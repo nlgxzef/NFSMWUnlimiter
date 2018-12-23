@@ -5,5 +5,5 @@ NFSMW Unlimiter is a script mod which fixes some issues for added cars:
 - Cars over the limit, or models don't exist in CARS folder will get replaced with Porsche Carrera GT.
 
 # Download
-You can [download Unlimiter](https://github.com/ExOptsTeam/NFSMWExOpts/releases) from Releases page, or from [NFSMods.xyz](https://www.nfsmods.xyz).
+You can [download Unlimiter](https://github.com/nlgzrgn/NFSMWUnlimiter/releases) from Releases page, or from [NFSMods.xyz](https://www.nfsmods.xyz).
 If you want to compile it yourself, you can download the source code from the green Clone or Download button up there.
