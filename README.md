@@ -3,6 +3,7 @@ NFSMW Unlimiter is a script mod which fixes some issues for added cars:
 + Added cars cannot be seen in game. (Increased CarTypeID limit and block size variables to solve the problem.)
 + Selecting added cars make the game crash. (Increased CarTypeID limit for RenderConn functions.)
 - Cars over the limit, or models don't exist in CARS folder will get replaced with Porsche Carrera GT.
++ And more...
 
 # Download
 You can [download Unlimiter](https://github.com/nlgzrgn/NFSMWUnlimiter/releases) from Releases page, or from [NFSMods.xyz](https://www.nfsmods.xyz).

@@ -5,8 +5,11 @@
 #include "includes\injector\injector.hpp"
 #include "includes\IniReader.h"
 
-int CarCount, ReplacementCar, TrafficCarCount;
-bool ManuHook, DisappearingWheelsFix, SecondaryLogoFix, ExpandMemoryPools;
+#define CarTypeInfoArray 0x9B09D8
+#define SingleCarTypeInfoBlockSize 0xD0
+
+int CarArraySize, CarCount, ReplacementCar, TrafficCarCount;
+bool ManuHook, DisappearingWheelsFix, SecondaryLogoFix, ExpandMemoryPools, AddOnCopsDamageFix;
 int ManuID;
 
 DWORD Attrib_Instance_dtInstance = 0x45A430;
@@ -18,6 +21,11 @@ char* GetManuNameFromID()
 	sprintf(num, "%d", ManuID);
 
 	return Manu.ReadString("Manufacturers", num, "DEFAULT");
+}
+
+bool IsCop(BYTE CarTypeID)
+{
+	return *(BYTE*)((*(DWORD*)CarTypeInfoArray) + CarTypeID * SingleCarTypeInfoBlockSize + 0x94) == 1;
 }
 
 void __declspec(naked) CarManuCodeCave()
@@ -156,33 +164,86 @@ void __declspec(naked) CarCountCodeCave_HeliRenderConn_Construct()
 	}
 }
 
+void __declspec(naked) DoUnlimiterStuffCodeCave()
+{
+	// Get count
+	__asm
+	{
+		mov dword ptr ds : [CarTypeInfoArray] , esi
+		sub esi, 0x0C
+		mov esi, [esi]
+		mov CarArraySize, esi
+		mov esi, dword ptr ds : [CarTypeInfoArray]
+		pushad
+	}
+	
+	CarArraySize -= 8;
+	CarCount = CarArraySize / SingleCarTypeInfoBlockSize;
+
+	// Do required stuff
+	injector::WriteMemory<int>(0x739900, CarCount * SingleCarTypeInfoBlockSize, true); // CarPartDatabase::GetCarType
+	injector::WriteMemory<int>(0x7B3879, CarCount * SingleCarTypeInfoBlockSize, true); // DebugCarCustomizeScreen::BuildOptionsLists
+
+	// Continue
+	__asm
+	{
+		popad
+		push 0x756AAD
+		retn
+	}
+}
+
+void __declspec(naked) AddOnCopsDamageFixCodeCave()
+{
+	__asm
+	{
+		push eax // Car Type ID
+		call IsCop
+		add esp, 4
+		cmp al, 1
+		je jDamageParts
+		jmp jWindowDamage
+
+		jDamageParts :
+			push 0x76041B
+			retn
+
+		jWindowDamage :
+			push 0x76044F
+			retn
+	}
+}
+
 int Init()
 {
 	CIniReader Settings("NFSMWUnlimiterSettings.ini");
 
 	// Main
-	CarCount = Settings.ReadInteger("Main", "CarModelIDLimit", 127);
+	//CarCount = Settings.ReadInteger("Main", "CarModelIDLimit", 127);
 	ReplacementCar = Settings.ReadInteger("Main", "ReplacementModel", 127);
-	TrafficCarCount = Settings.ReadInteger("Main", "TrafficCarCount", 127);
+	TrafficCarCount = Settings.ReadInteger("Main", "TrafficCarCount", 20);
 	ManuHook = Settings.ReadInteger("Main", "EnableManufacturerHook", 1) == 1;
 	// Fixes
 	DisappearingWheelsFix = Settings.ReadInteger("Fixes", "DisappearingWheelsFix", 1) == 1;
 	SecondaryLogoFix = Settings.ReadInteger("Fixes", "SecondaryLogoFix", 1) == 1;
+	AddOnCopsDamageFix = Settings.ReadInteger("Fixes", "AddOnCopsDamageFix", 1) == 1;
 	// Misc
 	ExpandMemoryPools = Settings.ReadInteger("Misc", "ExpandMemoryPools", 0) == 1;
+
+	// Count Cars Automatically
+	injector::MakeJMP(0x756AA7, DoUnlimiterStuffCodeCave, true);
 
 	// Car Type Unlimiter
 	injector::MakeJMP(0x6690BB, CarCountCodeCave_PVehicle_Resource_Resource, true);
 	injector::MakeJMP(0x7398A6, CarCountCodeCave_sub_7398A0, true);
-	injector::WriteMemory<int>(0x739900, CarCount * 0xD0, true); // CarPartDatabase::GetCarType
-	injector::WriteMemory<int>(0x739909, ReplacementCar, true); // Replacement model if model not found
 	injector::MakeJMP(0x73995B, CarCountCodeCave_GetCarTypeInfoFromHash, true);
 	injector::MakeJMP(0x7515FB, CarCountCodeCave_sub_7515D0, true);
 	injector::MakeJMP(0x759913, CarCountCodeCave_RideInfo_FillWithPreset, true);
 	injector::MakeJMP(0x75E6F4, CarCountCodeCave_CarRenderConn_Construct, true);
 	injector::MakeJMP(0x75E7B4, CarCountCodeCave_HeliRenderConn_Construct, true);
 	
-	injector::WriteMemory<int>(0x7B3879, CarCount * 0xD0, true); // DebugCarCustomizeScreen::BuildOptionsLists
+	// Replacement model if model not found in array
+	injector::WriteMemory<int>(0x739909, ReplacementCar, true); 
 
 	// Traffic Pattern Unlimiter
 	injector::WriteMemory<BYTE>(0x439B79, TrafficCarCount, true); // AITrafficManager::SpawnTraffic
@@ -198,7 +259,8 @@ int Init()
 		injector::MakeRangedNOP(0x581B69, 0x581B6E, true); // Prevent returning null
 	}
 
-	if (DisappearingWheelsFix) // Fix Invisible Wheels
+	// Fix Invisible Wheels
+	if (DisappearingWheelsFix) 
 		injector::WriteMemory<BYTE>(0x74251D, 0x01, true);
 
 	// 2nd logo fix
@@ -207,7 +269,7 @@ int Init()
 		injector::MakeRangedNOP(0x591273, 0x591279, true);
 	}
 
-	// Expand Memory Pools (ty Berkay)
+	// Expand Memory Pools (ty Berkay and Aero_)
 	if (ExpandMemoryPools)
 	{
 		injector::WriteMemory<short>(0x5F7396, 0x2C80, true); // GManager::PreloadTransientVaults (0x2C8000)
@@ -217,6 +279,19 @@ int Init()
 
 		injector::WriteMemory<DWORD>(0x8F5790, 0x0BE6E0, true); // FEngMemoryPoolSize (InitFEngMemoryPool)
 		injector::WriteMemory<DWORD>(0x8F7EF0, 0x01CC00, true); // CarLoaderPoolSizes
+
+		// Fixes disappearing objects
+		injector::WriteMemory<uint32_t>(0x5009D2, 0xFA000, true);
+		injector::WriteMemory<uint32_t>(0x5009DC, 0xFA000, true);
+		injector::WriteMemory<uint32_t>(0x500A01, 0xFA000, true);
+		injector::WriteMemory<uint32_t>(0x500A12, 0xFA000, true);
+	}
+
+	// Damage Parts Fix for Add-On Cop Cars
+	if (AddOnCopsDamageFix)
+	{
+		injector::MakeRangedNOP(0x7603EE, 0x760419, true);
+		injector::MakeJMP(0x7603EE, AddOnCopsDamageFixCodeCave, true);
 	}
 
 	return 0;
