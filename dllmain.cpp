@@ -9,10 +9,11 @@
 #define SingleCarTypeInfoBlockSize 0xD0
 
 int CarArraySize, CarCount, ReplacementCar, TrafficCarCount;
-bool ManuHook, DisappearingWheelsFix, SecondaryLogoFix, ExpandMemoryPools, AddOnCopsDamageFix;
+bool ManuHook, DisappearingWheelsFix, SecondaryLogoFix, ExpandMemoryPools, AddOnCopsDamageFix, AddOnOpponentsPartsFix;
 int ManuID;
 
 DWORD Attrib_Instance_dtInstance = 0x45A430;
+DWORD RideInfo_SetStockParts = 0x7594A0;
 
 char* GetManuNameFromID()
 {
@@ -197,6 +198,8 @@ void __declspec(naked) AddOnCopsDamageFixCodeCave()
 {
 	__asm
 	{
+		cmp eax,0x33 // COPMIDSIZEINT
+		je jWindowDamage
 		push eax // Car Type ID
 		call IsCop
 		add esp, 4
@@ -214,6 +217,25 @@ void __declspec(naked) AddOnCopsDamageFixCodeCave()
 	}
 }
 
+void __declspec(naked) ForceStockPartsOnAddOnsCodeCave()
+{
+	__asm
+	{
+		call RideInfo_SetStockParts
+		cmp [esi], 84
+		jge jLessRandomParts // 84+ = Add-On
+		jmp jNormalRandomParts
+
+		jLessRandomParts:
+			push 0x75B2EF
+			retn
+
+		jNormalRandomParts:
+			push 0x75B228
+			retn
+	}
+}
+
 int Init()
 {
 	CIniReader Settings("NFSMWUnlimiterSettings.ini");
@@ -227,6 +249,7 @@ int Init()
 	DisappearingWheelsFix = Settings.ReadInteger("Fixes", "DisappearingWheelsFix", 1) == 1;
 	SecondaryLogoFix = Settings.ReadInteger("Fixes", "SecondaryLogoFix", 1) == 1;
 	AddOnCopsDamageFix = Settings.ReadInteger("Fixes", "AddOnCopsDamageFix", 1) == 1;
+	AddOnOpponentsPartsFix = Settings.ReadInteger("Fixes", "AddOnOpponentsPartsFix", 1) == 1;
 	// Misc
 	ExpandMemoryPools = Settings.ReadInteger("Misc", "ExpandMemoryPools", 0) == 1;
 
@@ -292,6 +315,12 @@ int Init()
 	{
 		injector::MakeRangedNOP(0x7603EE, 0x760419, true);
 		injector::MakeJMP(0x7603EE, AddOnCopsDamageFixCodeCave, true);
+	}
+
+	// Force Stock Parts for Add-On Cars to fix Missing Parts on Opponents' Cars
+	if (AddOnOpponentsPartsFix)
+	{
+		injector::MakeJMP(0x75B223, ForceStockPartsOnAddOnsCodeCave, true);
 	}
 
 	return 0;
