@@ -198,6 +198,8 @@ void __declspec(naked) AddOnCopsDamageFixCodeCave()
 {
 	__asm
 	{
+		cmp eax,4 // COPHELI
+		je jWindowDamage
 		cmp eax,0x33 // COPMIDSIZEINT
 		je jWindowDamage
 		push eax // Car Type ID
