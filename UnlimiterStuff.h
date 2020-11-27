@@ -6,7 +6,7 @@
 #include "includes\IniReader.h"
 
 int ManuID, CarArraySize, CarCount, ReplacementCar, TrafficCarCount, RacerNamesCount;
-bool ManuHook, ExtraCustomization, DisappearingWheelsFix, SecondaryLogoFix, ExpandMemoryPools, AddOnCopsDamageFix, AddOnOpponentsPartsFix, ChallengeSeriesOpponentNameFix, BETACompatibility, CopDestroyedStringHook;
+bool ManuHook, ExtraCustomization, DisappearingWheelsFix, SecondaryLogoFix, ExpandMemoryPools, AddOnCopsDamageFix, AddOnOpponentsPartsFix, ChallengeSeriesOpponentNameFix, BETACompatibility, CopDestroyedStringHook, DisableTextureReplacement;
 
 #include "InGameFunctions.h"
 #include "CustomizeSub.h"
@@ -19,6 +19,7 @@ bool ManuHook, ExtraCustomization, DisappearingWheelsFix, SecondaryLogoFix, Expa
 #include "GRacerInfo.h"
 #include "CarCustomizeManager.h"
 #include "CarPart.h"
+#include "SimConnection.h"
 
 char num[4];
 
@@ -260,8 +261,8 @@ int Init()
 	CIniReader Settings("NFSMWUnlimiterSettings.ini");
 
 	// Main
-	ReplacementCar = Settings.ReadInteger("Main", "ReplacementModel", 127);
-	TrafficCarCount = Settings.ReadInteger("Main", "TrafficCarCount", 20);
+	ReplacementCar = Settings.ReadInteger("Main", "ReplacementModel", 1);
+	TrafficCarCount = Settings.ReadInteger("Main", "TrafficCarCount", 10);
 	ManuHook = Settings.ReadInteger("Main", "EnableManufacturerHook", 1) == 1;
 	ExtraCustomization = Settings.ReadInteger("Main", "EnableExtraCustomization", 1) == 1;
 	CopDestroyedStringHook = Settings.ReadInteger("Main", "EnableCopDestroyedStringHook", 1) == 1;
@@ -274,6 +275,8 @@ int Init()
 	// Misc
 	ExpandMemoryPools = Settings.ReadInteger("Misc", "ExpandMemoryPools", 0) == 1;
 	BETACompatibility = Settings.ReadInteger("Misc", "BETACompatibility", 0) == 1;
+	// Debug
+	DisableTextureReplacement = Settings.ReadInteger("Debug", "DisableTextureReplacement", 0) == 1;
 
 	// Count Cars Automatically
 	injector::MakeJMP(0x756AA7, DoUnlimiterStuffCodeCave, true);
@@ -300,11 +303,6 @@ int Init()
 	injector::WriteMemory<BYTE>(0x426254, TrafficCarCount, true); // AITrafficManager::NextSpawn
 	injector::WriteMemory<int>(0x426256, TrafficCarCount, true); // AITrafficManager::NextSpawn
 
-	// FastMem Fixes??
-	injector::WriteMemory<BYTE>(0x41B843, ((TrafficCarCount / 4) + 1) * 4, true); // sub_41B840
-	injector::WriteMemory<BYTE>(0x41B872, ((TrafficCarCount / 4) + 1) * 4, true); // sub_41B860
-	injector::WriteMemory<BYTE>(0x41AF95, ((TrafficCarCount / 4) + 1) * 4, true); // _List_base<IVehicle *, UTL::Std::Allocator<IVehicle *, _type_TrafficList>>::clear(void)
-	
 	// Manufacturer logo hook
 	if (ManuHook)
 	{
@@ -320,9 +318,12 @@ int Init()
 		injector::MakeJMP(0x7B759A, CustomizePartsPackageSwitchCodeCave, true); // Fix package switching for attachments
 
 		// Texture caves
-		injector::MakeJMP(0x737E26, TextureReplacementCodeCave, true); // Add texture replacements to the table
-		injector::MakeJMP(0x75230D, UsedCarTextureInfoCodeCave, true); // Allow custom texture names for interior in UsedCarTexture table
-
+		if (!DisableTextureReplacement)
+		{
+			injector::MakeJMP(0x737E26, TextureReplacementCodeCave, true); // Add texture replacements to the table
+			injector::MakeJMP(0x75230D, UsedCarTextureInfoCodeCave, true); // Allow custom texture names for interior in UsedCarTexture table
+		}
+		
 		// Fix headlight and taillight texture changing
 		injector::WriteMemory<int>(0x751B8B, 0xC4, true); // RideInfo + 0xC4 = LEFT_HEADLIGHT
 		injector::WriteMemory<int>(0x751B91, 0xBC, true); // RideInfo + 0xBC = LEFT_BRAKELIGHT
@@ -365,6 +366,9 @@ int Init()
 			injector::MakeNOP(0x7A539F, 6, true); // CarCustomizeManager::IsCategoryNew, Rims category
 			injector::MakeJMP(0x7A539F, IsNewCodeCaveRims, true); // CarCustomizeManager::IsCategoryNew, Rims category
 		}
+
+		// Fix Service Crash
+		injector::MakeJMP(0x6E9E40, SimConnectionService, true); //Sim::Connection::Service
 	}
 	
 	// Check the ini file for destroyed cops messages
