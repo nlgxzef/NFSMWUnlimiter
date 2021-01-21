@@ -10,6 +10,7 @@ Features:
 + Expands memory pools.
 + Fixes flickering cars in crowded areas with rain
 + Fixes character names for non-career events.
++ Fixes missing objects for options and stuff in FNGs by cloning them.
 + Adds new customization items to the menu. (Fully configurable via car-specific or general ini files.) (Parts should get added by modders.)
 + Lets modders add custom rim brands. (Fully configurable via ini file.)
 + Lets modders define custom destroyed bounty award messages for any cop car. (Fully configurable via ini file.)
@@ -17,6 +18,8 @@ Features:
 + Lets modders define engine type for any car. (Piston, Castrol (use "castrol" cheat code) and Rotary.)
 + Lets modders force LOD A for any car. (Useful if the modded car doesn't have LOD parts.)
 + Lets users enable some BETA features to use with elaymm4's BETA Content Mod.
++ Enables Backroom in My Cars menu. (Known issue: When you use Esc key to back out from Backroom, you won't be able to move between the options. Press Enter or Esc to get back and enter the menu again.)
++ Allows rims to have "LANGUAGEHASH" attribute.
 
 Also check out:
 - [2005 Ford Mustang GT (S-197) "Extra Customization Showcase"](https://nfsmods.xyz/mod/2225)

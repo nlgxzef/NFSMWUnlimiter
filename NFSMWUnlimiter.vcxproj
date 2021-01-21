@@ -93,9 +93,12 @@ copy "$(TargetDir)*.pdb" "G:\Games\Need for Speed Most Wanted\scripts"  /y</Comm
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="CarCustomizeManager.h" />
+    <ClInclude Include="CustomizeMain.h" />
     <ClInclude Include="CustomizeParts.h" />
     <ClInclude Include="CustomizeRims.h" />
+    <ClInclude Include="CustomizeShoppingCart.h" />
     <ClInclude Include="CustomizeSub.h" />
+    <ClInclude Include="FEPackage.h" />
     <ClInclude Include="FEShoppingCartItem.h" />
     <ClInclude Include="GRacerInfo.h" />
     <ClInclude Include="InGameFunctions.h" />

@@ -6,12 +6,14 @@
 #include "includes\IniReader.h"
 
 int ManuID, CarArraySize, CarCount, ReplacementCar, TrafficCarCount, RacerNamesCount;
-bool ManuHook, ExtraCustomization, DisappearingWheelsFix, SecondaryLogoFix, ExpandMemoryPools, AddOnCopsDamageFix, AddOnOpponentsPartsFix, ChallengeSeriesOpponentNameFix, BETACompatibility, CopDestroyedStringHook, DisableTextureReplacement;
+bool ManuHook, ExtraCustomization, DisappearingWheelsFix, SecondaryLogoFix, ExpandMemoryPools, AddOnCopsDamageFix, AddOnOpponentsPartsFix, ChallengeSeriesOpponentNameFix, BETACompatibility, CopDestroyedStringHook, DisableTextureReplacement, MyCarsBackroom, FNGFix;
 
 #include "InGameFunctions.h"
+#include "CustomizeMain.h"
 #include "CustomizeSub.h"
 #include "CustomizeParts.h"
 #include "CustomizeRims.h"
+#include "CustomizeShoppingCart.h"
 #include "FEShoppingCartItem.h"
 #include "CarRenderInfo.h"
 #include "RideInfo.h"
@@ -20,6 +22,7 @@ bool ManuHook, ExtraCustomization, DisappearingWheelsFix, SecondaryLogoFix, Expa
 #include "CarCustomizeManager.h"
 #include "CarPart.h"
 #include "SimConnection.h"
+#include "FEPackage.h"
 
 char num[4];
 
@@ -265,6 +268,7 @@ int Init()
 	TrafficCarCount = Settings.ReadInteger("Main", "TrafficCarCount", 10);
 	ManuHook = Settings.ReadInteger("Main", "EnableManufacturerHook", 1) == 1;
 	ExtraCustomization = Settings.ReadInteger("Main", "EnableExtraCustomization", 1) == 1;
+	MyCarsBackroom = Settings.ReadInteger("Main", "MyCarsBackroom", 1) == 1;
 	CopDestroyedStringHook = Settings.ReadInteger("Main", "EnableCopDestroyedStringHook", 1) == 1;
 	// Fixes
 	DisappearingWheelsFix = Settings.ReadInteger("Fixes", "DisappearingWheelsFix", 1) == 1;
@@ -272,6 +276,7 @@ int Init()
 	AddOnCopsDamageFix = Settings.ReadInteger("Fixes", "AddOnCopsDamageFix", 1) == 1;
 	AddOnOpponentsPartsFix = Settings.ReadInteger("Fixes", "AddOnOpponentsPartsFix", 1) == 1;
 	ChallengeSeriesOpponentNameFix = Settings.ReadInteger("Fixes", "ChallengeSeriesOpponentNameFix", 1) == 1;
+	FNGFix = Settings.ReadInteger("Fixes", "FNGFix", 1) == 1;
 	// Misc
 	ExpandMemoryPools = Settings.ReadInteger("Misc", "ExpandMemoryPools", 0) == 1;
 	BETACompatibility = Settings.ReadInteger("Misc", "BETACompatibility", 0) == 1;
@@ -309,10 +314,30 @@ int Init()
 		injector::MakeJMP(0x5817C1, CarManuCodeCave, true);
 		injector::MakeRangedNOP(0x581B69, 0x581B6E, true); // Prevent returning null
 	}
+
+	// Show Backroom Parts on Customization
+	if (MyCarsBackroom)
+	{
+		injector::MakeNOP(0x7BFF28, 6, true); // CustomizeMain::NotificationMessage - Switch to Backroom Menu
+		injector::MakeJMP(0x7B1226, MyCarsBackroomWidgetCodeCave, true); // CustomizeMain::RefreshHeader
+		injector::MakeJMP(0x7BFE2F, MyCarsBackroomEscCodeCave, true); // CustomizeMain::NotificationMessage
+		injector::MakeJMP(0x7BFCC2, MyCarsBackroomRoomChangeCodeCave, true); // CustomizeMain::SwitchRooms
+		injector::MakeJMP(0x7A60F0, MyCarsBackroomRoomChangeCodeCave2, true); // CustomizeMain::SwitchRooms_0 (0x7A60E0)
+		injector::MakeJMP(0x7A65C0, CustomizeMain_SetScreenNames, true); // CustomizeMain::SetScreenNames
+		injector::MakeNOP(0x7B92C8, 6, true); // CustomizePerformance::Setup - Fix Junkman Parts
+	}
 	
 	// Extra Customization Stuff
 	if (ExtraCustomization)
 	{
+		// Enable All Customizations For All Cars
+		injector::MakeNOP(0x7BCDD0, 2, true); // CustomizeMain::BuildOptionsList - My Cars (BMWM3GTRE46)
+		injector::MakeNOP(0x7BCE33, 2, true); // CustomizeMain::BuildOptionsList - Backroom (BMWM3GTRE46)
+		injector::MakeNOP(0x7B123D, 2, true); // CustomizeMain::RefreshHeader - Backroom HUD Widget (BMWM3GTRE46)
+		injector::MakeNOP(0x7BFF49, 6, true); // CustomizeMain::NotificationMessage - Switch to Backroom Menu (BMWM3GTRE46)
+		injector::MakeNOP(0x7B92DC, 6, true); // CustomizePerformance::Setup - Backroom Performance Parts (BMWM3GTRE46)
+		injector::MakeNOP(0x7BC28C, 2, true); // CustomizeSub::SetupVisual - Rim Paint (BMWM3GTRE46)
+
 		injector::MakeJMP(0x7BFBD0, CustomizeSub_Setup, true); // Add new options
 		injector::MakeJMP(0x7A5F40, FEShoppingCartItem_GetCarPartCatHash, true); // Add the new names for shopping cart, 18 calls
 		injector::MakeJMP(0x7B759A, CustomizePartsPackageSwitchCodeCave, true); // Fix package switching for attachments
@@ -355,6 +380,7 @@ int Init()
 		{
 			RimBrandsCount += 0x702;
 			injector::MakeJMP(0x7BC4B7, SetupRimBrandsCodeCave, true); // CustomizeSub::SetupRimBrands
+			injector::MakeJMP(0x7B7E90, NoRimSizeCodeCave, true); // CustomizeSub::BuildRimsList
 			injector::MakeCALL(0x7B7E17, CustomizeRims_GetCategoryBrandHash, true); // CustomizeRims::BuildRimsList
 			injector::WriteMemory<short>(0x7BC704, RimBrandsCount, true); // CustomizeSub::SetupRimBrands, expand for new brands (Default: 0x70B)
 			injector::WriteMemory<short>(0x7A587D, RimBrandsCount, true); // TranslateCustomizeCatToMarker
@@ -365,6 +391,7 @@ int Init()
 			injector::MakeJMP(0x7A6490, CustomizeSub_GetRimBrandIndex, true); // CustomizeSub::GetRimBrandIndex
 			injector::MakeNOP(0x7A539F, 6, true); // CarCustomizeManager::IsCategoryNew, Rims category
 			injector::MakeJMP(0x7A539F, IsNewCodeCaveRims, true); // CarCustomizeManager::IsCategoryNew, Rims category
+			injector::WriteMemory(0x8B7FE8, &CustomizeRims_RefreshHeader, true); // CustomizeRims::vtable
 		}
 
 		// Fix Service Crash
@@ -430,6 +457,12 @@ int Init()
 	// Engine Types
 	injector::MakeCALL(0x7A727B, CarCustomizeManager_IsCastrolCar, true); // CustomizePerformance::GetPerfPkgDesc
 	injector::MakeCALL(0x7A72AB, CarCustomizeManager_IsRotaryCar, true);
+
+	// Clone objects in FNG where needed
+	if (FNGFix)
+	{
+		injector::MakeCALL(0x5C4D64, CloneObjectstoShowMoreItemsInMenu, true); // FEPackageReader::Load
+	}
 
 	return 0;
 }
