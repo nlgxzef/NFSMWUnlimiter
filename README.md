@@ -11,20 +11,26 @@ Features:
 + Fixes flickering cars in crowded areas with rain
 + Fixes character names for non-career events.
 + Fixes missing objects for options and stuff in FNGs by cloning them.
++ Makes paint menu scroll properly when there are more than 80 colors in a category.
 + Adds new customization items to the menu. (Fully configurable via car-specific or general ini files.) (Parts should get added by modders.)
 + Lets modders add custom rim brands. (Fully configurable via ini file.)
 + Lets modders define custom destroyed bounty award messages for any cop car. (Fully configurable via ini file.)
 + Lets modders add up to 1000 names for random AI Opponents. (RACERNAME_000-999)
 + Lets modders define engine type for any car. (Piston, Castrol (use "castrol" cheat code) and Rotary.)
 + Lets modders force LOD A for any car. (Useful if the modded car doesn't have LOD parts.)
-+ Lets users enable some BETA features to use with elaymm4's BETA Content Mod.
++ Lets modders allow random parts for AI opponents, for any car part slot.
++ Enables some BETA features if elaymm4's BETA Content Mod is installed.
 + Enables Backroom in My Cars menu. (Known issue: When you use Esc key to back out from Backroom, you won't be able to move between the options. Press Enter or Esc to get back and enter the menu again.)
 + Allows rims to have "LANGUAGEHASH" attribute.
++ Allows decal dummy parts to have "NUM_DECALS" attribute to declare the number of slots.
 
 Also check out:
 - [2005 Ford Mustang GT (S-197) "Extra Customization Showcase"](https://nfsmods.xyz/mod/2225)
 - [NFSMW Leftover Brakes Fix](https://nfsmods.xyz/mod/2226)
 - [NFS Better License Plates](https://nfsmods.xyz/mod/2010)
+- [NFSMW RimPack by Viper4K](https://www.nfsaddons.com/downloads/nfsmw/tools/6202/need-for-speed-most-wanted-rimpack-by-viper4k.html)
+- [NFS Mods with Unlimiter (v3+) & Extended Customization Support](https://docs.google.com/spreadsheets/d/1BYqui01raMMtRGrJ63-2B-Agh9ag6RdPB-bd07pDIKI/edit#gid=0)
+
 
 # Technical Information
 If you want everything to work properly:
@@ -40,6 +46,7 @@ D68F9860 - VISUAL_PART_LICENSE_PLATE
 0294EC5E - VISUAL_PART_ROOF
 0DD35467 - VISUAL_PART_SIDE_MIRROR
 2CBB2D1C - VISUAL_PART_TAIL_LIGHTS
+0295EBFC - VISUAL_PART_TIRE
 ```
 
 2) You will need to add these strings into your LANGUAGES\\(LanguageName).bin:
@@ -61,6 +68,8 @@ D16C070D - CO_HEADLIGHTS
 F86904C6 - CO_ROOF
 F9D99DA5 - CO_TAILLIGHTS
 D3DAE7CF - CO_SIDE_MIRROR
+7D212D00 - CO_DECAL_SLOT_7
+7D212D01 - CO_DECAL_SLOT_8
 ```
 
 3) You will need to add the new camera angles for the new customization options via NFS-VltEd.
@@ -85,10 +94,11 @@ customize_customizeparts_276
 customize_customizeparts_277
 customize_customizeparts_278
 customize_customizeparts_776
+customize_customizeparts_788
 ```
 
 Note: Binary and NFS-VltEd scripts which will do these automatically for you are available in the release pack.
 
 # Download
-You can [download Unlimiter](https://github.com/nlgzrgn/NFSMWUnlimiter/releases) from Releases page, or from [NFSMods.xyz](https://www.nfsmods.xyz).
+You can [download Unlimiter](https://github.com/nlgzrgn/NFSMWUnlimiter/releases) from the Releases page, or from [NFSMods.xyz](https://www.nfsmods.xyz).
 If you want to compile it yourself, you can download the source code from the green Code button up there.

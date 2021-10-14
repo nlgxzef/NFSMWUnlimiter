@@ -6,13 +6,15 @@
 #include "includes\IniReader.h"
 
 int ManuID, CarArraySize, CarCount, ReplacementCar, TrafficCarCount, RacerNamesCount;
-bool ManuHook, ExtraCustomization, DisappearingWheelsFix, SecondaryLogoFix, ExpandMemoryPools, AddOnCopsDamageFix, AddOnOpponentsPartsFix, ChallengeSeriesOpponentNameFix, BETACompatibility, CopDestroyedStringHook, DisableTextureReplacement, MyCarsBackroom, FNGFix;
+bool ManuHook, ExtraCustomization, DisappearingWheelsFix, SecondaryLogoFix, ExpandMemoryPools, AddOnCopsDamageFix, ForceStockPartsOnAddOnOpponents, ChallengeSeriesOpponentNameFix, BETACompatibility, HPCCompatibility, CopDestroyedStringHook, DisableTextureReplacement, MyCarsBackroom, FNGFix, RandomHook, PaintMenuFix;
 
 #include "InGameFunctions.h"
 #include "CustomizeMain.h"
 #include "CustomizeSub.h"
 #include "CustomizeParts.h"
 #include "CustomizeRims.h"
+#include "CustomizePaint.h"
+#include "CustomizeDecals.h"
 #include "CustomizeShoppingCart.h"
 #include "FEShoppingCartItem.h"
 #include "CarRenderInfo.h"
@@ -23,241 +25,8 @@ bool ManuHook, ExtraCustomization, DisappearingWheelsFix, SecondaryLogoFix, Expa
 #include "CarPart.h"
 #include "SimConnection.h"
 #include "FEPackage.h"
-
-char num[4];
-
-char* GetManuNameFromID()
-{
-	CIniReader Manu("UnlimiterData\\_CarManufacturers.ini");
-	sprintf(num, "%d", ManuID);
-
-	return Manu.ReadString("Manufacturers", num, "DEFAULT");
-}
-
-bool IsCop(BYTE CarTypeID)
-{
-	return *(BYTE*)((*(DWORD*)CarTypeInfoArray) + CarTypeID * SingleCarTypeInfoBlockSize + 0x94) == 1;
-}
-
-void __declspec(naked) CarManuCodeCave()
-{
-	__asm
-	{
-		mov ManuID, eax // Get manu Id to global var
-
-		lea ecx, [esp]
-		mov dword ptr ds : [esp + 0x1C] , 0xFFFFFFFF
-		call Attrib_Instance_dtInstance
-		mov ecx, [esp + 14]
-		call GetManuNameFromID
-		mov fs : [00000000] , ecx
-		add esp, 0x20
-		ret
-	}
-}
-
-void __declspec(naked) CarCountCodeCave_PVehicle_Resource_Resource()
-{
-	__asm
-	{
-		cmp eax, CarCount
-		jnl jump_66910D
-
-		caveexit :
-		push 0x6690C0
-			retn
-
-			jump_66910D :
-		push 0x66910D
-			retn
-	}
-}
-
-void __declspec(naked) CarCountCodeCave_sub_7398A0()
-{
-	__asm
-	{
-		cmp ecx, CarCount
-		je jump_7398CB
-
-		caveexit :
-		push 0x7398AB
-			retn
-
-			jump_7398CB :
-		push 0x7398CB
-			retn
-	}
-}
-
-void __declspec(naked) CarCountCodeCave_GetCarTypeInfoFromHash()
-{
-	__asm
-	{
-		cmp eax, CarCount
-		jl jump_739950
-
-		caveexit :
-		push 0x739960
-			retn
-
-			jump_739950 :
-		push 0x739950
-			retn
-	}
-}
-
-void __declspec(naked) CarCountCodeCave_sub_7515D0()
-{
-	__asm
-	{
-		cmp eax, CarCount
-		jl jump_7515F0
-
-		caveexit :
-		push 0x751600
-			retn
-
-			jump_7515F0 :
-		push 0x7515F0
-			retn
-	}
-}
-
-void __declspec(naked) CarCountCodeCave_RideInfo_FillWithPreset()
-{
-	__asm
-	{
-		cmp ecx, CarCount
-		jl jump_759908
-
-		caveexit :
-		push 0x759918
-			retn
-
-			jump_759908 :
-		push 0x759908
-			retn
-	}
-}
-
-void __declspec(naked) CarCountCodeCave_CarRenderConn_Construct()
-{
-	__asm
-	{
-		cmp esi, CarCount
-		jnl jump_75E736
-
-		caveexit :
-		push 0x75E6F9
-			retn
-
-			jump_75E736 :
-		push 0x75E736
-			retn
-	}
-}
-
-void __declspec(naked) CarCountCodeCave_HeliRenderConn_Construct()
-{
-	__asm
-	{
-		cmp esi, CarCount
-		jnl jump_75E7F6
-
-		caveexit :
-		push 0x75E7B9
-			retn
-
-			jump_75E7F6 :
-		push 0x75E7F6
-			retn
-	}
-}
-
-void __declspec(naked) DoUnlimiterStuffCodeCave()
-{
-	// Get count
-	__asm
-	{
-		mov dword ptr ds : [CarTypeInfoArray] , esi
-		sub esi, 0x0C
-		mov esi, [esi]
-		mov CarArraySize, esi
-		mov esi, dword ptr ds : [CarTypeInfoArray]
-		pushad
-	}
-
-	CarArraySize -= 8;
-	CarCount = CarArraySize / SingleCarTypeInfoBlockSize;
-
-	// Do required stuff
-	injector::WriteMemory<int>(0x739900, CarCount * SingleCarTypeInfoBlockSize, true); // CarPartDatabase::GetCarType
-	injector::WriteMemory<int>(0x7B3879, CarCount * SingleCarTypeInfoBlockSize, true); // DebugCarCustomizeScreen::BuildOptionsLists
-
-	// Continue
-	__asm
-	{
-		popad
-		push 0x756AAD
-		retn
-	}
-}
-
-void __declspec(naked) AddOnCopsDamageFixCodeCave()
-{
-	__asm
-	{
-		cmp eax, 4 // COPHELI
-		je jWindowDamage
-		cmp eax, 0x33 // COPMIDSIZEINT
-		je jWindowDamage
-		push eax // Car Type ID
-		call IsCop
-		add esp, 4
-		cmp al, 1
-		je jDamageParts
-		jmp jWindowDamage
-
-		jDamageParts :
-		push 0x76041B
-			retn
-
-			jWindowDamage :
-		push 0x76044F
-			retn
-	}
-}
-
-void __declspec(naked) ForceStockPartsOnAddOnsCodeCave()
-{
-	__asm
-	{
-		call RideInfo_SetStockParts
-		cmp[esi], 84
-		jge jLessRandomParts // 84+ = Add-On
-		jmp jNormalRandomParts
-
-		jLessRandomParts :
-		push 0x75B2EF
-			retn
-
-			jNormalRandomParts :
-		push 0x75B228
-			retn
-	}
-}
-
-void __declspec(naked) ReplacementCarCodeCave_CarLoader_Load()
-{
-	_asm
-	{
-		mov edx, ReplacementCar
-		mov[ebx], edx
-		push 0x0075C717
-		retn
-	}
-}
+#include "Helpers.h"
+#include "CodeCaves.h"
 
 int Init()
 {
@@ -266,22 +35,29 @@ int Init()
 	// Main
 	ReplacementCar = Settings.ReadInteger("Main", "ReplacementModel", 1);
 	TrafficCarCount = Settings.ReadInteger("Main", "TrafficCarCount", 10);
-	ManuHook = Settings.ReadInteger("Main", "EnableManufacturerHook", 1) == 1;
-	ExtraCustomization = Settings.ReadInteger("Main", "EnableExtraCustomization", 1) == 1;
-	MyCarsBackroom = Settings.ReadInteger("Main", "MyCarsBackroom", 1) == 1;
-	CopDestroyedStringHook = Settings.ReadInteger("Main", "EnableCopDestroyedStringHook", 1) == 1;
+	ManuHook = Settings.ReadInteger("Main", "EnableManufacturerHook", 1) != 0;
+	ExtraCustomization = Settings.ReadInteger("Main", "EnableExtraCustomization", 1) != 0;
+	MyCarsBackroom = Settings.ReadInteger("Main", "MyCarsBackroom", 1) != 0;
+	CopDestroyedStringHook = Settings.ReadInteger("Main", "EnableCopDestroyedStringHook", 1) != 0;
+	RandomHook = Settings.ReadInteger("Main", "EnableRandomPartsHook", 1) != 0;
 	// Fixes
-	DisappearingWheelsFix = Settings.ReadInteger("Fixes", "DisappearingWheelsFix", 1) == 1;
-	SecondaryLogoFix = Settings.ReadInteger("Fixes", "SecondaryLogoFix", 1) == 1;
-	AddOnCopsDamageFix = Settings.ReadInteger("Fixes", "AddOnCopsDamageFix", 1) == 1;
-	AddOnOpponentsPartsFix = Settings.ReadInteger("Fixes", "AddOnOpponentsPartsFix", 1) == 1;
-	ChallengeSeriesOpponentNameFix = Settings.ReadInteger("Fixes", "ChallengeSeriesOpponentNameFix", 1) == 1;
-	FNGFix = Settings.ReadInteger("Fixes", "FNGFix", 1) == 1;
+	DisappearingWheelsFix = Settings.ReadInteger("Fixes", "DisappearingWheelsFix", 1) != 0;
+	SecondaryLogoFix = Settings.ReadInteger("Fixes", "SecondaryLogoFix", 1) != 0;
+	AddOnCopsDamageFix = Settings.ReadInteger("Fixes", "AddOnCopsDamageFix", 1) != 0;
+	ChallengeSeriesOpponentNameFix = Settings.ReadInteger("Fixes", "ChallengeSeriesOpponentNameFix", 1) != 0;
+	PaintMenuFix = Settings.ReadInteger("Fixes", "PaintMenuFix", 1) != 0;
+	FNGFix = Settings.ReadInteger("Fixes", "FNGFix", 1) != 0;
 	// Misc
-	ExpandMemoryPools = Settings.ReadInteger("Misc", "ExpandMemoryPools", 0) == 1;
-	BETACompatibility = Settings.ReadInteger("Misc", "BETACompatibility", 0) == 1;
+	ExpandMemoryPools = Settings.ReadInteger("Misc", "ExpandMemoryPools", 0) != 0;
+	//BETACompatibility = Settings.ReadInteger("Misc", "BETACompatibility", 0) != 0;
+	//HPCCompatibility = Settings.ReadInteger("Misc", "HPCCompatibility", 0) != 0;
+	ForceStockPartsOnAddOnOpponents = Settings.ReadInteger("Misc", "ForceStockPartsOnAddOnOpponents", 0) != 0;
 	// Debug
-	DisableTextureReplacement = Settings.ReadInteger("Debug", "DisableTextureReplacement", 0) == 1;
+	DisableTextureReplacement = Settings.ReadInteger("Debug", "DisableTextureReplacement", 0) != 0;
+
+	// Check compatibility
+	if (DoesFileExist("NFSMWBeta.asi")) BETACompatibility = 1;
+	if (DoesFileExist("NFSMWHPC.asi")) HPCCompatibility = 1;
 
 	// Count Cars Automatically
 	injector::MakeJMP(0x756AA7, DoUnlimiterStuffCodeCave, true);
@@ -330,9 +106,10 @@ int Init()
 	// Extra Customization Stuff
 	if (ExtraCustomization)
 	{
-		// Enable All Customizations For All Cars
-		injector::MakeNOP(0x7BCDD0, 2, true); // CustomizeMain::BuildOptionsList - My Cars (BMWM3GTRE46)
-		injector::MakeNOP(0x7BCE33, 2, true); // CustomizeMain::BuildOptionsList - Backroom (BMWM3GTRE46)
+		// Hook customize main
+		injector::MakeCALL(0x7BFCEC, CustomizeMain_BuildOptionsList, true); // CustomizeMain::SwitchRooms
+		injector::MakeCALL(0x7C0055, CustomizeMain_BuildOptionsList, true); // CustomizeMain::Setup
+
 		injector::MakeNOP(0x7B123D, 2, true); // CustomizeMain::RefreshHeader - Backroom HUD Widget (BMWM3GTRE46)
 		injector::MakeNOP(0x7BFF49, 6, true); // CustomizeMain::NotificationMessage - Switch to Backroom Menu (BMWM3GTRE46)
 		injector::MakeNOP(0x7B92DC, 6, true); // CustomizePerformance::Setup - Backroom Performance Parts (BMWM3GTRE46)
@@ -370,6 +147,13 @@ int Init()
 		injector::MakeNOP(0x7BAEE0, 6, true); // CarCustomizeManager::IsCategoryLocked, Visual category
 		injector::MakeJMP(0x7BAEE0, IsLockedCodeCaveVisual, true); // CarCustomizeManager::IsCategoryLocked, Visual category
 
+		// Decals
+		injector::MakeJMP(0x7A7030, CustomizeDecals_GetSlotIDFromCategory, true); // 3 references
+		injector::WriteMemory<int>(0x7BCF14, 0x608, true); // CustomizationScreen::CustomizationScreen
+
+		// Shopping Cart Text
+		injector::MakeCALL(0x7BB17B, FEShoppingCartItem_DrawPartName, true); // FEShoppingCartItem::Draw
+
 		// LOD Forcing option
 		injector::MakeJMP(0x751540, CarPart_GetModelNameHash, true);
 
@@ -402,6 +186,13 @@ int Init()
 	if (CopDestroyedStringHook)
 	{
 		injector::WriteMemory(0x8A2454, &PursuitBoard_SetNumCopsDestroyed, true);
+	}
+
+	// Hook SetRandomParts function to allow randomization for new parts
+	if (RandomHook)
+	{
+		injector::MakeCALL(0x5E8FE0, RideInfo_SetRandomParts, true); // GRacerInfo::CreateVehicle
+		injector::MakeCALL(0x7B4907, RideInfo_SetRandomParts, true); // UIQRBrief::NotificationMessage
 	}
 
 	// Fix Invisible Wheels
@@ -439,12 +230,12 @@ int Init()
 		injector::MakeJMP(0x7603EE, AddOnCopsDamageFixCodeCave, true);
 	}
 
-	// Force Stock Parts for Add-On Cars to fix Missing Parts on Opponents' Cars
-	if (AddOnOpponentsPartsFix)
+	// Paint related fixes
+	if (PaintMenuFix)
 	{
-		injector::MakeJMP(0x75B223, ForceStockPartsOnAddOnsCodeCave, true);
+		injector::WriteMemory(0x8B8074, CustomizePaint_RefreshHeader, true);
 	}
-
+	
 	// Racer names count
 	injector::MakeCALL(0x66617F, GRacerInfo_CountRandomNames, true);  // InitializeEverything
 

@@ -68,7 +68,7 @@ int __fastcall CustomizeSub_SetupParts(DWORD* _CustomizeSub, void* EDX_Unused)
             bStringHash("MARKER_ICON_PARTS_ROOFSCOOPS"),
             bStringHash("CO_ROOF_SCOOPS"),
             0x105);
-        if (BETACompatibility && (CarINI.ReadInteger("Visual", "CustomGauges", GeneralINI.ReadInteger("Visual", "CustomGauges", 0)) != 0))
+        if (BETACompatibility && (CarINI.ReadInteger("Visual", "CustomGauges", GeneralINI.ReadInteger("Visual", "CustomGauges", 1)) != 0))
         CustomizeCategoryScreen_AddCustomOption(
             _CustomizeCategoryScreen,
             *(char**)g_pCustomizeHudPkg,
@@ -163,7 +163,7 @@ int __fastcall CustomizeSub_SetupParts(DWORD* _CustomizeSub, void* EDX_Unused)
             bStringHash("VISUAL_PART_ATTACHMENT"),
             bStringHash("CO_ATTACHMENTS"),
             0x10C);
-        if (BETACompatibility && (CarINI.ReadInteger("Visual", "CustomGauges", GeneralINI.ReadInteger("Visual", "CustomGauges", 0)) != 0))
+        if (BETACompatibility && (CarINI.ReadInteger("Visual", "CustomGauges", GeneralINI.ReadInteger("Visual", "CustomGauges", 1)) != 0))
         CustomizeCategoryScreen_AddCustomOption(
             _CustomizeCategoryScreen,
             *(char**)g_pCustomizeHudPkg,
@@ -298,100 +298,113 @@ int __fastcall CustomizeSub_SetupVisual(DWORD* _CustomizeSub, void *EDX_Unused)
 
     if (CustomizeIsInBackRoom())
     {
-        if (CarINI.ReadInteger("Visual", "Paint", GeneralINI.ReadInteger("Visual", "Paint", 0)) != 0)
+        if (CarINI.ReadInteger("Visual", "Paint", GeneralINI.ReadInteger("Visual", "Paint", 1)) != 0)
         CustomizeCategoryScreen_AddCustomOption(
             _CustomizeCategoryScreen,
             *(char**)g_pCustomizePaintPkg,
             bStringHash("MARKER_ICON_VISUAL_PAINT"),
             bStringHash("CO_PAINT"),
             0x301);
-        if (CarINI.ReadInteger("Visual", "Vinyls", GeneralINI.ReadInteger("Visual", "Vinyls", 0)) != 0)
-        CustomizeCategoryScreen_AddCustomOption(
-            _CustomizeCategoryScreen,
-            *(char**)g_pCustomizeSubTopPkg,
-            bStringHash("MARKER_ICON_VISUAL_VINYLS"),
-            bStringHash("CO_VINYLS"),
-            0x302);
-        if (CarINI.ReadInteger("Visual", "Decals", GeneralINI.ReadInteger("Visual", "Decals", 0)) != 0)
-        CustomizeCategoryScreen_AddCustomOption(
-            _CustomizeCategoryScreen,
-            *(char**)g_pCustomizeSubTopPkg,
-            bStringHash("MARKER_ICON_VISUAL_DECALS"),
-            bStringHash("CO_DECALS"),
-            0x305);
-        if (!BETACompatibility && (CarINI.ReadInteger("Visual", "CustomGauges", GeneralINI.ReadInteger("Visual", "CustomGauges", 0)) != 0))
-        CustomizeCategoryScreen_AddCustomOption(
-            _CustomizeCategoryScreen,
-            *(char**)g_pCustomizeHudPkg,
-            bStringHash("MARKER_ICON_VISUAL_HUD"),
-            bStringHash("CO_CUSTOM_HUD"),
-            0x307);
+        if (!HPCCompatibility)
+        {
+            if (CarINI.ReadInteger("Visual", "Vinyls", GeneralINI.ReadInteger("Visual", "Vinyls", 1)) != 0)
+                CustomizeCategoryScreen_AddCustomOption(
+                    _CustomizeCategoryScreen,
+                    *(char**)g_pCustomizeSubTopPkg,
+                    bStringHash("MARKER_ICON_VISUAL_VINYLS"),
+                    bStringHash("CO_VINYLS"),
+                    0x302);
+            if (CarINI.ReadInteger("Visual", "Decals", GeneralINI.ReadInteger("Visual", "Decals", 1)) != 0)
+                CustomizeCategoryScreen_AddCustomOption(
+                    _CustomizeCategoryScreen,
+                    *(char**)g_pCustomizeSubTopPkg,
+                    bStringHash("MARKER_ICON_VISUAL_DECALS"),
+                    bStringHash("CO_DECALS"),
+                    0x305);
+            if (!BETACompatibility && (CarINI.ReadInteger("Visual", "CustomGauges", GeneralINI.ReadInteger("Visual", "CustomGauges", 1)) != 0))
+                CustomizeCategoryScreen_AddCustomOption(
+                    _CustomizeCategoryScreen,
+                    *(char**)g_pCustomizeHudPkg,
+                    bStringHash("MARKER_ICON_VISUAL_HUD"),
+                    bStringHash("CO_CUSTOM_HUD"),
+                    0x307);
+        }
     }
     else
     {
-        if (CarINI.ReadInteger("Visual", "Paint", GeneralINI.ReadInteger("Visual", "Paint", 0)) != 0)
+        if (CarINI.ReadInteger("Visual", "Paint", GeneralINI.ReadInteger("Visual", "Paint", 1)) != 0)
         CustomizeCategoryScreen_AddCustomOption(
             _CustomizeCategoryScreen,
             *(char**)g_pCustomizePaintPkg,
             bStringHash("PAINT_MOD_BASE"),
             bStringHash("CO_PAINT"),
             0x301);
-        if (CarINI.ReadInteger("Visual", "Vinyls", GeneralINI.ReadInteger("Visual", "Vinyls", 0)) != 0)
-        CustomizeCategoryScreen_AddCustomOption(
-            _CustomizeCategoryScreen,
-            *(char**)g_pCustomizeSubTopPkg,
-            bStringHash("VISUAL_PART_VINYL"),
-            bStringHash("CO_VINYLS"),
-            0x302);
-        if (CarINI.ReadInteger("Visual", "RimPaint", GeneralINI.ReadInteger("Visual", "RimPaint", 0)) != 0)
-        CustomizeCategoryScreen_AddCustomOption(
-            _CustomizeCategoryScreen,
-            *(char**)g_pCustomizePaintPkg,
-            bStringHash("PAINT_MOD_PART_RIMS"),
-            bStringHash("CO_RIM_PAINT"),
-            0x303);
-        if (CarINI.ReadInteger("Visual", "WindowTint", GeneralINI.ReadInteger("Visual", "WindowTint", 0)) != 0)
-        CustomizeCategoryScreen_AddCustomOption(
-            _CustomizeCategoryScreen,
-            *(char**)g_pCustomizePartsPkg,
-            bStringHash("VISUAL_PART_WINDOW_TINTING"),
-            bStringHash("CO_WINDOW_TINT"),
-            0x304);
-        if (CarINI.ReadInteger("Visual", "Decals", GeneralINI.ReadInteger("Visual", "Decals", 0)) != 0)
-        CustomizeCategoryScreen_AddCustomOption(
-            _CustomizeCategoryScreen,
-            *(char**)g_pCustomizeSubTopPkg,
-            bStringHash("VISUAL_PART_DECALS"),
-            bStringHash("CO_DECALS"),
-            0x305);
-        if (CarINI.ReadInteger("Visual", "Numbers", GeneralINI.ReadInteger("Visual", "Numbers", 0)) != 0)
-        CustomizeCategoryScreen_AddCustomOption(
-            _CustomizeCategoryScreen,
-            "Numbers.fng",
-            bStringHash("VISUAL_PART_NUMBERS"),
-            bStringHash("CO_NUMBERS"),
-            0x306);
-        if (!BETACompatibility && (CarINI.ReadInteger("Visual", "CustomGauges", GeneralINI.ReadInteger("Visual", "CustomGauges", 0)) != 0))
-        CustomizeCategoryScreen_AddCustomOption(
-            _CustomizeCategoryScreen,
-            *(char**)g_pCustomizeHudPkg,
-            bStringHash("VISUAL_PART_HUDS"),
-            bStringHash("CO_CUSTOM_HUD"),
-            0x307);
-        if (CarINI.ReadInteger("Visual", "Driver", GeneralINI.ReadInteger("Visual", "Driver", 0)) != 0)
-        CustomizeCategoryScreen_AddCustomOption(
-            _CustomizeCategoryScreen,
-            *(char**)g_pCustomizePartsPkg,
-            bStringHash("VISUAL_PART_DRIVER"),
-            bStringHash("CO_DRIVER"),
-            0x308);
-        if (CarINI.ReadInteger("Visual", "LicensePlate", GeneralINI.ReadInteger("Visual", "LicensePlate", 0)) != 0)
-        CustomizeCategoryScreen_AddCustomOption(
-            _CustomizeCategoryScreen,
-            *(char**)g_pCustomizePartsPkg,
-            bStringHash("VISUAL_PART_LICENSE_PLATE"),
-            bStringHash("CO_LICENSE_PLATE"),
-            0x309);
+        if (!HPCCompatibility)
+        {
+            if (CarINI.ReadInteger("Visual", "Vinyls", GeneralINI.ReadInteger("Visual", "Vinyls", 1)) != 0)
+                CustomizeCategoryScreen_AddCustomOption(
+                    _CustomizeCategoryScreen,
+                    *(char**)g_pCustomizeSubTopPkg,
+                    bStringHash("VISUAL_PART_VINYL"),
+                    bStringHash("CO_VINYLS"),
+                    0x302);
+            if (CarINI.ReadInteger("Visual", "RimPaint", GeneralINI.ReadInteger("Visual", "RimPaint", 1)) != 0)
+                CustomizeCategoryScreen_AddCustomOption(
+                    _CustomizeCategoryScreen,
+                    *(char**)g_pCustomizePaintPkg,
+                    bStringHash("PAINT_MOD_PART_RIMS"),
+                    bStringHash("CO_RIM_PAINT"),
+                    0x303);
+            if (CarINI.ReadInteger("Visual", "WindowTint", GeneralINI.ReadInteger("Visual", "WindowTint", 1)) != 0)
+                CustomizeCategoryScreen_AddCustomOption(
+                    _CustomizeCategoryScreen,
+                    *(char**)g_pCustomizePartsPkg,
+                    bStringHash("VISUAL_PART_WINDOW_TINTING"),
+                    bStringHash("CO_WINDOW_TINT"),
+                    0x304);
+            if (CarINI.ReadInteger("Visual", "Decals", GeneralINI.ReadInteger("Visual", "Decals", 1)) != 0)
+                CustomizeCategoryScreen_AddCustomOption(
+                    _CustomizeCategoryScreen,
+                    *(char**)g_pCustomizeSubTopPkg,
+                    bStringHash("VISUAL_PART_DECALS"),
+                    bStringHash("CO_DECALS"),
+                    0x305);
+            if (CarINI.ReadInteger("Visual", "Numbers", GeneralINI.ReadInteger("Visual", "Numbers", 1)) != 0)
+                CustomizeCategoryScreen_AddCustomOption(
+                    _CustomizeCategoryScreen,
+                    "Numbers.fng",
+                    bStringHash("VISUAL_PART_NUMBERS"),
+                    bStringHash("CO_NUMBERS"),
+                    0x306);
+            if (!BETACompatibility && (CarINI.ReadInteger("Visual", "CustomGauges", GeneralINI.ReadInteger("Visual", "CustomGauges", 1)) != 0))
+                CustomizeCategoryScreen_AddCustomOption(
+                    _CustomizeCategoryScreen,
+                    *(char**)g_pCustomizeHudPkg,
+                    bStringHash("VISUAL_PART_HUDS"),
+                    bStringHash("CO_CUSTOM_HUD"),
+                    0x307);
+            if (CarINI.ReadInteger("Visual", "Driver", GeneralINI.ReadInteger("Visual", "Driver", 0)) != 0)
+                CustomizeCategoryScreen_AddCustomOption(
+                    _CustomizeCategoryScreen,
+                    *(char**)g_pCustomizePartsPkg,
+                    bStringHash("VISUAL_PART_DRIVER"),
+                    bStringHash("CO_DRIVER"),
+                    0x308);
+            if (CarINI.ReadInteger("Visual", "LicensePlate", GeneralINI.ReadInteger("Visual", "LicensePlate", 0)) != 0)
+                CustomizeCategoryScreen_AddCustomOption(
+                    _CustomizeCategoryScreen,
+                    *(char**)g_pCustomizePartsPkg,
+                    bStringHash("VISUAL_PART_LICENSE_PLATE"),
+                    bStringHash("CO_LICENSE_PLATE"),
+                    0x309);
+            if (CarINI.ReadInteger("Visual", "Tires", GeneralINI.ReadInteger("Visual", "Tires", 0)) != 0)
+                CustomizeCategoryScreen_AddCustomOption(
+                    _CustomizeCategoryScreen,
+                    *(char**)g_pCustomizePartsPkg,
+                    bStringHash("VISUAL_PART_TIRE"),
+                    bStringHash("CO_TIRES"),
+                    0x314);
+        }
     }
     InitialPosition = _CustomizeCategoryScreen[85] & 0xFFFF00FF;
     if (*((BYTE*)_CustomizeCategoryScreen + 0x129))
@@ -419,6 +432,230 @@ int __fastcall CustomizeSub_GetRimBrandIndex(DWORD* CustomizeSub, void* EDX_Unus
     }
 
     return 1;
+}
+
+void __fastcall CustomizeSub_SetupDecalLocations(DWORD* CustomizeSub, void* EDX_Unused)
+{
+    DWORD PreviousMenu; // eax
+    unsigned int InitialPosition; // eax
+
+    CustomizeSub[108] = bStringHash("CO_DECAL_LOCATION");
+    CustomizeSub[83] = *(DWORD*)g_pCustomizeSubPkg;
+
+    // Get CarType Info
+    void* FECarRecord = *(void**)_FECarRecord;
+    int CarTypeID = FECarRecord_GetType(FECarRecord);
+    sprintf(CarTypeName, GetCarTypeName(CarTypeID));
+
+    // Read Part Options for the car
+    sprintf(CarININame, "UnlimiterData\\%s.ini", CarTypeName);
+    CIniReader CarINI(CarININame);
+    CIniReader GeneralINI("UnlimiterData\\_General.ini");
+
+    if (CarINI.ReadInteger("Visual", "DecalsWindshield", GeneralINI.ReadInteger("Visual", "DecalsWindshield", 1)) != 0) CustomizeCategoryScreen_AddCustomOption(CustomizeSub, *(char**)g_pCustomizeSubTopPkg, bStringHash("DECAL_ZONE_WINDSHIELD"), bStringHash("CO_DECAL_WINDSHIELD"), 0x501);
+    if (CarINI.ReadInteger("Visual", "DecalsRearWindow", GeneralINI.ReadInteger("Visual", "DecalsRearWindow", 1)) != 0) CustomizeCategoryScreen_AddCustomOption(CustomizeSub, *(char**)g_pCustomizeSubTopPkg, bStringHash("DECAL_ZONE_REARWINDOW"), bStringHash("CO_DECAL_REAR_WINDOW"), 0x502);
+    if (CarINI.ReadInteger("Visual", "DecalsLeftDoor", GeneralINI.ReadInteger("Visual", "DecalsLeftDoor", 1)) != 0) CustomizeCategoryScreen_AddCustomOption(CustomizeSub, *(char**)g_pCustomizeSubTopPkg, bStringHash("DECAL_ZONE_LEFTDOOR"), bStringHash("CO_DECAL_LEFT_DOOR"), 0x503);
+    if (CarINI.ReadInteger("Visual", "DecalsRightDoor", GeneralINI.ReadInteger("Visual", "DecalsRightDoor", 1)) != 0) CustomizeCategoryScreen_AddCustomOption(CustomizeSub, *(char**)g_pCustomizeSubTopPkg, bStringHash("DECAL_ZONE_RIGHTDOOR"), bStringHash("CO_DECAL_RIGHT_DOOR"), 0x504);
+    if (CarINI.ReadInteger("Visual", "DecalsLeftQuarter", GeneralINI.ReadInteger("Visual", "DecalsLeftQuarter", 1)) != 0) CustomizeCategoryScreen_AddCustomOption(CustomizeSub, *(char**)g_pCustomizeSubTopPkg, bStringHash("DECAL_ZONE_LEFTPANEL"), bStringHash("CO_DECAL_LEFT_QUARTER"), 0x505);
+    if (CarINI.ReadInteger("Visual", "DecalsRightQuarter", GeneralINI.ReadInteger("Visual", "DecalsRightQuarter", 1)) != 0) CustomizeCategoryScreen_AddCustomOption(CustomizeSub, *(char**)g_pCustomizeSubTopPkg, bStringHash("DECAL_ZONE_RIGHTPANEL"), bStringHash("CO_DECAL_RIGHT_QUARTER"), 0x506);
+    
+    PreviousMenu = CustomizeSub[85];
+    if (PreviousMenu == 0x803)
+    {
+        if (*((BYTE*)CustomizeSub + 297))
+        {
+            *((BYTE*)CustomizeSub + 284) = 0;
+            *((BYTE*)CustomizeSub + 281) = 1;
+            *((BYTE*)CustomizeSub + 282) = 0;
+            CustomizeSub[68] = 0;
+        }
+        (*(void(__thiscall**)(DWORD*, int))(CustomizeSub[11] + 64))(CustomizeSub + 11, 1);
+    }
+    else
+    {
+        InitialPosition = PreviousMenu & 0xFFFF00FF;
+        if (*((BYTE*)CustomizeSub + 297))
+        {
+            *((BYTE*)CustomizeSub + 284) = 0;
+            *((BYTE*)CustomizeSub + 281) = 1;
+            *((BYTE*)CustomizeSub + 282) = 0;
+            CustomizeSub[68] = 0;
+        }
+        (*(void(__thiscall**)(DWORD*, unsigned int))(CustomizeSub[11] + 64))(CustomizeSub + 11, InitialPosition);
+    }
+
+    if (PreviousMenu >= 0x501 && PreviousMenu <= 0x506)
+        CustomizeSub[85] = 0x803;
+}
+
+void __fastcall CustomizeSub_SetupDecalPositions(DWORD* CustomizeSub, void* EDX_Unused)
+{
+    DWORD PreviousMenu; // eax
+    unsigned int InitialPosition; // eax
+    DWORD* DecalPart;
+    int NumDecals;
+    char DecalMenuTexture[64];
+    char DecalMenuString[64];
+
+    CustomizeSub[108] = bStringHash("CO_DECAL_POSITION");
+    CustomizeSub[83] = *(DWORD*)g_pCustomizeSubTopPkg;
+
+    // Get car and customization record
+    DWORD* FEDatabase = *(DWORD**)_FEDatabase;
+    DWORD* FECarRecord = *(DWORD**)_FECarRecord;
+    DWORD* CustomizationRecord = FEPlayerCarDB_GetCustomizationRecordByHandle((DWORD*)(*((DWORD*)FEDatabase + 4) + 0x414),*((BYTE*)FECarRecord + 16));
+
+    switch (CustomizeSub[84])
+    {
+    case 0x501: // Windshield
+        // Get decal part
+        DecalPart = FECustomizationRecord_GetInstalledPart(CustomizationRecord, FECarRecord_GetType(FECarRecord), 70); // DECAL_FRONT_WINDOW_WIDE_MEDIUM
+
+        // look for the NUM_DECALS attribute
+        if (DecalPart)
+        {
+            NumDecals = CarPart_GetAppliedAttributeIParam(DecalPart, bStringHash("NUM_DECALS"), 0);
+            if (NumDecals <= 0 || NumDecals >= 8) NumDecals = 1;
+        }
+        else NumDecals = 1;
+
+        // Create menu options accordingly
+        for (int i = 1; i <= NumDecals; i++)
+        {
+            sprintf(DecalMenuString, "CO_DECAL_SLOT_%d", i);
+            CustomizeCategoryScreen_AddCustomOption(CustomizeSub, *(char**)g_pCustomizeDecalsPkg, bStringHash("DECAL_ZONE_WINDSHIELD"), bStringHash(DecalMenuString), 0x600 + i);
+        }
+
+        break;
+    case 0x502: // Rear Window
+        // Get decal part
+        DecalPart = FECustomizationRecord_GetInstalledPart(CustomizationRecord, FECarRecord_GetType(FECarRecord), 71); // DECAL_REAR_WINDOW_WIDE_MEDIUM
+
+        // look for the NUM_DECALS attribute
+        if (DecalPart)
+        {
+            NumDecals = CarPart_GetAppliedAttributeIParam(DecalPart, bStringHash("NUM_DECALS"), 0);
+            if (NumDecals <= 0 || NumDecals >= 8) NumDecals = 1;
+        }
+        else NumDecals = 1;
+
+        // Create menu options accordingly
+        for (int i = 1; i <= NumDecals; i++)
+        {
+            sprintf(DecalMenuString, "CO_DECAL_SLOT_%d", i);
+            CustomizeCategoryScreen_AddCustomOption(CustomizeSub, *(char**)g_pCustomizeDecalsPkg, bStringHash("DECAL_ZONE_REARWINDOW"), bStringHash(DecalMenuString), 0x600 + i);
+        }
+
+        break;
+    case 0x503: // Left Door
+    // Get decal part
+        DecalPart = FECustomizationRecord_GetInstalledPart(CustomizationRecord, FECarRecord_GetType(FECarRecord), 72); // DECAL_LEFT_DOOR_RECT_MEDIUM
+
+        // look for the NUM_DECALS attribute
+        if (DecalPart)
+        {
+            NumDecals = CarPart_GetAppliedAttributeIParam(DecalPart, bStringHash("NUM_DECALS"), 0);
+            if (NumDecals <= 0 || NumDecals >= 6) NumDecals = 6;
+        }
+        else NumDecals = 6;
+
+        // Create menu options accordingly
+        for (int i = 1; i <= NumDecals; i++)
+        {
+            sprintf(DecalMenuTexture, "DECAL_LEFTDOOR_SLOT%d", i);
+            sprintf(DecalMenuString, "CO_DECAL_SLOT_%d", i);
+            CustomizeCategoryScreen_AddCustomOption(CustomizeSub, *(char**)g_pCustomizeDecalsPkg, bStringHash(DecalMenuTexture), bStringHash(DecalMenuString), 0x600 + i);
+        }
+
+        break;
+    case 0x504: // Left Door
+    // Get decal part
+        DecalPart = FECustomizationRecord_GetInstalledPart(CustomizationRecord, FECarRecord_GetType(FECarRecord), 73); // DECAL_RIGHT_DOOR_RECT_MEDIUM
+
+        // look for the NUM_DECALS attribute
+        if (DecalPart)
+        {
+            NumDecals = CarPart_GetAppliedAttributeIParam(DecalPart, bStringHash("NUM_DECALS"), 0);
+            if (NumDecals <= 0 || NumDecals >= 6) NumDecals = 6;
+        }
+        else NumDecals = 6;
+
+        // Create menu options accordingly
+        for (int i = 1; i <= NumDecals; i++)
+        {
+            sprintf(DecalMenuTexture, "DECAL_RIGHTDOOR_SLOT%d", i);
+            sprintf(DecalMenuString, "CO_DECAL_SLOT_%d", i);
+            CustomizeCategoryScreen_AddCustomOption(CustomizeSub, *(char**)g_pCustomizeDecalsPkg, bStringHash(DecalMenuTexture), bStringHash(DecalMenuString), 0x600 + i);
+        }
+
+        break;
+    case 0x505: // Left Quarter
+    // Get decal part
+        DecalPart = FECustomizationRecord_GetInstalledPart(CustomizationRecord, FECarRecord_GetType(FECarRecord), 74); // DECAL_LEFT_QUARTER_RECT_MEDIUM
+
+        // look for the NUM_DECALS attribute
+        if (DecalPart)
+        {
+            NumDecals = CarPart_GetAppliedAttributeIParam(DecalPart, bStringHash("NUM_DECALS"), 0);
+            if (NumDecals <= 0 || NumDecals >= 8) NumDecals = 1;
+        }
+        else NumDecals = 1;
+
+        // Create menu options accordingly
+        for (int i = 1; i <= NumDecals; i++)
+        {
+            sprintf(DecalMenuString, "CO_DECAL_SLOT_%d", i);
+            CustomizeCategoryScreen_AddCustomOption(CustomizeSub, *(char**)g_pCustomizeDecalsPkg, bStringHash("DECAL_ZONE_LEFTPANEL"), bStringHash(DecalMenuString), 0x600 + i);
+        }
+
+        break;
+    case 0x506: // Right Quarter
+        // Get decal part
+        DecalPart = FECustomizationRecord_GetInstalledPart(CustomizationRecord, FECarRecord_GetType(FECarRecord), 75); // DECAL_RIGHT_QUARTER_RECT_MEDIUM
+
+        // look for the NUM_DECALS attribute
+        if (DecalPart)
+        {
+            NumDecals = CarPart_GetAppliedAttributeIParam(DecalPart, bStringHash("NUM_DECALS"), 0);
+            if (NumDecals <= 0 || NumDecals >= 8) NumDecals = 1;
+        }
+        else NumDecals = 1;
+
+        // Create menu options accordingly
+        for (int i = 1; i <= NumDecals; i++)
+        {
+            sprintf(DecalMenuString, "CO_DECAL_SLOT_%d", i);
+            CustomizeCategoryScreen_AddCustomOption(CustomizeSub, *(char**)g_pCustomizeDecalsPkg, bStringHash("DECAL_ZONE_RIGHTPANEL"), bStringHash(DecalMenuString), 0x600 + i);
+        }
+
+        break;
+    }
+
+    PreviousMenu = CustomizeSub[85];
+    if (PreviousMenu == 0x305)
+    {
+        if (*((BYTE*)CustomizeSub + 297))
+        {
+            *((BYTE*)CustomizeSub + 284) = 0;
+            *((BYTE*)CustomizeSub + 281) = 1;
+            *((BYTE*)CustomizeSub + 282) = 0;
+            CustomizeSub[68] = 0;
+        }
+        (*(void(__thiscall**)(DWORD*, int))(CustomizeSub[11] + 64))(CustomizeSub + 11, 1);
+    }
+    else
+    {
+        InitialPosition = PreviousMenu & 0xFFFF00FF;
+        if (*((BYTE*)CustomizeSub + 297))
+        {
+            *((BYTE*)CustomizeSub + 284) = 0;
+            *((BYTE*)CustomizeSub + 281) = 1;
+            *((BYTE*)CustomizeSub + 282) = 0;
+            CustomizeSub[68] = 0;
+        }
+        (*(void(__thiscall**)(DWORD*, unsigned int))(CustomizeSub[11] + 64))(CustomizeSub + 11, InitialPosition);
+        CustomizeSub[85] = 0x305;
+    }
 }
 
 int __fastcall CustomizeSub_Setup(DWORD* _CustomizeSub, void* EDX_Unused)
@@ -449,7 +686,7 @@ int __fastcall CustomizeSub_Setup(DWORD* _CustomizeSub, void* EDX_Unused)
     case 0x504:
     case 0x505:
     case 0x506:
-        CustomizeSub_SetupDecalPositions(_CustomizeSub);
+        CustomizeSub_SetupDecalPositions(_CustomizeSub, EDX_Unused);
         break;
 
         // Rims
@@ -469,7 +706,7 @@ int __fastcall CustomizeSub_Setup(DWORD* _CustomizeSub, void* EDX_Unused)
 
         // Decal Locations
     case 0x305:
-        CustomizeSub_SetupDecalLocations(_CustomizeSub);
+        CustomizeSub_SetupDecalLocations(_CustomizeSub, EDX_Unused);
         break;
     }
 

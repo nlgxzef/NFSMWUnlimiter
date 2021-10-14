@@ -121,6 +121,19 @@ void __declspec(naked) TextureReplacementCodeCave()
 		}
 	}
 
+	partPtr = *(RideInfo + 18 + 64); // TIRE_TEXTURE
+	if (partPtr)
+	{
+		texHash = CarPart_GetAppliedAttributeIParam((void*)partPtr, bStringHash((char*)"TEXTURE_NAME"), 0);
+		if (texHash)
+		{
+			// Texture Replacement Table = esi + 0x23C (8F)
+			*(CarRenderInfo + 0xCE) = 0xE4CEA024; // TIRE_STYLE01
+			*(CarRenderInfo + 0xCF) = texHash;
+			*(CarRenderInfo + 0xD0) = -1;
+		}
+	}
+
 	_asm popad;
 	_asm ret;
 }

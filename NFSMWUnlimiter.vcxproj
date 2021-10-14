@@ -21,13 +21,13 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
@@ -93,14 +93,19 @@ copy "$(TargetDir)*.pdb" "G:\Games\Need for Speed Most Wanted\scripts"  /y</Comm
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="CarCustomizeManager.h" />
+    <ClInclude Include="CodeCaves.h" />
+    <ClInclude Include="CustomizeDecals.h" />
     <ClInclude Include="CustomizeMain.h" />
+    <ClInclude Include="CustomizePaint.h" />
     <ClInclude Include="CustomizeParts.h" />
     <ClInclude Include="CustomizeRims.h" />
     <ClInclude Include="CustomizeShoppingCart.h" />
     <ClInclude Include="CustomizeSub.h" />
     <ClInclude Include="FEPackage.h" />
     <ClInclude Include="FEShoppingCartItem.h" />
+    <ClInclude Include="GlobalVariables.h" />
     <ClInclude Include="GRacerInfo.h" />
+    <ClInclude Include="Helpers.h" />
     <ClInclude Include="InGameFunctions.h" />
     <ClInclude Include="PursuitBoard.h" />
     <ClInclude Include="RideInfo.h" />

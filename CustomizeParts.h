@@ -179,6 +179,8 @@ void __declspec(naked) CustomizeVisualsIDCodeCave()
 		jz Drivers
 		cmp eax, 0x309
 		jz Plates
+		cmp eax, 0x314
+		jz Tire
 		push 0x7BD16F // Other Options
 		retn
 
@@ -197,6 +199,13 @@ void __declspec(naked) CustomizeVisualsIDCodeCave()
 			mov dword ptr ds : [edi + 0x15C] , 0x3CC9A5C8 // CO_LICENSE_PLATE
 			mov eax, 0xD68F9860 // VISUAL_PART_LICENSE_PLATE
 			mov esi, 69 // LICENSE_PLATE
+			mov ebp, eax
+			jmp CaveExit
+
+		Tire :
+			mov dword ptr ds : [edi + 0x15C] , 0x05AA9137 // CO_TIRES
+			mov eax, 0x0295EBFC // VISUAL_PART_TIRE
+			mov esi, 64 // TIRE
 			mov ebp, eax
 			jmp CaveExit
 

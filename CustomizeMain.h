@@ -134,3 +134,25 @@ void __declspec(naked) MyCarsBackroomRoomChangeCodeCave2()
 			retn
 	}
 }
+
+void __fastcall CustomizeMain_BuildOptionsList(DWORD* CustomizeMain, void* EDX_Unused)
+{
+	if (CustomizeIsInBackRoom())
+	{
+		if (!HPCCompatibility)
+		{
+			CustomizeCategoryScreen_AddCustomOption(CustomizeMain, *(char**)g_pCustomizeSubPkg, 0x73272ED2, 0x55DCE1A, 0x801); // Body Backroom
+			CustomizeCategoryScreen_AddCustomOption(CustomizeMain, *(char**)g_pCustomizeSubPkg, 0xC61C8D3A, 0xBAEF8282, 0x802); // Performance Backroom
+		}
+		CustomizeCategoryScreen_AddCustomOption(CustomizeMain, *(char**)g_pCustomizeSubPkg, 0xE69D4F7C, 0xBFA7D7C4, 0x803); // Visuals Backroom
+	}
+	else
+	{
+		if (!HPCCompatibility)
+		{
+			CustomizeCategoryScreen_AddCustomOption(CustomizeMain, *(char**)g_pCustomizeSubPkg, 0x6E0CA66C, 0x55DCE1A, 0x801); // Body
+			CustomizeMain[106] = CustomizeCategoryScreen_AddCustomOption(CustomizeMain, *(char**)g_pCustomizeSubPkg, 0x3987D054, 0xBAEF8282, 0x802); // Performance
+		}
+		CustomizeCategoryScreen_AddCustomOption(CustomizeMain, *(char**)g_pCustomizeSubPkg, 0x3E31BA56, 0xBFA7D7C4, 0x803); // Visuals
+	}
+}
