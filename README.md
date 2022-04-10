@@ -8,28 +8,34 @@ Features:
 + Fixes secondary logo issue for cars without manufacturer logo.
 + Allows modders to add more than 10 cars in traffic patterns.
 + Expands memory pools.
-+ Fixes flickering cars in crowded areas with rain
++ Fixes flickering cars in crowded areas with rain.
 + Fixes character names for non-career events.
 + Fixes missing objects for options and stuff in FNGs by cloning them.
 + Makes paint menu scroll properly when there are more than 80 colors in a category.
 + Adds new customization items to the menu. (Fully configurable via car-specific or general ini files.) (Parts should get added by modders.)
 + Lets modders add custom rim brands. (Fully configurable via ini file.)
+    - NoRimSize: Disables rim size checks for a specific brand.
 + Lets modders define custom destroyed bounty award messages for any cop car. (Fully configurable via ini file.)
 + Lets modders add up to 1000 names for random AI Opponents. (RACERNAME_000-999)
 + Lets modders define engine type for any car. (Piston, Castrol (use "castrol" cheat code) and Rotary.)
 + Lets modders force LOD A for any car. (Useful if the modded car doesn't have LOD parts.)
 + Lets modders allow random parts for AI opponents, for any car part slot.
++ Lets modders define own bonus cars. [ONLY FOR EXPERTS] (Only for newly created save games.)
 + Enables some BETA features if elaymm4's BETA Content Mod is installed.
 + Enables Backroom in My Cars menu. (Known issue: When you use Esc key to back out from Backroom, you won't be able to move between the options. Press Enter or Esc to get back and enter the menu again.)
 + Allows rims to have "LANGUAGEHASH" attribute.
 + Allows decal dummy parts to have "NUM_DECALS" attribute to declare the number of slots.
++ Adds custom attributes to allow even more customization options: (Extra Customization needs to be enabled to make custom attributes work.)
+	- FRONT_TIRE_OFFSET (Floating) : Adds offset (spacers) to the front wheels. The value is calculated in meters. This attribute can be added to Wide Body (BODY) parts.
+	- REAR_TIRE_OFFSET (Floating) : Adds offset (spacers) to the rear wheels. The value is calculated in meters. This attribute can be added to Wide Body (BODY) parts.
+
 
 Also check out:
-- [2005 Ford Mustang GT (S-197) "Extra Customization Showcase"](https://nfsmods.xyz/mod/2225)
-- [NFSMW Leftover Brakes Fix](https://nfsmods.xyz/mod/2226)
-- [NFS Better License Plates](https://nfsmods.xyz/mod/2010)
-- [NFSMW RimPack by Viper4K](https://www.nfsaddons.com/downloads/nfsmw/tools/6202/need-for-speed-most-wanted-rimpack-by-viper4k.html)
-- [NFS Mods with Unlimiter (v3+) & Extended Customization Support](https://docs.google.com/spreadsheets/d/1BYqui01raMMtRGrJ63-2B-Agh9ag6RdPB-bd07pDIKI/edit#gid=0)
+- 2005 Ford Mustang GT (S-197) [Extra Customization Showcase]: https://nfsmods.xyz/mod/2225
+- NFSMW Leftover Brakes Fix: https://nfsmods.xyz/mod/2226
+- NFS Better License Plates: https://nfsmods.xyz/mod/2010
+- NFSMW RimPack by Viper4K: https://www.nfsaddons.com/downloads/nfsmw/tools/6202/need-for-speed-most-wanted-rimpack-by-viper4k.html
+- NFS Mods with Unlimiter (v3+) & Extended Customization Support: https://docs.google.com/spreadsheets/d/1BYqui01raMMtRGrJ63-2B-Agh9ag6RdPB-bd07pDIKI/edit#gid=0
 
 
 # Technical Information
@@ -100,5 +106,5 @@ customize_customizeparts_788
 Note: Binary and NFS-VltEd scripts which will do these automatically for you are available in the release pack.
 
 # Download
-You can [download Unlimiter](https://github.com/nlgzrgn/NFSMWUnlimiter/releases) from the Releases page, or from [NFSMods.xyz](https://www.nfsmods.xyz).
+You can [download Unlimiter](https://github.com/nlgxzef/NFSMWUnlimiter/releases) from the Releases page, or from [NFSMods.xyz](https://www.nfsmods.xyz).
 If you want to compile it yourself, you can download the source code from the green Code button up there.

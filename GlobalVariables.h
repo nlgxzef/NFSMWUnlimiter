@@ -31,3 +31,10 @@
 #define g_bCustomizeInBackRoom 0x91D3D0
 #define CustomizeDecals_CurrentDecalLocation 0x905ED8
 #define _FEGroup_vtbl 0x8A2E24
+#define _IsCollectorsEdition 0x8F8718
+#define _UnlockAllThings 0x926124
+#define _TweakKitWheelOffsetFront 0x9B0960
+#define _TweakKitWheelOffsetRear 0x9B0964
+
+bool BETACompatibility = 0;
+bool HPCCompatibility = 0;

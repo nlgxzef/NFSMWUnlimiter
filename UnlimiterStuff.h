@@ -6,7 +6,7 @@
 #include "includes\IniReader.h"
 
 int ManuID, CarArraySize, CarCount, ReplacementCar, TrafficCarCount, RacerNamesCount;
-bool ManuHook, ExtraCustomization, DisappearingWheelsFix, SecondaryLogoFix, ExpandMemoryPools, AddOnCopsDamageFix, ForceStockPartsOnAddOnOpponents, ChallengeSeriesOpponentNameFix, BETACompatibility, HPCCompatibility, CopDestroyedStringHook, DisableTextureReplacement, MyCarsBackroom, FNGFix, RandomHook, PaintMenuFix;
+bool ManuHook, ExtraCustomization, DisappearingWheelsFix, SecondaryLogoFix, ExpandMemoryPools, AddOnCopsDamageFix, ForceStockPartsOnAddOnOpponents, ChallengeSeriesOpponentNameFix, CopDestroyedStringHook, DisableTextureReplacement, MyCarsBackroom, FNGFix, RandomHook, PaintMenuFix, BonusCarsHook, CarSkinFix;
 
 #include "InGameFunctions.h"
 #include "CustomizeMain.h"
@@ -25,6 +25,12 @@ bool ManuHook, ExtraCustomization, DisappearingWheelsFix, SecondaryLogoFix, Expa
 #include "CarPart.h"
 #include "SimConnection.h"
 #include "FEPackage.h"
+#include "FEPlayerCarDB.h"
+#include "UIQRCarSelect.h"
+#include "QuickRaceUnlocker.h"
+#include "UnlockSystem.h"
+#include "CompositeSkin.h"
+//#include "CarRenderConn.h"
 #include "Helpers.h"
 #include "CodeCaves.h"
 
@@ -40,6 +46,8 @@ int Init()
 	MyCarsBackroom = Settings.ReadInteger("Main", "MyCarsBackroom", 1) != 0;
 	CopDestroyedStringHook = Settings.ReadInteger("Main", "EnableCopDestroyedStringHook", 1) != 0;
 	RandomHook = Settings.ReadInteger("Main", "EnableRandomPartsHook", 1) != 0;
+	BonusCarsHook = Settings.ReadInteger("Main", "EnableBonusCarsHook", 0) != 0;
+
 	// Fixes
 	DisappearingWheelsFix = Settings.ReadInteger("Fixes", "DisappearingWheelsFix", 1) != 0;
 	SecondaryLogoFix = Settings.ReadInteger("Fixes", "SecondaryLogoFix", 1) != 0;
@@ -47,6 +55,8 @@ int Init()
 	ChallengeSeriesOpponentNameFix = Settings.ReadInteger("Fixes", "ChallengeSeriesOpponentNameFix", 1) != 0;
 	PaintMenuFix = Settings.ReadInteger("Fixes", "PaintMenuFix", 1) != 0;
 	FNGFix = Settings.ReadInteger("Fixes", "FNGFix", 1) != 0;
+	CarSkinFix = Settings.ReadInteger("Fixes", "CarSkinFix", 1) != 0;
+
 	// Misc
 	ExpandMemoryPools = Settings.ReadInteger("Misc", "ExpandMemoryPools", 0) != 0;
 	//BETACompatibility = Settings.ReadInteger("Misc", "BETACompatibility", 0) != 0;
@@ -56,8 +66,8 @@ int Init()
 	DisableTextureReplacement = Settings.ReadInteger("Debug", "DisableTextureReplacement", 0) != 0;
 
 	// Check compatibility
-	if (DoesFileExist("NFSMWBeta.asi")) BETACompatibility = 1;
-	if (DoesFileExist("NFSMWHPC.asi")) HPCCompatibility = 1;
+	BETACompatibility = DoesFileExist("NFSMWBeta.asi") || DoesFileExist("..\\NFSMWBeta.asi") || DoesFileExist("scripts\\NFSMWBeta.asi");
+	HPCCompatibility = DoesFileExist("NFSMWHPC.asi") || DoesFileExist("..\\NFSMWHPC.asi") || DoesFileExist("scripts\\NFSMWHPC.asi");
 
 	// Count Cars Automatically
 	injector::MakeJMP(0x756AA7, DoUnlimiterStuffCodeCave, true);
@@ -104,7 +114,7 @@ int Init()
 	}
 	
 	// Extra Customization Stuff
-	if (ExtraCustomization)
+	if (ExtraCustomization || HPCCompatibility)
 	{
 		// Hook customize main
 		injector::MakeCALL(0x7BFCEC, CustomizeMain_BuildOptionsList, true); // CustomizeMain::SwitchRooms
@@ -177,6 +187,11 @@ int Init()
 			injector::MakeJMP(0x7A539F, IsNewCodeCaveRims, true); // CarCustomizeManager::IsCategoryNew, Rims category
 			injector::WriteMemory(0x8B7FE8, &CustomizeRims_RefreshHeader, true); // CustomizeRims::vtable
 		}
+
+		// Apply attributes by hooking CarRenderInfo functions
+		injector::MakeCALL(0x760187, CarRenderInfo_UpdateWheelYRenderOffset, true); // CarRenderInfo::CarRenderInfo
+
+		// TODO: Fix tire skid offset in CarRenderConn
 
 		// Fix Service Crash
 		injector::MakeJMP(0x6E9E40, SimConnectionService, true); //Sim::Connection::Service
@@ -253,6 +268,89 @@ int Init()
 	if (FNGFix)
 	{
 		injector::MakeCALL(0x5C4D64, CloneObjectstoShowMoreItemsInMenu, true); // FEPackageReader::Load
+	}
+
+	// Bonus Cars Hook
+	if (BonusCarsHook)
+	{
+		CIniReader BonusCars("UnlimiterData\\_BonusCars.ini");
+		int BonusCarsCount = BonusCars.ReadInteger("BonusCars", "NumberOfBonusCars", -1);
+		if (BonusCarsCount != -1)
+		{
+			/* Replace cover car
+			char* CoverCarPresetName = BonusCars.ReadString("BonusCar0", "PresetName", "M3GTRCAREERSTART"); // get car preset name
+			// Point any cover car name to the new name we have
+			// injector::WriteMemory(0x57F60E, CoverCarPresetName, true); // CareerSettings::ResumeCareer
+			injector::WriteMemory(0x58FF63, CoverCarPresetName, true); // sub_58FF60
+			injector::WriteMemory(0x7C2918, CoverCarPresetName, true); // UIQRCarSelect::Setup
+			injector::WriteMemory(0x7A3E4F, CoverCarPresetName, true); // IsValidMikeMannCar
+			injector::WriteMemory(0x590DA0, CoverCarPresetName, true); // FEPlayerCarDB::Default
+			injector::WriteMemory(0x590E8C, CoverCarPresetName, true); // FEPlayerCarDB::Default
+			*/
+			// Use hooked bonus cars on new save games
+			injector::MakeJMP(0x590D9F, FEPlayerCarDB_Default_BonusCarsCodeCave, true); // FEPlayerCarDB::Default
+
+			// Hook unlockers to check for new bonus cars
+			injector::MakeCALL(0x58AA63, UnlockSystem_IsBonusCarCEOnly, true); // UnlockSystem::IsCarUnlocked
+			injector::MakeCALL(0x58ADB5, UnlockSystem_IsBonusCarCEOnly, true); // UnlockSystem::IsBonusCarAvailable
+
+			// Hooks to get custom unlock conditions and texts from ini
+			injector::MakeCALL(0x58A55C, QuickRaceUnlocker_IsCarUnlocked, true); // OnlineUnlocker::IsCarUnlocked
+			injector::MakeCALL(0x58AA19, QuickRaceUnlocker_IsCarUnlocked, true); // UnlockSystem::IsCarUnlocked
+			injector::MakeCALL(0x58AA47, QuickRaceUnlocker_IsCarUnlocked, true); // UnlockSystem::IsCarUnlocked
+			injector::MakeCALL(0x7ADD80, UIQRCarSelect_GetBonusUnlockText, true); // UIQRCarSelect::RefreshHeader
+			injector::MakeCALL(0x7ADD8D, UIQRCarSelect_GetBonusUnlockBinNumber, true); // UIQRCarSelect::RefreshHeader
+		}
+
+		// Skip RefreshBonusCarsList function, use regular checks instead. (Fixes crashes)
+		injector::WriteMemory<BYTE>(0x7BF7E5, 0xEB, true); // UIQRCarSelect::RefreshCarList
+		injector::WriteMemory<BYTE>(0x7BF95B, 0x01, true); // UIQRCarSelect::RefreshCarList, skip sorting by unlocks if the category is Bonus
+	}
+
+	// Car Skin Fix (Requires CarSkinCount (20) x dummy skin and wheel textures in CARS\TEXTURES.BIN)
+	if (CarSkinFix)
+	{
+		// VehicleRenderConn::Load
+		injector::MakeNOP(0x75D29E, 2, true);
+		injector::MakeRangedNOP(0x75D2BB, 0x75D2D6, true);
+		injector::WriteMemory<unsigned char>(0x75D2B6, CarSkinCount, true); 
+
+		// RideInfo::SetCompositeNameHash
+		injector::MakeRangedNOP(0x747F2B, 0x747F3B, true);
+		injector::WriteMemory<unsigned char>(0x747F22, CarSkinCount, true);
+
+		//injector::MakeRangedNOP(0x73B324, 0x73B328, true); //CompositeSkin32, crash fix??
+
+		// Relocate Swatch Offset arrays
+		//injector::WriteMemory(0x73B082, SwatchOffsetCache, true); //CompositeSkin32
+		//injector::WriteMemory(0x73B0EB, SwatchOffsetCache, true); //CompositeSkin32
+		//injector::WriteMemory(0x73B2F4, SwatchOffsetCache, true); //CompositeSkin32
+		//injector::WriteMemory(0x748CC9, SwatchOffsetCache, true); //CompositeSkin
+		//injector::WriteMemory(0x748D0F, SwatchOffsetCache, true); //CompositeSkin
+		//injector::WriteMemory(0x749280, SwatchOffsetCache, true); //CompositeSkin
+		//
+		//injector::WriteMemory(0x73B0D5, SwatchOffsetCount, true); //CompositeSkin32
+		//injector::WriteMemory(0x73B0F2, SwatchOffsetCount, true); //CompositeSkin32
+		//injector::WriteMemory(0x73B2F9, SwatchOffsetCount, true); //CompositeSkin32
+		//injector::WriteMemory(0x748D00, SwatchOffsetCount, true); //CompositeSkin
+		//injector::WriteMemory(0x748D1A, SwatchOffsetCount, true); //CompositeSkin
+		//injector::WriteMemory(0x74928E, SwatchOffsetCount, true); //CompositeSkin
+
+		// Expand Swatch Offset arrays
+		//injector::WriteMemory<BYTE>(0x73B0CD, CarSkinCount, true); //CompositeSkin32
+		//injector::WriteMemory<BYTE>(0x748D20, CarSkinCount, true); //CompositeSkin32
+
+		//injector::WriteMemory<BYTE>(0x748CEF, CarSkinCount, true); //CompositeSkin
+		//injector::WriteMemory<BYTE>(0x748D20, CarSkinCount, true); //CompositeSkin
+
+		// CompositeSkin, Expand and Relocate cache arrays
+		//injector::MakeJMP(0x73AB50, GetSkinCompositeParams, true); // 0 references??
+		//injector::MakeCALL(0x749922, IsInSkinCompositeCache, true);
+		//injector::MakeCALL(0x749933, UpdateSkinCompositeCache, true);
+
+		// TexturePack::UnAssignTextureData
+		//injector::MakeRangedNOP(0x4FCF3E, 0x4FCF5A, true);
+		//injector::MakeCALL(0x4FCF5B, FlushFromSkinCompositeCache, true);
 	}
 
 	return 0;

@@ -137,3 +137,144 @@ void __declspec(naked) TextureReplacementCodeCave()
 	_asm popad;
 	_asm ret;
 }
+
+void __fastcall CarRenderInfo_UpdateWheelYRenderOffset(DWORD* CarRenderInfo, void* EDX_Unused)
+{
+	float* TireOffsets, *TireSkidWidthKitScaleAttrib;
+	BYTE OffsetInMM;
+	float WheelWidth, WheelRadius, TireSkidWidthKitScale, TireSkidWidth, TireWidth, TireRadius, BodyKitFrontTireOffset, BodyKitRearTireOffset;
+	WORD* TireSkidWidthKitScaleArea;
+	DWORD AttrVal;
+
+	if (CarRenderInfo[34]) // CarRenderInfo->pCarTypeInfo
+	{
+		int CurrWheelID = 0;
+		int CurrWheelData = 0;
+		int CurrWheelDataX2 = 0;
+
+		// WheelYRenderOffset[4], WheelWidths[2], WheelRadius[2], WheelWidthScales[4], WheelRadiusScales[4], WheelBrakeMarkerY[2], WheelSpeeds[4]
+		float* WheelFloats = (float*)(CarRenderInfo + 68);
+		int v41 = -52 - (DWORD)CarRenderInfo;
+
+		DWORD* TheRideInfo = (DWORD*)CarRenderInfo[33]; // CarRenderInfo->pRideInfo
+		if (TheRideInfo)
+		{
+			do
+			{
+				WORD* eCarAttributes = (WORD*)CarRenderInfo[1517]; // Attrib_Gen_ecar mAttributes
+				bool IsRearWheel = CurrWheelID > 1;
+
+				if (CurrWheelID >= Attrib_Private_GetLength(eCarAttributes))
+					TireOffsets = (float*)Attrib_DefaultDataArea();
+				else TireOffsets = (float*)&eCarAttributes[CurrWheelData + 8];
+
+				int KitNumber = 0;
+				WheelFloats[0] = -TireOffsets[1]; // Y
+
+				BodyKitFrontTireOffset = 0;
+				BodyKitRearTireOffset = 0;
+
+				DWORD* BodyKitCarPart = RideInfo_GetPart(TheRideInfo, 23); // BODY_KIT
+				if (BodyKitCarPart)
+				{
+					KitNumber = CarPart_GetAppliedAttributeIParam(BodyKitCarPart, bStringHash("KITNUMBER"), 0);
+					// Read offset attributes from body kit
+					AttrVal = CarPart_GetAppliedAttributeUParam(BodyKitCarPart, bStringHash("FRONT_TIRE_OFFSET"), 0);
+					BodyKitFrontTireOffset = *(float*)&AttrVal;
+					AttrVal = CarPart_GetAppliedAttributeUParam(BodyKitCarPart, bStringHash("REAR_TIRE_OFFSET"), 0);
+					BodyKitRearTireOffset = *(float*)&AttrVal;
+
+				}
+
+				// todo (in v4): Read offset attributes from spacer parts
+
+				if (IsRearWheel)
+				{
+					OffsetInMM = *(int*)_TweakKitWheelOffsetRear;
+					if (!OffsetInMM)
+					{
+						if (KitNumber < Attrib_Private_GetLength(eCarAttributes + 128))
+							OffsetInMM = *(BYTE*)((BYTE*)eCarAttributes + KitNumber + 264);
+						else OffsetInMM = *(BYTE*)Attrib_DefaultDataArea();
+					}
+				}
+				else
+				{
+					OffsetInMM = *(int*)_TweakKitWheelOffsetFront;
+					if (!OffsetInMM)
+					{
+						if (KitNumber < Attrib_Private_GetLength(eCarAttributes + 135))
+							OffsetInMM = *(BYTE*)((BYTE*)eCarAttributes + KitNumber + 278);
+						else OffsetInMM = *(BYTE*)Attrib_DefaultDataArea();
+					}
+				}
+
+				float WheelOffset = (float)OffsetInMM * 0.001f; // mm -> meters
+				if (WheelFloats[0] <= 0.0f)
+					WheelOffset *= -1;
+				WheelFloats[0] += WheelOffset;
+
+				// Add offsets read from part attributes
+				if (IsRearWheel)
+				{
+					if (CurrWheelID == 2) WheelFloats[0] += BodyKitRearTireOffset; // Right wheel
+					else WheelFloats[0] -= BodyKitRearTireOffset; // Left wheel
+				}
+				else
+				{
+					if (CurrWheelID == 1) WheelFloats[0] += BodyKitFrontTireOffset; // Right wheel
+					else WheelFloats[0] -= BodyKitFrontTireOffset; // Left wheel
+				}
+
+				WheelWidth = *(float*)&CarRenderInfo[IsRearWheel + 72];
+				WheelRadius = *(float*)&CarRenderInfo[IsRearWheel + 74];
+
+				if (CurrWheelID >= Attrib_Private_GetLength(eCarAttributes + 106))
+					TireSkidWidth = *(float*)Attrib_DefaultDataArea();
+				else
+					TireSkidWidth = *(float*)((int)WheelFloats + v41 + (DWORD)eCarAttributes);
+				TireSkidWidthKitScaleArea = eCarAttributes + 40;
+				if (CurrWheelData >= 16)
+				{
+					if (KitNumber >= Attrib_Private_GetLength(TireSkidWidthKitScaleArea))
+						TireSkidWidthKitScaleAttrib = (float*)Attrib_DefaultDataArea();
+					else
+						TireSkidWidthKitScaleAttrib = (float*)&eCarAttributes[4 * KitNumber + 44];
+					TireSkidWidthKitScale = TireSkidWidthKitScaleAttrib[1];
+				}
+				else if (KitNumber >= Attrib_Private_GetLength(TireSkidWidthKitScaleArea))
+				{
+					TireSkidWidthKitScale = *(float*)Attrib_DefaultDataArea();
+				}
+				else
+				{
+					TireSkidWidthKitScale = *(float*)&eCarAttributes[4 * KitNumber + 44];
+				}
+
+				CurrWheelDataX2 = CurrWheelData * 2;
+				TireWidth = TireSkidWidthKitScale * TireSkidWidth;
+				TireRadius = *(float*)(CurrWheelData * 2 + CarRenderInfo[1517] + 28);
+				if (WheelWidth <= 0.0f || TireWidth <= 0.0f)
+					WheelFloats[8] = 1.0f; // WheelWidthScales
+				else
+					WheelFloats[8] = TireWidth / WheelWidth; // WheelWidthScales
+				if (WheelRadius <= 0.0f || TireRadius <= 0.0f)
+					WheelFloats[12] = 1.0f; // WheelRadiusScales
+				else
+					WheelFloats[12] = TireRadius / WheelRadius; // WheelRadiusScales
+
+				// Go to the next wheel
+				++WheelFloats;
+				++CurrWheelID;
+				CurrWheelData += 8;
+			} while ((CurrWheelDataX2 + 16) < 64);
+		}
+	}
+	else
+	{
+		CarRenderInfo[68] = 0; // WheelYRenderOffset[0]
+		CarRenderInfo[69] = 0; // WheelYRenderOffset[1]
+		CarRenderInfo[70] = 0; // WheelYRenderOffset[2]
+		CarRenderInfo[71] = 0; // WheelYRenderOffset[3]
+	}
+}
