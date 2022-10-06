@@ -5,7 +5,7 @@
 #include "includes\injector\injector.hpp"
 #include "includes\IniReader.h"
 
-int ManuID, CarArraySize, CarCount, ReplacementCar, TrafficCarCount, RacerNamesCount;
+int ManuID, CarArraySize, CarCount, ReplacementCar, TrafficCarCount, RacerNamesCount, FrameDelay;
 bool ManuHook, ExtraCustomization, DisappearingWheelsFix, SecondaryLogoFix, ExpandMemoryPools, AddOnCopsDamageFix, ForceStockPartsOnAddOnOpponents, ChallengeSeriesOpponentNameFix, CopDestroyedStringHook, DisableTextureReplacement, MyCarsBackroom, FNGFix, RandomHook, PaintMenuFix, BonusCarsHook, CarSkinFix;
 
 #include "InGameFunctions.h"
@@ -59,6 +59,7 @@ int Init()
 
 	// Misc
 	ExpandMemoryPools = Settings.ReadInteger("Misc", "ExpandMemoryPools", 0) != 0;
+	FrameDelay = Settings.ReadInteger("Misc", "FrameDelay", -1);
 	//BETACompatibility = Settings.ReadInteger("Misc", "BETACompatibility", 0) != 0;
 	//HPCCompatibility = Settings.ReadInteger("Misc", "HPCCompatibility", 0) != 0;
 	ForceStockPartsOnAddOnOpponents = Settings.ReadInteger("Misc", "ForceStockPartsOnAddOnOpponents", 0) != 0;
@@ -66,8 +67,8 @@ int Init()
 	DisableTextureReplacement = Settings.ReadInteger("Debug", "DisableTextureReplacement", 0) != 0;
 
 	// Check compatibility
-	BETACompatibility = DoesFileExist("NFSMWBeta.asi") || DoesFileExist("..\\NFSMWBeta.asi") || DoesFileExist("scripts\\NFSMWBeta.asi");
-	HPCCompatibility = DoesFileExist("NFSMWHPC.asi") || DoesFileExist("..\\NFSMWHPC.asi") || DoesFileExist("scripts\\NFSMWHPC.asi");
+	BETACompatibility = GetModuleHandleA("NFSMWBeta.asi") ? 1 : 0;
+	HPCCompatibility = GetModuleHandleA("NFSMWHPC.asi") ? 1 : 0;
 
 	// Count Cars Automatically
 	injector::MakeJMP(0x756AA7, DoUnlimiterStuffCodeCave, true);
@@ -236,6 +237,12 @@ int Init()
 		injector::WriteMemory<uint32_t>(0x5009DC, 0xFA000, true);
 		injector::WriteMemory<uint32_t>(0x500A01, 0xFA000, true);
 		injector::WriteMemory<uint32_t>(0x500A12, 0xFA000, true);
+	}
+
+	// Custom Frame Delay
+	if (FrameDelay > -1)
+	{
+		injector::MakeJMP(0x642EB1, CustomFrameDelayCodeCave, true);
 	}
 
 	// Damage Parts Fix for Add-On Cop Cars

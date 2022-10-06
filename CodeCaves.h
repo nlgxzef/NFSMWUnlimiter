@@ -200,3 +200,16 @@ void __declspec(naked) ReplacementCarCodeCave_CarLoader_Load()
 		retn
 	}
 }
+
+void __declspec(naked) CustomFrameDelayCodeCave()
+{
+	_asm
+	{
+		mov eax, [FrameDelay]
+		push eax
+		call j_bThreadYield
+		add esp, 4
+		push 0x642EDA
+		retn
+	}
+}

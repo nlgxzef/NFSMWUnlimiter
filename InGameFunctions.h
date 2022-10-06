@@ -103,3 +103,4 @@ void(__thiscall* Attrib_Gen_frontend_frontend)(DWORD* AttribGenFrontend, unsigne
 unsigned int(__thiscall* UIQRCarSelect_GetBonusUnlockText_Game)(DWORD* UIQRCarSelect, DWORD* FECarRecord) = (unsigned int(__thiscall*)(DWORD*, DWORD*))0x7A3C00;
 int(__thiscall* UIQRCarSelect_GetBonusUnlockBinNumber_Game)(DWORD* UIQRCarSelect, DWORD* FECarRecord) = (int(__thiscall*)(DWORD*, DWORD*))0x7A3C70;
 bool(*QuickRaceUnlocker_IsCarUnlocked_Game)(int eUnlockFilters, unsigned int Handle, int a3) = (bool(*)(int, unsigned int, int))0x58A0D0;
+void(*j_bThreadYield)(int dwMilliseconds) = (void(*)(int))0x64CF00;

@@ -28,13 +28,10 @@ Features:
 + Adds custom attributes to allow even more customization options: (Extra Customization needs to be enabled to make custom attributes work.)
 	- FRONT_TIRE_OFFSET (Floating) : Adds offset (spacers) to the front wheels. The value is calculated in meters. This attribute can be added to Wide Body (BODY) parts.
 	- REAR_TIRE_OFFSET (Floating) : Adds offset (spacers) to the rear wheels. The value is calculated in meters. This attribute can be added to Wide Body (BODY) parts.
++ Implements custom frame delay to help with performance issues.
 
 
 Also check out:
-- 2005 Ford Mustang GT (S-197) [Extra Customization Showcase]: https://nfsmods.xyz/mod/2225
-- NFSMW Leftover Brakes Fix: https://nfsmods.xyz/mod/2226
-- NFS Better License Plates: https://nfsmods.xyz/mod/2010
-- NFSMW RimPack by Viper4K: https://www.nfsaddons.com/downloads/nfsmw/tools/6202/need-for-speed-most-wanted-rimpack-by-viper4k.html
 - NFS Mods with Unlimiter (v3+) & Extended Customization Support: https://docs.google.com/spreadsheets/d/1BYqui01raMMtRGrJ63-2B-Agh9ag6RdPB-bd07pDIKI/edit#gid=0
 
 
