@@ -55,7 +55,7 @@ int Init()
 	ChallengeSeriesOpponentNameFix = Settings.ReadInteger("Fixes", "ChallengeSeriesOpponentNameFix", 1) != 0;
 	PaintMenuFix = Settings.ReadInteger("Fixes", "PaintMenuFix", 1) != 0;
 	FNGFix = Settings.ReadInteger("Fixes", "FNGFix", 1) != 0;
-	CarSkinFix = Settings.ReadInteger("Fixes", "CarSkinFix", 1) != 0;
+	CarSkinFix = Settings.ReadInteger("Fixes", "CarSkinFix", 0) != 0;
 
 	// Misc
 	ExpandMemoryPools = Settings.ReadInteger("Misc", "ExpandMemoryPools", 0) != 0;
@@ -318,13 +318,13 @@ int Init()
 	if (CarSkinFix)
 	{
 		// VehicleRenderConn::Load
-		injector::MakeNOP(0x75D29E, 2, true);
-		injector::MakeRangedNOP(0x75D2BB, 0x75D2D6, true);
-		injector::WriteMemory<unsigned char>(0x75D2B6, CarSkinCount, true); 
+		//injector::MakeNOP(0x75D29E, 2, true);
+		//injector::MakeRangedNOP(0x75D2BB, 0x75D2D6, true);
+		//injector::WriteMemory<unsigned char>(0x75D2B6, CarSkinCount, true); 
 
 		// RideInfo::SetCompositeNameHash
-		injector::MakeRangedNOP(0x747F2B, 0x747F3B, true);
-		injector::WriteMemory<unsigned char>(0x747F22, CarSkinCount, true);
+		//injector::MakeRangedNOP(0x747F2B, 0x747F3B, true);
+		//injector::WriteMemory<unsigned char>(0x747F22, CarSkinCount, true);
 
 		//injector::MakeRangedNOP(0x73B324, 0x73B328, true); //CompositeSkin32, crash fix??
 
