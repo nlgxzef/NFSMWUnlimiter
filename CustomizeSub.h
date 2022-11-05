@@ -246,11 +246,23 @@ int __fastcall CustomizeSub_SetupAttachments(DWORD* _CustomizeSub, void* EDX_Unu
 
 void SetupRimBrandsHook(void* _CustomizeCategoryScreen)
 {
+    // Get CarType Info
+    void* FECarRecord = *(void**)_FECarRecord;
+    int CarTypeID = FECarRecord_GetType(FECarRecord);
+    sprintf(CarTypeName, GetCarTypeName(CarTypeID));
+
+    // Read Part Options for the car
+    sprintf(CarININame, "UnlimiterData\\%s.ini", CarTypeName);
+    CIniReader CarINI(CarININame);
+    CIniReader GeneralINI("UnlimiterData\\_General.ini");
+
+    int CarSpecificRims = CarINI.ReadInteger("Main", "CarSpecificRims", GeneralINI.ReadInteger("Main", "CarSpecificRims", 0));
+
     CIniReader RimBrandsINI("UnlimiterData\\_RimBrands.ini");
 
     int RimBrandsCount = RimBrandsINI.ReadInteger("RimBrands", "NumberOfRimBrands", -1);
 
-    for (int i = 0; i <= RimBrandsCount; i++)
+    for (int i = (CarSpecificRims != 0) ? 0 : 1; i <= RimBrandsCount; i++)
     {
         sprintf(RimBrandID, "Brand%d", i);
         sprintf(RimBrandIcon, RimBrandsINI.ReadString(RimBrandID, "Texture", ""));
