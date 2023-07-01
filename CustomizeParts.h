@@ -2,240 +2,656 @@
 #include "InGameFunctions.h"
 #include "includes\IniReader.h"
 
-void __declspec(naked) CustomizePartsIDCodeCave()
+void __fastcall CustomizeParts_dtor_Hook(DWORD* _CustomizeParts, void* EDX_Unused)
 {
-	_asm
+	RenderFECarFlares = -1;
+	CustomizeParts_dtor(_CustomizeParts);
+}
+
+void __fastcall CustomizeParts_NotificationMessage(DWORD* _CustomizeParts, void* EDX_Unused, DWORD MessageHash, DWORD* FEObject, DWORD param1, DWORD param2)
+{
+	DWORD* PartInCart; // eax MAPDST
+	unsigned int MenuID = _CustomizeParts[82];
+	DWORD* SelectedPart; // eax MAPDST
+	DWORD* ASelectablePart; // eax MAPDST
+	int PackageSwitchArg; // eax
+
+	if (MessageHash != 0x406415E3) // !PAD_ACCEPT
+		CustomizationScreen_NotificationMessage(_CustomizeParts, MessageHash, FEObject, param1, param2);
+
+	switch (MessageHash)
 	{
-		dec eax
-		jz RoofScoops // 0x105
-		dec eax
-		jz Interiors // 0x106
-		dec eax
-		jz Roofs // 0x107
-		dec eax
-		jz Brakes // 0x108
-		dec eax
-		jz Headlights // 0x109
-		dec eax
-		jz Brakelights // 0x10A
-		dec eax
-		jz Mirrors // 0x10B
-		dec eax
-		// 0x10C = Attachments submenu
-		dec eax
-		jz Attachment1 // 0x10D
-		dec eax
-		jz Attachment2 // 0x10E
-		dec eax
-		jz Attachment3 // 0x10F
-		dec eax
-		jz Attachment4 // 0x110
-		dec eax
-		jz Attachment5 // 0x111
-		dec eax
-		jz Attachment6 // 0x112
-		dec eax
-		jz Attachment7 // 0x113
-		dec eax
-		jz Attachment8 // 0x114
-		dec eax
-		jz Attachment9 // 0x115
-		dec eax
-		jz Attachment10 // 0x116
-		
-		jmp CaveExit
+	case 0x911AB364: // PAD_BACK
+		if (MenuID >= 0x10D && MenuID <= 0x116) // Attachments menu
+		{
+			cFEng_QueuePackageSwitch(*(DWORD**)cFEng_mInstance, *(char**)g_pCustomizeSubTopPkg, _CustomizeParts[83] | (MenuID << 16), 0, 0); // CustomizeGenericTop.fng
+		}
+		else if (MenuID == 0x307)
+		{
+			if (*(bool*)_CustomizeParts_TexturePackLoaded)
+			{
+				PackageSwitchArg = _CustomizeParts[83] | 0x3070000;
+				*((BYTE*)_CustomizeParts + 456) = 1;
+				cFEng_QueuePackageSwitch(*(DWORD**)cFEng_mInstance, *(char**)g_pCustomizeSubPkg, PackageSwitchArg, 0, 0); // CustomizeCategory
+			}
+		}
+		else if (MenuID <= 0x401 || MenuID > 0x4FF)
+		{
+			cFEng_QueuePackageSwitch(*(DWORD**)cFEng_mInstance, *(char**)g_pCustomizeSubPkg, _CustomizeParts[83] | (MenuID << 16), 0, 0); // CustomizeCategory
+		}
+		else
+		{
+			CarCustomizeManager_ClearTempColoredPart((DWORD*)_gCarCustomizeManager);
+			cFEng_QueuePackageSwitch(*(DWORD**)cFEng_mInstance, *(char**)g_pCustomizeSubTopPkg, _CustomizeParts[83] | (MenuID << 16), 0, 0); // CustomizeGenericTop
+		}
+		break;
 
-		RoofScoops :
-		push 0x7BD0D4
-			retn
+	case 0xCF91AACD: // ??
+		if (MenuID == 0x307)
+		{
+			if (*(bool*)_CustomizeParts_TexturePackLoaded)
+			{
+				*((BYTE*)_CustomizeParts + 456) = 1;
+			}
+		}
+		break;
 
-		Interiors :
-			mov dword ptr ds : [edi + 0x15C] , 0xCBC529DC // CO_INTERIOR
-			mov eax, 0x524B1D74 // VISUAL_PART_INTERIOR
-			mov esi, 28 // INTERIOR
-			mov ebp, eax
-			jmp CaveExit
+	case 0x5A928018:
+		PartInCart = (*(DWORD * (__thiscall**)(DWORD*))(*_CustomizeParts + 24))(_CustomizeParts);// FindInCartPart
+		if (PartInCart)
+		{
+			if (!CarCustomizeManager_IsPartInCart((DWORD*)_gCarCustomizeManager, PartInCart))
+			{
+				PartInCart[8] &= 0xFu;
+				(*(void(__thiscall**)(DWORD*))(*_CustomizeParts + 12))(_CustomizeParts);
+			}
+		}
+		break;
 
-		Roofs :
-			mov dword ptr ds : [edi + 0x15C] , 0xF86904C6 // CO_ROOF
-			mov eax, 0x294EC5E // VISUAL_PART_ROOF
-			mov esi, 0 // BASE
-			mov ebp, eax
-			jmp CaveExit
+	case 0x406415E3: // PAD_ACCEPT
+		if (bList_TraversebList((DWORD*)(_CustomizeParts + 12), 0) != _CustomizeParts[59])
+		{
+			if (MenuID == 0x307) // Custom Gauges
+			{
+				if (!*(bool*)_CustomizeParts_TexturePackLoaded) return;
+				SelectedPart = (*(DWORD * (__thiscall**)(DWORD*))(*_CustomizeParts + 20))(_CustomizeParts);
+				if (SelectedPart && (SelectedPart[8] & 0xF) == 2)
+				{
+					CustomizationScreen_PlayLocked(_CustomizeParts);
+				}
+				else
+				{
+					if (*(DWORD*)0x9BA080)
+						CarCustomizeManager_ClearTempColoredPart((DWORD*)_gCarCustomizeManager);
 
-		Brakes :
-			mov dword ptr ds : [edi + 0x15C] , 0x91997EE8 // CO_BRAKES
-			mov eax, 0x54125A8D // VISUAL_PART_BRAKE
-			mov esi, 24 // FRONT_BRAKE
-			mov ebp, eax
-			jmp CaveExit
+					ASelectablePart = (DWORD*)j_malloc(44);
+					if (ASelectablePart) SelectablePart_copy(ASelectablePart, SelectedPart);
+					else ASelectablePart = 0;
 
-		Headlights :
-			mov dword ptr ds : [edi + 0x15C] , 0xD16C070D // CO_HEADLIGHTS
-			mov eax, 0xF69AC384 // VISUAL_PART_HEAD_LIGHTS
-			mov esi, 31 // LEFT_HEADLIGHT
-			mov ebp, eax
-			jmp CaveExit
+					CarCustomizeManager_SetTempColoredPart((DWORD*)_gCarCustomizeManager, ASelectablePart);
+					cFEng_QueuePackageSwitch(*(DWORD**)cFEng_mInstance, *(char**)g_pCustomizeHudColorPkg, _CustomizeParts[82] | (_CustomizeParts[83] << 16), 0, 0);
+				}
 
-		Brakelights :
-			mov dword ptr ds : [edi + 0x15C] , 0xF9D99DA5 // CO_TAILLIGHTS
-			mov eax, 0x2CBB2D1C // VISUAL_PART_TAIL_LIGHTS
-			mov esi, 29 // LEFT_BRAKELIGHT
-			mov ebp, eax
-			jmp CaveExit
+			}
+			else
+			{
+				if (MenuID <= 0x401 || MenuID > 0x4FF)
+				{
+					CustomizationScreen_NotificationMessage(_CustomizeParts, 0x406415E3, FEObject, param1, param2);
+					return;
+				}
 
-		
+				// Vinyls
+				SelectedPart = (*(DWORD * (__thiscall**)(DWORD*))(*_CustomizeParts + 20))(_CustomizeParts);// GetSelectedPart
 
-		Attachment1 :
-			mov dword ptr ds : [edi + 0x15C] , 0xB81F39E9 // CO_ATTACHMENT_1
-			mov eax, 0x5524B4D1 // VISUAL_PART_ATTACHMENT
-			mov esi, 52 // ATTACHMENT0
-			mov ebp, eax
-			jmp CaveExit
+				if (SelectedPart && (SelectedPart[8] & 0xF) == 2)
+				{
+					CustomizationScreen_PlayLocked(_CustomizeParts);
+				}
+				else
+				{
+					if (CarPart_GetAppliedAttributeUParam((DWORD*)SelectedPart[3], 0x6212682B, 0)) // NUMREMAPCOLOURS
+					{
+						ASelectablePart = (DWORD*)j_malloc(44);
+						if (ASelectablePart) SelectablePart_copy(ASelectablePart, SelectedPart);
+						else ASelectablePart = 0;
 
-		Attachment2 :
-			mov dword ptr ds : [edi + 0x15C] , 0xB81F39EA // CO_ATTACHMENT_2
-			mov eax, 0x5524B4D1 // VISUAL_PART_ATTACHMENT
-			mov esi, 53 // ATTACHMENT1
-			mov ebp, eax
-			jmp CaveExit
+						CarCustomizeManager_SetTempColoredPart((DWORD*)_gCarCustomizeManager, ASelectablePart);
+						cFEng_QueuePackageSwitch(*(DWORD**)cFEng_mInstance, *(char**)g_pCustomizePaintPkg, _CustomizeParts[82] | (_CustomizeParts[83] << 16), 0, 0);
+					}
+					else
+						CustomizationScreen_NotificationMessage(_CustomizeParts, 0x406415E3, FEObject, param1, param2);
+				}
+			}
+		}
 
-		Attachment3 :
-			mov dword ptr ds : [edi + 0x15C] , 0xB81F39EB // CO_ATTACHMENT_3
-			mov eax, 0x5524B4D1 // VISUAL_PART_ATTACHMENT
-			mov esi, 54 // ATTACHMENT2
-			mov ebp, eax
-			jmp CaveExit
+		break;
 
-		Attachment4 :
-			mov dword ptr ds : [edi + 0x15C] , 0xB81F39EC // CO_ATTACHMENT_4
-			mov eax, 0x5524B4D1 // VISUAL_PART_ATTACHMENT
-			mov esi, 55 // ATTACHMENT3
-			mov ebp, eax
-			jmp CaveExit
+	case 0x5073EF13: // PAD_LTRIGGER
+		if (MenuID == 0x109)
+		{
+			if (RenderFECarFlares == 1)
+			{
+				RenderFECarFlares = -1;
+				FEngSetLanguageHash((const char*)_CustomizeParts[4], 0x889BACB6, 0x70DFE5C2); // Text, COMMON_OFF
+			}
+			else if (RenderFECarFlares == -1)
+			{
+				RenderFECarFlares = 1;
+				FEngSetLanguageHash((const char*)_CustomizeParts[4], 0x889BACB6, 0x417B2604); // Text, COMMON_ON
+			}
+		}
+		else if (MenuID == 0x10A)
+		{
+			switch (RenderFECarFlares)
+			{
+			default:
+			case -1:
+				RenderFECarFlares = 2;
+				FEngSetLanguageHash((const char*)_CustomizeParts[4], 0x889BACB6, 0x6AB80AFA); // Text, BUTTON_BRAKE_REVERSE
+				break;
+			case 0:
+				RenderFECarFlares = -1;
+				FEngSetLanguageHash((const char*)_CustomizeParts[4], 0x889BACB6, 0x70DFE5C2); // Text, COMMON_OFF
+				break;
+			case 2:
+				RenderFECarFlares = 0;
+				FEngSetLanguageHash((const char*)_CustomizeParts[4], 0x889BACB6, 0x417B2604); // Text, COMMON_ON
+				break;
+			}
+		}
+		break;
 
-		Attachment5 :
-			mov dword ptr ds : [edi + 0x15C] , 0xB81F39ED // CO_ATTACHMENT_5
-			mov eax, 0x5524B4D1 // VISUAL_PART_ATTACHMENT
-			mov esi, 56 // ATTACHMENT4
-			mov ebp, eax
-			jmp CaveExit
-
-		Attachment6 :
-			mov dword ptr ds : [edi + 0x15C] , 0xB81F39EE // CO_ATTACHMENT_6
-			mov eax, 0x5524B4D1 // VISUAL_PART_ATTACHMENT
-			mov esi, 57 // ATTACHMENT5
-			mov ebp, eax
-			jmp CaveExit
-
-		Attachment7 :
-			mov dword ptr ds : [edi + 0x15C] , 0xB81F39EF // CO_ATTACHMENT_7
-			mov eax, 0x5524B4D1 // VISUAL_PART_ATTACHMENT
-			mov esi, 58 // ATTACHMENT6
-			mov ebp, eax
-			jmp CaveExit
-
-		Attachment8 :
-			mov dword ptr ds : [edi + 0x15C] , 0xB81F39F0 // CO_ATTACHMENT_8
-			mov eax, 0x5524B4D1 // VISUAL_PART_ATTACHMENT
-			mov esi, 59 // ATTACHMENT7
-			mov ebp, eax
-			jmp CaveExit
-
-		Attachment9 :
-			mov dword ptr ds : [edi + 0x15C] , 0xB81F39F1 // CO_ATTACHMENT_9
-			mov eax, 0x5524B4D1 // VISUAL_PART_ATTACHMENT
-			mov esi, 60 // ATTACHMENT8
-			mov ebp, eax
-			jmp CaveExit
-
-		Attachment10 :
-			mov dword ptr ds : [edi + 0x15C] , 0xBC067739 // CO_ATTACHMENT_10
-			mov eax, 0x5524B4D1 // VISUAL_PART_ATTACHMENT
-			mov esi, 61 // ATTACHMENT9
-			mov ebp, eax
-			jmp CaveExit
-
-		Mirrors :
-			mov dword ptr ds : [edi + 0x15C] , 0xD3DAE7CF // CO_SIDE_MIRROR
-			mov eax, 0x0DD35467 // VISUAL_PART_SIDE_MIRROR
-			mov esi, 33 // LEFT_SIDE_MIRROR
-			mov ebp, eax
-			jmp CaveExit
-
-		CaveExit :
-			push 0x7BD210
-			retn
+	case 0xD9FEEC59: // PAD_RTRIGGER
+		if (MenuID == 0x109)
+		{
+			if (RenderFECarFlares == 1)
+			{
+				RenderFECarFlares = -1;
+				FEngSetLanguageHash((const char*)_CustomizeParts[4], 0x889BACB6, 0x70DFE5C2); // Text, COMMON_OFF
+			}
+			else if (RenderFECarFlares == -1)
+			{
+				RenderFECarFlares = 1;
+				FEngSetLanguageHash((const char*)_CustomizeParts[4], 0x889BACB6, 0x417B2604); // Text, COMMON_ON
+			}
+		}
+		else if (MenuID == 0x10A)
+		{
+			switch (RenderFECarFlares)
+			{
+			default:
+			case -1:
+				RenderFECarFlares = 0;
+				FEngSetLanguageHash((const char*)_CustomizeParts[4], 0x889BACB6, 0x417B2604); // Text, COMMON_ON
+				break;
+			case 0:
+				RenderFECarFlares = 2;
+				FEngSetLanguageHash((const char*)_CustomizeParts[4], 0x889BACB6, 0x6AB80AFA); // Text, BUTTON_BRAKE_REVERSE
+				break;
+			case 2:
+				RenderFECarFlares = -1;
+				FEngSetLanguageHash((const char*)_CustomizeParts[4], 0x889BACB6, 0x70DFE5C2); // Text, COMMON_OFF
+				break;
+			}
+		}
+		break;
 	}
 }
 
-void __declspec(naked) CustomizeVisualsIDCodeCave()
+void __fastcall CustomizeParts_RefreshHeader(DWORD* _CustomizeParts, void* EDX_Unused)
 {
-	_asm
+	DWORD* SelectedPart;
+	unsigned int MenuID = _CustomizeParts[82];
+
+	//if (MenuID == 0x109) RenderFECarFlares = 1; // Headlights
+	//else if (MenuID == 0x10A) RenderFECarFlares = 2; // Taillights
+	//else RenderFECarFlares = -1;
+	if (MenuID == 0x109 || MenuID == 0x10A)
 	{
-		cmp eax, 0x307
-		jz CustomGauges
-		cmp eax, 0x308
-		jz Drivers
-		cmp eax, 0x309
-		jz Plates
-		cmp eax, 0x314
-		jz Tire
-		push 0x7BD16F // Other Options
-		retn
+		FEngSetVisible(FEngFindObject((const char*)_CustomizeParts[4], 0x53639A10)); // Switcher
+		FEngSetVisible(FEngFindObject((const char*)_CustomizeParts[4], 0x2C3CC2D3)); // bg
 
-		CustomGauges:
-			push 0x7BD192
-			retn
+		switch (RenderFECarFlares)
+		{
+		case 0:
+			FEngSetLanguageHash((const char*)_CustomizeParts[4], 0x889BACB6, 0x417B2604); // Text, COMMON_ON
+			break;
+		case 1:
+			FEngSetLanguageHash((const char*)_CustomizeParts[4], 0x889BACB6, 0x417B2604); // Text, COMMON_ON
+			break;
+		case 2:
+			FEngSetLanguageHash((const char*)_CustomizeParts[4], 0x889BACB6, 0x6AB80AFA); // Text, BUTTON_BRAKE_REVERSE
+			break;
+		case -1:
+		default:
+			FEngSetLanguageHash((const char*)_CustomizeParts[4], 0x889BACB6, 0x70DFE5C2); // Text, COMMON_OFF
+			break;
+		}
+	}
+	else
+	{
+		FEngSetInvisible(FEngFindObject((const char*)_CustomizeParts[4], 0x53639A10)); // Switcher
+		FEngSetInvisible(FEngFindObject((const char*)_CustomizeParts[4], 0x2C3CC2D3)); // bg
+	}
 
-		Drivers :
-			mov dword ptr ds : [edi + 0x15C] , 0x964861FC // CO_DRIVER
-			mov eax, 0xDB0C8F94 // VISUAL_PART_DRIVER
-			mov esi, 43 // DRIVER
-			mov ebp, eax
-			jmp CaveExit
+	CustomizationScreen_RefreshHeader(_CustomizeParts);
 
-		Plates :
-			mov dword ptr ds : [edi + 0x15C] , 0x3CC9A5C8 // CO_LICENSE_PLATE
-			mov eax, 0xD68F9860 // VISUAL_PART_LICENSE_PLATE
-			mov esi, 69 // LICENSE_PLATE
-			mov ebp, eax
-			jmp CaveExit
+	if (bList_TraversebList((DWORD*)(_CustomizeParts + 12), 0) == _CustomizeParts[59])
+	{
+		FEngSetInvisible(FEngFindObject((const char*)_CustomizeParts[4], 0x8D1559A4)); // Career Part Price Group
+		FEngSetInvisible(FEngFindObject((const char*)_CustomizeParts[4], 0x5E7B09C9)); // Part Name??
+		FEngSetInvisible(FEngFindObject((const char*)_CustomizeParts[4], 0xF2492598)); // Heat Level Group
+	}
+	else
+	{
+		SelectedPart = (DWORD*)(*(int(__thiscall**)(DWORD*))(*_CustomizeParts + 20))(_CustomizeParts);
+		if (SelectedPart)
+		{
+			if (CarPart_GetAppliedAttributeUParam((DWORD*)SelectedPart[3], 0x6212682B, 0)) // NUMREMAPCOLOURS
+				FEngSetLanguageHash((const char*)_CustomizeParts[4], 0xB94139F4, 0x8098A54C); // COMMON_CONTINUE
+			else FEngSetLanguageHash((const char*)_CustomizeParts[4], 0xB94139F4, 0x649F4A65); // CP_ADD_TO_CART
+		
 
-		Tire :
-			mov dword ptr ds : [edi + 0x15C] , 0x05AA9137 // CO_TIRES
-			mov eax, 0x0295EBFC // VISUAL_PART_TIRE
-			mov esi, 64 // TIRE
-			mov ebp, eax
-			jmp CaveExit
+			if (_CustomizeParts[82] == 0x307) // Custom Gauges
+			{
+				CustomizeParts_SetHUDTextures(_CustomizeParts);
+				CustomizeParts_SetHUDColors(_CustomizeParts);
+			}
+			else if ((float)(*(int*)_RealTimer - _CustomizeParts[110]) * (*(float*)0x890984) <= (*(float*)0x894B58))
+				*((BYTE*)_CustomizeParts + 436) = 1;
+			else
+			{
+				CarCustomizeManager_PreviewPart((DWORD*)_gCarCustomizeManager, SelectedPart[4], (DWORD*)SelectedPart[3]);
+			}
 
-		CaveExit :
-			push 0x7BD210
-			retn
+			DWORD LanguageHash = CarPart_GetAppliedAttributeUParam((DWORD*)(SelectedPart[3]), bStringHash("LANGUAGEHASH"), 0);
+			if (LanguageHash)
+				FEngSetLanguageHash((char const*)_CustomizeParts[4], 0x5E7B09C9, LanguageHash);
+			else FEPrintf((char const*)_CustomizeParts[4], 0x5E7B09C9, "%s", CarPart_GetName((DWORD*)(SelectedPart[3])));
+		}
 	}
 }
 
-void __declspec(naked) CustomizePartsPackageSwitchCodeCave()
+void __fastcall CustomizeParts_Setup(DWORD* _CustomizeParts, void* EDX_Unused)
 {
-	_asm
+	DWORD MenuID = _CustomizeParts[82];
+	DWORD PartIconNormal = 0, PartIconCF = 0, PartIconCustom = 0;
+	int CarSlotID = 0;
+	int PartCategory = 0;
+	DWORD SelectablePartsList[3];
+	DWORD* TheActiveCarPart;
+	DWORD* TheSelectablePart;
+	DWORD* ACarPart;
+	DWORD UnlockHash;
+	DWORD PartName;
+	bool IsLocked;
+
+	int v9; // ecx
+	DWORD* v10; // esi
+	DWORD* v11; // eax
+	int v12; // eax
+
+	DWORD* dword_9BA080 = *(DWORD**)0x9BA080;
+
+	// Get CarType Info
+	void* FECarRecord = *(void**)_FECarRecord;
+	int CarTypeID = FECarRecord_GetType(FECarRecord);
+	sprintf(CarTypeName, GetCarTypeName(CarTypeID));
+
+	// Read Part Options for the car
+	sprintf(CarININame, "UnlimiterData\\%s.ini", CarTypeName);
+	CIniReader CarINI(CarININame);
+	CIniReader GeneralINI("UnlimiterData\\_General.ini");
+
+	// Vinyls
+	if (MenuID >= 0x402 && MenuID <= 0x4FF)
 	{
-		cmp eax, 0x116
-		ja originalcode
-		cmp eax, 0x10D
-		jb loc_7B75E1
-		jmp loc_7B75A8
+		PartCategory = MenuID - 0x402;
+		CarSlotID = 77;
 
-		originalcode :
-			cmp eax, 0x401
-			push 0x7B759F
-			retn
+		switch (MenuID) // Other parts
+		{
+		case 0x402:
+			PartIconNormal = 0xF8148554; // VINYL_GROUP_FLAMES
+			_CustomizeParts[87] = 0xD9228FC6; // CO_VINYL_FLAME
+			break;
 
-		loc_7B75E1 :
-			push 0x7B75E1
-			retn
+		case 0x403:
+			PartIconNormal = 0x192D84DA; // VINYL_GROUP_TRIBAL
+			_CustomizeParts[87] = 0x1E8D885F; // CO_VINYL_TRIBAL
+			break;
 
-		loc_7B75A8 :
-			push 0x7B75A8
-			retn
+		case 0x404:
+			PartIconNormal = 0xF7352706; // VINYL_GROUP_STRIPES
+			_CustomizeParts[87] = 0x1C619FD8; // CO_VINYL_STRIPE
+			break;
+
+		case 0x405:
+			PartIconNormal = 0x1223CC89; // VINYL_GROUP_RACING_FLAG
+			_CustomizeParts[87] = 0x9C1B8935; // CO_VINYL_RACE_FLAG
+			break;
+
+		case 0x406:
+			PartIconNormal = 0xBC44BBCB; // VINYL_GROUP_NATIONAL_FLAG
+			_CustomizeParts[87] = 0x7956F7B0; // CO_VINYL_NATIONAL_FLAG
+			break;
+
+		case 0x407:
+			PartIconNormal = 0x694CA0CA; // VINYL_GROUP_BODY
+			_CustomizeParts[87] = 0x2D5BFF0F; // CO_VINYL_BODY
+			break;
+
+		case 0x408:
+			PartIconNormal = 0x1B3A8DD3; // VINYL_GROUP_UNIQUE
+			_CustomizeParts[87] = 0x209A9158; // CO_VINYL_UNIQUE
+			break;
+
+		case 0x409:
+			PartIconNormal = 0x1BA508FC; // VINYL_GROUP_CONTEST
+			_CustomizeParts[87] = 0xCD057D21; // CO_VINYL_CONTEST
+			break;
+
+		case 0x40A: // Custom
+			PartIconNormal = bStringHash("VINYL_GROUP_CUSTOM");
+			_CustomizeParts[87] = bStringHash("CO_VINYL_CUSTOM");
+			break;
+		}
+
+		if (dword_9BA080) TheActiveCarPart = (DWORD*)dword_9BA080[3];
+		else TheActiveCarPart = CarCustomizeManager_GetActivePartFromSlot((DWORD*)_gCarCustomizeManager, CarSlotID);
+
 	}
+	else
+	{
+		switch (MenuID) // Other parts
+		{
+		case 0x101:
+			CarSlotID = 23; // BODY
+			PartIconNormal = CustomizeIsInBackRoom() != 0
+				? GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "BackroomPartsBodyKits", "MARKER_ICON_PARTS_BODYKITS")
+				: GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "PartsBodyKits", "VISUAL_PART_BODY");
+			_CustomizeParts[87] = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsBodyKits", "CO_BODY_KITS");
+			break;
+
+		case 0x104:
+			CarSlotID = 63; // HOOD
+			PartIconNormal = CustomizeIsInBackRoom() != 0
+				? GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "BackroomPartsHoods", "MARKER_ICON_PARTS_HOODS")
+				: GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "PartsHoods", "VISUAL_PART_HOOD");
+			PartIconCF = CustomizeIsInBackRoom() != 0
+				? GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "BackroomPartsHoodsCF", "MARKER_ICON_PARTS_CF_HOODS")
+				: GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "PartsHoodsCF", "VISUAL_PART_HOOD_CARBON");
+			_CustomizeParts[87] = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsHoods", "CO_HOODS");
+			break;
+
+		case 0x105:
+			CarSlotID = 62; // ROOF
+			PartIconNormal = CustomizeIsInBackRoom() != 0
+				? GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "BackroomPartsRoofScoops", "MARKER_ICON_PARTS_ROOFSCOOPS")
+				: GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "PartsRoofScoops", "VISUAL_PART_ROOF_SCOOP");
+			PartIconCF = CustomizeIsInBackRoom() != 0
+				? GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "BackroomPartsRoofScoopsCF", "MARKER_ICON_PARTS_CF_ROOFSCOOPS")
+				: GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "PartsRoofScoopsCF", "VISUAL_PART_ROOF_SCOOP_CARBON");
+			_CustomizeParts[87] = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsRoofScoops", "CO_ROOF_SCOOPS");
+			break;
+
+		case 0x106:
+			CarSlotID = 28; // INTERIOR
+			PartIconNormal = GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "PartsInterior", "VISUAL_PART_INTERIOR");
+			_CustomizeParts[87] = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsInterior", "CO_INTERIOR");
+			break;
+
+		case 0x107: // Roof
+			CarSlotID = 0; // BASE
+			PartIconNormal = GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "PartsRoof", "VISUAL_PART_ROOF");
+			_CustomizeParts[87] = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsRoof", "CO_ROOF");
+			break;
+
+		case 0x108: // Brake
+			CarSlotID = 24; // FRONT_BRAKE
+			PartIconNormal = GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "PartsBrakes", "VISUAL_PART_BRAKE");
+			_CustomizeParts[87] = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsBrakes", "CO_BRAKES");
+			break;
+
+		case 0x109: // Headlight
+			CarSlotID = 31; // LEFT_HEADLIGHT
+			PartIconNormal = GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "PartsHeadlights", "VISUAL_PART_HEAD_LIGHTS");
+			_CustomizeParts[87] = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsHeadlights", "CO_HEADLIGHTS");
+			break;
+
+		case 0x10A: // Brakelight
+			CarSlotID = 29; // LEFT_BRAKELIGHT
+			PartIconNormal = GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "PartsTaillights", "VISUAL_PART_TAIL_LIGHTS");
+			_CustomizeParts[87] = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsTaillights", "CO_TAILLIGHTS");
+			break;
+
+		case 0x10B: // Mirror
+			CarSlotID = 33; // LEFT_SIDE_MIRROR
+			PartIconNormal = GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "PartsMirrors", "VISUAL_PART_SIDE_MIRROR");
+			_CustomizeParts[87] = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsMirrors", "CO_SIDE_MIRROR");
+			break;
+
+		case 0x10D: // Attachment 1
+			CarSlotID = 52; // ATTACHMENT0
+			PartIconNormal = GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "PartsAttachment0", "VISUAL_PART_ATTACHMENT");
+			_CustomizeParts[87] = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsAttachment0", "CO_ATTACHMENT_1");
+			break;
+
+		case 0x10E: // Attachment 2
+			CarSlotID = 53; // ATTACHMENT1
+			PartIconNormal = GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "PartsAttachment1", "VISUAL_PART_ATTACHMENT");
+			_CustomizeParts[87] = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsAttachment1", "CO_ATTACHMENT_2");
+			break;
+
+		case 0x10F: // Attachment 3
+			CarSlotID = 54; // ATTACHMENT2
+			PartIconNormal = GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "PartsAttachment2", "VISUAL_PART_ATTACHMENT");
+			_CustomizeParts[87] = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsAttachment2", "CO_ATTACHMENT_3");
+			break;
+
+		case 0x110: // Attachment 4
+			CarSlotID = 55; // ATTACHMENT3
+			PartIconNormal = GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "PartsAttachment3", "VISUAL_PART_ATTACHMENT");
+			_CustomizeParts[87] = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsAttachment3", "CO_ATTACHMENT_4");
+			break;
+
+		case 0x111: // Attachment 5
+			CarSlotID = 56; // ATTACHMENT4
+			PartIconNormal = GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "PartsAttachment4", "VISUAL_PART_ATTACHMENT");
+			_CustomizeParts[87] = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsAttachment4", "CO_ATTACHMENT_5");
+			break;
+
+		case 0x112: // Attachment 6
+			CarSlotID = 57; // ATTACHMENT5
+			PartIconNormal = GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "PartsAttachment5", "VISUAL_PART_ATTACHMENT");
+			_CustomizeParts[87] = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsAttachment5", "CO_ATTACHMENT_6");
+			break;
+
+		case 0x113: // Attachment 7
+			CarSlotID = 58; // ATTACHMENT6
+			PartIconNormal = GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "PartsAttachment6", "VISUAL_PART_ATTACHMENT");
+			_CustomizeParts[87] = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsAttachment6", "CO_ATTACHMENT_7");
+			break;
+
+		case 0x114: // Attachment 8
+			CarSlotID = 59; // ATTACHMENT7
+			PartIconNormal = GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "PartsAttachment7", "VISUAL_PART_ATTACHMENT");
+			_CustomizeParts[87] = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsAttachment7", "CO_ATTACHMENT_8");
+			break;
+
+		case 0x115: // Attachment 9
+			CarSlotID = 60; // ATTACHMENT8
+			PartIconNormal = GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "PartsAttachment8", "VISUAL_PART_ATTACHMENT");
+			_CustomizeParts[87] = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsAttachment8", "CO_ATTACHMENT_9");
+			break;
+
+		case 0x116: // Attachment 10
+			CarSlotID = 61; // ATTACHMENT9
+			PartIconNormal = GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "PartsAttachment9", "VISUAL_PART_ATTACHMENT");
+			_CustomizeParts[87] = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsAttachment9", "CO_ATTACHMENT_10");
+			break;
+
+		case 0x304: // Window Tint
+			CarSlotID = 131; // WINDOW_TINT
+			PartIconNormal = GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "VisualWindowTint", "VISUAL_PART_WINDOW_TINTING");
+			_CustomizeParts[87] = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "VisualWindowTint", "CO_WINDOW_TINT");
+			break;
+
+		case 0x307: // Custom Gauges
+
+			if (*(bool*)_CustomizeParts_TexturePackLoaded) // 0x9B9EB0
+			{
+				CustomizeParts_ShowHudObjects(_CustomizeParts);
+				cFEng_QueuePackageMessage(*(int**)cFEng_mInstance, 0x8CB81F09, (const char*)_CustomizeParts[4], 0);
+			}
+			else
+			{
+				cFEng_QueuePackageMessage(*(int**)cFEng_mInstance, 0x13FD3296, (const char*)_CustomizeParts[4], 0);
+				CustomizeParts_LoadHudTextures(_CustomizeParts);
+			}
+
+			CarSlotID = 132; // CUSTOM_HUD
+			PartIconNormal = CustomizeIsInBackRoom() != 0
+				? GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "BackroomVisualCustomGauges", "MARKER_ICON_VISUAL_HUD")
+				: GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "VisualCustomGauges", "VISUAL_PART_HUDS");
+			_CustomizeParts[87] = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "VisualCustomGauges", "CO_CUSTOM_HUD");
+			break;
+
+		case 0x308: // Drivers
+			CarSlotID = 43; // DRIVER
+			PartIconNormal = GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "VisualDriver", "VISUAL_PART_DRIVER");
+			_CustomizeParts[87] = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "VisualDriver", "CO_DRIVER");
+			break;
+
+		case 0x309: // License Plates
+			CarSlotID = 69; // LICENSE_PLATE
+			PartIconNormal = GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "VisualLicensePlate", "VISUAL_PART_LICENSE_PLATE");
+			_CustomizeParts[87] = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "VisualLicensePlate", "CO_LICENSE_PLATE");
+			break;
+
+		case 0x314: // Tires
+			CarSlotID = 64; // HEADLIGHT
+			PartIconNormal = GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "VisualTires", "VISUAL_PART_TIRE");
+			_CustomizeParts[87] = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "VisualTires", "CO_TIRES");
+			break;
+
+		case 0x315: // Neon
+			CarSlotID = 65; // BRAKELIGHT
+			PartIconNormal = GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "VisualNeon", "VISUAL_PART_NEON");
+			_CustomizeParts[87] = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "VisualNeon", "CO_NEON");
+			break;
+
+		case 0x316: // Empty Slot
+			CarSlotID = 68; // SPINNER
+			PartIconNormal = bStringHash("VISUAL_PART_SPINNER");
+			_CustomizeParts[87] = bStringHash("CO_SPINNER");
+			break;
+
+		case 0x317: // Empty Slot
+			CarSlotID = 137; // WHEEL_MANUFACTURER
+			PartIconNormal = bStringHash("VISUAL_PART_WHEEL_MANUFACTURER");
+			_CustomizeParts[87] = bStringHash("CO_WHEEL_MANUFACTURER");
+			break;
+
+		case 0x318: // Empty Slot
+			CarSlotID = 138; // MISC
+			PartIconNormal = bStringHash("VISUAL_PART_MISC");
+			_CustomizeParts[87] = bStringHash("CO_MISC");
+			break;
+		}
+
+		if (MenuID == 0x307 && dword_9BA080) TheActiveCarPart = (DWORD*)dword_9BA080[3];
+		else TheActiveCarPart = CarCustomizeManager_GetActivePartFromSlot((DWORD*)_gCarCustomizeManager, CarSlotID);
+	}
+
+AddToList:
+	// Initialize the list
+	SelectablePartsList[0] = (DWORD)SelectablePartsList; // Next
+	SelectablePartsList[1] = (DWORD)SelectablePartsList; // Prev
+	//v31 = 0;
+
+	if (CarSlotID != 77) PartCategory = 0; // VINYL_LAYER0
+
+	CarCustomizeManager_GetCarPartList((DWORD*)_gCarCustomizeManager, CarSlotID, SelectablePartsList, PartCategory); // Read parts into the list
+
+	DWORD* v8 = (DWORD*)SelectablePartsList[0]; // Next
+	int v28 = 0;
+	int a8 = 1;
+	DWORD NewPartIcon = PartIconNormal;
+
+	if ((DWORD*)SelectablePartsList[0] != SelectablePartsList)
+	{
+		while (1)
+		{
+			// List maths??
+			v9 = *v8; // Next -> Next
+			v10 = v8;
+			v11 = (DWORD*)v8[1]; // Next -> Prev
+			*v11 = v9;
+			*(DWORD*)(v9 + 4) = (DWORD)v11;
+			v12 = v10[4];
+
+			TheSelectablePart = (DWORD*)(v10 - 1);
+			UnlockHash = CarCustomizeManager_GetUnlockHash((DWORD*)_gCarCustomizeManager, _CustomizeParts[82], v12);
+
+			if (CarSlotID != 77) break; // VINYL_LAYER0
+
+			ACarPart = (DWORD*)TheSelectablePart[3];
+			if ((*((BYTE*)ACarPart + 5) & 0x1F) == PartCategory) goto LABEL_46;
+
+			(**(void(__thiscall***)(DWORD*, int))TheSelectablePart)(TheSelectablePart, 1); // Refresh the part??
+
+		LABEL_50:
+			v8 = (DWORD*)SelectablePartsList[0];
+			if ((DWORD*)SelectablePartsList[0] == SelectablePartsList)
+				goto LABEL_51;
+		}
+
+		ACarPart = (DWORD*)TheSelectablePart[3];
+
+		// Choose Part Icon
+		PartIconCustom = CarPart_GetAppliedAttributeIParam(ACarPart, bStringHash("TEXTUREHASH"), 0);
+		if (PartIconCustom) NewPartIcon = PartIconCustom;
+		else if (CarPart_GetAppliedAttributeIParam(ACarPart, bStringHash("CARBONFIBRE"), 0) && PartIconCF) NewPartIcon = PartIconCF;
+		else NewPartIcon = PartIconNormal;
+
+	LABEL_46:
+		PartName = *(BYTE*)(TheSelectablePart[3] + 5) >> 5;
+		IsLocked = CarCustomizeManager_IsPartLocked((DWORD*)_gCarCustomizeManager, TheSelectablePart, 0);
+		CustomizationScreen_AddPartOption(_CustomizeParts, TheSelectablePart, NewPartIcon, PartName, 0, UnlockHash, IsLocked);
+
+		if (TheActiveCarPart && TheSelectablePart[3] == (DWORD)TheActiveCarPart) v28 = a8;
+		a8++;
+		goto LABEL_50;
+	}
+
+LABEL_51:
+	int v21 = *(int*)_Showcase_FromIndex;
+	if (v21)
+	{
+		if (*((BYTE*)_CustomizeParts + 297))
+		{
+			*((BYTE*)_CustomizeParts + 284) = 0;
+			*((BYTE*)_CustomizeParts + 281) = 1;
+			*((BYTE*)_CustomizeParts + 282) = 0;
+			_CustomizeParts[68] = 0;
+		}
+		(*(void(__thiscall**)(DWORD*, int))(_CustomizeParts[11] + 64))(_CustomizeParts + 11, v21);
+		*(int*)_Showcase_FromIndex = 0;
+	}
+	else
+	{
+		if (*((BYTE*)_CustomizeParts + 297))
+		{
+			*((BYTE*)_CustomizeParts + 284) = 0;
+			*((BYTE*)_CustomizeParts + 281) = 1;
+			*((BYTE*)_CustomizeParts + 282) = 0;
+			_CustomizeParts[68] = 0;
+		}
+		(*(void(__thiscall**)(DWORD*, int))(_CustomizeParts[11] + 64))(_CustomizeParts + 11, v28);
+	}
+	(*(void(__thiscall**)(DWORD*))(*_CustomizeParts + 12))(_CustomizeParts);
+	//v31 = -1;
+	bTList_SelectablePart_dtor(SelectablePartsList);
 }

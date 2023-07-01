@@ -37,16 +37,16 @@ unsigned int __fastcall UIQRCarSelect_GetBonusUnlockText(DWORD* UIQRCarSelect, v
 				// Check if the car is CE only but the game is not CE
 				if ((BonusCars.ReadInteger(BonusCarNameBuf, "CEOnly", 0) != 0) && (*(bool*)_IsCollectorsEdition == 0))
 				{
-					return bStringHash("TEST");
+					return bStringHash("CARLOT_BONUSCAR_UNLOCK_MSG_05");
 				}
 				
 				// Get and check the condition
-				int UnlockConditionType = BonusCars.ReadInteger(BonusCarNameBuf, "UnlockConditionType", 0);
+				int UnlockConditionType = BonusCars.ReadInteger(BonusCarNameBuf, "UnlockConditionType", -1);
 
 				switch (UnlockConditionType)
 				{
 				case 0: // Initially unlocked
-					return bStringHash("TEST");
+					return bStringHash("CARLOT_BONUSCAR_UNLOCK_MSG_06");
 					break;
 				case 1: // Beat Blacklist member
 					return bStringHash("CARLOT_UNLOCK_MSG_01");
@@ -55,7 +55,7 @@ unsigned int __fastcall UIQRCarSelect_GetBonusUnlockText(DWORD* UIQRCarSelect, v
 					return bStringHash("CARLOT_BONUSCAR_UNLOCK_MSG_01");
 					break;
 				case 3: // Enter "castrol" cheat code (special flag)
-					return bStringHash("TEST");
+					return bStringHash("CARLOT_BONUSCAR_UNLOCK_MSG_07");
 					break;
 				case 4: // Complete CS 100% (special flag)
 					return bStringHash("CARLOT_BONUSCAR_UNLOCK_MSG_02");
@@ -76,7 +76,7 @@ unsigned int __fastcall UIQRCarSelect_GetBonusUnlockText(DWORD* UIQRCarSelect, v
 	}
 	// If not found, check in game function
 _InGameFunction:
-	return UIQRCarSelect_GetBonusUnlockBinNumber_Game(UIQRCarSelect, FECarRecord);
+	return UIQRCarSelect_GetBonusUnlockText_Game(UIQRCarSelect, FECarRecord);
 }
 
 int __fastcall UIQRCarSelect_GetBonusUnlockBinNumber(DWORD* UIQRCarSelect, void* EDX_Unused, DWORD* FECarRecord)
@@ -99,7 +99,7 @@ int __fastcall UIQRCarSelect_GetBonusUnlockBinNumber(DWORD* UIQRCarSelect, void*
             if (FEHashUpper(PresetName) == PresetHash) // If it's the preset we are checking
             {
                 // Get and check if the condition is met
-                int UnlockConditionType = BonusCars.ReadInteger(BonusCarNameBuf, "UnlockConditionType", 0);
+                int UnlockConditionType = BonusCars.ReadInteger(BonusCarNameBuf, "UnlockConditionType", -1);
 
                 if (UnlockConditionType == 1)
                     return BonusCars.ReadInteger(BonusCarNameBuf, "Blacklist", 15);

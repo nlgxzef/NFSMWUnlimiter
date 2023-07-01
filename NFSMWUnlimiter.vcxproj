@@ -66,8 +66,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PostBuildEvent>
-      <Command>copy "$(TargetDir)*.asi" "G:\Oyunlar\Need for Speed Most Wanted HPC\scripts"  /y
-copy "$(TargetDir)*.pdb" "G:\Oyunlar\Need for Speed Most Wanted HPC\scripts"  /y</Command>
+      <Command>copy "$(TargetDir)*.asi" "G:\Oyunlar\Need for Speed Most Wanted Dirty\scripts"  /y
+copy "$(TargetDir)*.pdb" "G:\Oyunlar\Need for Speed Most Wanted Dirty\scripts"  /y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -100,16 +100,26 @@ copy "$(TargetDir)*.pdb" "G:\Oyunlar\Need for Speed Most Wanted HPC\scripts"  /y
     <ClInclude Include="CustomizeMain.h" />
     <ClInclude Include="CustomizePaint.h" />
     <ClInclude Include="CustomizeParts.h" />
+    <ClInclude Include="CustomizePerformance.h" />
     <ClInclude Include="CustomizeRims.h" />
     <ClInclude Include="CustomizeShoppingCart.h" />
+    <ClInclude Include="CustomizeSpoiler.h" />
     <ClInclude Include="CustomizeSub.h" />
+    <ClInclude Include="eModel.h" />
+    <ClInclude Include="FECarRecord.h" />
+    <ClInclude Include="FECustomizationRecord.h" />
     <ClInclude Include="FEPackage.h" />
     <ClInclude Include="FEPlayerCarDB.h" />
     <ClInclude Include="FEShoppingCartItem.h" />
+    <ClInclude Include="FrontEndRenderingCar.h" />
+    <ClInclude Include="Game.h" />
     <ClInclude Include="GlobalVariables.h" />
     <ClInclude Include="GRacerInfo.h" />
     <ClInclude Include="Helpers.h" />
+    <ClInclude Include="IconScroller.h" />
     <ClInclude Include="InGameFunctions.h" />
+    <ClInclude Include="MemcardCallbacks.h" />
+    <ClInclude Include="Presitter.h" />
     <ClInclude Include="PursuitBoard.h" />
     <ClInclude Include="QuickRaceUnlocker.h" />
     <ClInclude Include="RideInfo.h" />
@@ -118,10 +128,12 @@ copy "$(TargetDir)*.pdb" "G:\Oyunlar\Need for Speed Most Wanted HPC\scripts"  /y
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="CarRenderInfo.h" />
+    <ClInclude Include="TireState.h" />
     <ClInclude Include="UIQRCarSelect.h" />
     <ClInclude Include="UnlimiterStuff.h" />
     <ClInclude Include="CarPart.h" />
     <ClInclude Include="UnlockSystem.h" />
+    <ClInclude Include="UserProfile.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">

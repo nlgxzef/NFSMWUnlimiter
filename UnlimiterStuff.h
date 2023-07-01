@@ -5,14 +5,16 @@
 #include "includes\injector\injector.hpp"
 #include "includes\IniReader.h"
 
-int ManuID, CarArraySize, CarCount, ReplacementCar, TrafficCarCount, RacerNamesCount, FrameDelay;
-bool ManuHook, ExtraCustomization, DisappearingWheelsFix, SecondaryLogoFix, ExpandMemoryPools, AddOnCopsDamageFix, ForceStockPartsOnAddOnOpponents, ChallengeSeriesOpponentNameFix, CopDestroyedStringHook, DisableTextureReplacement, MyCarsBackroom, FNGFix, RandomHook, PaintMenuFix, BonusCarsHook, CarSkinFix;
+int ManuID, CarArraySize, CarCount, CarPartCount, CarPartPartsTableSize, ReplacementCar, TrafficCarCount, RacerNamesCount, FrameDelay;
+bool ManuHook, ExtraCustomization, DisappearingWheelsFix, SecondaryLogoFix, ExpandMemoryPools, AddOnCopsDamageFix, ForceStockPartsOnAddOnOpponents, ChallengeSeriesOpponentNameFix, CopDestroyedStringHook, DisableTextureReplacement, MyCarsBackroom, FNGFix, RandomHook, RideHeightFix, BonusCarsHook, CarSkinFix, LightMaterialCrashFix, DisableNeon, DisableLightFlareColors, DisableKitWheelModifications, ExitWorkaround, Presitter, TestCareerCustomization, LimitAdjusterCompatibility;
 
 #include "InGameFunctions.h"
 #include "CustomizeMain.h"
 #include "CustomizeSub.h"
 #include "CustomizeParts.h"
+#include "CustomizePerformance.h"
 #include "CustomizeRims.h"
+#include "CustomizeSpoiler.h"
 #include "CustomizePaint.h"
 #include "CustomizeDecals.h"
 #include "CustomizeShoppingCart.h"
@@ -26,11 +28,20 @@ bool ManuHook, ExtraCustomization, DisappearingWheelsFix, SecondaryLogoFix, Expa
 #include "SimConnection.h"
 #include "FEPackage.h"
 #include "FEPlayerCarDB.h"
+#include "FECarRecord.h"
+#include "FECustomizationRecord.h"
 #include "UIQRCarSelect.h"
 #include "QuickRaceUnlocker.h"
 #include "UnlockSystem.h"
+#include "eModel.h"
+#include "FrontEndRenderingCar.h"
+#include "TireState.h"
+#include "CarRenderConn.h"
 #include "CompositeSkin.h"
-//#include "CarRenderConn.h"
+#include "Presitter.h"
+#include "UserProfile.h"
+#include "MemcardCallbacks.h"
+#include "Game.h"
 #include "Helpers.h"
 #include "CodeCaves.h"
 
@@ -40,21 +51,23 @@ int Init()
 
 	// Main
 	ReplacementCar = Settings.ReadInteger("Main", "ReplacementModel", 1);
-	TrafficCarCount = Settings.ReadInteger("Main", "TrafficCarCount", 10);
+	//TrafficCarCount = Settings.ReadInteger("Main", "TrafficCarCount", 10);
 	ManuHook = Settings.ReadInteger("Main", "EnableManufacturerHook", 1) != 0;
 	ExtraCustomization = Settings.ReadInteger("Main", "EnableExtraCustomization", 1) != 0;
 	MyCarsBackroom = Settings.ReadInteger("Main", "MyCarsBackroom", 1) != 0;
 	CopDestroyedStringHook = Settings.ReadInteger("Main", "EnableCopDestroyedStringHook", 1) != 0;
 	RandomHook = Settings.ReadInteger("Main", "EnableRandomPartsHook", 1) != 0;
 	BonusCarsHook = Settings.ReadInteger("Main", "EnableBonusCarsHook", 0) != 0;
+	Presitter = Settings.ReadInteger("Main", "EnablePresitter", 1) != 0;
 
 	// Fixes
 	DisappearingWheelsFix = Settings.ReadInteger("Fixes", "DisappearingWheelsFix", 1) != 0;
 	SecondaryLogoFix = Settings.ReadInteger("Fixes", "SecondaryLogoFix", 1) != 0;
 	AddOnCopsDamageFix = Settings.ReadInteger("Fixes", "AddOnCopsDamageFix", 1) != 0;
 	ChallengeSeriesOpponentNameFix = Settings.ReadInteger("Fixes", "ChallengeSeriesOpponentNameFix", 1) != 0;
-	PaintMenuFix = Settings.ReadInteger("Fixes", "PaintMenuFix", 1) != 0;
-	FNGFix = Settings.ReadInteger("Fixes", "FNGFix", 1) != 0;
+	LightMaterialCrashFix = Settings.ReadInteger("Fixes", "LightMaterialCrashFix", 0) != 0;
+	RideHeightFix = Settings.ReadInteger("Fixes", "RideHeightFix", 0) != 0;
+	FNGFix = Settings.ReadInteger("Fixes", "FNGFix", 0) != 0;
 	CarSkinFix = Settings.ReadInteger("Fixes", "CarSkinFix", 0) != 0;
 
 	// Misc
@@ -65,13 +78,20 @@ int Init()
 	ForceStockPartsOnAddOnOpponents = Settings.ReadInteger("Misc", "ForceStockPartsOnAddOnOpponents", 0) != 0;
 	// Debug
 	DisableTextureReplacement = Settings.ReadInteger("Debug", "DisableTextureReplacement", 0) != 0;
+	DisableNeon = Settings.ReadInteger("Debug", "DisableNeon", 0) != 0;
+	DisableLightFlareColors = Settings.ReadInteger("Debug", "DisableLightFlareColors", 0) != 0;
+	DisableKitWheelModifications = Settings.ReadInteger("Debug", "DisableKitWheelModifications", 0) != 0;
+	ExitWorkaround = Settings.ReadInteger("Debug", "ExitWorkaround", 0) != 0;
+	TestCareerCustomization = Settings.ReadInteger("Debug", "TestCareerCustomization", 0) != 0;
 
 	// Check compatibility
 	BETACompatibility = GetModuleHandleA("NFSMWBeta.asi") ? 1 : 0;
 	HPCCompatibility = GetModuleHandleA("NFSMWHPC.asi") ? 1 : 0;
+	LimitAdjusterCompatibility = GetModuleHandleA("NFSMWLimitAdjuster.asi") ? 1 : 0;
 
 	// Count Cars Automatically
-	injector::MakeJMP(0x756AA7, DoUnlimiterStuffCodeCave, true);
+	injector::MakeJMP(0x756AA7, DoUnlimiterStuffCodeCave, true); // LoaderCarInfo
+	injector::MakeJMP(0x756BC7, DoUnlimiterStuffCodeCave2, true); // LoaderCarInfo
 
 	// Car Type Unlimiter
 	injector::MakeJMP(0x6690BB, CarCountCodeCave_PVehicle_Resource_Resource, true);
@@ -82,24 +102,27 @@ int Init()
 	injector::MakeJMP(0x75E6F4, CarCountCodeCave_CarRenderConn_Construct, true);
 	injector::MakeJMP(0x75E7B4, CarCountCodeCave_HeliRenderConn_Construct, true);
 
-	// Replacement model if model not found in array
-	injector::WriteMemory<int>(0x739909, ReplacementCar, true);
-
 	// Fix crash if the model doesn't exist (Model will be invisible)
 	injector::MakeJMP(0x75C712, ReplacementCarCodeCave_CarLoader_Load, true);
 
-	// Traffic Pattern Unlimiter
+	// Traffic Pattern Unlimiter (disabled due to instability and fixed size arrays)
+	/*
+	if (TrafficCarCount > 10) TrafficCarCount = 10;
 	injector::WriteMemory<BYTE>(0x439B79, TrafficCarCount, true); // AITrafficManager::SpawnTraffic
 	injector::WriteMemory<BYTE>(0x410962, TrafficCarCount, true); // AITrafficManager::SetTrafficPattern
 	injector::WriteMemory<BYTE>(0x4265C2, TrafficCarCount, true); // AITrafficManager::FlushAllTraffic
 	injector::WriteMemory<BYTE>(0x426254, TrafficCarCount, true); // AITrafficManager::NextSpawn
 	injector::WriteMemory<int>(0x426256, TrafficCarCount, true); // AITrafficManager::NextSpawn
+	*/
 
 	// Manufacturer logo hook
 	if (ManuHook)
 	{
-		injector::MakeJMP(0x5817C1, CarManuCodeCave, true);
-		injector::MakeRangedNOP(0x581B69, 0x581B6E, true); // Prevent returning null
+		//injector::MakeJMP(0x5817C1, CarManuCodeCave, true);
+		//injector::MakeRangedNOP(0x581B69, 0x581B6E, true); // Prevent returning null
+		injector::MakeCALL(0x591337, FECarRecord_GetManufacturerName, true); // FECarRecord::GetManuLogoHash
+		injector::MakeCALL(0x59125E, FECarRecord_GetManufacturerName, true); // FECarRecord::GetLogoHash
+		injector::MakeCALL(0x59117F, FECarRecord_GetManufacturerName, true); // FECarRecord::GetNameHash
 	}
 
 	// Show Backroom Parts on Customization
@@ -126,9 +149,15 @@ int Init()
 		injector::MakeNOP(0x7B92DC, 6, true); // CustomizePerformance::Setup - Backroom Performance Parts (BMWM3GTRE46)
 		injector::MakeNOP(0x7BC28C, 2, true); // CustomizeSub::SetupVisual - Rim Paint (BMWM3GTRE46)
 
-		injector::MakeJMP(0x7BFBD0, CustomizeSub_Setup, true); // Add new options
+		injector::WriteMemory(0x8B8058, &CustomizeSub_NotificationMessage, true); // CustomizeSub::vtable
+		injector::WriteMemory(0x8B8064, &CustomizeSub_Setup, true);
+		injector::MakeCALL(0x7C29D7, CustomizeSub_Setup, true); // Add new options
 		injector::MakeJMP(0x7A5F40, FEShoppingCartItem_GetCarPartCatHash, true); // Add the new names for shopping cart, 18 calls
-		injector::MakeJMP(0x7B759A, CustomizePartsPackageSwitchCodeCave, true); // Fix package switching for attachments
+
+		// Camera Hook
+		//injector::MakeCALL(0x7B9FDC, FindScreenInfo, true); // GarageMainScreen::HandleTick
+		//injector::MakeCALL(0x7A8D73, FindScreenInfo, true); // FindScreenInfo (recursive)
+		//injector::MakeCALL(0x7B9FE4, FindScreenCameraInfo, true); // GarageMainScreen::HandleTick
 
 		// Texture caves
 		if (!DisableTextureReplacement)
@@ -145,8 +174,22 @@ int Init()
 		injector::MakeJMP(0x756E90, RideInfo_SetPart, true); // RideInfo::SetPart
 
 		// Customization setup for new ids
-		injector::MakeJMP(0x7BD0CD, CustomizePartsIDCodeCave, true); // CustomizeParts::Setup
-		injector::MakeJMP(0x7BD168, CustomizeVisualsIDCodeCave, true); // CustomizeParts::Setup
+		injector::WriteMemory(0x8B7EA8, &CustomizeParts_NotificationMessage, true); // CustomizeParts::vtable
+		injector::WriteMemory(0x8B7EB0, &CustomizeParts_RefreshHeader, true); // CustomizeParts::vtable
+		injector::WriteMemory(0x8B7EB4, &CustomizeParts_Setup, true); // CustomizeParts::vtable
+		injector::MakeCALL(0x7C01D3, CustomizeParts_dtor_Hook, true); // CustomizeParts::~CustomizeParts(bool)
+		injector::MakeCALL(0x7C01B0, CustomizeParts_Setup, true); // CustomizeParts::CustomizeParts
+
+		// Spoiler
+		injector::WriteMemory(0x8B7FCC, &CustomizeSpoiler_Setup, true); // CustomizeSpoiler::vtable
+		injector::MakeCALL(0x7C0248, CustomizeSpoiler_Setup, true); // CustomizeSpoiler::CustomizeSpoiler
+		injector::MakeJMP(0x7B76C0, CustomizeSpoiler_BuildPartOptionListFromFilter, true); // 4 references
+
+		// Performance
+		injector::MakeCALL(0x7B3277, CustomizePerformance_GetPerfPkgDesc, true); // CustomizePerformance::RefreshHeader
+		injector::WriteMemory(0x8B7F30, &CustomizePerformance_RefreshHeader, true); // CustomizePerformance::vtable
+		injector::WriteMemory(0x8B7F34, &CustomizePerformance_Setup, true); // CustomizePerformance::vtable
+		injector::MakeCALL(0x7BE470, CustomizePerformance_Setup, true); // CustomizePerformance::CustomizePerformance
 
 		// Remove locked & new status from new categories
 		injector::MakeNOP(0x7A50F9, 6, true); // CarCustomizeManager::IsCategoryNew, Parts category
@@ -157,6 +200,9 @@ int Init()
 		injector::MakeJMP(0x7BAD34, IsLockedCodeCaveParts, true); // CarCustomizeManager::IsCategoryLocked, Parts category
 		injector::MakeNOP(0x7BAEE0, 6, true); // CarCustomizeManager::IsCategoryLocked, Visual category
 		injector::MakeJMP(0x7BAEE0, IsLockedCodeCaveVisual, true); // CarCustomizeManager::IsCategoryLocked, Visual category
+
+		// Paint related fixes
+		injector::WriteMemory(0x8B8074, CustomizePaint_RefreshHeader, true);
 
 		// Decals
 		injector::MakeJMP(0x7A7030, CustomizeDecals_GetSlotIDFromCategory, true); // 3 references
@@ -174,7 +220,6 @@ int Init()
 		if (RimBrandsCount != -1)
 		{
 			RimBrandsCount += 0x702;
-			injector::MakeJMP(0x7BC4B7, SetupRimBrandsCodeCave, true); // CustomizeSub::SetupRimBrands
 			injector::MakeJMP(0x7B7E90, NoRimSizeCodeCave, true); // CustomizeSub::BuildRimsList
 			injector::MakeCALL(0x7B7E17, CustomizeRims_GetCategoryBrandHash, true); // CustomizeRims::BuildRimsList
 			injector::WriteMemory<short>(0x7BC704, RimBrandsCount, true); // CustomizeSub::SetupRimBrands, expand for new brands (Default: 0x70B)
@@ -183,19 +228,80 @@ int Init()
 			injector::WriteMemory<short>(0x7B6098, RimBrandsCount, true); // CarCustomizeManager::GetUnlockHash
 			injector::WriteMemory<short>(0x7BAD74, RimBrandsCount, true); // CarCustomizeManager::IsCategoryLocked
 			injector::WriteMemory<short>(0x7BAF96, RimBrandsCount, true); // CarCustomizeManager::IsCategoryLocked
-			injector::MakeJMP(0x7A6490, CustomizeSub_GetRimBrandIndex, true); // CustomizeSub::GetRimBrandIndex
+			injector::MakeJMP(0x7A6490, CustomizeSub_GetRimBrandIndex, true); // CustomizeSub::GetRimBrandIndex (2 references)
 			injector::MakeNOP(0x7A539F, 6, true); // CarCustomizeManager::IsCategoryNew, Rims category
 			injector::MakeJMP(0x7A539F, IsNewCodeCaveRims, true); // CarCustomizeManager::IsCategoryNew, Rims category
+			injector::WriteMemory(0x8B7FE0, &CustomizeRims_NotificationMessage, true); // CustomizeRims::vtable
 			injector::WriteMemory(0x8B7FE8, &CustomizeRims_RefreshHeader, true); // CustomizeRims::vtable
 		}
 
-		// Apply attributes by hooking CarRenderInfo functions
-		injector::MakeCALL(0x760187, CarRenderInfo_UpdateWheelYRenderOffset, true); // CarRenderInfo::CarRenderInfo
+		// Fix rear rims
+		injector::MakeCALL(0x7498D0, CompositeRim, true); // CompositeSkin
+		injector::MakeCALL(0x751A85, GetTempCarSkinTextures, true); // GetUsedCarTextureInfo
+		injector::WriteMemory<DWORD>(0x7529CD, 0x154, true); // LoadedWheel::LoadedWheel, Seperate rear rims and fix them in game
+		injector::MakeJMP(0x74F40B, RearWheelLightMaterialCodeCave, true); // CarRenderInfo::Render
 
-		// TODO: Fix tire skid offset in CarRenderConn
+		// Custom part costs
+		injector::MakeJMP(0x7AEF70, CarCustomizeManager_GetPartPrice, true); // 4 references
 
 		// Fix Service Crash
 		injector::MakeJMP(0x6E9E40, SimConnectionService, true); //Sim::Connection::Service
+
+		// Neon
+		if (!DisableNeon)
+		{
+			injector::MakeJMP(0x75FC83, CarShadowCave, true); // CarRenderInfo::CarRenderInfo
+			injector::MakeCALL(0x74E839, CarRenderInfo_DrawAmbientShadow_Hook, true); // CarRenderInfo::Render
+			injector::MakeJMP(0x744491, ShadowColorCave, true);
+
+			injector::WriteMemory<float*>(0x743F4E, &CarDistMax, true); // CarRenderInfo::DrawAmbientShadow
+			injector::WriteMemory<float*>(0x743F75, &CarDistMax, true);
+			injector::WriteMemory<float*>(0x743F61, &CarDistMult, true);
+			injector::WriteMemory<float*>(0x744462, &CarDistBright, true);
+			injector::WriteMemory<float*>(0x74446A, &CarShadBright, true);
+			injector::WriteMemory<float*>(0x744021, &FrontShadowSize, true);
+			injector::WriteMemory<float*>(0x744013, &RearShadowSize, true);
+			injector::WriteMemory<float*>(0x744003, &SideShadowSize, true);
+			injector::WriteMemory<float*>(0x743FF2, &SideShadowSize, true);
+			injector::WriteMemory<float*>(0x74406A, &ShadowSunMultiplier, true);
+		}
+
+		// Light Flare Colors
+		if (!DisableLightFlareColors)
+		{
+			hb_eRenderLightFlare.fun = injector::MakeJMP(0x743235, RenderLightFlareCodeCave, true).get(); // CarRenderInfo::RenderFlaresOnCar
+
+			injector::MakeCALL(0x6DAF96, RenderFEFlares, true); // sub_6DAE20
+			injector::MakeCALL(0x6DE616, RenderFEFlares, true); // sub_6DE300
+			hb_RenderFEFlares.fun = injector::MakeCALL(0x6DF34F, RenderFEFlares, true).get(); // sub_6DE300
+			
+			injector::MakeCALL(0x7429EB, CarRenderInfo_RenderTextureHeadlights_Hook, true); // CarRenderInfo::Render
+
+			// CarRenderInfo::RenderTextureHeadlights
+			injector::MakeRangedNOP(0x738241, 0x73826D, true);
+			injector::MakeJMP(0x738241, RenderTextureHeadlightsColorCave, true);
+		}
+
+		if (!DisableKitWheelModifications)
+		{
+			// Apply attributes by hooking CarRenderInfo functions
+			injector::MakeCALL(0x760187, CarRenderInfo_UpdateWheelYRenderOffset, true); // CarRenderInfo::CarRenderInfo
+			injector::MakeJMP(0x76018C, 0x76020A, true); // Disable vanilla brake markers code as it's now handled in UpdateWheelYRenderOffset
+
+			// Fix tire skid offset and width
+			injector::MakeJMP(0x746F33, DoSkidsCave, true); // CarRenderConn::UpdateTires (Fix skid width)
+
+			// Camber
+			injector::MakeJMP(0x74EFCF, CamberFrontCave, true); // CarRenderInfo::Render
+			injector::MakeJMP(0x74EFE8, CamberRearCave, true); // CarRenderInfo::Render
+
+			// FECompressions
+			injector::MakeCALL(0x007A9748, FrontEndRenderingCar_LookupWheelPosition, true);
+
+			// Ride Height
+			injector::MakeJMP(0x007471AD, RideHeightCave, true); // CarRenderConn::UpdateRenderMatrix
+		}
+		
 	}
 	
 	// Check the ini file for destroyed cops messages
@@ -222,7 +328,7 @@ int Init()
 	}
 
 	// Expand Memory Pools (ty Berkay and Aero_)
-	if (ExpandMemoryPools)
+	if ((ExpandMemoryPools || CarSkinFix) && !LimitAdjusterCompatibility)
 	{
 		injector::WriteMemory<short>(0x5F7396, 0x2C80, true); // GManager::PreloadTransientVaults (0x2C8000)
 		injector::WriteMemory<short>(0x5F73B2, 0x2C80, true);
@@ -248,14 +354,20 @@ int Init()
 	// Damage Parts Fix for Add-On Cop Cars
 	if (AddOnCopsDamageFix)
 	{
-		injector::MakeRangedNOP(0x7603EE, 0x760419, true);
+		injector::MakeRangedNOP(0x7603EE, 0x760419, true); // CarRenderInfo::CarRenderInfo
 		injector::MakeJMP(0x7603EE, AddOnCopsDamageFixCodeCave, true);
 	}
 
-	// Paint related fixes
-	if (PaintMenuFix)
+	// Always add both ride height values, not just when it's close enough (from chassis and ecar) (ty rx)
+	if (RideHeightFix)
 	{
-		injector::WriteMemory(0x8B8074, CustomizePaint_RefreshHeader, true);
+		injector::MakeRangedNOP(0x7470AC, 0x7470B2, true); // CarRenderConn::UpdateRenderMatrix
+	}
+
+	// (Attempt to) fix a crash with replacing light materials
+	if (LightMaterialCrashFix)
+	{
+		injector::MakeJMP(0x501640, eModel_ReplaceLightMaterial, true); // eModel::ReplaceLightMaterial (18 references)
 	}
 	
 	// Racer names count
@@ -314,51 +426,49 @@ int Init()
 		injector::WriteMemory<BYTE>(0x7BF95B, 0x01, true); // UIQRCarSelect::RefreshCarList, skip sorting by unlocks if the category is Bonus
 	}
 
+	if (ExitWorkaround)
+	{
+		injector::WriteMemory<BYTE>(0x6C21FC, 0xEB, true);
+	}
+
+	if (TestCareerCustomization)
+	{
+		injector::WriteMemory<BYTE>(g_bTestCareerCustomization, 1, true);
+	}
+
+	// Presitter: Dump/load presets when the profile is saved/loaded to work issues around with DBCarPart changes.
+	if (Presitter)
+	{
+		// Get SHGetFolderPathA
+		hb_SHGetFolderPathA.fun = injector::GetBranchDestination(0x6CBF17, true).get();
+
+		// Saving
+		injector::WriteMemory(0x89CD88, &MemcardCallbacks_SaveDone, true); // MemcardCallbacks::vtable
+		hb_MemcardCallbacks_SaveDone.fun = injector::MakeCALL(0x560EC9, MemcardCallbacks_SaveDone, true).get(); // IJoyHelper::EmulateMemoryCardLibrary
+
+		// Loading
+		injector::MakeCALL(0x5ACDEB, UserProfile_LoadFromBuffer, true); // cFrontendDatabase::LoadUserProfileFromBuffer
+		injector::MakeCALL(0x5ACE01, UserProfile_LoadFromBuffer, true); // cFrontendDatabase::LoadUserProfileFromBuffer
+		hb_UserProfile_LoadFromBuffer.fun = injector::MakeCALL(0x5ACE74, UserProfile_LoadFromBuffer, true).get(); // cFrontendDatabase::RestoreFromBackupDB
+	}
+
 	// Car Skin Fix (Requires CarSkinCount (20) x dummy skin and wheel textures in CARS\TEXTURES.BIN)
-	if (CarSkinFix)
+	if (CarSkinFix && !LimitAdjusterCompatibility)
 	{
 		// VehicleRenderConn::Load
-		//injector::MakeNOP(0x75D29E, 2, true);
-		//injector::MakeRangedNOP(0x75D2BB, 0x75D2D6, true);
-		//injector::WriteMemory<unsigned char>(0x75D2B6, CarSkinCount, true); 
+		injector::MakeNOP(0x75D29E, 2, true); // Skip precomposite skins
+		injector::MakeRangedNOP(0x75D2BB, 0x75D2D6, true);
+		injector::WriteMemory<unsigned char>(0x75D2B6, CarSkinCount, true); // 4 -> 20
 
 		// RideInfo::SetCompositeNameHash
-		//injector::MakeRangedNOP(0x747F2B, 0x747F3B, true);
-		//injector::WriteMemory<unsigned char>(0x747F22, CarSkinCount, true);
-
-		//injector::MakeRangedNOP(0x73B324, 0x73B328, true); //CompositeSkin32, crash fix??
-
-		// Relocate Swatch Offset arrays
-		//injector::WriteMemory(0x73B082, SwatchOffsetCache, true); //CompositeSkin32
-		//injector::WriteMemory(0x73B0EB, SwatchOffsetCache, true); //CompositeSkin32
-		//injector::WriteMemory(0x73B2F4, SwatchOffsetCache, true); //CompositeSkin32
-		//injector::WriteMemory(0x748CC9, SwatchOffsetCache, true); //CompositeSkin
-		//injector::WriteMemory(0x748D0F, SwatchOffsetCache, true); //CompositeSkin
-		//injector::WriteMemory(0x749280, SwatchOffsetCache, true); //CompositeSkin
-		//
-		//injector::WriteMemory(0x73B0D5, SwatchOffsetCount, true); //CompositeSkin32
-		//injector::WriteMemory(0x73B0F2, SwatchOffsetCount, true); //CompositeSkin32
-		//injector::WriteMemory(0x73B2F9, SwatchOffsetCount, true); //CompositeSkin32
-		//injector::WriteMemory(0x748D00, SwatchOffsetCount, true); //CompositeSkin
-		//injector::WriteMemory(0x748D1A, SwatchOffsetCount, true); //CompositeSkin
-		//injector::WriteMemory(0x74928E, SwatchOffsetCount, true); //CompositeSkin
-
-		// Expand Swatch Offset arrays
-		//injector::WriteMemory<BYTE>(0x73B0CD, CarSkinCount, true); //CompositeSkin32
-		//injector::WriteMemory<BYTE>(0x748D20, CarSkinCount, true); //CompositeSkin32
-
-		//injector::WriteMemory<BYTE>(0x748CEF, CarSkinCount, true); //CompositeSkin
-		//injector::WriteMemory<BYTE>(0x748D20, CarSkinCount, true); //CompositeSkin
-
-		// CompositeSkin, Expand and Relocate cache arrays
-		//injector::MakeJMP(0x73AB50, GetSkinCompositeParams, true); // 0 references??
-		//injector::MakeCALL(0x749922, IsInSkinCompositeCache, true);
-		//injector::MakeCALL(0x749933, UpdateSkinCompositeCache, true);
-
-		// TexturePack::UnAssignTextureData
-		//injector::MakeRangedNOP(0x4FCF3E, 0x4FCF5A, true);
-		//injector::MakeCALL(0x4FCF5B, FlushFromSkinCompositeCache, true);
+		injector::MakeRangedNOP(0x747F2B, 0x747F3B, true); // Skip precomposite skins
+		injector::MakeJMP(0x747F2B, 0x747F3B, true);
+		injector::WriteMemory<unsigned char>(0x747F22, CarSkinCount, true); // 4 -> 20
 	}
+
+#ifdef _DEBUG
+	injector::WriteMemory<BYTE>(_EnableReleasePrintf, 1, true); //Enable release printf
+#endif
 
 	return 0;
 }

@@ -276,6 +276,24 @@ unsigned int __fastcall RideInfo_SetPart(DWORD* RideInfo, int EDX_Unused, int Ca
 		RideInfo[18 + 42] = CarPartDatabase_NewGetCarPart((DWORD*)_CarPartDB, RideInfo[0], 42, bStringHash2("RIGHT_SIDE_MIRROR", KitNameHash), 0, -1);
 
 		goto SetSinglePart;
+/*
+	case 67: // REAR_WHEEL
+		if (!CarPart)
+		{
+		InvalidRearWheelPart:
+			RideInfo[18 + 67] = 0; // REAR_WHEEL
+
+			goto SetSinglePart;
+		}
+
+		// Apply rear wheel according to the front wheel style
+		PartHash = bStringHash2("_REAR", *(unsigned int*)CarPart);
+
+		PreviousPart = RideInfo[18 + 67];
+		RideInfo[18 + 67] = CarPartDatabase_NewGetCarPart((DWORD*)_CarPartDB, RideInfo[0], 67, PartHash, 0, -1); // If it has rear wheel
+		if (!RideInfo[18 + 67)) RideInfo[18 + 67] = PreviousPart; // Or else, reapply the previous part
+
+		goto SetSinglePart;*/
 
 		// BODY
 	case 46:	// DAMAGE0_FRONT
@@ -284,7 +302,7 @@ unsigned int __fastcall RideInfo_SetPart(DWORD* RideInfo, int EDX_Unused, int Ca
 	case 49:	// DAMAGE0_REAR
 	case 50:	// DAMAGE0_REARLEFT
 	case 51:	// DAMAGE0_REARRIGHT
-	case 67:	// REAR_WHEEL
+	//case 67:	// REAR_WHEEL
 	case 72:	// DECAL_LEFT_DOOR_RECT_MEDIUM
 	case 73:	// DECAL_RIGHT_DOOR_RECT_MEDIUM
 	case 74:	// DECAL_LEFT_QUARTER_RECT_MEDIUM
@@ -324,9 +342,69 @@ unsigned int __fastcall RideInfo_SetPart(DWORD* RideInfo, int EDX_Unused, int Ca
 	return PreviousPart;
 }
 
+unsigned int __fastcall RideInfo_SetRandomDecal(DWORD* RideInfo, void* EDX_Unused, int CarSlotID, int UpgradeLevel)
+{
+	DWORD* NewPart = 0, * LeftNumberPart = 0;
+	int NumCarParts = CarPartDatabase_NewGetNumCarParts((DWORD*)_CarPartDB, RideInfo[0], CarSlotID, 0, UpgradeLevel);
+	int rnd, ctr;
+	DWORD BrandNameHash;
+	bool IsNumberLeft = false, IsNumberRight = false;
+
+	if (NumCarParts)
+	{
+		rnd = bRandom(NumCarParts) + 1;
+		if (rnd > 0)
+		{
+			for (ctr = rnd; ctr; --ctr)
+			{
+				NewPart = (DWORD*)CarPartDatabase_NewGetCarPart((DWORD*)_CarPartDB, RideInfo[0], CarSlotID, 0, (DWORD)NewPart, UpgradeLevel);
+			}
+		}
+
+		if (NewPart)
+		{
+			BrandNameHash = CarPart_GetBrandName(NewPart);
+			if (BrandNameHash == bStringHash("NUMBER_LEFT")) IsNumberLeft = true;
+			if (BrandNameHash == bStringHash("NUMBER_RIGHT")) IsNumberRight = true;
+
+			// 105, 106, 113, 114 (DECAL_[LEFT/RIGHT]_DOOR_TEX[6/7])
+			switch (CarSlotID)
+			{
+			case 105: // DECAL_LEFT_DOOR_TEX6
+				if (IsNumberLeft) return RideInfo_SetPart(RideInfo, (int)EDX_Unused, CarSlotID, (DWORD)NewPart, 1);
+				return 0;
+				break;
+
+			case 106: // DECAL_LEFT_DOOR_TEX7
+				LeftNumberPart = RideInfo_GetPart(RideInfo, 105);
+
+				if (LeftNumberPart && IsNumberRight) return RideInfo_SetPart(RideInfo, (int)EDX_Unused, CarSlotID, (DWORD)NewPart, 1);
+				RideInfo_SetPart(RideInfo, (int)EDX_Unused, 105, 0, 1);
+				return RideInfo_SetPart(RideInfo, (int)EDX_Unused, CarSlotID, 0, 1);
+				break;
+
+			case 113: // DECAL_RIGHT_DOOR_TEX6
+				return RideInfo_SetPart(RideInfo, (int)EDX_Unused, CarSlotID, (DWORD)RideInfo_GetPart(RideInfo, 105), 1);
+				break;
+
+			case 114: // DECAL_RIGHT_DOOR_TEX7
+				return RideInfo_SetPart(RideInfo, (int)EDX_Unused, CarSlotID, (DWORD)RideInfo_GetPart(RideInfo, 106), 1);
+				break;
+
+			default:
+				if (!IsNumberLeft && !IsNumberRight) return RideInfo_SetPart(RideInfo, (int)EDX_Unused, CarSlotID, (DWORD)NewPart, 1);
+				return 0;
+				break;
+			}
+		}
+	}
+
+	return 0;
+}
+
 void __fastcall RideInfo_SetRandomParts(DWORD* RideInfo, void* EDX_Unused)
 {
-	int CustomizationLevel;
+	int CustomizationLevel, RearRimsHeadsOrTails;
 
 	// Set all parts as stock first
 	RideInfo_SetStockParts(RideInfo);
@@ -345,32 +423,43 @@ void __fastcall RideInfo_SetRandomParts(DWORD* RideInfo, void* EDX_Unused)
 	CIniReader CarINI(CarININame);
 	CIniReader GeneralINI("UnlimiterData\\_General.ini");
 
-	int CustomRandomParts = CarINI.ReadInteger("RandomParts", "CustomRandomParts", GeneralINI.ReadInteger("RandomParts", "CustomRandomParts", 0));
+	// Flip a coin for rear rims
+	RearRimsHeadsOrTails = bRandom(2);
+
+	// Get num attachments
+	int NumAttachments = GetCarIntOption(CarINI, GeneralINI, "Parts", "Attachments", 0) % 11;
+
+	int CustomRandomParts = GetCarIntOption(CarINI, GeneralINI, "RandomParts", "CustomRandomParts", 0);
 	if (CustomRandomParts)
 	{
-		if (CarINI.ReadInteger("RandomParts", "BodyKits", GeneralINI.ReadInteger("RandomParts", "BodyKits", 1)) != 0) RideInfo_SetRandomPart(RideInfo, 23, -1); // BODY
-		if (CarINI.ReadInteger("RandomParts", "Spoilers", GeneralINI.ReadInteger("RandomParts", "Spoilers", 1)) != 0) RideInfo_SetRandomPart(RideInfo, 44, -1); // SPOILER
-		if (CarINI.ReadInteger("RandomParts", "Rims", GeneralINI.ReadInteger("RandomParts", "Rims", 1)) != 0) RideInfo_SetRandomPart(RideInfo, 66, -1); // FRONT_WHEEL
-		if (CarINI.ReadInteger("RandomParts", "Hoods", GeneralINI.ReadInteger("RandomParts", "Hoods", 1)) != 0) RideInfo_SetRandomPart(RideInfo, 63, -1); // HOOD
-		if (CarINI.ReadInteger("RandomParts", "RoofScoops", GeneralINI.ReadInteger("RandomParts", "RoofScoops", 1)) != 0) RideInfo_SetRandomPart(RideInfo, 62, -1); // ROOF
-		if (CarINI.ReadInteger("RandomParts", "Interior", GeneralINI.ReadInteger("RandomParts", "Interior", 0)) != 0) RideInfo_SetRandomPart(RideInfo, 28, -1); // INTERIOR
-		if (CarINI.ReadInteger("RandomParts", "Roof", GeneralINI.ReadInteger("RandomParts", "Roof", 0)) != 0) RideInfo_SetRandomPart(RideInfo, 0, -1); // BASE
-		if (CarINI.ReadInteger("RandomParts", "Brakes", GeneralINI.ReadInteger("RandomParts", "Brakes", 0)) != 0) RideInfo_SetRandomPart(RideInfo, 24, -1); // FRONT_BRAKE
-		if (CarINI.ReadInteger("RandomParts", "Headlights", GeneralINI.ReadInteger("RandomParts", "Headlights", 0)) != 0) RideInfo_SetRandomPart(RideInfo, 31, -1); // LEFT_HEADLIGHT
-		if (CarINI.ReadInteger("RandomParts", "Taillights", GeneralINI.ReadInteger("RandomParts", "Taillights", 0)) != 0) RideInfo_SetRandomPart(RideInfo, 29, -1); // LEFT_BRAKELIGHT
-		if (CarINI.ReadInteger("RandomParts", "Mirrors", GeneralINI.ReadInteger("RandomParts", "Mirrors", 0)) != 0) RideInfo_SetRandomPart(RideInfo, 33, -1); // LEFT_SIDE_MIRROR
-		if (CarINI.ReadInteger("RandomParts", "Attachment0", GeneralINI.ReadInteger("RandomParts", "Attachment0", 0)) != 0) RideInfo_SetRandomPart(RideInfo, 52, -1); // ATTACHMENT0
-		if (CarINI.ReadInteger("RandomParts", "Attachment1", GeneralINI.ReadInteger("RandomParts", "Attachment1", 0)) != 0) RideInfo_SetRandomPart(RideInfo, 53, -1); // ATTACHMENT1
-		if (CarINI.ReadInteger("RandomParts", "Attachment2", GeneralINI.ReadInteger("RandomParts", "Attachment2", 0)) != 0) RideInfo_SetRandomPart(RideInfo, 54, -1); // ATTACHMENT2
-		if (CarINI.ReadInteger("RandomParts", "Attachment3", GeneralINI.ReadInteger("RandomParts", "Attachment3", 0)) != 0) RideInfo_SetRandomPart(RideInfo, 55, -1); // ATTACHMENT3
-		if (CarINI.ReadInteger("RandomParts", "Attachment4", GeneralINI.ReadInteger("RandomParts", "Attachment4", 0)) != 0) RideInfo_SetRandomPart(RideInfo, 56, -1); // ATTACHMENT4
-		if (CarINI.ReadInteger("RandomParts", "Attachment5", GeneralINI.ReadInteger("RandomParts", "Attachment5", 0)) != 0) RideInfo_SetRandomPart(RideInfo, 57, -1); // ATTACHMENT5
-		if (CarINI.ReadInteger("RandomParts", "Attachment6", GeneralINI.ReadInteger("RandomParts", "Attachment6", 0)) != 0) RideInfo_SetRandomPart(RideInfo, 58, -1); // ATTACHMENT6
-		if (CarINI.ReadInteger("RandomParts", "Attachment7", GeneralINI.ReadInteger("RandomParts", "Attachment7", 0)) != 0) RideInfo_SetRandomPart(RideInfo, 59, -1); // ATTACHMENT7
-		if (CarINI.ReadInteger("RandomParts", "Attachment8", GeneralINI.ReadInteger("RandomParts", "Attachment8", 0)) != 0) RideInfo_SetRandomPart(RideInfo, 60, -1); // ATTACHMENT8
-		if (CarINI.ReadInteger("RandomParts", "Attachment9", GeneralINI.ReadInteger("RandomParts", "Attachment9", 0)) != 0) RideInfo_SetRandomPart(RideInfo, 61, -1); // ATTACHMENT9
-		if (CarINI.ReadInteger("RandomParts", "Paint", GeneralINI.ReadInteger("RandomParts", "Paint", 1)) != 0) RideInfo_SetRandomPart(RideInfo, 76, -1); // BASE_PAINT
-		if (CarINI.ReadInteger("RandomParts", "Vinyls", GeneralINI.ReadInteger("RandomParts", "Vinyls", 1)) != 0)
+		if (GetCarIntOption(CarINI, GeneralINI, "RandomParts", "BodyKits", 1) != 0) RideInfo_SetRandomPart(RideInfo, 23, -1); // BODY
+		if (GetCarIntOption(CarINI, GeneralINI, "RandomParts", "Spoilers", 1) != 0) RideInfo_SetRandomPart(RideInfo, 44, -1); // SPOILER
+		if (GetCarIntOption(CarINI, GeneralINI, "RandomParts", "Rims", 1) != 0)
+		{
+			RideInfo_SetRandomPart(RideInfo, 66, -1); // FRONT_WHEEL
+			if (RearRimsHeadsOrTails) RideInfo_SetRandomPart(RideInfo, 67, -1); // REAR_WHEEL
+			else RideInfo_SetPart(RideInfo, (int)EDX_Unused, 67, (DWORD)RideInfo_GetPart(RideInfo, 66), 1);
+		}
+		if (GetCarIntOption(CarINI, GeneralINI, "RandomParts", "Hoods", 1) != 0) RideInfo_SetRandomPart(RideInfo, 63, -1); // HOOD
+		if (GetCarIntOption(CarINI, GeneralINI, "RandomParts", "RoofScoops", 1) != 0) RideInfo_SetRandomPart(RideInfo, 62, -1); // ROOF
+		if (GetCarIntOption(CarINI, GeneralINI, "RandomParts", "Interior", 0) != 0) RideInfo_SetRandomPart(RideInfo, 28, -1); // INTERIOR
+		if (GetCarIntOption(CarINI, GeneralINI, "RandomParts", "Roof", 0) != 0) RideInfo_SetRandomPart(RideInfo, 0, -1); // BASE
+		if (GetCarIntOption(CarINI, GeneralINI, "RandomParts", "Brakes", 0) != 0) RideInfo_SetRandomPart(RideInfo, 24, -1); // FRONT_BRAKE
+		if (GetCarIntOption(CarINI, GeneralINI, "RandomParts", "Headlights", 0) != 0) RideInfo_SetRandomPart(RideInfo, 31, -1); // LEFT_HEADLIGHT
+		if (GetCarIntOption(CarINI, GeneralINI, "RandomParts", "Taillights", 0) != 0) RideInfo_SetRandomPart(RideInfo, 29, -1); // LEFT_BRAKELIGHT
+		if (GetCarIntOption(CarINI, GeneralINI, "RandomParts", "Mirrors", 0) != 0) RideInfo_SetRandomPart(RideInfo, 33, -1); // LEFT_SIDE_MIRROR
+		if (GetCarIntOption(CarINI, GeneralINI, "RandomParts", "Attachment0", 0) != 0) RideInfo_SetRandomPart(RideInfo, 52, -1); // ATTACHMENT0
+		if (GetCarIntOption(CarINI, GeneralINI, "RandomParts", "Attachment1", 0) != 0) RideInfo_SetRandomPart(RideInfo, 53, -1); // ATTACHMENT1
+		if (GetCarIntOption(CarINI, GeneralINI, "RandomParts", "Attachment2", 0) != 0) RideInfo_SetRandomPart(RideInfo, 54, -1); // ATTACHMENT2
+		if (GetCarIntOption(CarINI, GeneralINI, "RandomParts", "Attachment3", 0) != 0) RideInfo_SetRandomPart(RideInfo, 55, -1); // ATTACHMENT3
+		if (GetCarIntOption(CarINI, GeneralINI, "RandomParts", "Attachment4", 0) != 0) RideInfo_SetRandomPart(RideInfo, 56, -1); // ATTACHMENT4
+		if (GetCarIntOption(CarINI, GeneralINI, "RandomParts", "Attachment5", 0) != 0) RideInfo_SetRandomPart(RideInfo, 57, -1); // ATTACHMENT5
+		if (GetCarIntOption(CarINI, GeneralINI, "RandomParts", "Attachment6", 0) != 0) RideInfo_SetRandomPart(RideInfo, 58, -1); // ATTACHMENT6
+		if (GetCarIntOption(CarINI, GeneralINI, "RandomParts", "Attachment7", 0) != 0) RideInfo_SetRandomPart(RideInfo, 59, -1); // ATTACHMENT7
+		if (GetCarIntOption(CarINI, GeneralINI, "RandomParts", "Attachment8", 0) != 0) RideInfo_SetRandomPart(RideInfo, 60, -1); // ATTACHMENT8
+		if (GetCarIntOption(CarINI, GeneralINI, "RandomParts", "Attachment9", 0) != 0) RideInfo_SetRandomPart(RideInfo, 61, -1); // ATTACHMENT9
+		if (GetCarIntOption(CarINI, GeneralINI, "RandomParts", "Paint", 1) != 0) RideInfo_SetRandomPart(RideInfo, 76, -1); // BASE_PAINT
+		if (GetCarIntOption(CarINI, GeneralINI, "RandomParts", "Vinyls", 1) != 0)
 		{
 			RideInfo_SetRandomPart(RideInfo, 77, -1); // VINYL_LAYER0
 			RideInfo_SetRandomPart(RideInfo, 79, -1); // VINYL_COLOUR0_0
@@ -378,138 +467,194 @@ void __fastcall RideInfo_SetRandomParts(DWORD* RideInfo, void* EDX_Unused)
 			RideInfo_SetRandomPart(RideInfo, 81, -1); // VINYL_COLOUR0_2
 			RideInfo_SetRandomPart(RideInfo, 82, -1); // VINYL_COLOUR0_3
 		}
-		if (CarINI.ReadInteger("RandomParts", "RimPaint", GeneralINI.ReadInteger("RandomParts", "RimPaint", 1)) != 0) RideInfo_SetRandomPart(RideInfo, 78, -1); // PAINT_RIM
-		if (CarINI.ReadInteger("RandomParts", "WindowTint", GeneralINI.ReadInteger("RandomParts", "WindowTint", 1)) != 0) RideInfo_SetRandomPart(RideInfo, 131, -1); // WINDOW_TINT
-		if (CarINI.ReadInteger("RandomParts", "DecalsWindshield1", GeneralINI.ReadInteger("RandomParts", "DecalsWindshield1", 0)) != 0) RideInfo_SetRandomPart(RideInfo, 83, -1); // DECAL_FRONT_WINDOW_TEX0
-		if (CarINI.ReadInteger("RandomParts", "DecalsWindshield2", GeneralINI.ReadInteger("RandomParts", "DecalsWindshield2", 0)) != 0) RideInfo_SetRandomPart(RideInfo, 84, -1); // DECAL_FRONT_WINDOW_TEX1
-		if (CarINI.ReadInteger("RandomParts", "DecalsWindshield3", GeneralINI.ReadInteger("RandomParts", "DecalsWindshield3", 0)) != 0) RideInfo_SetRandomPart(RideInfo, 85, -1); // DECAL_FRONT_WINDOW_TEX2
-		if (CarINI.ReadInteger("RandomParts", "DecalsWindshield4", GeneralINI.ReadInteger("RandomParts", "DecalsWindshield4", 0)) != 0) RideInfo_SetRandomPart(RideInfo, 86, -1); // DECAL_FRONT_WINDOW_TEX3
-		if (CarINI.ReadInteger("RandomParts", "DecalsWindshield5", GeneralINI.ReadInteger("RandomParts", "DecalsWindshield5", 0)) != 0) RideInfo_SetRandomPart(RideInfo, 87, -1); // DECAL_FRONT_WINDOW_TEX4
-		if (CarINI.ReadInteger("RandomParts", "DecalsWindshield6", GeneralINI.ReadInteger("RandomParts", "DecalsWindshield6", 0)) != 0) RideInfo_SetRandomPart(RideInfo, 88, -1); // DECAL_FRONT_WINDOW_TEX5
-		if (CarINI.ReadInteger("RandomParts", "DecalsWindshield7", GeneralINI.ReadInteger("RandomParts", "DecalsWindshield7", 0)) != 0) RideInfo_SetRandomPart(RideInfo, 89, -1); // DECAL_FRONT_WINDOW_TEX6
-		if (CarINI.ReadInteger("RandomParts", "DecalsWindshield8", GeneralINI.ReadInteger("RandomParts", "DecalsWindshield8", 0)) != 0) RideInfo_SetRandomPart(RideInfo, 90, -1); // DECAL_FRONT_WINDOW_TEX7
-		if (CarINI.ReadInteger("RandomParts", "DecalsRearWindow1", GeneralINI.ReadInteger("RandomParts", "DecalsRearWindow1", 0)) != 0) RideInfo_SetRandomPart(RideInfo, 91, -1); // DECAL_REAR_WINDOW_TEX0
-		if (CarINI.ReadInteger("RandomParts", "DecalsRearWindow2", GeneralINI.ReadInteger("RandomParts", "DecalsRearWindow2", 0)) != 0) RideInfo_SetRandomPart(RideInfo, 92, -1); // DECAL_REAR_WINDOW_TEX1
-		if (CarINI.ReadInteger("RandomParts", "DecalsRearWindow3", GeneralINI.ReadInteger("RandomParts", "DecalsRearWindow3", 0)) != 0) RideInfo_SetRandomPart(RideInfo, 93, -1); // DECAL_REAR_WINDOW_TEX2
-		if (CarINI.ReadInteger("RandomParts", "DecalsRearWindow4", GeneralINI.ReadInteger("RandomParts", "DecalsRearWindow4", 0)) != 0) RideInfo_SetRandomPart(RideInfo, 94, -1); // DECAL_REAR_WINDOW_TEX3
-		if (CarINI.ReadInteger("RandomParts", "DecalsRearWindow5", GeneralINI.ReadInteger("RandomParts", "DecalsRearWindow5", 0)) != 0) RideInfo_SetRandomPart(RideInfo, 95, -1); // DECAL_REAR_WINDOW_TEX4
-		if (CarINI.ReadInteger("RandomParts", "DecalsRearWindow6", GeneralINI.ReadInteger("RandomParts", "DecalsRearWindow6", 0)) != 0) RideInfo_SetRandomPart(RideInfo, 96, -1); // DECAL_REAR_WINDOW_TEX5
-		if (CarINI.ReadInteger("RandomParts", "DecalsRearWindow7", GeneralINI.ReadInteger("RandomParts", "DecalsRearWindow7", 0)) != 0) RideInfo_SetRandomPart(RideInfo, 97, -1); // DECAL_REAR_WINDOW_TEX6
-		if (CarINI.ReadInteger("RandomParts", "DecalsRearWindow8", GeneralINI.ReadInteger("RandomParts", "DecalsRearWindow8", 0)) != 0) RideInfo_SetRandomPart(RideInfo, 98, -1); // DECAL_REAR_WINDOW_TEX7
-		if (CarINI.ReadInteger("RandomParts", "DecalsLeftDoor1", GeneralINI.ReadInteger("RandomParts", "DecalsLeftDoor1", 0)) != 0) RideInfo_SetRandomPart(RideInfo, 99, -1); // DECAL_LEFT_DOOR_TEX0
-		if (CarINI.ReadInteger("RandomParts", "DecalsLeftDoor2", GeneralINI.ReadInteger("RandomParts", "DecalsLeftDoor2", 0)) != 0) RideInfo_SetRandomPart(RideInfo, 100, -1); // DECAL_LEFT_DOOR_TEX1
-		if (CarINI.ReadInteger("RandomParts", "DecalsLeftDoor3", GeneralINI.ReadInteger("RandomParts", "DecalsLeftDoor3", 0)) != 0) RideInfo_SetRandomPart(RideInfo, 101, -1); // DECAL_LEFT_DOOR_TEX2
-		if (CarINI.ReadInteger("RandomParts", "DecalsLeftDoor4", GeneralINI.ReadInteger("RandomParts", "DecalsLeftDoor4", 0)) != 0) RideInfo_SetRandomPart(RideInfo, 102, -1); // DECAL_LEFT_DOOR_TEX3
-		if (CarINI.ReadInteger("RandomParts", "DecalsLeftDoor5", GeneralINI.ReadInteger("RandomParts", "DecalsLeftDoor5", 0)) != 0) RideInfo_SetRandomPart(RideInfo, 103, -1); // DECAL_LEFT_DOOR_TEX4
-		if (CarINI.ReadInteger("RandomParts", "DecalsLeftDoor6", GeneralINI.ReadInteger("RandomParts", "DecalsLeftDoor6", 0)) != 0) RideInfo_SetRandomPart(RideInfo, 104, -1); // DECAL_LEFT_DOOR_TEX5
-		if (CarINI.ReadInteger("RandomParts", "DecalsLeftDoor7", GeneralINI.ReadInteger("RandomParts", "DecalsLeftDoor7", 0)) != 0) RideInfo_SetRandomPart(RideInfo, 105, -1); // DECAL_LEFT_DOOR_TEX6
-		if (CarINI.ReadInteger("RandomParts", "DecalsLeftDoor8", GeneralINI.ReadInteger("RandomParts", "DecalsLeftDoor8", 0)) != 0) RideInfo_SetRandomPart(RideInfo, 106, -1); // DECAL_LEFT_DOOR_TEX7
-		if (CarINI.ReadInteger("RandomParts", "DecalsRightDoor1", GeneralINI.ReadInteger("RandomParts", "DecalsRightDoor1", 0)) != 0) RideInfo_SetRandomPart(RideInfo, 107, -1); // DECAL_RIGHT_DOOR_TEX0
-		if (CarINI.ReadInteger("RandomParts", "DecalsRightDoor2", GeneralINI.ReadInteger("RandomParts", "DecalsRightDoor2", 0)) != 0) RideInfo_SetRandomPart(RideInfo, 108, -1); // DECAL_RIGHT_DOOR_TEX1
-		if (CarINI.ReadInteger("RandomParts", "DecalsRightDoor3", GeneralINI.ReadInteger("RandomParts", "DecalsRightDoor3", 0)) != 0) RideInfo_SetRandomPart(RideInfo, 109, -1); // DECAL_RIGHT_DOOR_TEX2
-		if (CarINI.ReadInteger("RandomParts", "DecalsRightDoor4", GeneralINI.ReadInteger("RandomParts", "DecalsRightDoor4", 0)) != 0) RideInfo_SetRandomPart(RideInfo, 110, -1); // DECAL_RIGHT_DOOR_TEX3
-		if (CarINI.ReadInteger("RandomParts", "DecalsRightDoor5", GeneralINI.ReadInteger("RandomParts", "DecalsRightDoor5", 0)) != 0) RideInfo_SetRandomPart(RideInfo, 111, -1); // DECAL_RIGHT_DOOR_TEX4
-		if (CarINI.ReadInteger("RandomParts", "DecalsRightDoor6", GeneralINI.ReadInteger("RandomParts", "DecalsRightDoor6", 0)) != 0) RideInfo_SetRandomPart(RideInfo, 112, -1); // DECAL_RIGHT_DOOR_TEX5
-		if (CarINI.ReadInteger("RandomParts", "DecalsRightDoor7", GeneralINI.ReadInteger("RandomParts", "DecalsRightDoor7", 0)) != 0) RideInfo_SetRandomPart(RideInfo, 113, -1); // DECAL_RIGHT_DOOR_TEX6
-		if (CarINI.ReadInteger("RandomParts", "DecalsRightDoor8", GeneralINI.ReadInteger("RandomParts", "DecalsRightDoor8", 0)) != 0) RideInfo_SetRandomPart(RideInfo, 114, -1); // DECAL_RIGHT_DOOR_TEX7
-		if (CarINI.ReadInteger("RandomParts", "DecalsLeftQuarter1", GeneralINI.ReadInteger("RandomParts", "DecalsLeftQuarter1", 0)) != 0) RideInfo_SetRandomPart(RideInfo, 115, -1); // DECAL_LEFT_QUARTER_TEX0
-		if (CarINI.ReadInteger("RandomParts", "DecalsLeftQuarter2", GeneralINI.ReadInteger("RandomParts", "DecalsLeftQuarter2", 0)) != 0) RideInfo_SetRandomPart(RideInfo, 116, -1); // DECAL_LEFT_QUARTER_TEX1
-		if (CarINI.ReadInteger("RandomParts", "DecalsLeftQuarter3", GeneralINI.ReadInteger("RandomParts", "DecalsLeftQuarter3", 0)) != 0) RideInfo_SetRandomPart(RideInfo, 117, -1); // DECAL_LEFT_QUARTER_TEX2
-		if (CarINI.ReadInteger("RandomParts", "DecalsLeftQuarter4", GeneralINI.ReadInteger("RandomParts", "DecalsLeftQuarter4", 0)) != 0) RideInfo_SetRandomPart(RideInfo, 118, -1); // DECAL_LEFT_QUARTER_TEX3
-		if (CarINI.ReadInteger("RandomParts", "DecalsLeftQuarter5", GeneralINI.ReadInteger("RandomParts", "DecalsLeftQuarter5", 0)) != 0) RideInfo_SetRandomPart(RideInfo, 119, -1); // DECAL_LEFT_QUARTER_TEX4
-		if (CarINI.ReadInteger("RandomParts", "DecalsLeftQuarter6", GeneralINI.ReadInteger("RandomParts", "DecalsLeftQuarter6", 0)) != 0) RideInfo_SetRandomPart(RideInfo, 120, -1); // DECAL_LEFT_QUARTER_TEX5
-		if (CarINI.ReadInteger("RandomParts", "DecalsLeftQuarter7", GeneralINI.ReadInteger("RandomParts", "DecalsLeftQuarter7", 0)) != 0) RideInfo_SetRandomPart(RideInfo, 121, -1); // DECAL_LEFT_QUARTER_TEX6
-		if (CarINI.ReadInteger("RandomParts", "DecalsLeftQuarter8", GeneralINI.ReadInteger("RandomParts", "DecalsLeftQuarter8", 0)) != 0) RideInfo_SetRandomPart(RideInfo, 122, -1); // DECAL_LEFT_QUARTER_TEX7
-		if (CarINI.ReadInteger("RandomParts", "DecalsRightQuarter1", GeneralINI.ReadInteger("RandomParts", "DecalsRightQuarter1", 0)) != 0) RideInfo_SetRandomPart(RideInfo, 123, -1); // DECAL_RIGHT_QUARTER_TEX0
-		if (CarINI.ReadInteger("RandomParts", "DecalsRightQuarter2", GeneralINI.ReadInteger("RandomParts", "DecalsRightQuarter2", 0)) != 0) RideInfo_SetRandomPart(RideInfo, 124, -1); // DECAL_RIGHT_QUARTER_TEX1
-		if (CarINI.ReadInteger("RandomParts", "DecalsRightQuarter3", GeneralINI.ReadInteger("RandomParts", "DecalsRightQuarter3", 0)) != 0) RideInfo_SetRandomPart(RideInfo, 125, -1); // DECAL_RIGHT_QUARTER_TEX2
-		if (CarINI.ReadInteger("RandomParts", "DecalsRightQuarter4", GeneralINI.ReadInteger("RandomParts", "DecalsRightQuarter4", 0)) != 0) RideInfo_SetRandomPart(RideInfo, 126, -1); // DECAL_RIGHT_QUARTER_TEX3
-		if (CarINI.ReadInteger("RandomParts", "DecalsRightQuarter5", GeneralINI.ReadInteger("RandomParts", "DecalsRightQuarter5", 0)) != 0) RideInfo_SetRandomPart(RideInfo, 127, -1); // DECAL_RIGHT_QUARTER_TEX4
-		if (CarINI.ReadInteger("RandomParts", "DecalsRightQuarter6", GeneralINI.ReadInteger("RandomParts", "DecalsRightQuarter6", 0)) != 0) RideInfo_SetRandomPart(RideInfo, 128, -1); // DECAL_RIGHT_QUARTER_TEX5
-		if (CarINI.ReadInteger("RandomParts", "DecalsRightQuarter7", GeneralINI.ReadInteger("RandomParts", "DecalsRightQuarter7", 0)) != 0) RideInfo_SetRandomPart(RideInfo, 129, -1); // DECAL_RIGHT_QUARTER_TEX6
-		if (CarINI.ReadInteger("RandomParts", "DecalsRightQuarter8", GeneralINI.ReadInteger("RandomParts", "DecalsRightQuarter8", 0)) != 0) RideInfo_SetRandomPart(RideInfo, 130, -1); // DECAL_RIGHT_QUARTER_TEX7
-		if (CarINI.ReadInteger("RandomParts", "Driver", GeneralINI.ReadInteger("RandomParts", "Driver", 0)) != 0) RideInfo_SetRandomPart(RideInfo, 43, -1); // DRIVER
-		if (CarINI.ReadInteger("RandomParts", "LicensePlate", GeneralINI.ReadInteger("RandomParts", "LicensePlate", 0)) != 0) RideInfo_SetRandomPart(RideInfo, 69, -1); // LICENSE_PLATE
-		if (CarINI.ReadInteger("RandomParts", "Tires", GeneralINI.ReadInteger("RandomParts", "Tires", 0)) != 0) RideInfo_SetRandomPart(RideInfo, 64, -1); // HEADLIGHT
+		if (GetCarIntOption(CarINI, GeneralINI, "RandomParts", "RimPaint", 1) != 0) RideInfo_SetRandomPart(RideInfo, 78, -1); // PAINT_RIM
+		if (GetCarIntOption(CarINI, GeneralINI, "RandomParts", "WindowTint", 1) != 0) RideInfo_SetRandomPart(RideInfo, 131, -1); // WINDOW_TINT
+		if (GetCarIntOption(CarINI, GeneralINI, "RandomParts", "DecalsWindshield1", 0) != 0) RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 83, -1); // DECAL_FRONT_WINDOW_TEX0
+		if (GetCarIntOption(CarINI, GeneralINI, "RandomParts", "DecalsWindshield2", 0) != 0) RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 84, -1); // DECAL_FRONT_WINDOW_TEX1
+		if (GetCarIntOption(CarINI, GeneralINI, "RandomParts", "DecalsWindshield3", 0) != 0) RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 85, -1); // DECAL_FRONT_WINDOW_TEX2
+		if (GetCarIntOption(CarINI, GeneralINI, "RandomParts", "DecalsWindshield4", 0) != 0) RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 86, -1); // DECAL_FRONT_WINDOW_TEX3
+		if (GetCarIntOption(CarINI, GeneralINI, "RandomParts", "DecalsWindshield5", 0) != 0) RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 87, -1); // DECAL_FRONT_WINDOW_TEX4
+		if (GetCarIntOption(CarINI, GeneralINI, "RandomParts", "DecalsWindshield6", 0) != 0) RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 88, -1); // DECAL_FRONT_WINDOW_TEX5
+		if (GetCarIntOption(CarINI, GeneralINI, "RandomParts", "DecalsWindshield7", 0) != 0) RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 89, -1); // DECAL_FRONT_WINDOW_TEX6
+		if (GetCarIntOption(CarINI, GeneralINI, "RandomParts", "DecalsWindshield8", 0) != 0) RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 90, -1); // DECAL_FRONT_WINDOW_TEX7
+		if (GetCarIntOption(CarINI, GeneralINI, "RandomParts", "DecalsRearWindow1", 0) != 0) RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 91, -1); // DECAL_REAR_WINDOW_TEX0
+		if (GetCarIntOption(CarINI, GeneralINI, "RandomParts", "DecalsRearWindow2", 0) != 0) RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 92, -1); // DECAL_REAR_WINDOW_TEX1
+		if (GetCarIntOption(CarINI, GeneralINI, "RandomParts", "DecalsRearWindow3", 0) != 0) RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 93, -1); // DECAL_REAR_WINDOW_TEX2
+		if (GetCarIntOption(CarINI, GeneralINI, "RandomParts", "DecalsRearWindow4", 0) != 0) RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 94, -1); // DECAL_REAR_WINDOW_TEX3
+		if (GetCarIntOption(CarINI, GeneralINI, "RandomParts", "DecalsRearWindow5", 0) != 0) RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 95, -1); // DECAL_REAR_WINDOW_TEX4
+		if (GetCarIntOption(CarINI, GeneralINI, "RandomParts", "DecalsRearWindow6", 0) != 0) RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 96, -1); // DECAL_REAR_WINDOW_TEX5
+		if (GetCarIntOption(CarINI, GeneralINI, "RandomParts", "DecalsRearWindow7", 0) != 0) RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 97, -1); // DECAL_REAR_WINDOW_TEX6
+		if (GetCarIntOption(CarINI, GeneralINI, "RandomParts", "DecalsRearWindow8", 0) != 0) RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 98, -1); // DECAL_REAR_WINDOW_TEX7
+		if (GetCarIntOption(CarINI, GeneralINI, "RandomParts", "DecalsLeftDoor1", 0) != 0) RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 99, -1); // DECAL_LEFT_DOOR_TEX0
+		if (GetCarIntOption(CarINI, GeneralINI, "RandomParts", "DecalsLeftDoor2", 0) != 0) RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 100, -1); // DECAL_LEFT_DOOR_TEX1
+		if (GetCarIntOption(CarINI, GeneralINI, "RandomParts", "DecalsLeftDoor3", 0) != 0) RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 101, -1); // DECAL_LEFT_DOOR_TEX2
+		if (GetCarIntOption(CarINI, GeneralINI, "RandomParts", "DecalsLeftDoor4", 0) != 0) RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 102, -1); // DECAL_LEFT_DOOR_TEX3
+		if (GetCarIntOption(CarINI, GeneralINI, "RandomParts", "DecalsLeftDoor5", 0) != 0) RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 103, -1); // DECAL_LEFT_DOOR_TEX4
+		if (GetCarIntOption(CarINI, GeneralINI, "RandomParts", "DecalsLeftDoor6", 0) != 0) RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 104, -1); // DECAL_LEFT_DOOR_TEX5
+		if (GetCarIntOption(CarINI, GeneralINI, "RandomParts", "DecalsLeftDoor7", 0) != 0) RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 105, -1); // DECAL_LEFT_DOOR_TEX6
+		if (GetCarIntOption(CarINI, GeneralINI, "RandomParts", "DecalsLeftDoor8", 0) != 0) RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 106, -1); // DECAL_LEFT_DOOR_TEX7
+		if (GetCarIntOption(CarINI, GeneralINI, "RandomParts", "DecalsRightDoor1", 0) != 0) RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 107, -1); // DECAL_RIGHT_DOOR_TEX0
+		if (GetCarIntOption(CarINI, GeneralINI, "RandomParts", "DecalsRightDoor2", 0) != 0) RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 108, -1); // DECAL_RIGHT_DOOR_TEX1
+		if (GetCarIntOption(CarINI, GeneralINI, "RandomParts", "DecalsRightDoor3", 0) != 0) RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 109, -1); // DECAL_RIGHT_DOOR_TEX2
+		if (GetCarIntOption(CarINI, GeneralINI, "RandomParts", "DecalsRightDoor4", 0) != 0) RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 110, -1); // DECAL_RIGHT_DOOR_TEX3
+		if (GetCarIntOption(CarINI, GeneralINI, "RandomParts", "DecalsRightDoor5", 0) != 0) RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 111, -1); // DECAL_RIGHT_DOOR_TEX4
+		if (GetCarIntOption(CarINI, GeneralINI, "RandomParts", "DecalsRightDoor6", 0) != 0) RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 112, -1); // DECAL_RIGHT_DOOR_TEX5
+		if (GetCarIntOption(CarINI, GeneralINI, "RandomParts", "DecalsRightDoor7", 0) != 0) RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 113, -1); // DECAL_RIGHT_DOOR_TEX6
+		if (GetCarIntOption(CarINI, GeneralINI, "RandomParts", "DecalsRightDoor8", 0) != 0) RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 114, -1); // DECAL_RIGHT_DOOR_TEX7
+		if (GetCarIntOption(CarINI, GeneralINI, "RandomParts", "DecalsLeftQuarter1", 0) != 0) RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 115, -1); // DECAL_LEFT_QUARTER_TEX0
+		if (GetCarIntOption(CarINI, GeneralINI, "RandomParts", "DecalsLeftQuarter2", 0) != 0) RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 116, -1); // DECAL_LEFT_QUARTER_TEX1
+		if (GetCarIntOption(CarINI, GeneralINI, "RandomParts", "DecalsLeftQuarter3", 0) != 0) RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 117, -1); // DECAL_LEFT_QUARTER_TEX2
+		if (GetCarIntOption(CarINI, GeneralINI, "RandomParts", "DecalsLeftQuarter4", 0) != 0) RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 118, -1); // DECAL_LEFT_QUARTER_TEX3
+		if (GetCarIntOption(CarINI, GeneralINI, "RandomParts", "DecalsLeftQuarter5", 0) != 0) RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 119, -1); // DECAL_LEFT_QUARTER_TEX4
+		if (GetCarIntOption(CarINI, GeneralINI, "RandomParts", "DecalsLeftQuarter6", 0) != 0) RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 120, -1); // DECAL_LEFT_QUARTER_TEX5
+		if (GetCarIntOption(CarINI, GeneralINI, "RandomParts", "DecalsLeftQuarter7", 0) != 0) RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 121, -1); // DECAL_LEFT_QUARTER_TEX6
+		if (GetCarIntOption(CarINI, GeneralINI, "RandomParts", "DecalsLeftQuarter8", 0) != 0) RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 122, -1); // DECAL_LEFT_QUARTER_TEX7
+		if (GetCarIntOption(CarINI, GeneralINI, "RandomParts", "DecalsRightQuarter1", 0) != 0) RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 123, -1); // DECAL_RIGHT_QUARTER_TEX0
+		if (GetCarIntOption(CarINI, GeneralINI, "RandomParts", "DecalsRightQuarter2", 0) != 0) RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 124, -1); // DECAL_RIGHT_QUARTER_TEX1
+		if (GetCarIntOption(CarINI, GeneralINI, "RandomParts", "DecalsRightQuarter3", 0) != 0) RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 125, -1); // DECAL_RIGHT_QUARTER_TEX2
+		if (GetCarIntOption(CarINI, GeneralINI, "RandomParts", "DecalsRightQuarter4", 0) != 0) RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 126, -1); // DECAL_RIGHT_QUARTER_TEX3
+		if (GetCarIntOption(CarINI, GeneralINI, "RandomParts", "DecalsRightQuarter5", 0) != 0) RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 127, -1); // DECAL_RIGHT_QUARTER_TEX4
+		if (GetCarIntOption(CarINI, GeneralINI, "RandomParts", "DecalsRightQuarter6", 0) != 0) RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 128, -1); // DECAL_RIGHT_QUARTER_TEX5
+		if (GetCarIntOption(CarINI, GeneralINI, "RandomParts", "DecalsRightQuarter7", 0) != 0) RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 129, -1); // DECAL_RIGHT_QUARTER_TEX6
+		if (GetCarIntOption(CarINI, GeneralINI, "RandomParts", "DecalsRightQuarter8", 0) != 0) RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 130, -1); // DECAL_RIGHT_QUARTER_TEX7
+		if (GetCarIntOption(CarINI, GeneralINI, "RandomParts", "Driver", 0) != 0) RideInfo_SetRandomPart(RideInfo, 43, -1); // DRIVER
+		if (GetCarIntOption(CarINI, GeneralINI, "RandomParts", "LicensePlate", 0) != 0) RideInfo_SetRandomPart(RideInfo, 69, -1); // LICENSE_PLATE
+		if (GetCarIntOption(CarINI, GeneralINI, "RandomParts", "Tires", 0) != 0) RideInfo_SetRandomPart(RideInfo, 64, -1); // HEADLIGHT
+		if (GetCarIntOption(CarINI, GeneralINI, "RandomParts", "Neon", 0) != 0) RideInfo_SetRandomPart(RideInfo, 65, -1); // BRAKELIGHT
 
 		return;
 	}
 
 	// Or, check the customization level for vanilla randomization
-	int ForceCustomizationLevel = CarINI.ReadInteger("RandomParts", "ForceCustomizationLevel", GeneralINI.ReadInteger("RandomParts", "ForceCustomizationLevel", -2));
+	int ForceCustomizationLevel = GetCarIntOption(CarINI, GeneralINI, "RandomParts", "ForceCustomizationLevel", -2);
 
 	// -2 = Random customization level
 	// -1 = Nothing
 	// 0 = Body, Spoiler, Rims and Paint (Carbon)
 	// 1 = Paint and Vinyls
-	// 2 = Body, Spoiler, Rims, Window Tint, Roof Scoops, Hood + Level 1
-	if (ForceCustomizationLevel == -2) CustomizationLevel = bRandom(3u);
+	// 2 = (Level 1) + Body, Spoiler, Rims, Window Tint, Roof Scoops, Hood
+	// 3 = (Level 2) + Unlimiter stuff
+	// 4 = (Level 3) + Decals
+	if (ForceCustomizationLevel == -2) CustomizationLevel = bRandom(5);
 	else CustomizationLevel = ForceCustomizationLevel;
 
-	if (ForceStockPartsOnAddOnOpponents && RideInfo[0] >= 84)
+	bool NeedsStockBodyParts = ForceStockPartsOnAddOnOpponents && RideInfo[0] >= 84; // Keep BODY, SPOILER, HOOD and ROOF stock
+
+	switch (CustomizationLevel)
 	{
-		switch (CustomizationLevel) // Add-On with stock body parts
+	case 4:
+		// Decals
+		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 83, -1); // DECAL_FRONT_WINDOW_TEX0
+		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 84, -1); // DECAL_FRONT_WINDOW_TEX1
+		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 85, -1); // DECAL_FRONT_WINDOW_TEX2
+		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 86, -1); // DECAL_FRONT_WINDOW_TEX3
+		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 87, -1); // DECAL_FRONT_WINDOW_TEX4
+		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 88, -1); // DECAL_FRONT_WINDOW_TEX5
+		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 89, -1); // DECAL_FRONT_WINDOW_TEX6
+		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 90, -1); // DECAL_FRONT_WINDOW_TEX7
+		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 91, -1); // DECAL_REAR_WINDOW_TEX0
+		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 92, -1); // DECAL_REAR_WINDOW_TEX1
+		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 93, -1); // DECAL_REAR_WINDOW_TEX2
+		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 94, -1); // DECAL_REAR_WINDOW_TEX3
+		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 95, -1); // DECAL_REAR_WINDOW_TEX4
+		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 96, -1); // DECAL_REAR_WINDOW_TEX5
+		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 97, -1); // DECAL_REAR_WINDOW_TEX6
+		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 98, -1); // DECAL_REAR_WINDOW_TEX7
+		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 99, -1); // DECAL_LEFT_DOOR_TEX0
+		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 100, -1); // DECAL_LEFT_DOOR_TEX1
+		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 101, -1); // DECAL_LEFT_DOOR_TEX2
+		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 102, -1); // DECAL_LEFT_DOOR_TEX3
+		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 103, -1); // DECAL_LEFT_DOOR_TEX4
+		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 104, -1); // DECAL_LEFT_DOOR_TEX5
+		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 105, -1); // DECAL_LEFT_DOOR_TEX6
+		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 106, -1); // DECAL_LEFT_DOOR_TEX7
+		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 107, -1); // DECAL_RIGHT_DOOR_TEX0
+		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 108, -1); // DECAL_RIGHT_DOOR_TEX1
+		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 109, -1); // DECAL_RIGHT_DOOR_TEX2
+		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 110, -1); // DECAL_RIGHT_DOOR_TEX3
+		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 111, -1); // DECAL_RIGHT_DOOR_TEX4
+		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 112, -1); // DECAL_RIGHT_DOOR_TEX5
+		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 113, -1); // DECAL_RIGHT_DOOR_TEX6
+		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 114, -1); // DECAL_RIGHT_DOOR_TEX7
+		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 115, -1); // DECAL_LEFT_QUARTER_TEX0
+		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 116, -1); // DECAL_LEFT_QUARTER_TEX1
+		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 117, -1); // DECAL_LEFT_QUARTER_TEX2
+		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 118, -1); // DECAL_LEFT_QUARTER_TEX3
+		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 119, -1); // DECAL_LEFT_QUARTER_TEX4
+		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 120, -1); // DECAL_LEFT_QUARTER_TEX5
+		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 121, -1); // DECAL_LEFT_QUARTER_TEX6
+		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 122, -1); // DECAL_LEFT_QUARTER_TEX7
+		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 123, -1); // DECAL_RIGHT_QUARTER_TEX0
+		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 124, -1); // DECAL_RIGHT_QUARTER_TEX1
+		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 125, -1); // DECAL_RIGHT_QUARTER_TEX2
+		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 126, -1); // DECAL_RIGHT_QUARTER_TEX3
+		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 127, -1); // DECAL_RIGHT_QUARTER_TEX4
+		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 128, -1); // DECAL_RIGHT_QUARTER_TEX5
+		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 129, -1); // DECAL_RIGHT_QUARTER_TEX6
+		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 130, -1); // DECAL_RIGHT_QUARTER_TEX7
+
+	case 3:
+		// Unlimiter parts
+		if (GetCarIntOption(CarINI, GeneralINI, "Parts", "RoofScoops", 1) != 0) RideInfo_SetRandomPart(RideInfo, 62, -1); // ROOF
+		if (GetCarIntOption(CarINI, GeneralINI, "Parts", "Interior", 0) != 0) RideInfo_SetRandomPart(RideInfo, 28, -1); // INTERIOR
+		if (GetCarIntOption(CarINI, GeneralINI, "Parts", "Roof", 0) != 0) RideInfo_SetRandomPart(RideInfo, 0, -1); // BASE
+		if (GetCarIntOption(CarINI, GeneralINI, "Parts", "Brakes", 0) != 0) RideInfo_SetRandomPart(RideInfo, 24, -1); // FRONT_BRAKE
+		if (GetCarIntOption(CarINI, GeneralINI, "Parts", "Headlights", 0) != 0) RideInfo_SetRandomPart(RideInfo, 31, -1); // LEFT_HEADLIGHT
+		if (GetCarIntOption(CarINI, GeneralINI, "Parts", "Taillights", 0) != 0) RideInfo_SetRandomPart(RideInfo, 29, -1); // LEFT_BRAKELIGHT
+		if (GetCarIntOption(CarINI, GeneralINI, "Parts", "Mirrors", 0) != 0) RideInfo_SetRandomPart(RideInfo, 33, -1); // LEFT_SIDE_MIRROR
+
+		for (int i = 1; i <= NumAttachments; i++)
 		{
-		case 2:
-			// Body parts
-			RideInfo_SetRandomPart(RideInfo, 66, -1); // FRONT_WHEEL
-			RideInfo_SetRandomPart(RideInfo, 78, -1); // PAINT_RIM
-			RideInfo_SetRandomPart(RideInfo, 131, -1); // WINDOW_TINT
-		case 1:
-			// Paint and vinyls
-			RideInfo_SetRandomPart(RideInfo, 76, -1); // BASE_PAINT
-			RideInfo_SetRandomPart(RideInfo, 77, -1); // VINYL_LAYER0
-			RideInfo_SetRandomPart(RideInfo, 79, -1); // VINYL_COLOUR0_0
-			RideInfo_SetRandomPart(RideInfo, 80, -1); // VINYL_COLOUR0_1
-			RideInfo_SetRandomPart(RideInfo, 81, -1); // VINYL_COLOUR0_2
-			RideInfo_SetRandomPart(RideInfo, 82, -1); // VINYL_COLOUR0_3
-			break;
-		case 0:
-		default:
-			// Pretty much Carbon.
-			RideInfo_SetRandomPart(RideInfo, 76, -1); // BASE_PAINT
-			RideInfo_SetRandomPart(RideInfo, 66, -1); // FRONT_WHEEL
-			RideInfo_SetRandomPart(RideInfo, 78, -1); // PAINT_RIM
-			break;
-		case -1:
-			// Nothing. Bone stock.
-			break;
+			RideInfo_SetRandomPart(RideInfo, 51 + i, -1); // ATTACHMENT0-9
 		}
-	}
-	else
-	{
-		switch (CustomizationLevel)
+
+		if (GetCarIntOption(CarINI, GeneralINI, "Visual", "Driver", 0) != 0) RideInfo_SetRandomPart(RideInfo, 43, -1); // DRIVER
+		if (GetCarIntOption(CarINI, GeneralINI, "Visual", "LicensePlate", 0) != 0) RideInfo_SetRandomPart(RideInfo, 69, -1); // LICENSE_PLATE
+		if (GetCarIntOption(CarINI, GeneralINI, "Visual", "Tires", 0) != 0) RideInfo_SetRandomPart(RideInfo, 64, -1); // HEADLIGHT (Tires)
+		if (GetCarIntOption(CarINI, GeneralINI, "Visual", "Neon", 0) != 0) RideInfo_SetRandomPart(RideInfo, 65, -1); // BRAKELIGHT (Neon)
+		
+	case 2:
+		// Body parts
+		if (!NeedsStockBodyParts)
 		{
-		case 2:
-			// Body parts
 			RideInfo_SetRandomPart(RideInfo, 23, -1); // BODY
 			RideInfo_SetRandomPart(RideInfo, 44, -1); // SPOILER
-			RideInfo_SetRandomPart(RideInfo, 66, -1); // FRONT_WHEEL
-			RideInfo_SetRandomPart(RideInfo, 78, -1); // PAINT_RIM
-			RideInfo_SetRandomPart(RideInfo, 131, -1); // WINDOW_TINT
 			RideInfo_SetRandomPart(RideInfo, 62, -1); // ROOF
 			RideInfo_SetRandomPart(RideInfo, 63, -1); // HOOD
-		case 1:
-			// Paint and vinyls
-			RideInfo_SetRandomPart(RideInfo, 76, -1); // BASE_PAINT
-			RideInfo_SetRandomPart(RideInfo, 77, -1); // VINYL_LAYER0
-			RideInfo_SetRandomPart(RideInfo, 79, -1); // VINYL_COLOUR0_0
-			RideInfo_SetRandomPart(RideInfo, 80, -1); // VINYL_COLOUR0_1
-			RideInfo_SetRandomPart(RideInfo, 81, -1); // VINYL_COLOUR0_2
-			RideInfo_SetRandomPart(RideInfo, 82, -1); // VINYL_COLOUR0_3
-			break;
-		case 0:
-		default:
-			// Pretty much Carbon.
+		}
+		RideInfo_SetRandomPart(RideInfo, 66, -1); // FRONT_WHEEL
+		if (RearRimsHeadsOrTails) RideInfo_SetRandomPart(RideInfo, 67, -1); // REAR_WHEEL
+		else RideInfo_SetPart(RideInfo, (int)EDX_Unused, 67, (DWORD)RideInfo_GetPart(RideInfo, 66), 1);
+
+		RideInfo_SetRandomPart(RideInfo, 78, -1); // PAINT_RIM
+		RideInfo_SetRandomPart(RideInfo, 131, -1); // WINDOW_TINT
+
+	case 1:
+		// Paint and vinyls
+		RideInfo_SetRandomPart(RideInfo, 76, -1); // BASE_PAINT
+		RideInfo_SetRandomPart(RideInfo, 77, -1); // VINYL_LAYER0
+		RideInfo_SetRandomPart(RideInfo, 79, -1); // VINYL_COLOUR0_0
+		RideInfo_SetRandomPart(RideInfo, 80, -1); // VINYL_COLOUR0_1
+		RideInfo_SetRandomPart(RideInfo, 81, -1); // VINYL_COLOUR0_2
+		RideInfo_SetRandomPart(RideInfo, 82, -1); // VINYL_COLOUR0_3
+		break;
+	case 0:
+	default:
+		// Pretty much Carbon.
+		if (!NeedsStockBodyParts)
+		{
 			RideInfo_SetRandomPart(RideInfo, 23, -1); // BODY
 			RideInfo_SetRandomPart(RideInfo, 44, -1); // SPOILER
-			RideInfo_SetRandomPart(RideInfo, 76, -1); // BASE_PAINT
-			RideInfo_SetRandomPart(RideInfo, 66, -1); // FRONT_WHEEL
-			RideInfo_SetRandomPart(RideInfo, 78, -1); // PAINT_RIM
-			break;
-		case -1:
-			// Nothing. Bone stock.
-			break;
 		}
+		RideInfo_SetRandomPart(RideInfo, 76, -1); // BASE_PAINT
+		RideInfo_SetRandomPart(RideInfo, 66, -1); // FRONT_WHEEL
+		if (RearRimsHeadsOrTails) RideInfo_SetRandomPart(RideInfo, 67, -1); // REAR_WHEEL
+		else RideInfo_SetPart(RideInfo, (int)EDX_Unused, 67, (DWORD)RideInfo_GetPart(RideInfo, 66), 1);
+		RideInfo_SetRandomPart(RideInfo, 78, -1); // PAINT_RIM
+		break;
+	case -1:
+		// Nothing. Bone stock.
+		break;
 	}
+
 }

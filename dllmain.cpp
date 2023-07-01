@@ -3,6 +3,7 @@
 #include <string>
 #include <windows.h>
 #include "includes\injector\injector.hpp"
+#include "includes\injector\utility.hpp"
 #include "includes\IniReader.h"
 #include "UnlimiterStuff.h"
 

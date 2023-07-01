@@ -1,5 +1,6 @@
 #include "stdio.h"
 #include "InGameFunctions.h"
+#include "Helpers.h"
 
 // 0x7A65C0
 char CustomizeMain_SetScreenNames()
@@ -137,22 +138,69 @@ void __declspec(naked) MyCarsBackroomRoomChangeCodeCave2()
 
 void __fastcall CustomizeMain_BuildOptionsList(DWORD* CustomizeMain, void* EDX_Unused)
 {
+	// Get CarType Info
+	void* FECarRecord = *(void**)_FECarRecord;
+	int CarTypeID = FECarRecord_GetType(FECarRecord);
+	sprintf(CarTypeName, GetCarTypeName(CarTypeID));
+
+	// Read Part Options for the car
+	sprintf(CarININame, "UnlimiterData\\%s.ini", CarTypeName);
+	CIniReader CarINI(CarININame);
+	CIniReader GeneralINI("UnlimiterData\\_General.ini");
+
+	if (IsMenuEmpty_CustomizeMain(CarINI, GeneralINI)) // Throw an error and add a dummy option if the menu is empty
+	{
+		CustomizeCategoryScreen_AddCustomOption(CustomizeMain, (char const*)CustomizeMain[4],
+			bStringHash("BROWSER_NOT_APPLICABLE"),
+			bStringHash("NOT_APPLICABLE"),
+			0);
+
+		DialogInterface_ShowOk((char const*)CustomizeMain[4], "", 1, bStringHash("CUSTOMIZE_NO_OPTIONS"));
+	}
+		
+
 	if (CustomizeIsInBackRoom())
 	{
 		if (!HPCCompatibility)
 		{
-			CustomizeCategoryScreen_AddCustomOption(CustomizeMain, *(char**)g_pCustomizeSubPkg, 0x73272ED2, 0x55DCE1A, 0x801); // Body Backroom
-			CustomizeCategoryScreen_AddCustomOption(CustomizeMain, *(char**)g_pCustomizeSubPkg, 0xC61C8D3A, 0xBAEF8282, 0x802); // Performance Backroom
+			if ((GetCarIntOption(CarINI, GeneralINI, "Main", "Parts", 1)) && !IsMenuEmpty_PartsBackroom(CarINI, GeneralINI))
+			CustomizeCategoryScreen_AddCustomOption(CustomizeMain, *(char**)g_pCustomizeSubPkg,
+				GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "BackroomParts", "MARKER_ICON_PARTS"),
+				GetCarTextOptionHash(CarINI, GeneralINI, "Names", "Parts", "CO_PARTS"),
+				0x801); // Body Backroom
+
+			if ((GetCarIntOption(CarINI, GeneralINI, "Main", "Performance", 1)) && !IsMenuEmpty_Performance(CarINI, GeneralINI))
+			CustomizeCategoryScreen_AddCustomOption(CustomizeMain, *(char**)g_pCustomizeSubPkg,
+				GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "BackroomPerformance", "MARKER_ICON_PERFORMANCE"),
+				GetCarTextOptionHash(CarINI, GeneralINI, "Names", "Performance", "CO_PERFORMANCE"),
+				0x802); // Performance Backroom
 		}
-		CustomizeCategoryScreen_AddCustomOption(CustomizeMain, *(char**)g_pCustomizeSubPkg, 0xE69D4F7C, 0xBFA7D7C4, 0x803); // Visuals Backroom
+		if ((GetCarIntOption(CarINI, GeneralINI, "Main", "Visual", 1)) && !IsMenuEmpty_VisualBackroom(CarINI, GeneralINI))
+		CustomizeCategoryScreen_AddCustomOption(CustomizeMain, *(char**)g_pCustomizeSubPkg,
+			GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "BackroomVisual", "MARKER_ICON_VISUAL"),
+			GetCarTextOptionHash(CarINI, GeneralINI, "Names", "Visual", "CO_VISUAL"),
+			0x803); // Visuals Backroom
 	}
 	else
 	{
 		if (!HPCCompatibility)
 		{
-			CustomizeCategoryScreen_AddCustomOption(CustomizeMain, *(char**)g_pCustomizeSubPkg, 0x6E0CA66C, 0x55DCE1A, 0x801); // Body
-			CustomizeMain[106] = CustomizeCategoryScreen_AddCustomOption(CustomizeMain, *(char**)g_pCustomizeSubPkg, 0x3987D054, 0xBAEF8282, 0x802); // Performance
+			if ((GetCarIntOption(CarINI, GeneralINI, "Main", "Parts", 1)) && !IsMenuEmpty_PartsBackroom(CarINI, GeneralINI))
+			CustomizeCategoryScreen_AddCustomOption(CustomizeMain, *(char**)g_pCustomizeSubPkg,
+				GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "Parts", "BROWSER_PARTS"),
+				GetCarTextOptionHash(CarINI, GeneralINI, "Names", "Parts", "CO_PARTS"),
+				0x801); // Body
+
+			if ((GetCarIntOption(CarINI, GeneralINI, "Main", "Performance", 1)) && !IsMenuEmpty_Performance(CarINI, GeneralINI))
+			CustomizeMain[106] = CustomizeCategoryScreen_AddCustomOption(CustomizeMain, *(char**)g_pCustomizeSubPkg,
+				GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "Performance", "BROWSER_PERFORMANCE"),
+				GetCarTextOptionHash(CarINI, GeneralINI, "Names", "Performance", "CO_PERFORMANCE"),
+				0x802); // Performance
 		}
-		CustomizeCategoryScreen_AddCustomOption(CustomizeMain, *(char**)g_pCustomizeSubPkg, 0x3E31BA56, 0xBFA7D7C4, 0x803); // Visuals
+		if ((GetCarIntOption(CarINI, GeneralINI, "Main", "Visual", 1)) && !IsMenuEmpty_VisualBackroom(CarINI, GeneralINI))
+		CustomizeCategoryScreen_AddCustomOption(CustomizeMain, *(char**)g_pCustomizeSubPkg,
+			GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "Visual", "BROWSER_VISUAL"),
+			GetCarTextOptionHash(CarINI, GeneralINI, "Names", "Visual", "CO_VISUAL"),
+			0x803); // Visuals
 	}
 }

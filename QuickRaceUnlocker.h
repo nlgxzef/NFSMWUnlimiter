@@ -92,7 +92,7 @@ bool __cdecl QuickRaceUnlocker_IsCarUnlocked(int eUnlockFilters, unsigned int Ha
                 if (BonusCars.ReadInteger(BonusCarNameBuf, "CEOnly", 0) != 0) goto _CEONLY;
 
                 // Get and check if the condition is met
-                int UnlockConditionType = BonusCars.ReadInteger(BonusCarNameBuf, "UnlockConditionType", 0);
+                int UnlockConditionType = BonusCars.ReadInteger(BonusCarNameBuf, "UnlockConditionType", -1);
 
                 switch (UnlockConditionType)
                 {

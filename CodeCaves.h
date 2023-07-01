@@ -1,22 +1,5 @@
 #pragma once
 
-void __declspec(naked) CarManuCodeCave()
-{
-	__asm
-	{
-		mov ManuID, eax // Get manu Id to global var
-
-		lea ecx, [esp]
-		mov dword ptr ds : [esp + 0x1C] , 0xFFFFFFFF
-		call Attrib_Instance_dtInstance
-		mov ecx, [esp + 14]
-		call GetManuNameFromID
-		mov fs : [00000000] , ecx
-		add esp, 0x20
-		ret
-	}
-}
-
 void __declspec(naked) CarCountCodeCave_PVehicle_Resource_Resource()
 {
 	__asm
@@ -136,6 +119,7 @@ void __declspec(naked) CarCountCodeCave_HeliRenderConn_Construct()
 	}
 }
 
+// 0x756AA7
 void __declspec(naked) DoUnlimiterStuffCodeCave()
 {
 	// Get count
@@ -156,11 +140,51 @@ void __declspec(naked) DoUnlimiterStuffCodeCave()
 	injector::WriteMemory<int>(0x739900, CarCount * SingleCarTypeInfoBlockSize, true); // CarPartDatabase::GetCarType
 	injector::WriteMemory<int>(0x7B3879, CarCount * SingleCarTypeInfoBlockSize, true); // DebugCarCustomizeScreen::BuildOptionsLists
 
+	// Fix quantizers
+	injector::WriteMemory<int>(0x9B1334, CarCount, true); // QuantCarType
+	injector::WriteMemory<int>(0x9B1338, CarCount + 1, true);
+
+	// Replacement model if model not found in array
+	if (ReplacementCar > CarCount) ReplacementCar = 1;
+	injector::WriteMemory<int>(0x739909, ReplacementCar, true);
+
 	// Continue
 	__asm
 	{
 		popad
 		push 0x756AAD
+		retn
+	}
+}
+
+// 0x756BC7
+void __declspec(naked) DoUnlimiterStuffCodeCave2()
+{
+	// Get count
+	__asm
+	{
+		mov dword ptr ds : [_CarPartPartsTable] , edx
+		sub edx, 4
+		mov edx, [edx]
+		mov CarPartPartsTableSize, edx
+		mov edx, dword ptr ds : [_CarPartPartsTable]
+		pushad
+	}
+
+	CarPartCount = CarPartPartsTableSize / SingleCarPartSize;
+
+	if (CarPartCount > 16000)
+	{
+		// Fix quantizers
+		injector::WriteMemory<int>(0x9B1478, CarPartCount, true); // QuantPartIndex
+		injector::WriteMemory<int>(0x9B147C, CarPartCount + 1, true);
+	}
+
+	// Continue
+	__asm
+	{
+		popad
+		push 0x756BCD
 		retn
 	}
 }

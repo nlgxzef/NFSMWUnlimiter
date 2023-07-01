@@ -127,7 +127,7 @@ void __fastcall CustomizePaint_RefreshHeader(DWORD* CustomizePaint, void* EDX_Un
 		if (CustomizePaintDatum)
 		{
 			CustomizePaintDatumOffset = (DWORD*)(CustomizePaintDatum + 1);
-			PaintUnlockData = *(DWORD*)(CustomizePaintDatum + 28);
+			PaintUnlockData = CustomizePaintDatum[7];
 		}
 		else
 		{

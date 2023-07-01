@@ -1,3 +1,5 @@
+#pragma once
+
 #include "stdio.h"
 #include "InGameFunctions.h"
 
@@ -5,88 +7,104 @@ int __fastcall FEShoppingCartItem_GetCarPartCatHash(DWORD* _this, int EDX_Unused
 {
     int result;
 
+    // Get CarType Info
+    void* FECarRecord = *(void**)_FECarRecord;
+    int CarTypeID = FECarRecord_GetType(FECarRecord);
+    sprintf(CarTypeName, GetCarTypeName(CarTypeID));
+
+    // Read Part Options for the car
+    sprintf(CarININame, "UnlimiterData\\%s.ini", CarTypeName);
+    CIniReader CarINI(CarININame);
+    CIniReader GeneralINI("UnlimiterData\\_General.ini");
+
     switch (CarSlotID)
     {
     case 0:
-        result = bStringHash("CO_ROOF");
+        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsRoof", "CO_ROOF");
         break;
     case 23:
-        result = bStringHash("CO_BODY_KITS");
+        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsBodyKits", "CO_BODY_KITS");
         break;
     case 24:
-        result = bStringHash("CO_BRAKES");
+        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsBrakes", "CO_BRAKES");
         break;
     case 28:
-        result = bStringHash("CO_INTERIOR");
+        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsInterior", "CO_INTERIOR");
         break;
     case 29:
-        result = bStringHash("CO_TAILLIGHTS");
+        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsTaillights", "CO_TAILLIGHTS");
         break;
     case 31:
-        result = bStringHash("CO_HEADLIGHTS");
+        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsHeadlights", "CO_HEADLIGHTS");
         break;
     case 33:
-        result = bStringHash("CO_SIDE_MIRROR");
+        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsMirrors", "CO_SIDE_MIRROR");
         break;
     case 43:
-        result = bStringHash("CO_DRIVER");
+        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "VisualDriver", "CO_DRIVER");
         break;
     case 44:
-        result = bStringHash("CO_SPOILERS");
+        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsSpoilers", "CO_SPOILERS");
         break;
     case 52:
-        result = bStringHash("CO_ATTACHMENT_1");
+        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsAttachment0", "CO_ATTACHMENT_1");
         break;
     case 53:
-        result = bStringHash("CO_ATTACHMENT_2");
+        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsAttachment1", "CO_ATTACHMENT_2");
         break;
     case 54:
-        result = bStringHash("CO_ATTACHMENT_3");
+        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsAttachment2", "CO_ATTACHMENT_3");
         break;
     case 55:
-        result = bStringHash("CO_ATTACHMENT_4");
+        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsAttachment3", "CO_ATTACHMENT_4");
         break;
     case 56:
-        result = bStringHash("CO_ATTACHMENT_5");
+        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsAttachment4", "CO_ATTACHMENT_5");
         break;
     case 57:
-        result = bStringHash("CO_ATTACHMENT_6");
+        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsAttachment5", "CO_ATTACHMENT_6");
         break;
     case 58:
-        result = bStringHash("CO_ATTACHMENT_7");
+        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsAttachment6", "CO_ATTACHMENT_7");
         break;
     case 59:
-        result = bStringHash("CO_ATTACHMENT_8");
+        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsAttachment7", "CO_ATTACHMENT_8");
         break;
     case 60:
-        result = bStringHash("CO_ATTACHMENT_9");
+        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsAttachment8", "CO_ATTACHMENT_9");
         break;
     case 61:
-        result = bStringHash("CO_ATTACHMENT_10");
+        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsAttachment9", "CO_ATTACHMENT_10");
         break;
     case 62:
-        result = bStringHash("CO_ROOF_SCOOPS");
+        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsRoofScoops", "CO_ROOF_SCOOPS");
         break;
     case 63:
-        result = bStringHash("CO_HOODS");
+        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsHoods", "CO_HOODS");
         break;
     case 64: // HEADLIGHT
-        result = bStringHash("CO_TIRES");
+        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "VisualTires", "CO_TIRES");
+        break;
+    case 65: // BRAKELIGHT
+        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "VisualNeon", "CO_NEON");
         break;
     case 66:
-        result = bStringHash("CO_RIMS");
+        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsRims", "CO_RIMS");
+        break;
+    case 67:
+        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsRims", "CO_RIMS");
         break;
     case 69:
-        result = bStringHash("CO_LICENSE_PLATE");
+        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "VisualLicensePlate", "CO_LICENSE_PLATE");
         break;
     case 76:
-        result = bStringHash("CO_PAINT");
+        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "VisualPaint", "CO_PAINT");
         break;
     case 77:
-        result = bStringHash("CO_VINYLS");
+        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "VisualVinyls", "CO_VINYLS");
         break;
     case 78:
-        result = bStringHash("CO_RIM_PAINT");
+        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "VisualRimPaint", "CO_RIM_PAINT");
         break;
     case 83:
     case 84:
@@ -96,7 +114,7 @@ int __fastcall FEShoppingCartItem_GetCarPartCatHash(DWORD* _this, int EDX_Unused
     case 88:
     case 89:
     case 90:
-        result = bStringHash("CO_DECAL_WINDSHIELD");
+        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "VisualDecalsWindshield", "CO_DECAL_WINDSHIELD");
         break;
     case 91:
     case 92:
@@ -106,7 +124,7 @@ int __fastcall FEShoppingCartItem_GetCarPartCatHash(DWORD* _this, int EDX_Unused
     case 96:
     case 97:
     case 98:
-        result = bStringHash("CO_DECAL_REAR_WINDOW");
+        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "VisualDecalsRearWindow", "CO_DECAL_REAR_WINDOW");
         break;
     case 99:
     case 100:
@@ -114,7 +132,7 @@ int __fastcall FEShoppingCartItem_GetCarPartCatHash(DWORD* _this, int EDX_Unused
     case 102:
     case 103:
     case 104:
-        result = bStringHash("CO_DECAL_LEFT_DOOR");
+        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "VisualDecalsLeftDoor", "CO_DECAL_LEFT_DOOR");
         break;
     case 107:
     case 108:
@@ -122,10 +140,10 @@ int __fastcall FEShoppingCartItem_GetCarPartCatHash(DWORD* _this, int EDX_Unused
     case 110:
     case 111:
     case 112:
-        result = bStringHash("CO_DECAL_RIGHT_DOOR");
+        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "VisualDecalsRightDoor", "CO_DECAL_RIGHT_DOOR");
         break;
-    case 113:
-        result = bStringHash("CO_NUMBERS");
+    case 113: // DECAL_RIGHT_DOOR_TEX6
+        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "VisualNumbers", "CO_NUMBERS");
         break;
     case 115:
     case 116:
@@ -135,7 +153,7 @@ int __fastcall FEShoppingCartItem_GetCarPartCatHash(DWORD* _this, int EDX_Unused
     case 120:
     case 121:
     case 122:
-        result = bStringHash("CO_DECAL_LEFT_QUARTER");
+        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "VisualDecalsLeftQuarter", "CO_DECAL_LEFT_QUARTER");
         break;
     case 123:
     case 124:
@@ -145,13 +163,13 @@ int __fastcall FEShoppingCartItem_GetCarPartCatHash(DWORD* _this, int EDX_Unused
     case 128:
     case 129:
     case 130:
-        result = bStringHash("CO_DECAL_RIGHT_QUARTER");
+        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "VisualDecalsRightQuarter", "CO_DECAL_RIGHT_QUARTER");
         break;
     case 131:
-        result = bStringHash("CO_WINDOW_TINT");
+        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "VisualWindowTint", "CO_WINDOW_TINT");
         break;
     case 132:
-        result = bStringHash("CO_CUSTOM_HUD");
+        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "VisualCustomGauges", "CO_CUSTOM_HUD");
         break;
     default:
         result = 0;
@@ -160,12 +178,142 @@ int __fastcall FEShoppingCartItem_GetCarPartCatHash(DWORD* _this, int EDX_Unused
     return result;
 }
 
+unsigned int FEShoppingCartItem_GetPerfPkgCatHash(int PerfPkgType)
+{
+    unsigned int result; // eax
+
+    // Get CarType Info
+    void* FECarRecord = *(void**)_FECarRecord;
+    int CarTypeID = FECarRecord_GetType(FECarRecord);
+    sprintf(CarTypeName, GetCarTypeName(CarTypeID));
+
+    // Read Part Options for the car
+    sprintf(CarININame, "UnlimiterData\\%s.ini", CarTypeName);
+    CIniReader CarINI(CarININame);
+    CIniReader GeneralINI("UnlimiterData\\_General.ini");
+
+    result = 0;
+    switch (PerfPkgType)
+    {
+    case 0:
+        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PerformanceTires", "CO_TIRES");
+        break;
+    case 1:
+        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PerformanceBrakes", "CO_BRAKES");
+        break;
+    case 2:
+        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PerformanceChassis", "CO_SUSPENSION");
+        break;
+    case 3:
+        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PerformanceTransmission", "CO_TRANSMISSION");
+        break;
+    case 4:
+        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PerformanceEngine", "CO_ENGINE");
+        break;
+    case 5:
+        result = CarCustomizeManager_IsTurbo((DWORD*)_gCarCustomizeManager)
+            ? GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PerformanceTurbo", "CO_TURBO")
+            : GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PerformanceSupercharger", "CO_SUPERCHARGER");
+        break;
+    case 6:
+        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PerformanceNitrous", "CO_NITROUS");
+        break;
+    default:
+        return result;
+    }
+    return result;
+}
+
+unsigned int FEShoppingCartItem_GetPerfPkgLevelHash(int PerfPkgType, int PerfPkgLevel)
+{
+    unsigned int result; // eax
+    char buf[64];
+
+    // Get CarType Info
+    void* FECarRecord = *(void**)_FECarRecord;
+    int CarTypeID = FECarRecord_GetType(FECarRecord);
+    sprintf(CarTypeName, GetCarTypeName(CarTypeID));
+
+    // Read Part Options for the car
+    sprintf(CarININame, "UnlimiterData\\%s.ini", CarTypeName);
+    CIniReader CarINI(CarININame);
+    CIniReader GeneralINI("UnlimiterData\\_General.ini");
+
+    sprintf(buf, "Performance");
+
+    switch (PerfPkgType)
+    {
+    case 0:
+        strcat(buf, "Tires");
+        break;
+    case 1:
+        strcat(buf, "Brakes");
+        break;
+    case 2:
+        strcat(buf, "Chassis");
+        break;
+    case 3:
+        strcat(buf, "Transmission");
+        break;
+    case 4:
+        strcat(buf, "Engine");
+        break;
+    case 5:
+        strcat(buf, CarCustomizeManager_IsTurbo((DWORD*)_gCarCustomizeManager) ? "Turbo" : "Supercharger");
+        break;
+    case 6:
+        strcat(buf, "Nitrous");
+        break;
+    default:
+        break;
+    }
+
+    switch (PerfPkgLevel)
+    {
+    case 0:
+    default:
+        strcat(buf, "Stock");
+        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", buf, "PN_LEVEL_0");
+        break;
+    case 1:
+        strcat(buf, "Street");
+        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", buf, "PN_LEVEL_1");
+        break;
+    case 2:
+        strcat(buf, "SuperStreet");
+        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", buf, "PN_LEVEL_2");
+        break;
+    case 3:
+        strcat(buf, "Race");
+        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", buf, "PN_LEVEL_3");
+        break;
+    case 4:
+        strcat(buf, "Pro");
+        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", buf, "PN_LEVEL_4");
+        break;
+    case 5:
+        strcat(buf, "SuperPro");
+        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", buf, "PN_LEVEL_5");
+        break;
+    case 6:
+        strcat(buf, "Ultimate");
+        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", buf, "PN_LEVEL_6");
+        break;
+    case 7:
+        strcat(buf, "Junkman");
+        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", buf, "PN_LEVEL_JUNKMAN");
+        break;
+    }
+
+    return result;
+}
+
 void __fastcall FEShoppingCartItem_DrawPartName(DWORD* FEShoppingCartItem)
 {
     int SelectablePart; // esi
-    int PerformancePartType; // ebx
-    int PerformancePartMaxLevel; // esi
-    int PerformancePartLevel; // esi
+    int PerfPkgType; // ebx
+    int PerfPkgLevel; // esi
+    int PerfPkgRealLevel; // esi
     const char* PartMaterialName; // eax MAPDST
     DWORD PaintTypeNameHash; // ebp
     DWORD PaintBrandNameHash; // eax
@@ -225,7 +373,8 @@ void __fastcall FEShoppingCartItem_DrawPartName(DWORD* FEShoppingCartItem)
             PartName = GetLocalizedString(PartNameHash);
             PartMaterialName = GetLocalizedString(0x5415B874);// CARBON
             goto LABEL_64;
-        case 66:                                  // FRONT_WHEEL
+        case 66: // FRONT_WHEEL
+        case 67: // REAR_WHEEL
             ThePartInCart = *(DWORD**)(SelectablePart + 12);
             if (ThePartInCart == CarCustomizeManager_GetStockCarPart((DWORD*)_gCarCustomizeManager, 66))
                 goto LABEL_66;
@@ -236,13 +385,12 @@ void __fastcall FEShoppingCartItem_DrawPartName(DWORD* FEShoppingCartItem)
             PartNameBufLen = strlen(PartNameBuf);
             if (PartNameBufLen > 0)
             {
-                /*v84 = PartNameBufLen - 6;
-                if (!__OFSUB__(PartNameBufLen, PartNameBufLen - 6))// Cut last 6 chars
+                if (PartNameBufLen > 6 && !PartNameHash) // Cut last 6 chars if it doesn't use LANGUAGEHASH attribute
                 {
-                    do
-                        PartNameBuf[PartNameBufLen--] = 0;
-                    while (PartNameBufLen >= v84);
-                }*/
+                    PartNameBufLen -= 6;
+                    PartNameBuf[PartNameBufLen] = '\0';
+                }
+
                 CurrLanguage = GetCurrentLanguage();
                 ThePartInCart = *(DWORD**)(SelectablePart + 12);
                 CartItemName = *((DWORD**)FEShoppingCartItem + 11);
@@ -619,48 +767,46 @@ void __fastcall FEShoppingCartItem_DrawPartName(DWORD* FEShoppingCartItem)
             PartCategoryNameHash = FEShoppingCartItem_GetCarPartCatHash(FEShoppingCartItem, 0, CarSlotID);
             break;
         }
-    PrintPartName:
+
         PartCategoryName = GetLocalizedString(PartCategoryNameHash);
         FEPrintf_obj(CartItemName, "%s: %s", PartCategoryName, PartName);
         return;
     }
-    PerformancePartType = *(DWORD*)(SelectablePart + 24);
-    PerformancePartMaxLevel = *(DWORD*)(SelectablePart + 20);
-    if (PerformancePartMaxLevel != 7)
+    PerfPkgType = *(DWORD*)(SelectablePart + 24);
+    PerfPkgLevel = *(DWORD*)(SelectablePart + 20);
+    
+    switch (PerfPkgLevel)
     {
-        PerformancePartLevel = PerformancePartMaxLevel
-            - Physics_Upgrades_GetMaxLevel((DWORD*)(_FECarRecord + 4), PerformancePartType)
+    case 0:
+        PerfPkgRealLevel = 0; // stock
+        break;
+    case 7:
+        PerfPkgRealLevel = 7; // junkman
+        break;
+    default:
+        PerfPkgRealLevel = PerfPkgLevel
+            - Physics_Upgrades_GetMaxLevel((DWORD*)(_FECarRecord + 4), PerfPkgType)
             + 6;
-        CurrLanguage = GetCurrentLanguage();
-        CartItemName = *((DWORD**)FEShoppingCartItem + 11);
-        if (CurrLanguage == 1)
-        {
-            PartNameHash = FEShoppingCartItem_GetPerfPkgLevelHash(FEShoppingCartItem, PerformancePartLevel);
-            PartName = GetLocalizedString(PartNameHash);
-            PartCategoryNameHash = FEShoppingCartItem_GetPerfPkgCatHash(FEShoppingCartItem, PerformancePartType);
-            PartCategoryName = GetLocalizedString(PartCategoryNameHash);
-            FEPrintf_obj(CartItemName, "%s : %s", PartCategoryName, PartName);
-            return;
-        }
-        PartNameHash = FEShoppingCartItem_GetPerfPkgLevelHash(FEShoppingCartItem, PerformancePartLevel);
-        PartName = GetLocalizedString(PartNameHash);
-        PartCategoryNameHash = FEShoppingCartItem_GetPerfPkgCatHash(FEShoppingCartItem, PerformancePartType);
-        goto PrintPartName;
+        break;
     }
+
     CurrLanguage = GetCurrentLanguage();
     CartItemName = *((DWORD**)FEShoppingCartItem + 11);
     if (CurrLanguage == 1)
     {
-        Junkman = GetLocalizedString(0xEDD14807);   // PN_LEVEL_JUNKMAN
-        PartCategoryNameHash = FEShoppingCartItem_GetPerfPkgCatHash(FEShoppingCartItem, PerformancePartType);
+        PartNameHash = FEShoppingCartItem_GetPerfPkgLevelHash(PerfPkgType, PerfPkgRealLevel);
+        PartName = GetLocalizedString(PartNameHash);
+        PartCategoryNameHash = FEShoppingCartItem_GetPerfPkgCatHash(PerfPkgType);
+
         PartCategoryName = GetLocalizedString(PartCategoryNameHash);
-        FEPrintf_obj(CartItemName, "%s : %s", PartCategoryName, Junkman);
+        FEPrintf_obj(CartItemName, "%s : %s", PartCategoryName, PartName);
+        return;
     }
-    else
-    {
-        Junkman = GetLocalizedString(0xEDD14807);   // PN_LEVEL_JUNKMAN
-        PartCategoryNameHash = FEShoppingCartItem_GetPerfPkgCatHash(FEShoppingCartItem, PerformancePartType);
-        PartCategoryName = GetLocalizedString(PartCategoryNameHash);
-        FEPrintf_obj(CartItemName, "%s: %s", PartCategoryName, Junkman);
-    }
+    PartNameHash = FEShoppingCartItem_GetPerfPkgLevelHash(PerfPkgType, PerfPkgRealLevel);
+    PartName = GetLocalizedString(PartNameHash);
+    PartCategoryNameHash = FEShoppingCartItem_GetPerfPkgCatHash(PerfPkgType);
+
+    PartCategoryName = GetLocalizedString(PartCategoryNameHash);
+    FEPrintf_obj(CartItemName, "%s: %s", PartCategoryName, PartName);
+    return;
 }

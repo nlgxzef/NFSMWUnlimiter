@@ -1,9 +1,18 @@
+#pragma once
+
 #include "stdio.h"
 #include "InGameFunctions.h"
 #include "includes\IniReader.h"
 
 unsigned int PreviousCarTypeNameHash;
 bool Result;
+
+float __fastcall CarPart_GetAppliedAttributeFParam(DWORD* _CarPart, void* EDX_Unused, DWORD namehash, float default_value)
+{
+    float* Attribute = (float*)CarPart_GetAttribute(_CarPart, namehash, 0);
+    if (Attribute) return Attribute[1];
+    return default_value;
+}
 
 bool GetForceLODA(unsigned int CarTypeNameHash)
 {
@@ -15,8 +24,7 @@ bool GetForceLODA(unsigned int CarTypeNameHash)
     CIniReader CarINI(CarININame);
     CIniReader GeneralINI("UnlimiterData\\_General.ini");
 
-    Result = (CarINI.ReadInteger("Main", "ForceLODA", GeneralINI.ReadInteger("Main", "ForceLODA", 0)) != 0);
-    return Result;
+    return GetCarIntOption(CarINI, GeneralINI, "Main", "ForceLODA", 0) != 0;
 }
 
 int __fastcall CarPart_GetModelNameHash(DWORD* CarPart, int edx_unused, int a5, int LOD)
