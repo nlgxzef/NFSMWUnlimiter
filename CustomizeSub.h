@@ -1220,7 +1220,7 @@ int __fastcall CustomizeSub_SetupVinylGroups(DWORD* _CustomizeSub, void* EDX_Unu
     (*(void(__thiscall**)(DWORD*, unsigned int))(_CustomizeSub[11] + 64))(_CustomizeSub + 11, InitialPosition);
 LABEL_26:
     result = _CustomizeSub[85];
-    if (result >= 0x401 && result <= 0x409)
+    if (result >= 0x401 && result <= VinylGroupsCount + 0x402)
         _CustomizeSub[85] = 0x803;
     return result;
 }

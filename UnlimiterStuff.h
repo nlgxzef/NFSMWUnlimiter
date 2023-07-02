@@ -212,7 +212,7 @@ int Init()
 		injector::MakeCALL(0x7BB17B, FEShoppingCartItem_DrawPartName, true); // FEShoppingCartItem::Draw
 
 		// LOD Forcing option
-		injector::MakeJMP(0x751540, CarPart_GetModelNameHash, true);
+		injector::MakeJMP(0x751540, CarPart_GetModelNameHash, true); // 6 references
 
 		// Rims
 		CIniReader RimBrandsINI("UnlimiterData\\_RimBrands.ini");
@@ -261,8 +261,8 @@ int Init()
 			injector::WriteMemory<float*>(0x74446A, &CarShadBright, true);
 			injector::WriteMemory<float*>(0x744021, &FrontShadowSize, true);
 			injector::WriteMemory<float*>(0x744013, &RearShadowSize, true);
-			injector::WriteMemory<float*>(0x744003, &SideShadowSize, true);
-			injector::WriteMemory<float*>(0x743FF2, &SideShadowSize, true);
+			injector::WriteMemory<float*>(0x744003, &LeftShadowSize, true); // left
+			injector::WriteMemory<float*>(0x743FF2, &RightShadowSize, true); // right
 			injector::WriteMemory<float*>(0x74406A, &ShadowSunMultiplier, true);
 		}
 
@@ -453,7 +453,7 @@ int Init()
 	}
 
 	// Car Skin Fix (Requires CarSkinCount (20) x dummy skin and wheel textures in CARS\TEXTURES.BIN)
-	if (CarSkinFix && !LimitAdjusterCompatibility)
+	if (CarSkinFix && !LimitAdjusterCompatibility && !HPCCompatibility)
 	{
 		// VehicleRenderConn::Load
 		injector::MakeNOP(0x75D29E, 2, true); // Skip precomposite skins

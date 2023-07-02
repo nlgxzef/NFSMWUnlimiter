@@ -233,7 +233,7 @@ void __fastcall CarRenderInfo_UpdateWheelYRenderOffset(DWORD* CarRenderInfo, voi
 				if (CurrWheelID >= Attrib_Private_GetLength(eCarAttributes + 106))
 					TireSkidWidth = *(float*)Attrib_DefaultDataArea();
 				else
-					TireSkidWidth = *(float*)((int)WheelFloats + v41 + (DWORD)eCarAttributes);
+					TireSkidWidth = *(float*)(eCarAttributes + 110);
 
 				// If they exist, use width value read from part attributes instead (DIRTY)
 				if (IsRearWheel)
@@ -246,17 +246,17 @@ void __fastcall CarRenderInfo_UpdateWheelYRenderOffset(DWORD* CarRenderInfo, voi
 				}
 
 				TireSkidWidthKitScaleArea = eCarAttributes + 40;
-				if (CurrWheelData >= 16)
+				if (IsRearWheel)
 				{
 					if (KitNumber >= Attrib_Private_GetLength(TireSkidWidthKitScaleArea))
-						TireSkidWidthKitScaleAttrib = (float*)Attrib_DefaultDataArea();
+						TireSkidWidthKitScaleAttrib = (float*)&eCarAttributes[44];//(float*)Attrib_DefaultDataArea();
 					else
 						TireSkidWidthKitScaleAttrib = (float*)&eCarAttributes[4 * KitNumber + 44];
 					TireSkidWidthKitScale = TireSkidWidthKitScaleAttrib[1];
 				}
 				else if (KitNumber >= Attrib_Private_GetLength(TireSkidWidthKitScaleArea))
 				{
-					TireSkidWidthKitScale = *(float*)Attrib_DefaultDataArea();
+					TireSkidWidthKitScale = *(float*)&eCarAttributes[44];//*(float*)Attrib_DefaultDataArea();
 				}
 				else
 				{
@@ -297,7 +297,7 @@ void __fastcall CarRenderInfo_UpdateWheelYRenderOffset(DWORD* CarRenderInfo, voi
 	DWORD* FrontBrakePositionMarker = 0, *RearBrakePositionMarker = 0;
 
 	if (FrontWheeleModel) FrontBrakePositionMarker = (DWORD*)eModel_GetPositionMarker(FrontWheeleModel, bStringHash("FRONT_BRAKE"));
-	if (RearWheeleModel) RearBrakePositionMarker = (DWORD*)eModel_GetPositionMarker(FrontWheeleModel, bStringHash("REAR_BRAKE"));
+	if (RearWheeleModel) RearBrakePositionMarker = (DWORD*)eModel_GetPositionMarker(RearWheeleModel, bStringHash("REAR_BRAKE"));
 
 	if (FrontBrakePositionMarker) CarRenderInfo[84] = FrontBrakePositionMarker[17]; // Y Position
 	else CarRenderInfo[84] = 0;
@@ -331,7 +331,8 @@ float CarDistBright = 0.0f;
 float CarShadBright = 110.0f;
 float FrontShadowSize = 1.2f;
 float RearShadowSize = 1.2f;
-float SideShadowSize = 1.05f;
+float LeftShadowSize = 1.05f;
+float RightShadowSize = 1.05f;
 
 float ShadowSunMultiplier = 0.5f;
 
@@ -376,6 +377,28 @@ DWORD GetShadowCutTextureHash(DWORD* _RideInfo)
 	}
 
 	return 0;
+}
+
+void SetShadowSize(DWORD* _RideInfo, bool IsNeon)
+{
+	//DWORD* BodyKitCarPart = RideInfo_GetPart(_RideInfo, 23); // BODY_KIT
+
+	if (IsNeon)
+	{
+		ShadowSunMultiplier = 0.0f;
+		FrontShadowSize = 1.2f;
+		RearShadowSize = 1.2f;
+		LeftShadowSize = 1.2f;
+		RightShadowSize = 1.2f;
+	}
+	else
+	{
+		ShadowSunMultiplier = 0.5f;
+		FrontShadowSize = 1.05f;
+		RearShadowSize = 1.05f;
+		LeftShadowSize = 1.05f;
+		RightShadowSize = 1.05f;
+	}
 }
 
 int __stdcall SetNeonColor(DWORD* _CarRenderInfo, int OriginalColor)
@@ -485,15 +508,13 @@ double __fastcall CarRenderInfo_DrawAmbientShadow_Hook(DWORD* _CarRenderInfo, vo
 	DWORD NeonTextureHash = GetNeonTextureHash((DWORD*)_CarRenderInfo[33]); // CarRenderInfo->pRideInfo);
 	if (NeonTextureHash)
 	{
-		ShadowSunMultiplier = 0.0f;
-		SideShadowSize = 1.2f;
+		SetShadowSize((DWORD*)_CarRenderInfo[33], 1);
 		DWORD* NeonTextureInfo = GetTextureInfo(NeonTextureHash, 0, 0);
 		DWORD* ShadowTextureInfo = (DWORD*)_CarRenderInfo[52]; // CarRenderInfo->mpShadowTexture
 		_CarRenderInfo[52] = (DWORD)NeonTextureInfo;
 		CarRenderInfo_DrawAmbientShadow_Game(_CarRenderInfo, eView, bV3, flt, bM41, bM42, bM43);
 		_CarRenderInfo[52] = (DWORD)ShadowTextureInfo;
-		ShadowSunMultiplier = 0.5f;
-		SideShadowSize = 1.05f;
+		SetShadowSize((DWORD*)_CarRenderInfo[33], 0);
 	}
 
 	return ret;

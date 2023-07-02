@@ -20,11 +20,18 @@ bool GetForceLODA(unsigned int CarTypeNameHash)
     else PreviousCarTypeNameHash = CarTypeNameHash;
 
     DWORD* CarTypeInfo = GetCarTypeInfoFromHash(CarTypeNameHash);
+    if (!CarTypeInfo)
+    {
+        Result = 0;
+        return Result;
+    }
+
     sprintf(CarININame, "UnlimiterData\\%s.ini", (char*)CarTypeInfo);
     CIniReader CarINI(CarININame);
     CIniReader GeneralINI("UnlimiterData\\_General.ini");
 
-    return GetCarIntOption(CarINI, GeneralINI, "Main", "ForceLODA", 0) != 0;
+    Result = GetCarIntOption(CarINI, GeneralINI, "Main", "ForceLODA", 0) != 0;
+    return Result;
 }
 
 int __fastcall CarPart_GetModelNameHash(DWORD* CarPart, int edx_unused, int a5, int LOD)
@@ -37,21 +44,18 @@ int __fastcall CarPart_GetModelNameHash(DWORD* CarPart, int edx_unused, int a5, 
     int BrandName; // eax
     unsigned int CarTypeNameHash; // eax
 
-    LevelOfDetail = LOD;
+    CarTypeNameHash = CarPart_GetCarTypeNameHash(CarPart);
+    LevelOfDetail = GetForceLODA(CarTypeNameHash) ? 0 : LOD;
     MasterCarPartPack = *(int*)_MasterCarPartPack;
 
     CarPartID = *((WORD*)CarPart + 6);
-    if (CarPartID == -1)
-        return 0;
+    if (CarPartID == -1) return 0;
+
     _CarPartModelTable = (DWORD*)(*(DWORD*)(MasterCarPartPack + 44) + 24 * CarPartID);
     PartType = *((BYTE*)CarPart + 6);
     if (!PartType) return CarPartModelTable_GetModelNameHash(_CarPartModelTable, -1, a5, LevelOfDetail); // Global Parts??
-    if (PartType == 1)  // Car-Specific Parts
-    {
-        CarTypeNameHash = CarPart_GetCarTypeNameHash(CarPart);
-        if (GetForceLODA(CarTypeNameHash)) LevelOfDetail = 0;
-        return CarPartModelTable_GetModelNameHash(_CarPartModelTable, CarTypeNameHash, a5, LevelOfDetail);
-    }
+    if (PartType == 1) return CarPartModelTable_GetModelNameHash(_CarPartModelTable, CarTypeNameHash, a5, LevelOfDetail); // Car-Specific Parts 
+    
     BrandName = CarPart_GetBrandName(CarPart);
     return CarPartModelTable_GetModelNameHash(_CarPartModelTable, BrandName, a5, LevelOfDetail); // Branded parts
 }
