@@ -248,12 +248,12 @@ int __fastcall CustomizeSub_SetupAttachments(DWORD* _CustomizeSub, void* EDX_Unu
 int __fastcall CustomizeSub_GetRimBrandIndex(DWORD* CustomizeSub, void* EDX_Unused, unsigned int WheelManufacturerHash)
 {
     CIniReader RimBrandsINI("UnlimiterData\\_RimBrands.ini");
-    int RimBrandsCount = RimBrandsINI.ReadInteger("RimBrands", "NumberOfRimBrands", -1);
+    int RimBrandsCount = RimBrandsINI.ReadInteger("RimBrands", "NumberOfRimBrands", DefaultRimBrandCount);
 
     for (int i = 0; i <= RimBrandsCount; i++)
     {
         sprintf(RimBrandID, "Brand%d", i);
-        if (bStringHash(RimBrandsINI.ReadString(RimBrandID, "BrandName", "")) == WheelManufacturerHash) return i + 2;
+        if (bStringHash(RimBrandsINI.ReadString(RimBrandID, "BrandName", GetDefaultRimBrandName(i))) == WheelManufacturerHash) return i + 2;
     }
 
     return 1;
@@ -277,9 +277,7 @@ int __fastcall CustomizeSub_SetupRimBrands(DWORD* _CustomizeSub, void* EDX_Unuse
     //int v16; // [esp+44h] [ebp-4h]
 
     CIniReader RimBrandsINI("UnlimiterData\\_RimBrands.ini");
-    int RimBrandsCount = RimBrandsINI.ReadInteger("RimBrands", "NumberOfRimBrands", -1);
-    // If unable to access RimBrands.ini or the count is set to -1, return to game's own implementation
-    if (RimBrandsCount == -1) return CustomizeSub_SetupRimBrands_Game(_CustomizeSub);
+    int RimBrandsCount = RimBrandsINI.ReadInteger("RimBrands", "NumberOfRimBrands", DefaultRimBrandCount);
 
     DWORD* FEDatabase = *(DWORD**)_FEDatabase;
 
@@ -348,8 +346,8 @@ int __fastcall CustomizeSub_SetupRimBrands(DWORD* _CustomizeSub, void* EDX_Unuse
     {
         if (i == 0 && HasNoCustomRims) continue;
         sprintf(RimBrandID, "Brand%d", i);
-        sprintf(RimBrandIcon, RimBrandsINI.ReadString(RimBrandID, "Texture", ""));
-        sprintf(RimBrandString, RimBrandsINI.ReadString(RimBrandID, "String", ""));
+        sprintf(RimBrandIcon, RimBrandsINI.ReadString(RimBrandID, "Texture", GetDefaultRimBrandTexture(i)));
+        sprintf(RimBrandString, RimBrandsINI.ReadString(RimBrandID, "String", GetDefaultRimBrandString(i)));
         CustomizeCategoryScreen_AddCustomOption(
             _CustomizeSub,
             *(char**)g_pCustomizeRimsPkg,
@@ -410,7 +408,7 @@ int __fastcall CustomizeSub_SetupRimBrands(DWORD* _CustomizeSub, void* EDX_Unuse
     (*(void(__thiscall**)(DWORD*, unsigned int))(_CustomizeSub[11] + 64))(_CustomizeSub + 11, InitialPosition);
 LABEL_26:
     result = _CustomizeSub[85];
-    if (result >= 0x701 && result <= 0x70B)
+    if (result >= 0x701 && result <= 0x702 + RimBrandsCount)
         _CustomizeSub[85] = 0x801;
     return result;
 }
@@ -1035,39 +1033,9 @@ void __fastcall CustomizeSub_SetupDecalPositions(DWORD* CustomizeSub, void* EDX_
 
 int CustomizeSub_GetVinylGroupIndex(int group)
 {
-    int result; // eax
-
-    switch (group)
-    {
-    case 0:
-        result = 2;
-        break;
-    case 1:
-        result = 3;
-        break;
-    case 2:
-        result = 4;
-        break;
-    case 3:
-        result = 5;
-        break;
-    case 4:
-        result = 6;
-        break;
-    case 5:
-        result = 7;
-        break;
-    case 6:
-        result = 8;
-        break;
-    case 7:
-        result = 9;
-        break;
-    default:
-        result = 1;
-        break;
-    }
-    return result;
+    CIniReader VinylGroupsINI("UnlimiterData\\_VinylGroups.ini");
+    sprintf(VinylBrandID, "Group%d", group);
+    return VinylGroupsINI.ReadInteger(VinylBrandID, "Index", GetDefaultVinylGroupIndex(group));
 }
 
 int __fastcall CustomizeSub_SetupVinylGroups(DWORD* _CustomizeSub, void* EDX_Unused)
@@ -1088,9 +1056,7 @@ int __fastcall CustomizeSub_SetupVinylGroups(DWORD* _CustomizeSub, void* EDX_Unu
     //int v16; // [esp+44h] [ebp-4h]
 
     CIniReader VinylGroupsINI("UnlimiterData\\_VinylGroups.ini");
-    int VinylGroupsCount = VinylGroupsINI.ReadInteger("VinylGroups", "NumberOfVinylGroups", -1);
-    // If unable to access VinylGroups.ini or the count is set to -1, return to game's own implementation
-    if (VinylGroupsCount == -1) return CustomizeSub_SetupVinylGroups_Game(_CustomizeSub);
+    int VinylGroupsCount = VinylGroupsINI.ReadInteger("VinylGroups", "NumberOfVinylGroups", DefaultVinylGroupCount);
 
     DWORD* FEDatabase = *(DWORD**)_FEDatabase;
 
@@ -1125,7 +1091,7 @@ int __fastcall CustomizeSub_SetupVinylGroups(DWORD* _CustomizeSub, void* EDX_Unu
     {
         InstalledVinyl = 0;
     }
-    if (CarCustomizeManager_IsPartInstalled((DWORD*)_gCarCustomizeManager, InstalledVinyl)) InstalledVinyl[8] = 16;
+    //if (CarCustomizeManager_IsPartInstalled((DWORD*)_gCarCustomizeManager, InstalledVinyl)) InstalledVinyl[8] = 16;
 
     StockVinylIconOption = (DWORD*)j_malloc(0x5C);
     //v16 = 0;
@@ -1152,8 +1118,8 @@ int __fastcall CustomizeSub_SetupVinylGroups(DWORD* _CustomizeSub, void* EDX_Unu
     for (int i = 0; i <= VinylGroupsCount; i++)
     {
         sprintf(VinylBrandID, "Group%d", i);
-        sprintf(VinylBrandIcon, VinylGroupsINI.ReadString(VinylBrandID, "Texture", ""));
-        sprintf(VinylBrandString, VinylGroupsINI.ReadString(VinylBrandID, "String", ""));
+        sprintf(VinylBrandIcon, VinylGroupsINI.ReadString(VinylBrandID, "Texture", GetDefaultVinylGroupTexture(i)));
+        sprintf(VinylBrandString, VinylGroupsINI.ReadString(VinylBrandID, "String", GetDefaultVinylGroupString(i)));
         CustomizeCategoryScreen_AddCustomOption(
             _CustomizeSub,
             *(char**)g_pCustomizePartsPkg,

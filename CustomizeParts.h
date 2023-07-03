@@ -311,67 +311,12 @@ void __fastcall CustomizeParts_Setup(DWORD* _CustomizeParts, void* EDX_Unused)
 		CarSlotID = 77;
 
 		CIniReader VinylGroupsINI("UnlimiterData\\_VinylGroups.ini");
-		int VinylGroupsCount = VinylGroupsINI.ReadInteger("VinylGroups", "NumberOfVinylGroups", -1);
-		// If unable to access VinylGroups.ini or the count is set to -1
-		if (VinylGroupsCount == -1)
-		{
-			switch (MenuID) // Other parts
-			{
-			case 0x402:
-				PartIconNormal = 0xF8148554; // VINYL_GROUP_FLAMES
-				_CustomizeParts[87] = 0xD9228FC6; // CO_VINYL_FLAME
-				break;
+		sprintf(VinylBrandID, "Group%d", PartCategory);
+		sprintf(VinylBrandIcon, VinylGroupsINI.ReadString(VinylBrandID, "Texture", GetDefaultVinylGroupTexture(PartCategory)));
+		sprintf(VinylBrandString, VinylGroupsINI.ReadString(VinylBrandID, "String", GetDefaultVinylGroupString(PartCategory)));
 
-			case 0x403:
-				PartIconNormal = 0x192D84DA; // VINYL_GROUP_TRIBAL
-				_CustomizeParts[87] = 0x1E8D885F; // CO_VINYL_TRIBAL
-				break;
-
-			case 0x404:
-				PartIconNormal = 0xF7352706; // VINYL_GROUP_STRIPES
-				_CustomizeParts[87] = 0x1C619FD8; // CO_VINYL_STRIPE
-				break;
-
-			case 0x405:
-				PartIconNormal = 0x1223CC89; // VINYL_GROUP_RACING_FLAG
-				_CustomizeParts[87] = 0x9C1B8935; // CO_VINYL_RACE_FLAG
-				break;
-
-			case 0x406:
-				PartIconNormal = 0xBC44BBCB; // VINYL_GROUP_NATIONAL_FLAG
-				_CustomizeParts[87] = 0x7956F7B0; // CO_VINYL_NATIONAL_FLAG
-				break;
-
-			case 0x407:
-				PartIconNormal = 0x694CA0CA; // VINYL_GROUP_BODY
-				_CustomizeParts[87] = 0x2D5BFF0F; // CO_VINYL_BODY
-				break;
-
-			case 0x408:
-				PartIconNormal = 0x1B3A8DD3; // VINYL_GROUP_UNIQUE
-				_CustomizeParts[87] = 0x209A9158; // CO_VINYL_UNIQUE
-				break;
-
-			case 0x409:
-				PartIconNormal = 0x1BA508FC; // VINYL_GROUP_CONTEST
-				_CustomizeParts[87] = 0xCD057D21; // CO_VINYL_CONTEST
-				break;
-
-			case 0x40A: // Custom
-				PartIconNormal = bStringHash("VINYL_GROUP_CUSTOM");
-				_CustomizeParts[87] = bStringHash("CO_VINYL_CUSTOM");
-				break;
-			}
-		}
-		else
-		{
-			sprintf(VinylBrandID, "Group%d", PartCategory);
-			sprintf(VinylBrandIcon, VinylGroupsINI.ReadString(VinylBrandID, "Texture", ""));
-			sprintf(VinylBrandString, VinylGroupsINI.ReadString(VinylBrandID, "String", ""));
-
-			PartIconNormal = bStringHash(VinylBrandIcon); // VINYL_GROUP_FLAMES
-			_CustomizeParts[87] = bStringHash(VinylBrandString); // CO_VINYL_FLAME
-		}
+		PartIconNormal = bStringHash(VinylBrandIcon); // VINYL_GROUP_FLAMES
+		_CustomizeParts[87] = bStringHash(VinylBrandString); // CO_VINYL_FLAME
 		
 		if (dword_9BA080) TheActiveCarPart = (DWORD*)dword_9BA080[3];
 		else TheActiveCarPart = CarCustomizeManager_GetActivePartFromSlot((DWORD*)_gCarCustomizeManager, CarSlotID);

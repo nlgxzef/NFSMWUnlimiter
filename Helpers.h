@@ -126,3 +126,39 @@ bool IsMenuEmpty_CustomizeMain(CIniReader& CarINI, CIniReader& GeneralINI)
 
 	return 1;
 }
+
+char* GetDefaultRimBrandName(int ID)
+{
+	if (ID > DefaultRimBrandCount) return "";
+	else return DefaultRimBrandNames[ID];
+}
+
+char* GetDefaultRimBrandTexture(int ID)
+{
+	if (ID > DefaultRimBrandCount) return "";
+	else return DefaultRimBrandTextures[ID];
+}
+
+char* GetDefaultRimBrandString(int ID)
+{
+	if (ID > DefaultRimBrandCount) return "";
+	else return DefaultRimBrandStrings[ID];
+}
+
+int GetDefaultVinylGroupIndex(int ID)
+{
+	if (ID > DefaultVinylGroupCount) return 1;
+	else return DefaultVinylGroupIndexes[ID];
+}
+
+char* GetDefaultVinylGroupTexture(int ID)
+{
+	if (ID > DefaultVinylGroupCount) return "";
+	else return DefaultVinylGroupTextures[ID];
+}
+
+char* GetDefaultVinylGroupString(int ID)
+{
+	if (ID > DefaultVinylGroupCount) return "";
+	else return DefaultVinylGroupStrings[ID];
+}

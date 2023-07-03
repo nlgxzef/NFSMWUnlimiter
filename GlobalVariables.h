@@ -72,3 +72,85 @@ char DecalMenuDefaultString[64];
 int RenderFECarFlares = -1;
 
 int RimsToCustomize = 1; // -1 = Rear, 0 = All, 1 = Front
+
+// Default values for Rim Brands if _RimBrands.ini is N/A
+#define DefaultRimBrandCount 10
+
+char* DefaultRimBrandNames[]
+{
+	"",
+	"5ZIGEN",
+	"ADR",
+	"BBS",
+	"ENKEI",
+	"KONIG",
+	"LOWENHART",
+	"RACINGHART",
+	"OZ",
+	"VOLK",
+	"ROJA"
+};
+
+char* DefaultRimBrandStrings[]
+{
+	"CO_RIM_BRAND_CUSTOM",
+	"CO_RIM_BRAND_5_ZIGEN",
+	"CO_RIM_BRAND_ADR",
+	"CO_RIM_BRAND_BBS",
+	"CO_RIM_BRAND_ENKEI",
+	"CO_RIM_BRAND_KONIG",
+	"CO_RIM_BRAND_LOWENHART",
+	"CO_RIM_BRAND_RACING_HART",
+	"CO_RIM_BRAND_OZ",
+	"CO_RIM_BRAND_VOLK",
+	"CO_RIM_BRAND_ROJA"
+};
+
+char* DefaultRimBrandTextures[]
+{
+	"VISUAL_RIMS_BRAND_CUSTOM",
+	"VISUAL_RIMS_BRAND_5ZIGEN",
+	"VISUAL_RIMS_BRAND_ADR",
+	"VISUAL_RIMS_BRAND_BBS",
+	"VISUAL_RIMS_BRAND_ENKEI",
+	"VISUAL_RIMS_BRAND_KONIG",
+	"VISUAL_RIMS_BRAND_LOWENHEART",
+	"VISUAL_RIMS_BRAND_RACINGHART",
+	"VISUAL_RIMS_BRAND_OZ",
+	"VISUAL_RIMS_BRAND_VOLK",
+	"VISUAL_RIMS_BRAND_RAJA"
+};
+
+// Default values for Vinyl Groups if _VinylGroups.ini is N/A
+#define DefaultVinylGroupCount 8
+
+int DefaultVinylGroupIndexes[]
+{
+	2, 3, 4, 5, 6, 7, 8, 9, 1
+};
+
+char* DefaultVinylGroupStrings[]
+{
+	"CO_VINYL_FLAME",
+	"CO_VINYL_TRIBAL",
+	"CO_VINYL_STRIPE",
+	"CO_VINYL_RACE_FLAG",
+	"CO_VINYL_NATIONAL_FLAG",
+	"CO_VINYL_BODY",
+	"CO_VINYL_UNIQUE",
+	"CO_VINYL_CONTEST",
+	"CO_VINYL_CUSTOM"
+};
+
+char* DefaultVinylGroupTextures[]
+{
+	"VINYL_GROUP_FLAMES",
+	"VINYL_GROUP_TRIBAL",
+	"VINYL_GROUP_STRIPES",
+	"VINYL_GROUP_RACING_FLAG",
+	"VINYL_GROUP_NATIONAL_FLAG",
+	"VINYL_GROUP_BODY",
+	"VINYL_GROUP_UNIQUE",
+	"VINYL_GROUP_CONTEST",
+	"VINYL_GROUP_CUSTOM"
+};

@@ -216,24 +216,30 @@ int Init()
 
 		// Rims
 		CIniReader RimBrandsINI("UnlimiterData\\_RimBrands.ini");
-		int RimBrandsCount = RimBrandsINI.ReadInteger("RimBrands", "NumberOfRimBrands", -1);
-		if (RimBrandsCount != -1)
-		{
-			RimBrandsCount += 0x702;
-			injector::MakeJMP(0x7B7E90, NoRimSizeCodeCave, true); // CustomizeSub::BuildRimsList
-			injector::MakeCALL(0x7B7E17, CustomizeRims_GetCategoryBrandHash, true); // CustomizeRims::BuildRimsList
-			injector::WriteMemory<short>(0x7BC704, RimBrandsCount, true); // CustomizeSub::SetupRimBrands, expand for new brands (Default: 0x70B)
-			injector::WriteMemory<short>(0x7A587D, RimBrandsCount, true); // TranslateCustomizeCatToMarker
-			injector::WriteMemory<short>(0x7AFEAD, RimBrandsCount, true); // GetMarkerNameFromCategory
-			injector::WriteMemory<short>(0x7B6098, RimBrandsCount, true); // CarCustomizeManager::GetUnlockHash
-			injector::WriteMemory<short>(0x7BAD74, RimBrandsCount, true); // CarCustomizeManager::IsCategoryLocked
-			injector::WriteMemory<short>(0x7BAF96, RimBrandsCount, true); // CarCustomizeManager::IsCategoryLocked
-			injector::MakeJMP(0x7A6490, CustomizeSub_GetRimBrandIndex, true); // CustomizeSub::GetRimBrandIndex (2 references)
-			injector::MakeNOP(0x7A539F, 6, true); // CarCustomizeManager::IsCategoryNew, Rims category
-			injector::MakeJMP(0x7A539F, IsNewCodeCaveRims, true); // CarCustomizeManager::IsCategoryNew, Rims category
-			injector::WriteMemory(0x8B7FE0, &CustomizeRims_NotificationMessage, true); // CustomizeRims::vtable
-			injector::WriteMemory(0x8B7FE8, &CustomizeRims_RefreshHeader, true); // CustomizeRims::vtable
-		}
+		int RimBrandsCount = RimBrandsINI.ReadInteger("RimBrands", "NumberOfRimBrands", DefaultRimBrandCount);
+		RimBrandsCount += 0x702;
+		injector::WriteMemory<short>(0x7A587D, RimBrandsCount, true); // TranslateCustomizeCatToMarker
+		injector::WriteMemory<short>(0x7AFEAD, RimBrandsCount, true); // GetMarkerNameFromCategory
+		injector::WriteMemory<short>(0x7B6098, RimBrandsCount, true); // CarCustomizeManager::GetUnlockHash
+		injector::WriteMemory<short>(0x7BAD74, RimBrandsCount, true); // CarCustomizeManager::IsCategoryLocked
+		injector::WriteMemory<short>(0x7BAF96, RimBrandsCount, true); // CarCustomizeManager::IsCategoryLocked
+		injector::MakeNOP(0x7A539F, 6, true); // CarCustomizeManager::IsCategoryNew, Rims category
+		injector::MakeJMP(0x7A539F, IsNewCodeCaveRims, true); // CarCustomizeManager::IsCategoryNew, Rims category
+		injector::WriteMemory(0x8B7FE0, &CustomizeRims_NotificationMessage, true); // CustomizeRims::vtable
+		injector::WriteMemory(0x8B7FE8, &CustomizeRims_RefreshHeader, true); // CustomizeRims::vtable
+		injector::WriteMemory(0x8B7FEC, &CustomizeRims_Setup, true); // CustomizeRims::vtable
+		injector::MakeCALL(0x7C039E, CustomizeRims_Setup, true); // CustomizeRims::CustomizeRims
+		
+		// Vinyls
+		CIniReader VinylGroupsINI("UnlimiterData\\_VinylGroups.ini");
+		int VinylGroupsCount = VinylGroupsINI.ReadInteger("VinylGroups", "NumberOfVinylGroups", DefaultVinylGroupCount);
+		VinylGroupsCount += 0x402;
+		injector::WriteMemory<short>(0x7A5823, VinylGroupsCount, true); // TranslateCustomizeCatToMarker
+		injector::WriteMemory<short>(0x7AFE90, VinylGroupsCount, true); // GetMarkerNameFromCategory
+		injector::WriteMemory<short>(0x7B600C, VinylGroupsCount, true); // CarCustomizeManager::GetUnlockHash
+		injector::WriteMemory<short>(0x7BAEC3, VinylGroupsCount, true); // CarCustomizeManager::IsCategoryLocked
+		injector::WriteMemory<short>(0x7BAF10, VinylGroupsCount, true); // CarCustomizeManager::IsCategoryLocked
+		injector::WriteMemory<short>(0x7c0ae7, VinylGroupsCount, true); // CustomizePaint::Setup
 
 		// Fix rear rims
 		injector::MakeCALL(0x7498D0, CompositeRim, true); // CompositeSkin

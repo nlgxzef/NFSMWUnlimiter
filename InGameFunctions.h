@@ -188,3 +188,6 @@ void(__thiscall* CustomizeCategoryScreen_NotificationMessage)(DWORD* _CustomizeC
 int(*UnlockSystem_GetPerfPackageCost)(int UnlockFilter, int PackageType, int PackageLevel, int Unk) = (int(*)(int, int, int, int))0x58ACD0;
 int(*UnlockSystem_GetCarPartCost)(int UnlockFilter, int CarSlotID, DWORD* CarPart, int Unk) = (int(*)(int, int, DWORD*, int))0x58AD10;
 void(__thiscall* CustomizeRims_ScrollRimSizes)(DWORD* CustomizeRims, int Direction) = (void(__thiscall*)(DWORD*, int))0x7BDAE0;
+BYTE(__thiscall* CarCustomizeManager_GetMinInnerRadius)(DWORD* CarCustomizeManager) = (BYTE(__thiscall*)(DWORD*))0x7A5660;
+BYTE(__thiscall* CarCustomizeManager_GetMaxInnerRadius)(DWORD* CarCustomizeManager) = (BYTE(__thiscall*)(DWORD*))0x7A5680;
+void(__thiscall* CustomizeRims_BuildRimsList_Game)(DWORD* CustomizeRims, int unk) = (void(__thiscall*)(DWORD*, int))0x7B7DD0;
