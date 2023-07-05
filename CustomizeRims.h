@@ -93,11 +93,11 @@ void __fastcall CustomizeRims_NotificationMessage(DWORD* _CustomizeRims, void* E
     switch (MessageHash)
     {
     case 0x5073EF13: // PAD_LTRIGGER
-        CustomizeRims_ScrollRimSizes(_CustomizeRims, -1);
+        if (!IsNoRimSize(_CustomizeRims[82])) CustomizeRims_ScrollRimSizes(_CustomizeRims, -1);
         break;
 
     case 0xD9FEEC59:  // PAD_RTRIGGER
-        CustomizeRims_ScrollRimSizes(_CustomizeRims, 1);
+        if (!IsNoRimSize(_CustomizeRims[82])) CustomizeRims_ScrollRimSizes(_CustomizeRims, 1);
         break;
 
     case 0xC519BFBF: // PAD_BUTTON0

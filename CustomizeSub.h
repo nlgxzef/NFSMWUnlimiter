@@ -1269,7 +1269,7 @@ void __fastcall CustomizeSub_NotificationMessage(DWORD* _CustomizeSub, void* EDX
         break;
 
     case 0xC519BFC3: // PAD_BUTTON4
-        if (/*(*((BYTE*)FEDatabase + 300) & 1) == 0 && !g_bTestCareerCustomization && */CurrentMenuID == 0x802) // Career Mode (canceled) & Performance Menu
+        if (/*(*((BYTE*)FEDatabase + 300) & 1) == 0 && !*(bool*)g_bTestCareerCustomization && */CurrentMenuID == 0x802) // Career Mode (canceled) & Performance Menu
         {
             DialogInterface_ShowTwoButtons((char const*)_CustomizeSub[4], "", 3, 0x70E01038, 0x417B25E4, 0x6820E23E, 0xB4EDEB6D, 0, 0x892CB612); // COMMON_YES, COMMON_NO, YesButton, NoButton, CD_MAX_PERFORMANCE_DLG
             (*(void(__thiscall**)(DWORD*))(*_CustomizeSub + 12))(_CustomizeSub); // RefreshHeader

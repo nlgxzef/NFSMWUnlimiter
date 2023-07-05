@@ -1,5 +1,6 @@
 #include "stdio.h"
 #include "InGameFunctions.h"
+#include "CarCustomizeManager.h"
 #include "Helpers.h"
 
 // 0x7A65C0
@@ -185,7 +186,7 @@ void __fastcall CustomizeMain_BuildOptionsList(DWORD* CustomizeMain, void* EDX_U
 	{
 		if (!HPCCompatibility)
 		{
-			if ((GetCarIntOption(CarINI, GeneralINI, "Main", "Parts", 1)) && !IsMenuEmpty_PartsBackroom(CarINI, GeneralINI))
+			if ((GetCarIntOption(CarINI, GeneralINI, "Main", "Parts", 1)) && !IsMenuEmpty_Parts(CarINI, GeneralINI))
 			CustomizeCategoryScreen_AddCustomOption(CustomizeMain, *(char**)g_pCustomizeSubPkg,
 				GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "Parts", "BROWSER_PARTS"),
 				GetCarTextOptionHash(CarINI, GeneralINI, "Names", "Parts", "CO_PARTS"),
@@ -197,7 +198,7 @@ void __fastcall CustomizeMain_BuildOptionsList(DWORD* CustomizeMain, void* EDX_U
 				GetCarTextOptionHash(CarINI, GeneralINI, "Names", "Performance", "CO_PERFORMANCE"),
 				0x802); // Performance
 		}
-		if ((GetCarIntOption(CarINI, GeneralINI, "Main", "Visual", 1)) && !IsMenuEmpty_VisualBackroom(CarINI, GeneralINI))
+		if ((GetCarIntOption(CarINI, GeneralINI, "Main", "Visual", 1)) && !IsMenuEmpty_Visual(CarINI, GeneralINI))
 		CustomizeCategoryScreen_AddCustomOption(CustomizeMain, *(char**)g_pCustomizeSubPkg,
 			GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "Visual", "BROWSER_VISUAL"),
 			GetCarTextOptionHash(CarINI, GeneralINI, "Names", "Visual", "CO_VISUAL"),

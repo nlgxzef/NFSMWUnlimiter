@@ -7,6 +7,7 @@
 #define _nullString 0x890978
 #define _SaveFolderNameString 0x901748
 #define _CustomizeParts_TexturePackLoaded 0x9B9EB0
+#define _CarViewer_haveLoadedOnce 0x9B9E64
 #define _gCarCustomizeManager 0x9B9EC0
 #define _FECarRecord 0x9B9EC4
 #define _PhysicsUpgrades 0x9B9EC8
@@ -36,6 +37,7 @@
 #define g_bTestCareerCustomization 0x9B9E8D
 #define g_bCustomizeInBackRoom 0x91D3D0
 #define CustomizeDecals_CurrentDecalLocation 0x905ED8
+#define TheFEMarkerManager 0x91D928
 #define _RealTimer 0x925B14
 #define _RealTimeElapsedFrame 0x9259BC
 #define _TheGameFlowManager 0x925E90
@@ -50,6 +52,7 @@
 #define _DrawLightFlares 0x8F2918
 #define _FrontEndRenderingCarList 0x9B27EC
 #define _EnableReleasePrintf 0x90E630
+#define _MemoryCard_s_pThis 0x91CB20
 
 bool BETACompatibility = 0;
 bool HPCCompatibility = 0;

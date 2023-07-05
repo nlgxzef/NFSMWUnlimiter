@@ -229,6 +229,8 @@ int Init()
 		injector::WriteMemory(0x8B7FE8, &CustomizeRims_RefreshHeader, true); // CustomizeRims::vtable
 		injector::WriteMemory(0x8B7FEC, &CustomizeRims_Setup, true); // CustomizeRims::vtable
 		injector::MakeCALL(0x7C039E, CustomizeRims_Setup, true); // CustomizeRims::CustomizeRims
+		injector::MakeCALL(0x7BDB3A, CustomizeRims_BuildRimsList, true); // CustomizeRims::ScrollRimSizes
+		injector::MakeCALL(0x7BDB4F, CustomizeRims_BuildRimsList, true); // CustomizeRims::ScrollRimSizes
 		
 		// Vinyls
 		CIniReader VinylGroupsINI("UnlimiterData\\_VinylGroups.ini");
@@ -440,6 +442,9 @@ int Init()
 	if (TestCareerCustomization)
 	{
 		injector::WriteMemory<BYTE>(g_bTestCareerCustomization, 1, true);
+		injector::MakeJMP(0x7BABDD, 0x7BAC6D, true); // CarCustomizeManager::Checkout (Don't deduct user's cash)
+		injector::MakeJMP(0x7BB594, 0x7BB5C8, true); // CustomizeCategoryScreen::AddCustomOption (Ignore backroom parts without markers)
+		injector::WriteMemory<BYTE>(0x7B0185, 0xEB, true); // CustomizeShoppingCart::CanCheckout (Allow checkout when there isn't enough cash)
 	}
 
 	// Presitter: Dump/load presets when the profile is saved/loaded to work issues around with DBCarPart changes.

@@ -50,6 +50,7 @@ void __fastcall CustomizeSpoiler_BuildPartOptionListFromFilter(DWORD* _Customize
                 PartIcon = CustomizeIsInBackRoom() != 0 ? 0x611D142A : 0x4D1C18BA;
             PartName = *(BYTE*)(TheSelectablePart[3] + 5) >> 5;
             IsLocked = CarCustomizeManager_IsPartLocked((DWORD*)_gCarCustomizeManager, TheSelectablePart, 0);
+            PartIcon = CarPart_GetAppliedAttributeIParam(TheCarPart, bStringHash("TEXTUREHASH"), PartIcon);
             CustomizationScreen_AddPartOption(_CustomizeSpoiler, TheSelectablePart, PartIcon, PartName, 0, UnlockHash, IsLocked);
             v16 = _CustomizeSpoiler[111];
             if (_CustomizeSpoiler[v16 + 112] == 1)

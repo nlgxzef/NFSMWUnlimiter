@@ -315,8 +315,8 @@ void __fastcall CustomizeParts_Setup(DWORD* _CustomizeParts, void* EDX_Unused)
 		sprintf(VinylBrandIcon, VinylGroupsINI.ReadString(VinylBrandID, "Texture", GetDefaultVinylGroupTexture(PartCategory)));
 		sprintf(VinylBrandString, VinylGroupsINI.ReadString(VinylBrandID, "String", GetDefaultVinylGroupString(PartCategory)));
 
-		PartIconNormal = bStringHash(VinylBrandIcon); // VINYL_GROUP_FLAMES
-		_CustomizeParts[87] = bStringHash(VinylBrandString); // CO_VINYL_FLAME
+		PartIconNormal = bStringHash(VinylBrandIcon);
+		_CustomizeParts[87] = bStringHash(VinylBrandString);
 		
 		if (dword_9BA080) TheActiveCarPart = (DWORD*)dword_9BA080[3];
 		else TheActiveCarPart = CarCustomizeManager_GetActivePartFromSlot((DWORD*)_gCarCustomizeManager, CarSlotID);
@@ -570,13 +570,13 @@ AddToList:
 
 		ACarPart = (DWORD*)TheSelectablePart[3];
 
+	LABEL_46:
 		// Choose Part Icon
 		PartIconCustom = CarPart_GetAppliedAttributeIParam(ACarPart, bStringHash("TEXTUREHASH"), 0);
 		if (PartIconCustom) NewPartIcon = PartIconCustom;
 		else if (CarPart_GetAppliedAttributeIParam(ACarPart, bStringHash("CARBONFIBRE"), 0) && PartIconCF) NewPartIcon = PartIconCF;
 		else NewPartIcon = PartIconNormal;
-
-	LABEL_46:
+	
 		PartName = *(BYTE*)(TheSelectablePart[3] + 5) >> 5;
 		IsLocked = CarCustomizeManager_IsPartLocked((DWORD*)_gCarCustomizeManager, TheSelectablePart, 0);
 		CustomizationScreen_AddPartOption(_CustomizeParts, TheSelectablePart, NewPartIcon, PartName, 0, UnlockHash, IsLocked);

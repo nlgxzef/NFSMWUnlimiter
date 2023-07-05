@@ -2,6 +2,7 @@
 
 #include "stdio.h"
 #include "InGameFunctions.h"
+#include "Helpers.h"
 
 bool __fastcall CarCustomizeManager_IsCastrolCar(DWORD* CarCustomizeManager, int edx_unused)
 {
@@ -186,4 +187,16 @@ bool __fastcall CarCustomizeManager_AreAllRimsStock(DWORD* _CarCustomizeManager,
     bool IsRearStock = !InstalledRearWheel || StockRearWheel == InstalledRearWheel;
 
     return IsFrontStock && IsRearStock;
+}
+
+bool __fastcall CarCustomizeManager_IsCareerMode_CheckTCC(DWORD* _CarCustomizeManager, void* EDX_Unused)
+{
+    bool result = 1;
+    bool Test = !*(bool*)g_bTestCareerCustomization;
+    DWORD* FEDatabase = *(DWORD**)_FEDatabase;
+
+    if (TestCareerCustomization) Test = 1;
+
+    if ((*((BYTE*)FEDatabase + 300) & 1) == 0 && Test) result = 0;
+    return result;
 }

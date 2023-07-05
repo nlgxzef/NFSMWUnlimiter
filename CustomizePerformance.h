@@ -491,10 +491,10 @@ void __fastcall CustomizePerformance_Setup(DWORD* _CustomizePerformance, void* E
     // Get car and customization record
     DWORD* FEDatabase = *(DWORD**)_FEDatabase;
     DWORD* FECarRecord = *(DWORD**)_FECarRecord;
-    DWORD* CustomizationRecord = FEPlayerCarDB_GetCustomizationRecordByHandle((DWORD*)(*((DWORD*)FEDatabase + 4) + 0x414), *((BYTE*)FECarRecord + 16));
+    DWORD* CustomizationRecord = FEPlayerCarDB_GetCustomizationRecordByHandle((DWORD*)(*((DWORD*)FEDatabase + 4) + 0x414), ((BYTE*)FECarRecord)[16]);
 
-    if ((*((BYTE*)FEDatabase + 300) & 1) == 0 && !g_bTestCareerCustomization)
-        cFEng_QueuePackageMessage((int*)cFEng_mInstance, 0xDE511657, (const char*)_CustomizePerformance[4], 0);
+    if ((*((BYTE*)FEDatabase + 300) & 1) == 0 && !*(bool*)g_bTestCareerCustomization)
+        cFEng_QueuePackageMessage(*(int**)cFEng_mInstance, 0xDE511657, (const char*)_CustomizePerformance[4], 0);
 
     FEngPackage = (const char*)_CustomizePerformance[4];
 
@@ -577,11 +577,10 @@ void __fastcall CustomizePerformance_Setup(DWORD* _CustomizePerformance, void* E
     }
     
     // Junkman
-    if (CustomizeIsInBackRoom() && ((*((BYTE*)FEDatabase + 300) & 1) != 0 || g_bTestCareerCustomization))
+    if (CustomizeIsInBackRoom())
     {
         UnlockHash = 0;
-        if (!CustomizeIsInBackRoom())
-            UnlockHash = CarCustomizeManager_GetUnlockHash((DWORD*)_gCarCustomizeManager, _CustomizePerformance[82], 7);
+        
         ASelectablePart = (DWORD*)j_malloc(0x2Cu);
         if (ASelectablePart)
         {
@@ -637,7 +636,7 @@ void __fastcall CustomizePerformance_Setup(DWORD* _CustomizePerformance, void* E
     }
 
     v25 = *((DWORD*)FEDatabase + 4);
-    if (((*(DWORD*)(v25 + 172) & 0x2000) != 0 && (*((BYTE*)FEDatabase + 300) & 1) == 0 || *(BYTE*)(v25 + 37084)) && Physics_Upgrades_CanInstallJunkman((DWORD*)_PhysicsUpgrades, PerformancePartType))
+    if (((*(DWORD*)(v25 + 172) & 0x2000) != 0 || *(BYTE*)(v25 + 37084)) && Physics_Upgrades_CanInstallJunkman((DWORD*)_PhysicsUpgrades, PerformancePartType))
     {
         ASelectablePart = (DWORD*)j_malloc(0x2Cu);
         if (ASelectablePart)
@@ -689,7 +688,7 @@ void __fastcall CustomizePerformance_Setup(DWORD* _CustomizePerformance, void* E
         }
     }
 LABEL_51:
-    if (CustomizeIsInBackRoom() && ((*((BYTE*)FEDatabase + 300) & 1) != 0 || g_bTestCareerCustomization))
+    if (CustomizeIsInBackRoom() && ((*((BYTE*)FEDatabase + 300) & 1) != 0 || *(bool*)g_bTestCareerCustomization))
     {
         if (*((BYTE*)_CustomizePerformance + 297))
         {
