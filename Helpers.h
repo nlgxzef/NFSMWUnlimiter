@@ -21,6 +21,11 @@ int GetCarIntOption(CIniReader& CarINI, CIniReader& GeneralINI, char* Section, c
 	return CarINI.ReadInteger(Section, Option, GeneralINI.ReadInteger(Section, Option, DefaultValue));
 }
 
+int GetCarFloatOption(CIniReader& CarINI, CIniReader& GeneralINI, char* Section, char* Option, float DefaultValue)
+{
+	return CarINI.ReadFloat(Section, Option, GeneralINI.ReadFloat(Section, Option, DefaultValue));
+}
+
 int GetCarTextOptionHash(CIniReader& CarINI, CIniReader& GeneralINI, char* Section, char* Option, char const* DefaultValue)
 {
 	return bStringHash(GetCarTextOption(CarINI, GeneralINI, Section, Option, DefaultValue));

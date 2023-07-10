@@ -53,6 +53,7 @@
 #define _FrontEndRenderingCarList 0x9B27EC
 #define _EnableReleasePrintf 0x90E630
 #define _MemoryCard_s_pThis 0x91CB20
+#define _gTradeInFactor 0x89F71C
 
 bool BETACompatibility = 0;
 bool HPCCompatibility = 0;
@@ -125,15 +126,16 @@ char* DefaultRimBrandTextures[]
 };
 
 // Default values for Vinyl Groups if _VinylGroups.ini is N/A
-#define DefaultVinylGroupCount 8
+#define DefaultVinylGroupCount 9
 
 int DefaultVinylGroupIndexes[]
 {
-	2, 3, 4, 5, 6, 7, 8, 9, 1
+	31, 0, 1, 2, 3, 4, 5, 6, 7, 8
 };
 
 char* DefaultVinylGroupStrings[]
 {
+	"CO_VINYL_CUSTOM",
 	"CO_VINYL_FLAME",
 	"CO_VINYL_TRIBAL",
 	"CO_VINYL_STRIPE",
@@ -142,11 +144,12 @@ char* DefaultVinylGroupStrings[]
 	"CO_VINYL_BODY",
 	"CO_VINYL_UNIQUE",
 	"CO_VINYL_CONTEST",
-	"CO_VINYL_CUSTOM"
+	"CO_VINYL_SPECIAL"
 };
 
 char* DefaultVinylGroupTextures[]
 {
+	"VINYL_GROUP_CUSTOM",
 	"VINYL_GROUP_FLAMES",
 	"VINYL_GROUP_TRIBAL",
 	"VINYL_GROUP_STRIPES",
@@ -155,5 +158,5 @@ char* DefaultVinylGroupTextures[]
 	"VINYL_GROUP_BODY",
 	"VINYL_GROUP_UNIQUE",
 	"VINYL_GROUP_CONTEST",
-	"VINYL_GROUP_CUSTOM"
+	"VINYL_GROUP_SPECIAL"
 };

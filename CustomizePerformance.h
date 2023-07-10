@@ -474,8 +474,8 @@ void __fastcall CustomizePerformance_Setup(DWORD* _CustomizePerformance, void* E
     int v25; // eax
     bool InstalledPart; // zf
     int CarType; // eax
-    int v32; // edi
-    int v33; // eax
+    int UpgradeLevel; // edi
+    int PerfPartInCart; // eax
     DWORD* v34; // eax
     int v35; // ecx
     DWORD* v36; // edx
@@ -564,10 +564,10 @@ void __fastcall CustomizePerformance_Setup(DWORD* _CustomizePerformance, void* E
             ASelectablePart[4] = 0;
             ASelectablePart[5] = 0;
             ASelectablePart[6] = PerformancePartType;
-            *((BYTE*)ASelectablePart + 28) = 1;
+            *((BYTE*)ASelectablePart + 28) = 1; // IsPerformancePart
             ASelectablePart[8] = 1;
             ASelectablePart[9] = 0;
-            *((BYTE*)ASelectablePart + 40) = 0;
+            *((BYTE*)ASelectablePart + 40) = 0; // IsJunkman
         }
         else
         {
@@ -589,10 +589,10 @@ void __fastcall CustomizePerformance_Setup(DWORD* _CustomizePerformance, void* E
             ASelectablePart[4] = 0;
             ASelectablePart[5] = 7;
             ASelectablePart[6] = PerformancePartType;
-            *((BYTE*)ASelectablePart + 28) = 1;
+            *((BYTE*)ASelectablePart + 28) = 1; // IsPerformancePart
             ASelectablePart[8] = 1;
             ASelectablePart[9] = 0;
-            *((BYTE*)ASelectablePart + 40) = 1;
+            *((BYTE*)ASelectablePart + 40) = 1; // IsJunkman
         }
         else
         {
@@ -646,10 +646,10 @@ void __fastcall CustomizePerformance_Setup(DWORD* _CustomizePerformance, void* E
             ASelectablePart[4] = 0;
             ASelectablePart[5] = 7;
             ASelectablePart[6] = PerformancePartType;
-            *((BYTE*)ASelectablePart + 28) = 1;
+            *((BYTE*)ASelectablePart + 28) = 1; // IsPerformancePart
             ASelectablePart[8] = 1;
             ASelectablePart[9] = 0;
-            *((BYTE*)ASelectablePart + 40) = 1;
+            *((BYTE*)ASelectablePart + 40) = 1; // IsJunkman
         }
         else
         {
@@ -670,8 +670,8 @@ void __fastcall CustomizePerformance_Setup(DWORD* _CustomizePerformance, void* E
                         goto LABEL_51;
                     }
                     goto LABEL_49;
-                }
-                InstalledPart = ASelectablePart[5] == *(DWORD*)(CustomizationRecord + 4 * ASelectablePart[6] + 280);
+                } 
+                InstalledPart = ASelectablePart[5] == ((BYTE*)CustomizationRecord)[4 * ASelectablePart[6] + 280];
             }
             else
             {
@@ -697,11 +697,11 @@ LABEL_51:
             *((BYTE*)_CustomizePerformance + 282) = 0;
             _CustomizePerformance[68] = 0;
         }
-        (*(void(__thiscall**)(DWORD*, int))(_CustomizePerformance[11] + 64))(_CustomizePerformance + 11, 1);
+        (*(void(__thiscall**)(DWORD*, int))(_CustomizePerformance[11] + 64))(_CustomizePerformance + 11, 1); // IconScroller::SetInitialPos
     }
     else
     {
-        v32 = *(DWORD*)(CustomizationRecord + 4 * PerformancePartType + 280);
+        UpgradeLevel = ((BYTE*)CustomizationRecord)[4 * ASelectablePart[6] + 280];
         TheSelectablePart[0] = (DWORD)SelectablePart_vtable;
             TheSelectablePart[3] = 0;
         TheSelectablePart[4] = 0;
@@ -711,10 +711,10 @@ LABEL_51:
         TheSelectablePart[8] = 1;
         TheSelectablePart[9] = 0;
         *((BYTE*)TheSelectablePart + 40) = 0;
-        v33 = CarCustomizeManager_IsPartTypeInCart((DWORD*)_gCarCustomizeManager, TheSelectablePart);
+        PerfPartInCart = CarCustomizeManager_IsPartTypeInCart((DWORD*)_gCarCustomizeManager, TheSelectablePart);
 
-        if (v33)
-            v32 = *(DWORD*)(*(DWORD*)(v33 + 12) + 20);
+        if (PerfPartInCart)
+            UpgradeLevel = *(DWORD*)(*(DWORD*)(PerfPartInCart + 12) + 20);
 
         if (*((BYTE*)_CustomizePerformance + 297))
         {
@@ -723,7 +723,7 @@ LABEL_51:
             *((BYTE*)_CustomizePerformance + 282) = 0;
             _CustomizePerformance[68] = 0;
         }
-        (*(void(__thiscall**)(DWORD*, int))(_CustomizePerformance[11] + 64))(_CustomizePerformance + 11, v32);
+        (*(void(__thiscall**)(DWORD*, int))(_CustomizePerformance[11] + 64))(_CustomizePerformance + 11, UpgradeLevel + 1); // IconScroller::SetInitialPos
     }
     (*(void(__thiscall**)(DWORD*))(*_CustomizePerformance + 12))(_CustomizePerformance);
     v34 = (DWORD*)PartList[0];

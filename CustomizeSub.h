@@ -1034,8 +1034,15 @@ void __fastcall CustomizeSub_SetupDecalPositions(DWORD* CustomizeSub, void* EDX_
 int CustomizeSub_GetVinylGroupIndex(int group)
 {
     CIniReader VinylGroupsINI("UnlimiterData\\_VinylGroups.ini");
-    sprintf(VinylBrandID, "Group%d", group);
-    return VinylGroupsINI.ReadInteger(VinylBrandID, "Index", GetDefaultVinylGroupIndex(group));
+    int VinylGroupsCount = VinylGroupsINI.ReadInteger("VinylGroups", "NumberOfVinylGroups", DefaultVinylGroupCount);
+
+    for (int i = 0; i <= VinylGroupsCount; i++)
+    {
+        sprintf(VinylBrandID, "Group%d", i);
+        if (VinylGroupsINI.ReadInteger(VinylBrandID, "Index", GetDefaultVinylGroupIndex(i)) == group) return i + 2;
+    }
+
+    return 1;
 }
 
 int __fastcall CustomizeSub_SetupVinylGroups(DWORD* _CustomizeSub, void* EDX_Unused)
@@ -1114,9 +1121,13 @@ int __fastcall CustomizeSub_SetupVinylGroups(DWORD* _CustomizeSub, void* EDX_Unu
     // Stock vinyl
     IconScrollerMenu_AddOption(_CustomizeSub, StockVinylIconOption);
 
+    // Check if the car has OEM vinyls
+    bool HasNoCustomVinyls = GetCarIntOption(CarINI, GeneralINI, "Visual", "VinylsCustom", 0) == 0;
+
     // Add the brands from ini
     for (int i = 0; i <= VinylGroupsCount; i++)
     {
+        if (i == 0 && HasNoCustomVinyls) continue;
         sprintf(VinylBrandID, "Group%d", i);
         sprintf(VinylBrandIcon, VinylGroupsINI.ReadString(VinylBrandID, "Texture", GetDefaultVinylGroupTexture(i)));
         sprintf(VinylBrandString, VinylGroupsINI.ReadString(VinylBrandID, "String", GetDefaultVinylGroupString(i)));
@@ -1147,7 +1158,7 @@ int __fastcall CustomizeSub_SetupVinylGroups(DWORD* _CustomizeSub, void* EDX_Unu
         {
             TheVinylPart = *(DWORD*)(SelectablePartInCart + 12); // CarPart
             if (TheVinylPart)
-                _CustomizeSub[107] = CustomizeSub_GetVinylGroupIndex(*((BYTE*)TheVinylPart + 5) & 0x1F);
+                _CustomizeSub[107] = CustomizeSub_GetVinylGroupIndex(*((BYTE*)TheVinylPart + 5) & 0x1F) - HasNoCustomVinyls;
             else
                 _CustomizeSub[107] = 1;
         }
@@ -1156,7 +1167,7 @@ int __fastcall CustomizeSub_SetupVinylGroups(DWORD* _CustomizeSub, void* EDX_Unu
     CarType = FECarRecord_GetType(FECarRecord);
     InstalledPart = FECustomizationRecord_GetInstalledPart(CustomizationRecord, CarType, 77); // VINYL_LAYER0
     if (InstalledPart)
-        _CustomizeSub[106] = CustomizeSub_GetVinylGroupIndex(*((BYTE*)InstalledPart + 5) & 0x1F);
+        _CustomizeSub[106] = CustomizeSub_GetVinylGroupIndex(*((BYTE*)InstalledPart + 5) & 0x1F) - HasNoCustomVinyls;
     else
         _CustomizeSub[106] = 1;
     PreviousMenu = _CustomizeSub[85];

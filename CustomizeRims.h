@@ -73,6 +73,39 @@ void __fastcall CustomizeRims_RefreshHeader(DWORD* CustomizeRims, void* EDX_Unus
             if ((strlen(RimNameBuffer) > 6) && !IsNoRimSize(CustomizeRims[82])) RimNameBuffer[strlen(RimNameBuffer) - 6] = '\0'; // Trim last 6 characters if the rim has size
             FEPrintf((char const*)CustomizeRims[4], 0x5E7B09C9, "%s", RimNameBuffer);
         }
+
+        // Fix cost and trade in display
+        if (CarCustomizeManager_IsCareerMode())
+        {
+            if (!CustomizeIsInBackRoom())
+            {
+                // Recalculate cost and trade in values
+                DWORD* InstalledFrontRim = CarCustomizeManager_GetInstalledCarPart((DWORD*)_gCarCustomizeManager, 66);
+                DWORD* InstalledRearRim = CarCustomizeManager_GetInstalledCarPart((DWORD*)_gCarCustomizeManager, 67);
+                int UnlockFilter = CarCustomizeManager_GetUnlockFilter();
+                int TradeIn = 0;
+                //int CartTotal = CarCustomizeManager_GetCartTotal((DWORD*)_gCarCustomizeManager, 2);
+                int Cost = UnlockSystem_GetCarPartCost(UnlockFilter, 66, (DWORD*)(SelectedPart[3]), 0);
+
+                if (InstalledFrontRim && RimsToCustomize != -1)
+                {
+                    TradeIn += UnlockSystem_GetCarPartCost(UnlockFilter, 66, InstalledFrontRim, 0);
+                }
+
+                if (InstalledRearRim && RimsToCustomize != 1)
+                {
+                    TradeIn += UnlockSystem_GetCarPartCost(UnlockFilter, 67, InstalledRearRim, 0);
+                }
+
+                if (RimsToCustomize == 0) Cost *= 2;
+
+                TradeIn = TradeIn * *(float*)_gTradeInFactor;
+
+                FEPrintf((char const*)CustomizeRims[4], 0xDBB80EDD, "%$d", Cost); // Total cost amount
+                FEPrintf((char const*)CustomizeRims[4], 0xA91EDA8A, "%$d", TradeIn); // Trade in amount
+                //FEPrintf((char const*)CustomizeRims[4], 0x7A6D2F71, "%$d", CartTotal); // Total
+            }
+        }
     }
 
     if (IsNoRimSize(CustomizeRims[82]))

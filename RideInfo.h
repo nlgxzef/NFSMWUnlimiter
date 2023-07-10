@@ -2,7 +2,7 @@
 #include "InGameFunctions.h"
 #include "includes\IniReader.h"
 
-unsigned int __fastcall RideInfo_SetPart(DWORD* RideInfo, int EDX_Unused, int CarSlotID, unsigned int CarPart, bool UpdateEnabled)
+unsigned int __fastcall RideInfo_SetPart(DWORD* RideInfo, void* EDX_Unused, int CarSlotID, unsigned int CarPart, bool UpdateEnabled)
 {
 	unsigned int PreviousPart;
 	unsigned int KitNumber;
@@ -371,28 +371,28 @@ unsigned int __fastcall RideInfo_SetRandomDecal(DWORD* RideInfo, void* EDX_Unuse
 			switch (CarSlotID)
 			{
 			case 105: // DECAL_LEFT_DOOR_TEX6
-				if (IsNumberLeft) return RideInfo_SetPart(RideInfo, (int)EDX_Unused, CarSlotID, (DWORD)NewPart, 1);
+				if (IsNumberLeft) return RideInfo_SetPart(RideInfo, EDX_Unused, CarSlotID, (DWORD)NewPart, 1);
 				return 0;
 				break;
 
 			case 106: // DECAL_LEFT_DOOR_TEX7
 				LeftNumberPart = RideInfo_GetPart(RideInfo, 105);
 
-				if (LeftNumberPart && IsNumberRight) return RideInfo_SetPart(RideInfo, (int)EDX_Unused, CarSlotID, (DWORD)NewPart, 1);
-				RideInfo_SetPart(RideInfo, (int)EDX_Unused, 105, 0, 1);
-				return RideInfo_SetPart(RideInfo, (int)EDX_Unused, CarSlotID, 0, 1);
+				if (LeftNumberPart && IsNumberRight) return RideInfo_SetPart(RideInfo, EDX_Unused, CarSlotID, (DWORD)NewPart, 1);
+				RideInfo_SetPart(RideInfo, EDX_Unused, 105, 0, 1);
+				return RideInfo_SetPart(RideInfo, EDX_Unused, CarSlotID, 0, 1);
 				break;
 
 			case 113: // DECAL_RIGHT_DOOR_TEX6
-				return RideInfo_SetPart(RideInfo, (int)EDX_Unused, CarSlotID, (DWORD)RideInfo_GetPart(RideInfo, 105), 1);
+				return RideInfo_SetPart(RideInfo, EDX_Unused, CarSlotID, (DWORD)RideInfo_GetPart(RideInfo, 105), 1);
 				break;
 
 			case 114: // DECAL_RIGHT_DOOR_TEX7
-				return RideInfo_SetPart(RideInfo, (int)EDX_Unused, CarSlotID, (DWORD)RideInfo_GetPart(RideInfo, 106), 1);
+				return RideInfo_SetPart(RideInfo, EDX_Unused, CarSlotID, (DWORD)RideInfo_GetPart(RideInfo, 106), 1);
 				break;
 
 			default:
-				if (!IsNumberLeft && !IsNumberRight) return RideInfo_SetPart(RideInfo, (int)EDX_Unused, CarSlotID, (DWORD)NewPart, 1);
+				if (!IsNumberLeft && !IsNumberRight) return RideInfo_SetPart(RideInfo, EDX_Unused, CarSlotID, (DWORD)NewPart, 1);
 				return 0;
 				break;
 			}
@@ -402,12 +402,98 @@ unsigned int __fastcall RideInfo_SetRandomDecal(DWORD* RideInfo, void* EDX_Unuse
 	return 0;
 }
 
+void __fastcall RideInfo_SetStockParts(DWORD* TheRideInfo, void* EDX_Unused)
+{
+	DWORD PartNameHash; // eax MAPDST
+	DWORD TheCarPart; // eax MAPDST
+	int VinylColorSlotID; // edi
+	DWORD* VinylColorRef; // ebx
+	int NumVinylLayers; // ebp
+	DWORD DefaultVinylColors[4]; // [esp+8h] [ebp-18h] BYREF
+
+	int CarType = TheRideInfo[0];
+
+	DefaultVinylColors[0] = bStringHash("VINYL_L1_COLOR01"); // 255, 255, 255, 100
+	DefaultVinylColors[1] = bStringHash("VINYL_L1_COLOR03"); // 255, 251, 224, 100
+	DefaultVinylColors[2] = bStringHash("VINYL_L1_COLOR61"); // VINYL_L2_COLOR11 (129, 130, 120, 100) Doesn't exist in vanilla game
+	DefaultVinylColors[3] = bStringHash("VINYL_L1_COLOR01"); // 255, 255, 255, 100
+
+	for (int CarSlotID = 0; CarSlotID < 139; ++CarSlotID)
+	{
+		// (Type != COPHELI || != ATTACHMENT6) && (!VINYL_LAYER0) && (< VINYL_LAYER0 || > DECAL_RIGHT_QUARTER_TEX7)
+		if ((CarType != 4 || CarSlotID != 58) && (CarSlotID != 77) && (CarSlotID < 77 || CarSlotID > 130))
+		{
+			switch (CarSlotID)
+			{
+			case 76: // BASE_PAINT
+				PartNameHash = *(DWORD*)(208 * CarType + *(DWORD*)CarTypeInfoArray + 204);
+				TheCarPart = CarPartDatabase_NewGetCarPart((DWORD*)_CarPartDB, CarType, CarSlotID, PartNameHash, 0, -1);
+				if (TheCarPart) RideInfo_SetPart(TheRideInfo, EDX_Unused, CarSlotID, TheCarPart, 1);
+				else // If the paint is invalid
+				{
+					PartNameHash = bStringHash("GLOSS_L1_COLOR01");
+					TheCarPart = CarPartDatabase_NewGetCarPart((DWORD*)_CarPartDB, CarType, CarSlotID, PartNameHash, 0, -1);
+					if (TheCarPart) RideInfo_SetPart(TheRideInfo, EDX_Unused, CarSlotID, TheCarPart, 1);
+				}
+				break;
+
+			case 62: // ROOF
+				PartNameHash = bStringHash("ROOF_STYLE00");
+				goto ApplyPart;
+				break;
+
+			case 64: // HEADLIGHT (Tires)
+				PartNameHash = bStringHash("TIRE_STYLE01");
+				goto ApplyPart;
+				break;
+
+			case 65: // BRAKELIGHT (Neon)
+				PartNameHash = bStringHash("NEON_NONE");
+				goto ApplyPart;
+				break;
+
+			case 133: // HUD_BACKING_COLOUR
+			case 134: // HUD_NEEDLE_COLOUR
+				PartNameHash = bStringHash("ORANGE");
+					goto ApplyPart;
+					break;
+
+			case 135: // HUD_CHARACTER_COLOUR
+				PartNameHash = bStringHash("WHITE");
+
+			ApplyPart:
+				TheCarPart = CarPartDatabase_NewGetCarPart((DWORD*)_CarPartDB, CarType, CarSlotID, PartNameHash, 0, -1);
+				if (TheCarPart) RideInfo_SetPart(TheRideInfo, EDX_Unused, CarSlotID, TheCarPart, 1);
+				else RideInfo_SetUpgradePart(TheRideInfo, CarSlotID, 0);
+				break;
+
+			default: // Apply the first available part with upgrade level 0
+				RideInfo_SetUpgradePart(TheRideInfo, CarSlotID, 0);
+				break;
+			}
+		}
+		// else: No need to assign, RideInfo inits them with 0
+	}
+
+	VinylColorSlotID = 79; // VINYL_COLOUR0_0
+	VinylColorRef = DefaultVinylColors;
+	NumVinylLayers = 4;
+	do
+	{
+		TheCarPart = CarPartDatabase_NewGetCarPart((DWORD*)_CarPartDB, CarType, VinylColorSlotID, *VinylColorRef, 0, -1);
+		RideInfo_SetPart(TheRideInfo, EDX_Unused, VinylColorSlotID, TheCarPart, 1);
+		++VinylColorRef;
+		++VinylColorSlotID;
+		--NumVinylLayers;
+	} while (NumVinylLayers);
+}
+
 void __fastcall RideInfo_SetRandomParts(DWORD* RideInfo, void* EDX_Unused)
 {
 	int CustomizationLevel, RearRimsHeadsOrTails;
 
 	// Set all parts as stock first
-	RideInfo_SetStockParts(RideInfo);
+	RideInfo_SetStockParts(RideInfo, EDX_Unused);
 
 	// If HPC is present, only randomize the car paint
 	if (HPCCompatibility)
@@ -438,7 +524,7 @@ void __fastcall RideInfo_SetRandomParts(DWORD* RideInfo, void* EDX_Unused)
 		{
 			RideInfo_SetRandomPart(RideInfo, 66, -1); // FRONT_WHEEL
 			if (RearRimsHeadsOrTails) RideInfo_SetRandomPart(RideInfo, 67, -1); // REAR_WHEEL
-			else RideInfo_SetPart(RideInfo, (int)EDX_Unused, 67, (DWORD)RideInfo_GetPart(RideInfo, 66), 1);
+			else RideInfo_SetPart(RideInfo, EDX_Unused, 67, (DWORD)RideInfo_GetPart(RideInfo, 66), 1);
 		}
 		if (GetCarIntOption(CarINI, GeneralINI, "RandomParts", "Hoods", 1) != 0) RideInfo_SetRandomPart(RideInfo, 63, -1); // HOOD
 		if (GetCarIntOption(CarINI, GeneralINI, "RandomParts", "RoofScoops", 1) != 0) RideInfo_SetRandomPart(RideInfo, 62, -1); // ROOF
@@ -624,7 +710,7 @@ void __fastcall RideInfo_SetRandomParts(DWORD* RideInfo, void* EDX_Unused)
 		}
 		RideInfo_SetRandomPart(RideInfo, 66, -1); // FRONT_WHEEL
 		if (RearRimsHeadsOrTails) RideInfo_SetRandomPart(RideInfo, 67, -1); // REAR_WHEEL
-		else RideInfo_SetPart(RideInfo, (int)EDX_Unused, 67, (DWORD)RideInfo_GetPart(RideInfo, 66), 1);
+		else RideInfo_SetPart(RideInfo, EDX_Unused, 67, (DWORD)RideInfo_GetPart(RideInfo, 66), 1);
 
 		RideInfo_SetRandomPart(RideInfo, 78, -1); // PAINT_RIM
 		RideInfo_SetRandomPart(RideInfo, 131, -1); // WINDOW_TINT
@@ -649,7 +735,7 @@ void __fastcall RideInfo_SetRandomParts(DWORD* RideInfo, void* EDX_Unused)
 		RideInfo_SetRandomPart(RideInfo, 76, -1); // BASE_PAINT
 		RideInfo_SetRandomPart(RideInfo, 66, -1); // FRONT_WHEEL
 		if (RearRimsHeadsOrTails) RideInfo_SetRandomPart(RideInfo, 67, -1); // REAR_WHEEL
-		else RideInfo_SetPart(RideInfo, (int)EDX_Unused, 67, (DWORD)RideInfo_GetPart(RideInfo, 66), 1);
+		else RideInfo_SetPart(RideInfo, EDX_Unused, 67, (DWORD)RideInfo_GetPart(RideInfo, 66), 1);
 		RideInfo_SetRandomPart(RideInfo, 78, -1); // PAINT_RIM
 		break;
 	case -1:

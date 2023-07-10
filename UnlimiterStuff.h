@@ -172,6 +172,7 @@ int Init()
 
 		// Implement new part changing
 		injector::MakeJMP(0x756E90, RideInfo_SetPart, true); // RideInfo::SetPart
+		injector::MakeJMP(0x7594A0, RideInfo_SetStockParts, true); // (9 references)
 
 		// Customization setup for new ids
 		injector::WriteMemory(0x8B7EA8, &CustomizeParts_NotificationMessage, true); // CustomizeParts::vtable
@@ -251,6 +252,10 @@ int Init()
 
 		// Custom part costs
 		injector::MakeJMP(0x7AEF70, CarCustomizeManager_GetPartPrice, true); // 4 references
+		injector::MakeCALL(0x7B16BE, UnlockSystem_GetCarPartCost, true); // CustomizationScreen::RefreshHeader
+
+		// Custom FECooling (heat level multipliers)
+		injector::MakeJMP(0x7AF330, CarCustomizeManager_UpdateHeatOnVehicle, true); // 4 references
 
 		// Fix Service Crash
 		injector::MakeJMP(0x6E9E40, SimConnectionService, true); //Sim::Connection::Service

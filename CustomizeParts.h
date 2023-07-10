@@ -307,13 +307,13 @@ void __fastcall CustomizeParts_Setup(DWORD* _CustomizeParts, void* EDX_Unused)
 	// Vinyls
 	if (MenuID >= 0x402 && MenuID <= 0x4FF)
 	{
-		PartCategory = MenuID - 0x402;
 		CarSlotID = 77;
 
 		CIniReader VinylGroupsINI("UnlimiterData\\_VinylGroups.ini");
-		sprintf(VinylBrandID, "Group%d", PartCategory);
-		sprintf(VinylBrandIcon, VinylGroupsINI.ReadString(VinylBrandID, "Texture", GetDefaultVinylGroupTexture(PartCategory)));
-		sprintf(VinylBrandString, VinylGroupsINI.ReadString(VinylBrandID, "String", GetDefaultVinylGroupString(PartCategory)));
+		sprintf(VinylBrandID, "Group%d", MenuID - 0x402);
+		sprintf(VinylBrandIcon, VinylGroupsINI.ReadString(VinylBrandID, "Texture", GetDefaultVinylGroupTexture(MenuID - 0x402)));
+		sprintf(VinylBrandString, VinylGroupsINI.ReadString(VinylBrandID, "String", GetDefaultVinylGroupString(MenuID - 0x402)));
+		PartCategory = VinylGroupsINI.ReadInteger(VinylBrandID, "Index", GetDefaultVinylGroupIndex(MenuID - 0x402));
 
 		PartIconNormal = bStringHash(VinylBrandIcon);
 		_CustomizeParts[87] = bStringHash(VinylBrandString);
