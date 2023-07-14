@@ -171,3 +171,4 @@ void __fastcall CustomizePaint_RefreshHeader(DWORD* CustomizePaint, void* EDX_Un
 		}
 	}
 }
+

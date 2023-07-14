@@ -344,16 +344,25 @@ int __fastcall CustomizeSub_SetupRimBrands(DWORD* _CustomizeSub, void* EDX_Unuse
     // Add the brands from ini
     for (int i = 0; i <= RimBrandsCount; i++)
     {
-        if (i == 0 && HasNoCustomRims) continue;
-        sprintf(RimBrandID, "Brand%d", i);
-        sprintf(RimBrandIcon, RimBrandsINI.ReadString(RimBrandID, "Texture", GetDefaultRimBrandTexture(i)));
-        sprintf(RimBrandString, RimBrandsINI.ReadString(RimBrandID, "String", GetDefaultRimBrandString(i)));
-        CustomizeCategoryScreen_AddCustomOption(
-            _CustomizeSub,
-            *(char**)g_pCustomizeRimsPkg,
-            bStringHash(RimBrandIcon),
-            bStringHash(RimBrandString),
-            0x702 + i);
+        if (i == 0)
+        {
+            if (HasNoCustomRims) continue;
+
+            sprintf(RimBrandID, "Brand%d", i);
+            sprintf(RimBrandIcon, GetCarTextOption(CarINI, GeneralINI, "Icons", "PartsRimsCustom", ""));
+            sprintf(RimBrandString, GetCarTextOption(CarINI, GeneralINI, "Names", "PartsRimsCustom", ""));
+
+            if (bStringHash(RimBrandIcon) == -1) sprintf(RimBrandIcon, RimBrandsINI.ReadString(RimBrandID, "Texture", GetDefaultRimBrandTexture(i)));
+            if (bStringHash(RimBrandString) == -1) sprintf(RimBrandString, RimBrandsINI.ReadString(RimBrandID, "String", GetDefaultRimBrandString(i)));
+        }
+        else
+        {
+            sprintf(RimBrandID, "Brand%d", i);
+            sprintf(RimBrandIcon, RimBrandsINI.ReadString(RimBrandID, "Texture", GetDefaultRimBrandTexture(i)));
+            sprintf(RimBrandString, RimBrandsINI.ReadString(RimBrandID, "String", GetDefaultRimBrandString(i)));
+        }
+
+        CustomizeCategoryScreen_AddCustomOption(_CustomizeSub, *(char**)g_pCustomizeRimsPkg, bStringHash(RimBrandIcon), bStringHash(RimBrandString), 0x702 + i);
     }
 
     ARimPart[0] = SelectablePart_vtable;
@@ -1127,16 +1136,25 @@ int __fastcall CustomizeSub_SetupVinylGroups(DWORD* _CustomizeSub, void* EDX_Unu
     // Add the brands from ini
     for (int i = 0; i <= VinylGroupsCount; i++)
     {
-        if (i == 0 && HasNoCustomVinyls) continue;
-        sprintf(VinylBrandID, "Group%d", i);
-        sprintf(VinylBrandIcon, VinylGroupsINI.ReadString(VinylBrandID, "Texture", GetDefaultVinylGroupTexture(i)));
-        sprintf(VinylBrandString, VinylGroupsINI.ReadString(VinylBrandID, "String", GetDefaultVinylGroupString(i)));
-        CustomizeCategoryScreen_AddCustomOption(
-            _CustomizeSub,
-            *(char**)g_pCustomizePartsPkg,
-            bStringHash(VinylBrandIcon),
-            bStringHash(VinylBrandString),
-            0x402 + i);
+        if (i == 0)
+        {
+            if (HasNoCustomVinyls) continue;
+
+            sprintf(VinylBrandID, "Group%d", i);
+            sprintf(VinylBrandIcon, GetCarTextOption(CarINI, GeneralINI, "Icons", "VisualVinylsCustom", ""));
+            sprintf(VinylBrandString, GetCarTextOption(CarINI, GeneralINI, "Names", "VisualVinylsCustom", ""));
+
+            if (bStringHash(VinylBrandIcon) == -1) sprintf(VinylBrandIcon, VinylGroupsINI.ReadString(VinylBrandID, "Texture", GetDefaultVinylGroupTexture(i)));
+            if (bStringHash(VinylBrandString) == -1) sprintf(VinylBrandString, VinylGroupsINI.ReadString(VinylBrandID, "String", GetDefaultVinylGroupString(i)));
+        }
+        else
+        {
+            sprintf(VinylBrandID, "Group%d", i);
+            sprintf(VinylBrandIcon, VinylGroupsINI.ReadString(VinylBrandID, "Texture", GetDefaultVinylGroupTexture(i)));
+            sprintf(VinylBrandString, VinylGroupsINI.ReadString(VinylBrandID, "String", GetDefaultVinylGroupString(i)));
+        }
+
+        CustomizeCategoryScreen_AddCustomOption(_CustomizeSub, *(char**)g_pCustomizePartsPkg, bStringHash(VinylBrandIcon), bStringHash(VinylBrandString), 0x402 + i);
     }
 
     AVinylPart[0] = SelectablePart_vtable;

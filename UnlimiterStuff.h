@@ -41,6 +41,7 @@ bool ManuHook, ExtraCustomization, DisappearingWheelsFix, SecondaryLogoFix, Expa
 #include "Presitter.h"
 #include "UserProfile.h"
 #include "MemcardCallbacks.h"
+#include "RealmcIface_MemcardInterfaceImpl.h"
 #include "Game.h"
 #include "Helpers.h"
 #include "CodeCaves.h"
@@ -448,7 +449,7 @@ int Init()
 	{
 		injector::WriteMemory<BYTE>(g_bTestCareerCustomization, 1, true);
 		injector::MakeJMP(0x7BABDD, 0x7BAC6D, true); // CarCustomizeManager::Checkout (Don't deduct user's cash)
-		injector::MakeJMP(0x7BB594, 0x7BB5C8, true); // CustomizeCategoryScreen::AddCustomOption (Ignore backroom parts without markers)
+		injector::WriteMemory<BYTE>(0x7BB594, 0xEB, true); // CustomizeCategoryScreen::AddCustomOption (Ignore backroom parts without markers)
 		injector::WriteMemory<BYTE>(0x7B0185, 0xEB, true); // CustomizeShoppingCart::CanCheckout (Allow checkout when there isn't enough cash)
 	}
 
@@ -466,6 +467,9 @@ int Init()
 		injector::MakeCALL(0x5ACDEB, UserProfile_LoadFromBuffer, true); // cFrontendDatabase::LoadUserProfileFromBuffer
 		injector::MakeCALL(0x5ACE01, UserProfile_LoadFromBuffer, true); // cFrontendDatabase::LoadUserProfileFromBuffer
 		hb_UserProfile_LoadFromBuffer.fun = injector::MakeCALL(0x5ACE74, UserProfile_LoadFromBuffer, true).get(); // cFrontendDatabase::RestoreFromBackupDB
+
+		// Deleting (todo: make it delete after asking)
+		//hb_RealmcIface_MemcardInterfaceImpl_ProcessDelete.fun = injector::MakeCALL(0x7F5BB1, RealmcIface_MemcardInterfaceImpl_ProcessDelete, true).get(); // RealmcIface::MemcardInterfaceImpl::Update
 	}
 
 	// Car Skin Fix (Requires CarSkinCount (20) x dummy skin and wheel textures in CARS\TEXTURES.BIN)

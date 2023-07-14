@@ -402,6 +402,285 @@ unsigned int __fastcall RideInfo_SetRandomDecal(DWORD* RideInfo, void* EDX_Unuse
 	return 0;
 }
 
+DWORD __fastcall RideInfo_GetStockPartNameHash(DWORD* RideInfo, void* EDX_Unused, int CarSlotID)
+{
+	DWORD result = -1;
+	
+	// Check UnlimiterData\\CARNAME.ini for custom stock parts
+	// Get CarType Info
+	sprintf(CarTypeName, GetCarTypeName(RideInfo[0]));
+	sprintf(CarININame, "UnlimiterData\\%s.ini", CarTypeName);
+	CIniReader CarINI(CarININame);
+	CIniReader GeneralINI("UnlimiterData\\_General.ini");
+
+	switch (CarSlotID)
+	{
+	case 23: // BODY
+		result = GetCarTextOptionHash(CarINI, GeneralINI, "StockParts", "BodyKits", "");
+		break;
+	case 44: // SPOILER
+		result = GetCarTextOptionHash(CarINI, GeneralINI, "StockParts", "Spoilers", "");
+		break;
+	case 66: // FRONT_WHEEL
+		result = GetCarTextOptionHash(CarINI, GeneralINI, "StockParts", "RimsFront", "");
+		break;
+	case 67: // REAR_WHEEL
+		result = GetCarTextOptionHash(CarINI, GeneralINI, "StockParts", "RimsRear", "");
+		break;
+	case 63: // HOOD
+		result = GetCarTextOptionHash(CarINI, GeneralINI, "StockParts", "Hoods", "");
+		break;
+	case 62: // ROOF
+		result = GetCarTextOptionHash(CarINI, GeneralINI, "StockParts", "RoofScoops", "");
+		break;
+	case 28: // INTERIOR
+		result = GetCarTextOptionHash(CarINI, GeneralINI, "StockParts", "Interior", "");
+		break;
+	case 0: // BASE
+		result = GetCarTextOptionHash(CarINI, GeneralINI, "StockParts", "Roof", "");
+		break;
+	case 24: // FRONT_BRAKE
+		result = GetCarTextOptionHash(CarINI, GeneralINI, "StockParts", "Brakes", "");
+		break;
+	case 31: // LEFT_HEADLIGHT
+		result = GetCarTextOptionHash(CarINI, GeneralINI, "StockParts", "Headlights", "");
+		break;
+	case 29: // LEFT_BRAKELIGHT
+		result = GetCarTextOptionHash(CarINI, GeneralINI, "StockParts", "Taillights", "");
+		break;
+	case 33: // LEFT_SIDE_MIRROR
+		result = GetCarTextOptionHash(CarINI, GeneralINI, "StockParts", "Mirrors", "");
+		break;
+	case 52: // ATTACHMENT0
+		result = GetCarTextOptionHash(CarINI, GeneralINI, "StockParts", "Attachment0", "");
+		break;
+	case 53: // ATTACHMENT1
+		result = GetCarTextOptionHash(CarINI, GeneralINI, "StockParts", "Attachment1", "");
+		break;
+	case 54: // ATTACHMENT2
+		result = GetCarTextOptionHash(CarINI, GeneralINI, "StockParts", "Attachment2", "");
+		break;
+	case 55: // ATTACHMENT3
+		result = GetCarTextOptionHash(CarINI, GeneralINI, "StockParts", "Attachment3", "");
+		break;
+	case 56: // ATTACHMENT4
+		result = GetCarTextOptionHash(CarINI, GeneralINI, "StockParts", "Attachment4", "");
+		break;
+	case 57: // ATTACHMENT5
+		result = GetCarTextOptionHash(CarINI, GeneralINI, "StockParts", "Attachment5", "");
+		break;
+	case 58: // ATTACHMENT6
+		result = GetCarTextOptionHash(CarINI, GeneralINI, "StockParts", "Attachment6", "");
+		break;
+	case 59: // ATTACHMENT7
+		result = GetCarTextOptionHash(CarINI, GeneralINI, "StockParts", "Attachment7", "");
+		break;
+	case 60: // ATTACHMENT8
+		result = GetCarTextOptionHash(CarINI, GeneralINI, "StockParts", "Attachment8", "");
+		break;
+	case 61: // ATTACHMENT9
+		result = GetCarTextOptionHash(CarINI, GeneralINI, "StockParts", "Attachment9", "");
+		break;
+	case 76: // BASE_PAINT
+		result = GetCarTextOptionHash(CarINI, GeneralINI, "StockParts", "Paint", "");
+		break;
+	case 77: // VINYL_LAYER0
+		result = GetCarTextOptionHash(CarINI, GeneralINI, "StockParts", "Vinyls", "");
+		break;
+	case 78: // PAINT_RIM
+		result = GetCarTextOptionHash(CarINI, GeneralINI, "StockParts", "RimPaint", "");
+		break;
+	case 79: // VINYL_COLOUR0_0
+		result = GetCarTextOptionHash(CarINI, GeneralINI, "StockParts", "VinylColor1", "");
+		break;
+	case 80: // VINYL_COLOUR0_1
+		result = GetCarTextOptionHash(CarINI, GeneralINI, "StockParts", "VinylColor2", "");
+		break;
+	case 81: // VINYL_COLOUR0_2
+		result = GetCarTextOptionHash(CarINI, GeneralINI, "StockParts", "VinylColor3", "");
+		break;
+	case 82: // VINYL_COLOUR0_3
+		result = GetCarTextOptionHash(CarINI, GeneralINI, "StockParts", "VinylColor4", "");
+		break;
+	case 83: // DECAL_FRONT_WINDOW_TEX0
+		result = GetCarTextOptionHash(CarINI, GeneralINI, "StockParts", "DecalsWindshield1", "");
+		break;
+	case 84: // DECAL_FRONT_WINDOW_TEX1
+		result = GetCarTextOptionHash(CarINI, GeneralINI, "StockParts", "DecalsWindshield2", "");
+		break;
+	case 85: // DECAL_FRONT_WINDOW_TEX2
+		result = GetCarTextOptionHash(CarINI, GeneralINI, "StockParts", "DecalsWindshield3", "");
+		break;
+	case 86: // DECAL_FRONT_WINDOW_TEX3
+		result = GetCarTextOptionHash(CarINI, GeneralINI, "StockParts", "DecalsWindshield4", "");
+		break;
+	case 87: // DECAL_FRONT_WINDOW_TEX4
+		result = GetCarTextOptionHash(CarINI, GeneralINI, "StockParts", "DecalsWindshield5", "");
+		break;
+	case 88: // DECAL_FRONT_WINDOW_TEX5
+		result = GetCarTextOptionHash(CarINI, GeneralINI, "StockParts", "DecalsWindshield6", "");
+		break;
+	case 89: // DECAL_FRONT_WINDOW_TEX6
+		result = GetCarTextOptionHash(CarINI, GeneralINI, "StockParts", "DecalsWindshield7", "");
+		break;
+	case 90: // DECAL_FRONT_WINDOW_TEX7
+		result = GetCarTextOptionHash(CarINI, GeneralINI, "StockParts", "DecalsWindshield8", "");
+		break;
+	case 91: // DECAL_REAR_WINDOW_TEX0
+		result = GetCarTextOptionHash(CarINI, GeneralINI, "StockParts", "DecalsRearWindow1", "");
+		break;
+	case 92: // DECAL_REAR_WINDOW_TEX1
+		result = GetCarTextOptionHash(CarINI, GeneralINI, "StockParts", "DecalsRearWindow2", "");
+		break;
+	case 93: // DECAL_REAR_WINDOW_TEX2
+		result = GetCarTextOptionHash(CarINI, GeneralINI, "StockParts", "DecalsRearWindow3", "");
+		break;
+	case 94: // DECAL_REAR_WINDOW_TEX3
+		result = GetCarTextOptionHash(CarINI, GeneralINI, "StockParts", "DecalsRearWindow4", "");
+		break;
+	case 95: // DECAL_REAR_WINDOW_TEX4
+		result = GetCarTextOptionHash(CarINI, GeneralINI, "StockParts", "DecalsRearWindow5", "");
+		break;
+	case 96: // DECAL_REAR_WINDOW_TEX5
+		result = GetCarTextOptionHash(CarINI, GeneralINI, "StockParts", "DecalsRearWindow6", "");
+		break;
+	case 97: // DECAL_REAR_WINDOW_TEX6
+		result = GetCarTextOptionHash(CarINI, GeneralINI, "StockParts", "DecalsRearWindow7", "");
+		break;
+	case 98: // DECAL_REAR_WINDOW_TEX7
+		result = GetCarTextOptionHash(CarINI, GeneralINI, "StockParts", "DecalsRearWindow8", "");
+		break;
+	case 99: // DECAL_LEFT_DOOR_TEX0
+		result = GetCarTextOptionHash(CarINI, GeneralINI, "StockParts", "DecalsLeftDoor1", "");
+		break;
+	case 100: // DECAL_LEFT_DOOR_TEX1
+		result = GetCarTextOptionHash(CarINI, GeneralINI, "StockParts", "DecalsLeftDoor2", "");
+		break;
+	case 101: // DECAL_LEFT_DOOR_TEX2
+		result = GetCarTextOptionHash(CarINI, GeneralINI, "StockParts", "DecalsLeftDoor3", "");
+		break;
+	case 102: // DECAL_LEFT_DOOR_TEX3
+		result = GetCarTextOptionHash(CarINI, GeneralINI, "StockParts", "DecalsLeftDoor4", "");
+		break;
+	case 103: // DECAL_LEFT_DOOR_TEX4
+		result = GetCarTextOptionHash(CarINI, GeneralINI, "StockParts", "DecalsLeftDoor5", "");
+		break;
+	case 104: // DECAL_LEFT_DOOR_TEX5
+		result = GetCarTextOptionHash(CarINI, GeneralINI, "StockParts", "DecalsLeftDoor6", "");
+		break;
+	case 105: // DECAL_LEFT_DOOR_TEX6
+		result = GetCarTextOptionHash(CarINI, GeneralINI, "StockParts", "DecalsLeftDoor7", "");
+		break;
+	case 106: // DECAL_LEFT_DOOR_TEX7
+		result = GetCarTextOptionHash(CarINI, GeneralINI, "StockParts", "DecalsLeftDoor8", "");
+		break;
+	case 107: // DECAL_RIGHT_DOOR_TEX0
+		result = GetCarTextOptionHash(CarINI, GeneralINI, "StockParts", "DecalsRightDoor1", "");
+		break;
+	case 108: // DECAL_RIGHT_DOOR_TEX1
+		result = GetCarTextOptionHash(CarINI, GeneralINI, "StockParts", "DecalsRightDoor2", "");
+		break;
+	case 109: // DECAL_RIGHT_DOOR_TEX2
+		result = GetCarTextOptionHash(CarINI, GeneralINI, "StockParts", "DecalsRightDoor3", "");
+		break;
+	case 110: // DECAL_RIGHT_DOOR_TEX3
+		result = GetCarTextOptionHash(CarINI, GeneralINI, "StockParts", "DecalsRightDoor4", "");
+		break;
+	case 111: // DECAL_RIGHT_DOOR_TEX4
+		result = GetCarTextOptionHash(CarINI, GeneralINI, "StockParts", "DecalsRightDoor5", "");
+		break;
+	case 112: // DECAL_RIGHT_DOOR_TEX5
+		result = GetCarTextOptionHash(CarINI, GeneralINI, "StockParts", "DecalsRightDoor6", "");
+		break;
+	case 113: // DECAL_RIGHT_DOOR_TEX6
+		result = GetCarTextOptionHash(CarINI, GeneralINI, "StockParts", "DecalsRightDoor7", "");
+		break;
+	case 114: // DECAL_RIGHT_DOOR_TEX7
+		result = GetCarTextOptionHash(CarINI, GeneralINI, "StockParts", "DecalsRightDoor8", "");
+		break;
+	case 115: // DECAL_LEFT_QUARTER_TEX0
+		result = GetCarTextOptionHash(CarINI, GeneralINI, "StockParts", "DecalsLeftQuarter1", "");
+		break;
+	case 116: // DECAL_LEFT_QUARTER_TEX1
+		result = GetCarTextOptionHash(CarINI, GeneralINI, "StockParts", "DecalsLeftQuarter2", "");
+		break;
+	case 117: // DECAL_LEFT_QUARTER_TEX2
+		result = GetCarTextOptionHash(CarINI, GeneralINI, "StockParts", "DecalsLeftQuarter3", "");
+		break;
+	case 118: // DECAL_LEFT_QUARTER_TEX3
+		result = GetCarTextOptionHash(CarINI, GeneralINI, "StockParts", "DecalsLeftQuarter4", "");
+		break;
+	case 119: // DECAL_LEFT_QUARTER_TEX4
+		result = GetCarTextOptionHash(CarINI, GeneralINI, "StockParts", "DecalsLeftQuarter5", "");
+		break;
+	case 120: // DECAL_LEFT_QUARTER_TEX5
+		result = GetCarTextOptionHash(CarINI, GeneralINI, "StockParts", "DecalsLeftQuarter6", "");
+		break;
+	case 121: // DECAL_LEFT_QUARTER_TEX6
+		result = GetCarTextOptionHash(CarINI, GeneralINI, "StockParts", "DecalsLeftQuarter7", "");
+		break;
+	case 122: // DECAL_LEFT_QUARTER_TEX7
+		result = GetCarTextOptionHash(CarINI, GeneralINI, "StockParts", "DecalsLeftQuarter8", "");
+		break;
+	case 123: // DECAL_RIGHT_QUARTER_TEX0
+		result = GetCarTextOptionHash(CarINI, GeneralINI, "StockParts", "DecalsRightQuarter1", "");
+		break;
+	case 124: // DECAL_RIGHT_QUARTER_TEX1
+		result = GetCarTextOptionHash(CarINI, GeneralINI, "StockParts", "DecalsRightQuarter2", "");
+		break;
+	case 125: // DECAL_RIGHT_QUARTER_TEX2
+		result = GetCarTextOptionHash(CarINI, GeneralINI, "StockParts", "DecalsRightQuarter3", "");
+		break;
+	case 126: // DECAL_RIGHT_QUARTER_TEX3
+		result = GetCarTextOptionHash(CarINI, GeneralINI, "StockParts", "DecalsRightQuarter4", "");
+		break;
+	case 127: // DECAL_RIGHT_QUARTER_TEX4
+		result = GetCarTextOptionHash(CarINI, GeneralINI, "StockParts", "DecalsRightQuarter5", "");
+		break;
+	case 128: // DECAL_RIGHT_QUARTER_TEX5
+		result = GetCarTextOptionHash(CarINI, GeneralINI, "StockParts", "DecalsRightQuarter6", "");
+		break;
+	case 129: // DECAL_RIGHT_QUARTER_TEX6
+		result = GetCarTextOptionHash(CarINI, GeneralINI, "StockParts", "DecalsRightQuarter7", "");
+		break;
+	case 130: // DECAL_RIGHT_QUARTER_TEX7
+		result = GetCarTextOptionHash(CarINI, GeneralINI, "StockParts", "DecalsRightQuarter8", "");
+		break;
+	case 131: // WINDOW_TINT
+		result = GetCarTextOptionHash(CarINI, GeneralINI, "StockParts", "WindowTint", "");
+		break;
+	case 132: // CUSTOM_HUD
+		result = GetCarTextOptionHash(CarINI, GeneralINI, "StockParts", "CustomGauges", "");
+		break;
+	case 133: // HUD_BACKING_COLOUR
+		result = GetCarTextOptionHash(CarINI, GeneralINI, "StockParts", "CustomGaugesBackingColor", "");
+		break;
+	case 134: // HUD_NEEDLE_COLOUR
+		result = GetCarTextOptionHash(CarINI, GeneralINI, "StockParts", "CustomGaugesNeedleColor", "");
+		break;
+	case 135: // HUD_CHARACTER_COLOUR
+		result = GetCarTextOptionHash(CarINI, GeneralINI, "StockParts", "CustomGaugesCharacterColor", "");
+		break;
+	case 43: // DRIVER
+		result = GetCarTextOptionHash(CarINI, GeneralINI, "StockParts", "Driver", "");
+		break;
+	case 69: // LICENSE_PLATE
+		result = GetCarTextOptionHash(CarINI, GeneralINI, "StockParts", "LicensePlate", "");
+		break;
+	case 64: // HEADLIGHT (Tires)
+		result = GetCarTextOptionHash(CarINI, GeneralINI, "StockParts", "Tires", "");
+		break;
+	case 65: // BRAKELIGHT (Neon)
+		result = GetCarTextOptionHash(CarINI, GeneralINI, "StockParts", "Neon", "");
+		break;
+	default:
+		result = -1;
+		break;
+	}
+
+	return result;
+}
+
 void __fastcall RideInfo_SetStockParts(DWORD* TheRideInfo, void* EDX_Unused)
 {
 	DWORD PartNameHash; // eax MAPDST
@@ -441,11 +720,11 @@ void __fastcall RideInfo_SetStockParts(DWORD* TheRideInfo, void* EDX_Unused)
 				PartNameHash = bStringHash("ROOF_STYLE00");
 				goto ApplyPart;
 				break;
-
+				/*
 			case 64: // HEADLIGHT (Tires)
 				PartNameHash = bStringHash("TIRE_STYLE01");
 				goto ApplyPart;
-				break;
+				break;*/
 
 			case 65: // BRAKELIGHT (Neon)
 				PartNameHash = bStringHash("NEON_NONE");
@@ -473,6 +752,15 @@ void __fastcall RideInfo_SetStockParts(DWORD* TheRideInfo, void* EDX_Unused)
 			}
 		}
 		// else: No need to assign, RideInfo inits them with 0
+
+		// Check if ini has a custom stock part
+		PartNameHash = RideInfo_GetStockPartNameHash(TheRideInfo, EDX_Unused, CarSlotID);
+		if (PartNameHash != -1) // apply the part
+		{
+			TheCarPart = CarPartDatabase_NewGetCarPart((DWORD*)_CarPartDB, CarType, CarSlotID, PartNameHash, 0, -1);
+			if (TheCarPart) RideInfo_SetPart(TheRideInfo, EDX_Unused, CarSlotID, TheCarPart, 1);
+			else RideInfo_SetUpgradePart(TheRideInfo, CarSlotID, 0);
+		}
 	}
 
 	VinylColorSlotID = 79; // VINYL_COLOUR0_0
@@ -480,8 +768,12 @@ void __fastcall RideInfo_SetStockParts(DWORD* TheRideInfo, void* EDX_Unused)
 	NumVinylLayers = 4;
 	do
 	{
-		TheCarPart = CarPartDatabase_NewGetCarPart((DWORD*)_CarPartDB, CarType, VinylColorSlotID, *VinylColorRef, 0, -1);
-		RideInfo_SetPart(TheRideInfo, EDX_Unused, VinylColorSlotID, TheCarPart, 1);
+		PartNameHash = RideInfo_GetStockPartNameHash(TheRideInfo, EDX_Unused, VinylColorSlotID);
+		if (PartNameHash == -1)
+		{
+			TheCarPart = CarPartDatabase_NewGetCarPart((DWORD*)_CarPartDB, CarType, VinylColorSlotID, *VinylColorRef, 0, -1);
+			RideInfo_SetPart(TheRideInfo, EDX_Unused, VinylColorSlotID, TheCarPart, 1);
+		}
 		++VinylColorRef;
 		++VinylColorSlotID;
 		--NumVinylLayers;
@@ -603,6 +895,10 @@ void __fastcall RideInfo_SetRandomParts(DWORD* RideInfo, void* EDX_Unused)
 		if (GetCarIntOption(CarINI, GeneralINI, "RandomParts", "DecalsRightQuarter6", 0) != 0) RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 128, -1); // DECAL_RIGHT_QUARTER_TEX5
 		if (GetCarIntOption(CarINI, GeneralINI, "RandomParts", "DecalsRightQuarter7", 0) != 0) RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 129, -1); // DECAL_RIGHT_QUARTER_TEX6
 		if (GetCarIntOption(CarINI, GeneralINI, "RandomParts", "DecalsRightQuarter8", 0) != 0) RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 130, -1); // DECAL_RIGHT_QUARTER_TEX7
+		if (GetCarIntOption(CarINI, GeneralINI, "RandomParts", "CustomGauges", 0) != 0) RideInfo_SetRandomPart(RideInfo, 132, -1); // CUSTOM_HUD
+		if (GetCarIntOption(CarINI, GeneralINI, "RandomParts", "CustomGaugesBackingColor", 0) != 0) RideInfo_SetRandomPart(RideInfo, 133, -1); // HUD_BACKING_COLOUR
+		if (GetCarIntOption(CarINI, GeneralINI, "RandomParts", "CustomGaugesNeedleColor", 0) != 0) RideInfo_SetRandomPart(RideInfo, 134, -1); // HUD_NEEDLE_COLOUR
+		if (GetCarIntOption(CarINI, GeneralINI, "RandomParts", "CustomGaugesCharacterColor", 0) != 0) RideInfo_SetRandomPart(RideInfo, 135, -1); // HUD_CHARACTER_COLOUR
 		if (GetCarIntOption(CarINI, GeneralINI, "RandomParts", "Driver", 0) != 0) RideInfo_SetRandomPart(RideInfo, 43, -1); // DRIVER
 		if (GetCarIntOption(CarINI, GeneralINI, "RandomParts", "LicensePlate", 0) != 0) RideInfo_SetRandomPart(RideInfo, 69, -1); // LICENSE_PLATE
 		if (GetCarIntOption(CarINI, GeneralINI, "RandomParts", "Tires", 0) != 0) RideInfo_SetRandomPart(RideInfo, 64, -1); // HEADLIGHT
@@ -678,6 +974,14 @@ void __fastcall RideInfo_SetRandomParts(DWORD* RideInfo, void* EDX_Unused)
 		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 128, -1); // DECAL_RIGHT_QUARTER_TEX5
 		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 129, -1); // DECAL_RIGHT_QUARTER_TEX6
 		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, 130, -1); // DECAL_RIGHT_QUARTER_TEX7
+		// Gauges
+		if (GetCarIntOption(CarINI, GeneralINI, "Visual", "CustomGauges", 1) != 0)
+		{
+			RideInfo_SetRandomPart(RideInfo, 132, -1); // CUSTOM_HUD
+			RideInfo_SetRandomPart(RideInfo, 133, -1); // HUD_BACKING_COLOUR
+			RideInfo_SetRandomPart(RideInfo, 134, -1); // HUD_NEEDLE_COLOUR
+			RideInfo_SetRandomPart(RideInfo, 135, -1); // HUD_CHARACTER_COLOUR
+		}
 
 	case 3:
 		// Unlimiter parts

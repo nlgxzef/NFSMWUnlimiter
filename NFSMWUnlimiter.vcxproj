@@ -122,6 +122,7 @@ copy "$(TargetDir)*.pdb" "G:\Oyunlar\Need for Speed Most Wanted Dirty\scripts"  
     <ClInclude Include="Presitter.h" />
     <ClInclude Include="PursuitBoard.h" />
     <ClInclude Include="QuickRaceUnlocker.h" />
+    <ClInclude Include="RealmcIface_MemcardInterfaceImpl.h" />
     <ClInclude Include="RideInfo.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="SimConnection.h" />

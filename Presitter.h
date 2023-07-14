@@ -12,6 +12,39 @@
 
 static injector::hook_back<HRESULT(WINAPI*)(HWND, int, HANDLE, DWORD, LPSTR)> hb_SHGetFolderPathA;
 
+void Presitter_Delete(char const* ProfileName)
+{
+	// Presitter: Delete preset data
+	char SaveProfilePath[MAX_PATH];
+	char PresetPath[MAX_PATH];
+	char CarTypeName[CarNameLength];
+	char PresetName[PresetNameLength];
+	int zero = 0;
+
+	hb_SHGetFolderPathA.fun(0, 0x8005, 0, 0, SaveProfilePath); // Get save profile folder
+	strcat(SaveProfilePath, "\\NFS Most Wanted");
+	strcat(SaveProfilePath, "\\");
+	strcat(SaveProfilePath, ProfileName);
+	strcat(SaveProfilePath, "\\Presets");
+
+	// Empty the directory
+	for (int i = 0; i < NumFECustomizationRecords; i++)
+	{
+		// Create file handle
+		sprintf(PresetPath, "%s\\%02d.bin", SaveProfilePath, i);
+		FILE* PresetFile = fopen(PresetPath, "rb");
+
+		if (PresetFile)
+		{
+			fclose(PresetFile); // Close the file
+			remove(PresetPath); // Delete the file we just opened
+		}
+	}
+
+	// Delete the directory
+	RemoveDirectoryA(SaveProfilePath);
+}
+
 void Presitter_Save(char const* ProfileName)
 {
 	// Presittter: Dump preset data from customization records next to the game profile
@@ -33,6 +66,20 @@ void Presitter_Save(char const* ProfileName)
 	if (!SkipFile)
 	{
 		DWORD* FEDatabase = *(DWORD**)_FEDatabase;
+
+		// Delete all files first
+		for (int i = 0; i < NumFECustomizationRecords; i++)
+		{
+			// Create file handle
+			sprintf(PresetPath, "%s\\%02d.bin", SaveProfilePath, i);
+			FILE* PresetFile = fopen(PresetPath, "rb");
+
+			if (PresetFile)
+			{
+				fclose(PresetFile); // Close the file
+				remove(PresetPath); // Delete the file we just opened
+			}
+		}
 
 		for (int i = 0; i < NumFECarRecords; i++)
 		{

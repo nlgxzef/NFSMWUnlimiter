@@ -310,10 +310,24 @@ void __fastcall CustomizeParts_Setup(DWORD* _CustomizeParts, void* EDX_Unused)
 		CarSlotID = 77;
 
 		CIniReader VinylGroupsINI("UnlimiterData\\_VinylGroups.ini");
-		sprintf(VinylBrandID, "Group%d", MenuID - 0x402);
-		sprintf(VinylBrandIcon, VinylGroupsINI.ReadString(VinylBrandID, "Texture", GetDefaultVinylGroupTexture(MenuID - 0x402)));
-		sprintf(VinylBrandString, VinylGroupsINI.ReadString(VinylBrandID, "String", GetDefaultVinylGroupString(MenuID - 0x402)));
-		PartCategory = VinylGroupsINI.ReadInteger(VinylBrandID, "Index", GetDefaultVinylGroupIndex(MenuID - 0x402));
+		int i = MenuID - 0x402;
+
+		if (i == 0)
+		{
+			sprintf(VinylBrandID, "Group%d", 0);
+			sprintf(VinylBrandIcon, GetCarTextOption(CarINI, GeneralINI, "Icons", "VisualVinylsCustom", ""));
+			sprintf(VinylBrandString, GetCarTextOption(CarINI, GeneralINI, "Names", "VisualVinylsCustom", ""));
+
+			if (bStringHash(VinylBrandIcon) == -1) sprintf(VinylBrandIcon, VinylGroupsINI.ReadString(VinylBrandID, "Texture", GetDefaultVinylGroupTexture(0)));
+			if (bStringHash(VinylBrandString) == -1) sprintf(VinylBrandString, VinylGroupsINI.ReadString(VinylBrandID, "String", GetDefaultVinylGroupString(0)));
+		}
+		else
+		{
+			sprintf(VinylBrandID, "Group%d", i);
+			sprintf(VinylBrandIcon, VinylGroupsINI.ReadString(VinylBrandID, "Texture", GetDefaultVinylGroupTexture(i)));
+			sprintf(VinylBrandString, VinylGroupsINI.ReadString(VinylBrandID, "String", GetDefaultVinylGroupString(i)));
+		}
+		PartCategory = VinylGroupsINI.ReadInteger(VinylBrandID, "Index", GetDefaultVinylGroupIndex(i));
 
 		PartIconNormal = bStringHash(VinylBrandIcon);
 		_CustomizeParts[87] = bStringHash(VinylBrandString);

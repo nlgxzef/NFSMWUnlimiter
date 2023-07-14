@@ -341,43 +341,43 @@ void __fastcall CarCustomizeManager_UpdateHeatOnVehicle(DWORD* CarCustomizeManag
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             break;
         case 52: // ATTACHMENT0
-            CustomFECoolingValue = GetCarFloatOption(CarINI, GeneralINI, "FECooling", "Attachment1", 0.0f);
+            CustomFECoolingValue = GetCarFloatOption(CarINI, GeneralINI, "FECooling", "Attachment0", 0.0f);
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             break;
         case 53: // ATTACHMENT1
-            CustomFECoolingValue = GetCarFloatOption(CarINI, GeneralINI, "FECooling", "Attachment2", 0.0f);
+            CustomFECoolingValue = GetCarFloatOption(CarINI, GeneralINI, "FECooling", "Attachment1", 0.0f);
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             break;
         case 54: // ATTACHMENT2
-            CustomFECoolingValue = GetCarFloatOption(CarINI, GeneralINI, "FECooling", "Attachment3", 0.0f);
+            CustomFECoolingValue = GetCarFloatOption(CarINI, GeneralINI, "FECooling", "Attachment2", 0.0f);
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             break;
         case 55: // ATTACHMENT3
-            CustomFECoolingValue = GetCarFloatOption(CarINI, GeneralINI, "FECooling", "Attachment4", 0.0f);
+            CustomFECoolingValue = GetCarFloatOption(CarINI, GeneralINI, "FECooling", "Attachment3", 0.0f);
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             break;
         case 56: // ATTACHMENT4
-            CustomFECoolingValue = GetCarFloatOption(CarINI, GeneralINI, "FECooling", "Attachment5", 0.0f);
+            CustomFECoolingValue = GetCarFloatOption(CarINI, GeneralINI, "FECooling", "Attachment4", 0.0f);
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             break;
         case 57: // ATTACHMENT5
-            CustomFECoolingValue = GetCarFloatOption(CarINI, GeneralINI, "FECooling", "Attachment6", 0.0f);
+            CustomFECoolingValue = GetCarFloatOption(CarINI, GeneralINI, "FECooling", "Attachment5", 0.0f);
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             break;
         case 58: // ATTACHMENT6
-            CustomFECoolingValue = GetCarFloatOption(CarINI, GeneralINI, "FECooling", "Attachment7", 0.0f);
+            CustomFECoolingValue = GetCarFloatOption(CarINI, GeneralINI, "FECooling", "Attachment6", 0.0f);
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             break;
         case 59: // ATTACHMENT7
-            CustomFECoolingValue = GetCarFloatOption(CarINI, GeneralINI, "FECooling", "Attachment8", 0.0f);
+            CustomFECoolingValue = GetCarFloatOption(CarINI, GeneralINI, "FECooling", "Attachment7", 0.0f);
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             break;
         case 60: // ATTACHMENT8
-            CustomFECoolingValue = GetCarFloatOption(CarINI, GeneralINI, "FECooling", "Attachment9", 0.0f);
+            CustomFECoolingValue = GetCarFloatOption(CarINI, GeneralINI, "FECooling", "Attachment8", 0.0f);
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             break;
         case 61: // ATTACHMENT9
-            CustomFECoolingValue = GetCarFloatOption(CarINI, GeneralINI, "FECooling", "Attachment10", 0.0f);
+            CustomFECoolingValue = GetCarFloatOption(CarINI, GeneralINI, "FECooling", "Attachment9", 0.0f);
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             break;
         case 43: // DRIVER
