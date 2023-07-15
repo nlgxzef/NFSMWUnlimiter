@@ -127,14 +127,15 @@ int Init()
 	}
 
 	// Show Backroom Parts on Customization
-	if (MyCarsBackroom)
+	if (MyCarsBackroom && !ExtraCustomization)
 	{
 		injector::MakeNOP(0x7BFF28, 6, true); // CustomizeMain::NotificationMessage - Switch to Backroom Menu
+		injector::MakeNOP(0x7BFD56, 2, true); // CustomizeMain::NotificationMessage - Fix backing out by checking for backroom instead of career mode
+		injector::WriteMemory(0x7BFD52, g_bCustomizeInBackRoom, true); // CustomizeMain::NotificationMessage - Fix backing out by checking for backroom instead of career mode
 		injector::MakeJMP(0x7B1226, MyCarsBackroomWidgetCodeCave, true); // CustomizeMain::RefreshHeader
 		injector::MakeJMP(0x7BFE2F, MyCarsBackroomEscCodeCave, true); // CustomizeMain::NotificationMessage
 		injector::MakeJMP(0x7BFCC2, MyCarsBackroomRoomChangeCodeCave, true); // CustomizeMain::SwitchRooms
-		injector::MakeJMP(0x7A60F0, MyCarsBackroomRoomChangeCodeCave2, true); // CustomizeMain::SwitchRooms_0 (0x7A60E0)
-		injector::MakeJMP(0x7A65C0, CustomizeMain_SetScreenNames, true); // CustomizeMain::SetScreenNames
+		injector::MakeJMP(0x7A60F0, MyCarsBackroomRoomChangeCodeCave2, true); // CustomizeShoppingCart::ExitShoppingCart
 		injector::MakeNOP(0x7B92C8, 6, true); // CustomizePerformance::Setup - Fix Junkman Parts
 	}
 	
@@ -144,11 +145,13 @@ int Init()
 		// Hook customize main
 		injector::MakeCALL(0x7BFCEC, CustomizeMain_BuildOptionsList, true); // CustomizeMain::SwitchRooms
 		injector::MakeCALL(0x7C0055, CustomizeMain_BuildOptionsList, true); // CustomizeMain::Setup
+		injector::WriteMemory(0x8B808C, &CustomizeMain_NotificationMessage, true); // CustomizeMain::vtable
+		injector::WriteMemory(0x8B8094, &CustomizeMain_RefreshHeader, true); // CustomizeMain::vtable
 
-		injector::MakeNOP(0x7B123D, 2, true); // CustomizeMain::RefreshHeader - Backroom HUD Widget (BMWM3GTRE46)
-		injector::MakeNOP(0x7BFF49, 6, true); // CustomizeMain::NotificationMessage - Switch to Backroom Menu (BMWM3GTRE46)
-		injector::MakeNOP(0x7B92DC, 6, true); // CustomizePerformance::Setup - Backroom Performance Parts (BMWM3GTRE46)
-		injector::MakeNOP(0x7BC28C, 2, true); // CustomizeSub::SetupVisual - Rim Paint (BMWM3GTRE46)
+		//injector::MakeNOP(0x7B123D, 2, true); // CustomizeMain::RefreshHeader - Backroom HUD Widget (BMWM3GTRE46)
+		//injector::MakeNOP(0x7BFF49, 6, true); // CustomizeMain::NotificationMessage - Switch to Backroom Menu (BMWM3GTRE46)
+		//injector::MakeNOP(0x7B92DC, 6, true); // CustomizePerformance::Setup - Backroom Performance Parts (BMWM3GTRE46)
+		//injector::MakeNOP(0x7BC28C, 2, true); // CustomizeSub::SetupVisual - Rim Paint (BMWM3GTRE46)
 
 		injector::WriteMemory(0x8B8058, &CustomizeSub_NotificationMessage, true); // CustomizeSub::vtable
 		injector::WriteMemory(0x8B8064, &CustomizeSub_Setup, true);
@@ -203,8 +206,10 @@ int Init()
 		injector::MakeNOP(0x7BAEE0, 6, true); // CarCustomizeManager::IsCategoryLocked, Visual category
 		injector::MakeJMP(0x7BAEE0, IsLockedCodeCaveVisual, true); // CarCustomizeManager::IsCategoryLocked, Visual category
 
-		// Paint related fixes
-		injector::WriteMemory(0x8B8074, CustomizePaint_RefreshHeader, true);
+		// Paint
+		injector::WriteMemory(0x8B8074, &CustomizePaint_RefreshHeader, true);
+		injector::MakeJMP(0x7B8040, CustomizePaint_BuildSwatchList, true); // 6 references
+		injector::WriteMemory<int>(0x7BDD03, 4, true); // CustomizePaint::ScrollFilters
 
 		// Decals
 		injector::MakeJMP(0x7A7030, CustomizeDecals_GetSlotIDFromCategory, true); // 3 references
@@ -316,6 +321,14 @@ int Init()
 			injector::MakeJMP(0x007471AD, RideHeightCave, true); // CarRenderConn::UpdateRenderMatrix
 		}
 		
+	}
+
+	if (ExtraCustomization || MyCarsBackroom || TestCareerCustomization)
+	{
+		injector::MakeJMP(0x7A65C0, CustomizeMain_SetScreenNames, true); // 2 references
+
+		// Shopping cart screen switching fix
+		injector::MakeJMP(0x7A60E0, CustomizeShoppingCart_ExitShoppingCart, true); // 3 references
 	}
 	
 	// Check the ini file for destroyed cops messages

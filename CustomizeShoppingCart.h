@@ -1,3 +1,5 @@
+#pragma once
+
 #include "stdio.h"
 #include "InGameFunctions.h"
 
@@ -29,4 +31,15 @@ void __declspec(naked) MyCarsBackroomShoppingCartFixCodeCave2()
 			push 0x7B093E
 			retn
 	}
+}
+
+void CustomizeShoppingCart_ExitShoppingCart()
+{
+	if (CustomizeIsInBackRoom())
+	{
+		CustomizeSetInBackRoom(0);
+		DWORD* TheFEManager = FEManager_Get();
+		FEManager_SetGarageType(TheFEManager, CarCustomizeManager_IsCareerMode_CheckTCC() ? 3 : 1);
+	}
+	cFEng_QueuePackageSwitch(*(DWORD**)cFEng_mInstance, *(char**)g_pCustomizeMainPkg, 0, 0, 0);
 }

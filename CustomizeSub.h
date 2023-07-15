@@ -2,6 +2,7 @@
 #include "InGameFunctions.h"
 #include "includes\IniReader.h"
 #include "CarCustomizeManager.h"
+#include "CustomizeShoppingCart.h"
 #include "Helpers.h"
 #include "IconScroller.h"
 

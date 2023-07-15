@@ -91,7 +91,7 @@ void Presitter_Save(char const* ProfileName)
 				// Get Customization Record
 				BYTE CustRecHandle = ((BYTE*)CarRecord)[16];
 
-				if (CustRecHandle != -1)
+				if (CarRecord[0] != -1 && CustRecHandle != 0xFF) // Valid car and customization records
 				{
 					// Get customization record
 					DWORD* CustomizationRecord = FEPlayerCarDB_GetCustomizationRecordByHandle((DWORD*)(FEDatabase[4] + 1044), CustRecHandle);
@@ -184,7 +184,7 @@ void Presitter_Load(char const* ProfileName)
 				// Get Customization Record
 				BYTE CustRecHandle = ((BYTE*)CarRecord)[16];
 
-				if (CustRecHandle != -1)
+				if (CarRecord[0] != -1 && CustRecHandle != 0xFF) // Valid car and customization records
 				{
 					// Get customization record
 					DWORD* CustomizationRecord = FEPlayerCarDB_GetCustomizationRecordByHandle((DWORD*)(FEDatabase[4] + 1044), CustRecHandle);

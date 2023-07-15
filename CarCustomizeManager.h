@@ -169,6 +169,11 @@ void __declspec(naked) IsLockedCodeCaveVisual()
     }
 }
 
+bool __fastcall CarCustomizeManager_IsCategoryNew(DWORD* _CarCustomizeManager, void* EDX_Unused, unsigned int MenuID)
+{
+    return CarCustomizeManager_IsCategoryNew_Game(_CarCustomizeManager, MenuID);
+}
+
 bool __fastcall CarCustomizeManager_AreAllRimsStock(DWORD* _CarCustomizeManager, void* EDX_Unused)
 {
     DWORD* StockFrontWheel = CarCustomizeManager_GetStockCarPart((DWORD*)_gCarCustomizeManager, 66); // FRONT_WHEEL
@@ -183,7 +188,7 @@ bool __fastcall CarCustomizeManager_AreAllRimsStock(DWORD* _CarCustomizeManager,
     return IsFrontStock && IsRearStock;
 }
 
-bool __fastcall CarCustomizeManager_IsCareerMode_CheckTCC(DWORD* _CarCustomizeManager, void* EDX_Unused)
+bool CarCustomizeManager_IsCareerMode_CheckTCC()
 {
     bool result = 1;
     bool Test = !*(bool*)g_bTestCareerCustomization;

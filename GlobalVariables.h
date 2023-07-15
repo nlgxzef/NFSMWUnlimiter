@@ -42,12 +42,14 @@
 #define _RealTimeElapsedFrame 0x9259BC
 #define _TheGameFlowManager 0x925E90
 #define _FEGroup_vtbl 0x8A2E24
+#define _CustomizePaintDatum_vtable 0x8B7580
 #define _IsCollectorsEdition 0x8F8718
 #define _UnlockAllThings 0x926124
 #define _TweakKitWheelOffsetFront 0x9B0960
 #define _TweakKitWheelOffsetRear 0x9B0964
 #define _Showcase_FromIndex 0x9B9E84
 #define _Showcase_FromFilter 0x905E38
+#define _Showcase_FromColor 0x9B9E3C
 #define _DrawCars 0x903320
 #define _DrawLightFlares 0x8F2918
 #define _FrontEndRenderingCarList 0x9B27EC

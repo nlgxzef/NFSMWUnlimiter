@@ -50,6 +50,12 @@ void __fastcall CustomizePaint_RefreshHeader(DWORD* CustomizePaint, void* EDX_Un
 			case 2:
 				PaintCategoryNameHash = 0xB715070A; // CP_FILTER_PEARL
 				break;
+			case 3:
+				PaintCategoryNameHash = bStringHash("CP_FILTER_TRAFFIC"); // CP_FILTER_RIM
+				break;
+			case 4:
+				PaintCategoryNameHash = bStringHash("CP_FILTER_COP"); // CP_FILTER_RIM
+				break;
 			}
 			SelectedPaintCarPart = *(DWORD**)((*(int(__thiscall**)(DWORD*))(*CustomizePaint + 20))(CustomizePaint) + 12);
 			SelectedPaintSelectablePart = (DWORD*)(*(int(__thiscall**)(DWORD*))(*CustomizePaint + 20))(CustomizePaint); // GetSelectedPart
@@ -166,9 +172,224 @@ void __fastcall CustomizePaint_RefreshHeader(DWORD* CustomizePaint, void* EDX_Un
 				BYTE Green = (BYTE)CarPart_GetAppliedAttributeIParam(SelectedPaintCarPart, bStringHash("GREEN"), 0);
 				BYTE Blue = (BYTE)CarPart_GetAppliedAttributeIParam(SelectedPaintCarPart, bStringHash("BLUE"), 0);
 
-				FEngSetColor_obj(*(DWORD**)(PaintSlot + 3), Blue | (((unsigned __int8)Green | ((Red | 0xFFFFFF00) << 8)) << 8));
+				FEngSetColor_obj(*(DWORD**)(PaintSlot + 3), Blue | ((Green | ((Red | 0xFFFFFF00) << 8)) << 8));
 			}
 		}
 	}
 }
 
+DWORD __fastcall CustomizePaint_CalcBrandHash(DWORD* _CustomizePaint, void* EDX_Unused, DWORD* ActivePaint)
+{
+	DWORD result;
+
+	int MenuID = _CustomizePaint[82];
+	int PaintScrollerIndex = _CustomizePaint[111];
+
+	switch (MenuID)
+	{
+	case 0x301:
+		switch (PaintScrollerIndex)
+		{
+		case 4:
+			result = 0x9B21; // COP
+			break;
+		case 3:
+			result = 0x19E0ECBE; // TRAFFIC
+			break;
+		case 2:
+			result = 0x3797533; // PEARL
+			break;
+		case 1:
+			result = 0x3437A52; // METAL
+			break;
+		case 0:
+			result = 0x2DAAB07; // GLOSS
+			break;
+		default:
+			result = CarPart_GetAppliedAttributeUParam(ActivePaint, 0xEBB03E66, 0); // BRAND_NAME
+			break;
+		}
+		break;
+
+	case 0x303:
+		result = 0xDA27; // RIM
+		break;
+
+	default:
+		result = 0x3E871F1; // VINYL
+		break;
+	}
+
+	return result;
+}
+
+DWORD __fastcall CustomizePaint_CalcIndexFromBrandHash(DWORD* _CustomizePaint, void* EDX_Unused, DWORD BrandHash)
+{
+	DWORD result = 0;
+
+	switch (BrandHash)
+	{
+	case 0x9B21:
+		result = 4; // COP
+		break;
+	case 0x19E0ECBE:
+		result = 3; // TRAFFIC
+		break;
+	case 0x3797533:
+		result = 2; // PEARL
+		break;
+	case 0x3437A52:
+		result = 1; // METAL
+		break;
+	case 0x2DAAB07:
+	default:
+		result = 0; // GLOSS
+		break;
+	}
+
+	_CustomizePaint[111] = result;
+	return result;
+}
+
+void __fastcall CustomizePaint_BuildSwatchList(DWORD* _CustomizePaint, void* EDX_Unused, unsigned int CarSlotID)
+{
+	int VinylColorLayer; // eax
+	DWORD* ShowcasePaintPart; // ecx
+	unsigned int BrandHash; // eax MAPDST
+	bool IsIndexInvalid; // zf
+	DWORD* ListItem; // eax
+	DWORD* PaintSelectablePart; // eax
+	DWORD* NextPaintSelectablePart; // eax
+	int Unlockhash; // ebp
+	DWORD* PaintDatum; // esi
+	DWORD* pl_itm_nxt; // ecx MAPDST
+	DWORD* pl_itm; // edx MAPDST
+	DWORD* pl_itm_prv; // eax MAPDST
+	DWORD* SelectablePartFromDatum; // edi
+	DWORD* pItemIndex; // eax
+	DWORD* ArraySlot; // ebp
+	DWORD* PaintPart; // edi MAPDST
+	int AttrNameHash; // eax MAPDST
+	unsigned __int8 r; // al MAPDST
+	unsigned __int8 b; // al
+	DWORD InitialPosition; // eax
+	int i; // [esp+Ch] [ebp-24h]
+	DWORD* ActivePaint; // [esp+10h] [ebp-20h] MAPDST
+	DWORD* PartList[2]; // [esp+1Ch] [ebp-14h] BYREF
+	int v38; // [esp+2Ch] [ebp-4h]
+	unsigned __int8 g; // [esp+34h] [ebp+4h]
+
+	ArrayScroller_ClearData(_CustomizePaint + 136);
+	if (CarSlotID < 79 || CarSlotID > 81)
+		goto LABEL_11;
+	if (CarSlotID == 79)
+		VinylColorLayer = 0;
+	else
+		VinylColorLayer = CarSlotID == 80 ? 1 : 2;
+	ShowcasePaintPart = *(DWORD**)(_Showcase_FromColor + 4 * VinylColorLayer);
+	if (!ShowcasePaintPart)
+		goto LABEL_11;
+	if (_CustomizePaint[VinylColorLayer + 181])
+		goto LABEL_11;
+	ActivePaint = (DWORD*)ShowcasePaintPart[3];
+	if (!ActivePaint)
+		LABEL_11:
+	ActivePaint = (DWORD*)CarCustomizeManager_GetActivePartFromSlot(
+		(DWORD*)_gCarCustomizeManager,
+		CarSlotID);
+	BrandHash = CustomizePaint_CalcBrandHash(_CustomizePaint, EDX_Unused, ActivePaint);
+	IsIndexInvalid = _CustomizePaint[111] == -1;
+	if (IsIndexInvalid) CustomizePaint_CalcIndexFromBrandHash(_CustomizePaint, EDX_Unused, BrandHash);
+
+	PartList[0] = (DWORD*)PartList;
+	PartList[1] = (DWORD*)PartList;
+	v38 = 0;
+	CarCustomizeManager_GetCarPartList((DWORD*)_gCarCustomizeManager, CarSlotID, (DWORD*)PartList, 0);
+	ListItem = PartList[0];
+	for (i = 0; (DWORD**)PartList[0] != PartList; ListItem = PartList[0])
+	{
+		if (ListItem)
+			PaintSelectablePart = ListItem - 1;
+		else
+			PaintSelectablePart = 0;
+		if (CarPart_GetAppliedAttributeUParam((DWORD*)PaintSelectablePart[3], 0xEBB03E66, 0) == BrandHash)
+		{
+			if (PartList[0])
+				NextPaintSelectablePart = PartList[0] - 1;
+			else
+				NextPaintSelectablePart = 0;
+			Unlockhash = CarCustomizeManager_GetUnlockHash(
+				(DWORD*)_gCarCustomizeManager,
+				_CustomizePaint[82],
+				*(BYTE*)(NextPaintSelectablePart[3] + 5) >> 5);
+			PaintDatum = (DWORD*)j_malloc(0x20u);
+			v38 = 1;
+			if (PaintDatum)
+			{
+				pl_itm_nxt = (DWORD*)*PartList[0];
+				pl_itm = PartList[0];
+				pl_itm_prv = (DWORD*)PartList[0][1];
+				*pl_itm_prv = *PartList[0];
+				pl_itm_nxt[1] = (DWORD)pl_itm_prv;
+				SelectablePartFromDatum = pl_itm - 1;
+				ArrayDatum_ArrayDatum(PaintDatum, 0xC6AFDD7E, 0);
+				*PaintDatum = _CustomizePaintDatum_vtable;
+					PaintDatum[6] = (DWORD)SelectablePartFromDatum;
+				PaintDatum[7] = Unlockhash;
+			}
+			else
+			{
+				PaintDatum = 0;
+			}
+			pItemIndex = &_CustomizePaint[_CustomizePaint[111]%3 + 112];
+			IsIndexInvalid = *pItemIndex == -1;
+			v38 = 0;
+			if (IsIndexInvalid && ActivePaint == *(DWORD**)(PaintDatum[6] + 12))
+				*pItemIndex = i;
+			ArrayScroller_AddDatum((_CustomizePaint + 136), PaintDatum);
+			ArraySlot = (DWORD*)ArrayScroller_GetSlotAt((_CustomizePaint + 136), i);
+			if (ArraySlot)
+			{
+				PaintPart = *(DWORD**)(PaintDatum[6] + 12);
+				AttrNameHash = bStringHash("RED");
+				r = CarPart_GetAppliedAttributeIParam(PaintPart, AttrNameHash, 0);
+				PaintPart = *(DWORD**)(PaintDatum[6] + 12);
+				AttrNameHash = bStringHash("GREEN");
+				g = CarPart_GetAppliedAttributeIParam(PaintPart, AttrNameHash, 0);
+				PaintPart = *(DWORD**)(PaintDatum[6] + 12);
+				AttrNameHash = bStringHash("BLUE");
+				b = CarPart_GetAppliedAttributeIParam(PaintPart, AttrNameHash, 0);
+				FEngSetColor_obj((DWORD*)ArraySlot[3], b | ((g | ((r | 0xFFFFFF00) << 8)) << 8));
+			}
+			++i;
+		}
+		else                                        // remove from list
+		{
+			pl_itm_nxt = (DWORD*)*PartList[0];
+			pl_itm = PartList[0];
+			pl_itm_prv = (DWORD*)PartList[0][1];
+			*pl_itm_prv = *PartList[0];
+			pl_itm_nxt[1] = (DWORD)pl_itm_prv;
+			if (pl_itm != (DWORD*)4)
+				(*(void(__thiscall**)(DWORD*, int)) * (pl_itm - 1))(pl_itm - 1, 1);
+		}
+	}
+	if (*(int*)_Showcase_FromIndex)
+	{
+		_CustomizePaint[_CustomizePaint[111]%3 + 112] = *(int*)_Showcase_FromIndex - 1;
+		ArrayScroller_SetInitialPosition((_CustomizePaint + 136), *(int*)_Showcase_FromIndex - 1);
+		*(int*)_Showcase_FromIndex = 0;
+	}
+	else
+	{
+		InitialPosition = (DWORD)&_CustomizePaint[_CustomizePaint[111]%3 + 112];
+		if (*(DWORD*)InitialPosition == -1)
+			*(DWORD*)InitialPosition = 0;
+		ArrayScroller_SetInitialPosition(
+			(_CustomizePaint + 136),
+			_CustomizePaint[_CustomizePaint[111]%3 + 112]);
+	}
+	(*(void(__thiscall**)(DWORD*))(*_CustomizePaint + 12))(_CustomizePaint);// RefreshHeader
+	v38 = -1;
+	bTList_SelectablePart_dtor((int**)PartList);
+}
