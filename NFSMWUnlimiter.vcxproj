@@ -60,6 +60,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <AdditionalIncludeDirectories>includes</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -80,6 +81,7 @@ copy "$(TargetDir)*.pdb" "G:\Oyunlar\Need for Speed Most Wanted Dirty\scripts"  
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <AdditionalIncludeDirectories>includes</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -117,6 +119,7 @@ copy "$(TargetDir)*.pdb" "G:\Oyunlar\Need for Speed Most Wanted Dirty\scripts"  
     <ClInclude Include="GRacerInfo.h" />
     <ClInclude Include="Helpers.h" />
     <ClInclude Include="IconScroller.h" />
+    <ClInclude Include="includes\ini.h" />
     <ClInclude Include="InGameFunctions.h" />
     <ClInclude Include="MemcardCallbacks.h" />
     <ClInclude Include="Presitter.h" />
@@ -131,6 +134,7 @@ copy "$(TargetDir)*.pdb" "G:\Oyunlar\Need for Speed Most Wanted Dirty\scripts"  
     <ClInclude Include="CarRenderInfo.h" />
     <ClInclude Include="TireState.h" />
     <ClInclude Include="UIQRCarSelect.h" />
+    <ClInclude Include="UnlimiterData.h" />
     <ClInclude Include="UnlimiterStuff.h" />
     <ClInclude Include="CarPart.h" />
     <ClInclude Include="UnlockSystem.h" />

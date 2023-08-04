@@ -30,7 +30,7 @@ bool __fastcall FrontEndRenderingCar_LookupWheelPosition(DWORD* _FrontEndRenderi
         if (BodyKitCarPart)
         {
             // Read offset attributes from body kit
-            FECompression = CarPart_GetAppliedAttributeFParam(BodyKitCarPart, 0, index >> 1 ? bStringHash("REAR_FECOMPRESSION") : bStringHash("FRONT_FECOMPRESSION"), FECompression);
+            FECompression = CarPart_GetAppliedAttributeFParam(BodyKitCarPart, 0, index >> 1 ? bStringHash((char*)"REAR_FECOMPRESSION") : bStringHash((char*)"FRONT_FECOMPRESSION"), FECompression);
         }
     }
 

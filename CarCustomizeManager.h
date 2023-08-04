@@ -1,5 +1,6 @@
 #pragma once
 
+#include "stdafx.h"
 #include "stdio.h"
 #include "UnlockSystem.h"
 #include "InGameFunctions.h"
@@ -12,13 +13,7 @@ bool __fastcall CarCustomizeManager_IsCastrolCar(DWORD* CarCustomizeManager, int
     int CarType; // eax
     CarType = FECarRecord_GetType(*(void**)_FECarRecord);
 
-    // Get config files
-    sprintf(CarTypeName, GetCarTypeName(CarType));
-    sprintf(CarININame, "UnlimiterData\\%s.ini", CarTypeName);
-    CIniReader CarINI(CarININame);
-    CIniReader GeneralINI("UnlimiterData\\_General.ini");
-
-    int EngineType = GetCarIntOption(CarINI, GeneralINI, "Main", "EngineType", -1);
+    int EngineType = CarConfigs[CarType].Main.EngineType;
 
     if ((EngineType == -1 && CarType == 52) || EngineType == 1) // FORDGT
         result = EasterEggs_IsEasterEggUnlocked((DWORD*)gEasterEggs, 4);
@@ -32,13 +27,7 @@ bool __fastcall CarCustomizeManager_IsRotaryCar(DWORD* CarCustomizeManager, int 
     int CarType; // eax
     CarType = FECarRecord_GetType(*(void**)_FECarRecord);
 
-    // Get config files
-    sprintf(CarTypeName, GetCarTypeName(CarType));
-    sprintf(CarININame, "UnlimiterData\\%s.ini", CarTypeName);
-    CIniReader CarINI(CarININame);
-    CIniReader GeneralINI("UnlimiterData\\_General.ini");
-
-    int EngineType = GetCarIntOption(CarINI, GeneralINI, "Main", "EngineType", -1);
+    int EngineType = CarConfigs[CarType].Main.EngineType;
 
     if (EngineType == -1) return CarType == 5 || CarType == 56; // RX7, RX8
     else return EngineType == 2;
@@ -207,12 +196,6 @@ void __fastcall CarCustomizeManager_UpdateHeatOnVehicle(DWORD* CarCustomizeManag
     int CarType; // eax
     CarType = FECarRecord_GetType(*(void**)_FECarRecord);
 
-    // Get config files
-    sprintf(CarTypeName, GetCarTypeName(CarType));
-    sprintf(CarININame, "UnlimiterData\\%s.ini", CarTypeName);
-    CIniReader CarINI(CarININame);
-    CIniReader GeneralINI("UnlimiterData\\_General.ini");
-
     if (TheSelectablePart && FECareerRecord
         && !*((BYTE*)TheSelectablePart + 28) // Is not performance part
         && ((*((BYTE*)FEDatabase + 300) & 1) != 0 || *(bool*)g_bTestCareerCustomization)) // Career mode
@@ -224,43 +207,43 @@ void __fastcall CarCustomizeManager_UpdateHeatOnVehicle(DWORD* CarCustomizeManag
         switch (TheSelectablePart[4]) // CarSlotID
         {
         case 23: // BODY
-            CustomFECoolingValue = GetCarFloatOption(CarINI, GeneralINI, "FECooling", "BodyKits", 0.0f);
+            CustomFECoolingValue = CarConfigs[CarType].FECooling.BodyKits;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             else FECareerRecord_AdjustHeatOnBodyKitApplied(FECareerRecord, HeatAdjustMultiplier);
             break;
         case 44: // SPOILER
-            CustomFECoolingValue = GetCarFloatOption(CarINI, GeneralINI, "FECooling", "Spoilers", 0.0f);
+            CustomFECoolingValue = CarConfigs[CarType].FECooling.Spoilers;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             else FECareerRecord_AdjustHeatOnSpoilerApplied(FECareerRecord, HeatAdjustMultiplier);
             break;
         case 62: // ROOF
-            CustomFECoolingValue = GetCarFloatOption(CarINI, GeneralINI, "FECooling", "RoofScoops", 0.0f);
+            CustomFECoolingValue = CarConfigs[CarType].FECooling.RoofScoops;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             else FECareerRecord_AdjustHeatOnRoofScoopApplied(FECareerRecord, HeatAdjustMultiplier);
             break;
         case 63: // HOOD
-            CustomFECoolingValue = GetCarFloatOption(CarINI, GeneralINI, "FECooling", "Hoods", 0.0f);
+            CustomFECoolingValue = CarConfigs[CarType].FECooling.Hoods;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             else FECareerRecord_AdjustHeatOnHoodApplied(FECareerRecord, HeatAdjustMultiplier);
             break;
         case 66: // FRONT_WHEEL
         case 67: // REAR_WHEEL
-            CustomFECoolingValue = GetCarFloatOption(CarINI, GeneralINI, "FECooling", "Rims", 0.0f);
+            CustomFECoolingValue = CarConfigs[CarType].FECooling.Rims;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             else FECareerRecord_AdjustHeatOnRimApplied(FECareerRecord, HeatAdjustMultiplier);
             break;
         case 76: // BASE_PAINT
-            CustomFECoolingValue = GetCarFloatOption(CarINI, GeneralINI, "FECooling", "Paint", 0.0f);
+            CustomFECoolingValue = CarConfigs[CarType].FECooling.Paint;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             else FECareerRecord_AdjustHeatOnPaintApplied(FECareerRecord, HeatAdjustMultiplier);
             break;
         case 77: // VINYL_LAYER0
-            CustomFECoolingValue = GetCarFloatOption(CarINI, GeneralINI, "FECooling", "Vinyls", 0.0f);
+            CustomFECoolingValue = CarConfigs[CarType].FECooling.Vinyls;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             else FECareerRecord_AdjustHeatOnVinylApplied(FECareerRecord, HeatAdjustMultiplier);
             break;
         case 78: // PAINT_RIM
-            CustomFECoolingValue = GetCarFloatOption(CarINI, GeneralINI, "FECooling", "RimPaint", 0.0f);
+            CustomFECoolingValue = CarConfigs[CarType].FECooling.RimPaint;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             else FECareerRecord_AdjustHeatOnRimPaintApplied(FECareerRecord, HeatAdjustMultiplier);
             break;
@@ -312,93 +295,93 @@ void __fastcall CarCustomizeManager_UpdateHeatOnVehicle(DWORD* CarCustomizeManag
         case 128: // DECAL_RIGHT_QUARTER_TEX5
         case 129: // DECAL_RIGHT_QUARTER_TEX6
         case 130: // DECAL_RIGHT_QUARTER_TEX7
-            CustomFECoolingValue = GetCarFloatOption(CarINI, GeneralINI, "FECooling", "Decals", 0.0f);
+            CustomFECoolingValue = CarConfigs[CarType].FECooling.Decals;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             else FECareerRecord_AdjustHeatOnDecalApplied(FECareerRecord, HeatAdjustMultiplier);
             break;
         case 131: // WINDOW_TINT
-            CustomFECoolingValue = GetCarFloatOption(CarINI, GeneralINI, "FECooling", "WindowTint", 0.0f);
+            CustomFECoolingValue = CarConfigs[CarType].FECooling.WindowTint;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             else FECareerRecord_AdjustHeatOnWindowTintApplied(FECareerRecord, HeatAdjustMultiplier);
             break;
         case 28: // INTERIOR
-            CustomFECoolingValue = GetCarFloatOption(CarINI, GeneralINI, "FECooling", "Interior", 0.0f);
+            CustomFECoolingValue = CarConfigs[CarType].FECooling.Interior;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             break;
         case 0: // BASE
-            CustomFECoolingValue = GetCarFloatOption(CarINI, GeneralINI, "FECooling", "Roof", 0.0f);
+            CustomFECoolingValue = CarConfigs[CarType].FECooling.Roof;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             break;
         case 24: // FRONT_BRAKE
-            CustomFECoolingValue = GetCarFloatOption(CarINI, GeneralINI, "FECooling", "Brakes", 0.0f);
+            CustomFECoolingValue = CarConfigs[CarType].FECooling.Brakes;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             break;
         case 31: // LEFT_HEADLIGHT
-            CustomFECoolingValue = GetCarFloatOption(CarINI, GeneralINI, "FECooling", "Headlights", 0.0f);
+            CustomFECoolingValue = CarConfigs[CarType].FECooling.Headlights;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             break;
         case 29: // LEFT_BRAKELIGHT
-            CustomFECoolingValue = GetCarFloatOption(CarINI, GeneralINI, "FECooling", "Taillights", 0.0f);
+            CustomFECoolingValue = CarConfigs[CarType].FECooling.Taillights;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             break;
         case 33: // LEFT_SIDE_MIRROR
-            CustomFECoolingValue = GetCarFloatOption(CarINI, GeneralINI, "FECooling", "Mirrors", 0.0f);
+            CustomFECoolingValue = CarConfigs[CarType].FECooling.Mirrors;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             break;
         case 52: // ATTACHMENT0
-            CustomFECoolingValue = GetCarFloatOption(CarINI, GeneralINI, "FECooling", "Attachment0", 0.0f);
+            CustomFECoolingValue = CarConfigs[CarType].FECooling.Attachment0;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             break;
         case 53: // ATTACHMENT1
-            CustomFECoolingValue = GetCarFloatOption(CarINI, GeneralINI, "FECooling", "Attachment1", 0.0f);
+            CustomFECoolingValue = CarConfigs[CarType].FECooling.Attachment1;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             break;
         case 54: // ATTACHMENT2
-            CustomFECoolingValue = GetCarFloatOption(CarINI, GeneralINI, "FECooling", "Attachment2", 0.0f);
+            CustomFECoolingValue = CarConfigs[CarType].FECooling.Attachment2;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             break;
         case 55: // ATTACHMENT3
-            CustomFECoolingValue = GetCarFloatOption(CarINI, GeneralINI, "FECooling", "Attachment3", 0.0f);
+            CustomFECoolingValue = CarConfigs[CarType].FECooling.Attachment3;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             break;
         case 56: // ATTACHMENT4
-            CustomFECoolingValue = GetCarFloatOption(CarINI, GeneralINI, "FECooling", "Attachment4", 0.0f);
+            CustomFECoolingValue = CarConfigs[CarType].FECooling.Attachment4;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             break;
         case 57: // ATTACHMENT5
-            CustomFECoolingValue = GetCarFloatOption(CarINI, GeneralINI, "FECooling", "Attachment5", 0.0f);
+            CustomFECoolingValue = CarConfigs[CarType].FECooling.Attachment5;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             break;
         case 58: // ATTACHMENT6
-            CustomFECoolingValue = GetCarFloatOption(CarINI, GeneralINI, "FECooling", "Attachment6", 0.0f);
+            CustomFECoolingValue = CarConfigs[CarType].FECooling.Attachment6;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             break;
         case 59: // ATTACHMENT7
-            CustomFECoolingValue = GetCarFloatOption(CarINI, GeneralINI, "FECooling", "Attachment7", 0.0f);
+            CustomFECoolingValue = CarConfigs[CarType].FECooling.Attachment7;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             break;
         case 60: // ATTACHMENT8
-            CustomFECoolingValue = GetCarFloatOption(CarINI, GeneralINI, "FECooling", "Attachment8", 0.0f);
+            CustomFECoolingValue = CarConfigs[CarType].FECooling.Attachment8;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             break;
         case 61: // ATTACHMENT9
-            CustomFECoolingValue = GetCarFloatOption(CarINI, GeneralINI, "FECooling", "Attachment9", 0.0f);
+            CustomFECoolingValue = CarConfigs[CarType].FECooling.Attachment9;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             break;
         case 43: // DRIVER
-            CustomFECoolingValue = GetCarFloatOption(CarINI, GeneralINI, "FECooling", "Driver", 0.0f);
+            CustomFECoolingValue = CarConfigs[CarType].FECooling.Driver;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             break;
         case 69: // LICENSE_PLATE
-            CustomFECoolingValue = GetCarFloatOption(CarINI, GeneralINI, "FECooling", "LicensePlate", 0.0f);
+            CustomFECoolingValue = CarConfigs[CarType].FECooling.LicensePlate;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             break;
         case 64: // HEADLIGHT
-            CustomFECoolingValue = GetCarFloatOption(CarINI, GeneralINI, "FECooling", "Tires", 0.0f);
+            CustomFECoolingValue = CarConfigs[CarType].FECooling.Tires;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             break;
         case 65: // BRAKELIGHT
-            CustomFECoolingValue = GetCarFloatOption(CarINI, GeneralINI, "FECooling", "Neon", 0.0f);
+            CustomFECoolingValue = CarConfigs[CarType].FECooling.Neon;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             break;
         default:

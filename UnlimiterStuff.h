@@ -1,14 +1,14 @@
 #include "stdafx.h"
 #include "stdio.h"
 #include <string>
-#include <windows.h>
 #include "includes\injector\injector.hpp"
-#include "includes\IniReader.h"
+#include "includes\ini.h"
 
-int ManuID, CarArraySize, CarCount, CarPartCount, CarPartPartsTableSize, ReplacementCar, TrafficCarCount, RacerNamesCount, FrameDelay;
-bool ManuHook, ExtraCustomization, DisappearingWheelsFix, SecondaryLogoFix, ExpandMemoryPools, AddOnCopsDamageFix, ForceStockPartsOnAddOnOpponents, ChallengeSeriesOpponentNameFix, CopDestroyedStringHook, DisableTextureReplacement, MyCarsBackroom, FNGFix, RandomHook, RideHeightFix, BonusCarsHook, CarSkinFix, LightMaterialCrashFix, DisableNeon, DisableLightFlareColors, DisableKitWheelModifications, ExitWorkaround, Presitter, TestCareerCustomization, LimitAdjusterCompatibility;
+int ManuID, CarArraySize, CarCount, CarPartCount, CarPartPartsTableSize, ReplacementCar, TrafficCarCount, RacerNamesCount, FrameDelay, CarSkinCount;
+bool ManuHook, ExtraCustomization, DisappearingWheelsFix, SecondaryLogoFix, ExpandMemoryPools, AddOnCopsDamageFix, ForceStockPartsOnAddOnOpponents, ChallengeSeriesOpponentNameFix, CopDestroyedStringHook, DisableTextureReplacement, MyCarsBackroom, EnableFNGFixes, RandomHook, RideHeightFix, BonusCarsHook, CarSkinFix, LightMaterialCrashFix, DisableNeon, DisableLightFlareColors, DisableKitWheelModifications, ExitWorkaround, Presitter, TestCareerCustomization, LimitAdjusterCompatibility;
 
 #include "InGameFunctions.h"
+#include "GlobalVariables.h"
 #include "CustomizeMain.h"
 #include "CustomizeSub.h"
 #include "CustomizeParts.h"
@@ -37,53 +37,59 @@ bool ManuHook, ExtraCustomization, DisappearingWheelsFix, SecondaryLogoFix, Expa
 #include "FrontEndRenderingCar.h"
 #include "TireState.h"
 #include "CarRenderConn.h"
-#include "CompositeSkin.h"
+//#include "CompositeSkin.h"
 #include "Presitter.h"
 #include "UserProfile.h"
 #include "MemcardCallbacks.h"
 #include "RealmcIface_MemcardInterfaceImpl.h"
 #include "Game.h"
 #include "Helpers.h"
+#include "UnlimiterData.h"
 #include "CodeCaves.h"
 
 int Init()
 {
-	CIniReader Settings("NFSMWUnlimiterSettings.ini");
+	CurrentWorkingDirectory = std::filesystem::current_path();
+
+	auto UnlimiterSettings = CurrentWorkingDirectory / "NFSMWUnlimiterSettings.ini";
+	mINI::INIFile NFSMWUnlimiterSettingsINIFile(UnlimiterSettings.string());
+	mINI::INIStructure Settings;
+	NFSMWUnlimiterSettingsINIFile.read(Settings);
 
 	// Main
-	ReplacementCar = Settings.ReadInteger("Main", "ReplacementModel", 1);
-	//TrafficCarCount = Settings.ReadInteger("Main", "TrafficCarCount", 10);
-	ManuHook = Settings.ReadInteger("Main", "EnableManufacturerHook", 1) != 0;
-	ExtraCustomization = Settings.ReadInteger("Main", "EnableExtraCustomization", 1) != 0;
-	MyCarsBackroom = Settings.ReadInteger("Main", "MyCarsBackroom", 1) != 0;
-	CopDestroyedStringHook = Settings.ReadInteger("Main", "EnableCopDestroyedStringHook", 1) != 0;
-	RandomHook = Settings.ReadInteger("Main", "EnableRandomPartsHook", 1) != 0;
-	BonusCarsHook = Settings.ReadInteger("Main", "EnableBonusCarsHook", 0) != 0;
-	Presitter = Settings.ReadInteger("Main", "EnablePresitter", 1) != 0;
+	ReplacementCar = mINI_ReadInteger(Settings, "Main", "ReplacementModel", 1);
+	//TrafficCarCount = mINI_ReadInteger(Settings, "Main", "TrafficCarCount", 10);
+	ManuHook = mINI_ReadInteger(Settings, "Main", "EnableManufacturerHook", 1) != 0;
+	ExtraCustomization = mINI_ReadInteger(Settings, "Main", "EnableExtraCustomization", 1) != 0;
+	MyCarsBackroom = mINI_ReadInteger(Settings, "Main", "MyCarsBackroom", 1) != 0;
+	CopDestroyedStringHook = mINI_ReadInteger(Settings, "Main", "EnableCopDestroyedStringHook", 1) != 0;
+	RandomHook = mINI_ReadInteger(Settings, "Main", "EnableRandomPartsHook", 1) != 0;
+	BonusCarsHook = mINI_ReadInteger(Settings, "Main", "EnableBonusCarsHook", 0) != 0;
+	Presitter = mINI_ReadInteger(Settings, "Main", "EnablePresitter", 1) != 0;
 
 	// Fixes
-	DisappearingWheelsFix = Settings.ReadInteger("Fixes", "DisappearingWheelsFix", 1) != 0;
-	SecondaryLogoFix = Settings.ReadInteger("Fixes", "SecondaryLogoFix", 1) != 0;
-	AddOnCopsDamageFix = Settings.ReadInteger("Fixes", "AddOnCopsDamageFix", 1) != 0;
-	ChallengeSeriesOpponentNameFix = Settings.ReadInteger("Fixes", "ChallengeSeriesOpponentNameFix", 1) != 0;
-	LightMaterialCrashFix = Settings.ReadInteger("Fixes", "LightMaterialCrashFix", 0) != 0;
-	RideHeightFix = Settings.ReadInteger("Fixes", "RideHeightFix", 0) != 0;
-	FNGFix = Settings.ReadInteger("Fixes", "FNGFix", 0) != 0;
-	CarSkinFix = Settings.ReadInteger("Fixes", "CarSkinFix", 0) != 0;
+	DisappearingWheelsFix = mINI_ReadInteger(Settings, "Fixes", "DisappearingWheelsFix", 1) != 0;
+	SecondaryLogoFix = mINI_ReadInteger(Settings, "Fixes", "SecondaryLogoFix", 1) != 0;
+	AddOnCopsDamageFix = mINI_ReadInteger(Settings, "Fixes", "AddOnCopsDamageFix", 1) != 0;
+	ChallengeSeriesOpponentNameFix = mINI_ReadInteger(Settings, "Fixes", "ChallengeSeriesOpponentNameFix", 1) != 0;
+	LightMaterialCrashFix = mINI_ReadInteger(Settings, "Fixes", "LightMaterialCrashFix", 0) != 0;
+	RideHeightFix = mINI_ReadInteger(Settings, "Fixes", "RideHeightFix", 0) != 0;
+	EnableFNGFixes = mINI_ReadInteger(Settings, "Fixes", "FNGFix", 0) != 0;
+	CarSkinFix = mINI_ReadInteger(Settings, "Fixes", "CarSkinFix", 0) != 0;
 
 	// Misc
-	ExpandMemoryPools = Settings.ReadInteger("Misc", "ExpandMemoryPools", 0) != 0;
-	FrameDelay = Settings.ReadInteger("Misc", "FrameDelay", -1);
-	//BETACompatibility = Settings.ReadInteger("Misc", "BETACompatibility", 0) != 0;
-	//HPCCompatibility = Settings.ReadInteger("Misc", "HPCCompatibility", 0) != 0;
-	ForceStockPartsOnAddOnOpponents = Settings.ReadInteger("Misc", "ForceStockPartsOnAddOnOpponents", 0) != 0;
+	ExpandMemoryPools = mINI_ReadInteger(Settings, "Misc", "ExpandMemoryPools", 0) != 0;
+	FrameDelay = mINI_ReadInteger(Settings, "Misc", "FrameDelay", -1);
+	ForceStockPartsOnAddOnOpponents = mINI_ReadInteger(Settings, "Misc", "ForceStockPartsOnAddOnOpponents", 0) != 0;
+	CarSkinCount = mINI_ReadInteger(Settings, "Misc", "CarSkinCount", 20);
+
 	// Debug
-	DisableTextureReplacement = Settings.ReadInteger("Debug", "DisableTextureReplacement", 0) != 0;
-	DisableNeon = Settings.ReadInteger("Debug", "DisableNeon", 0) != 0;
-	DisableLightFlareColors = Settings.ReadInteger("Debug", "DisableLightFlareColors", 0) != 0;
-	DisableKitWheelModifications = Settings.ReadInteger("Debug", "DisableKitWheelModifications", 0) != 0;
-	ExitWorkaround = Settings.ReadInteger("Debug", "ExitWorkaround", 0) != 0;
-	TestCareerCustomization = Settings.ReadInteger("Debug", "TestCareerCustomization", 0) != 0;
+	DisableTextureReplacement = mINI_ReadInteger(Settings, "Debug", "DisableTextureReplacement", 0) != 0;
+	DisableNeon = mINI_ReadInteger(Settings, "Debug", "DisableNeon", 0) != 0;
+	DisableLightFlareColors = mINI_ReadInteger(Settings, "Debug", "DisableLightFlareColors", 0) != 0;
+	DisableKitWheelModifications = mINI_ReadInteger(Settings, "Debug", "DisableKitWheelModifications", 0) != 0;
+	ExitWorkaround = mINI_ReadInteger(Settings, "Debug", "ExitWorkaround", 0) != 0;
+	TestCareerCustomization = mINI_ReadInteger(Settings, "Debug", "TestCareerCustomization", 0) != 0;
 
 	// Check compatibility
 	BETACompatibility = GetModuleHandleA("NFSMWBeta.asi") ? 1 : 0;
@@ -159,9 +165,9 @@ int Init()
 		injector::MakeJMP(0x7A5F40, FEShoppingCartItem_GetCarPartCatHash, true); // Add the new names for shopping cart, 18 calls
 
 		// Camera Hook
-		//injector::MakeCALL(0x7B9FDC, FindScreenInfo, true); // GarageMainScreen::HandleTick
+		injector::MakeCALL(0x7B9FDC, FindScreenInfo, true); // GarageMainScreen::HandleTick
 		//injector::MakeCALL(0x7A8D73, FindScreenInfo, true); // FindScreenInfo (recursive)
-		//injector::MakeCALL(0x7B9FE4, FindScreenCameraInfo, true); // GarageMainScreen::HandleTick
+		injector::MakeCALL(0x7B9FE4, FindScreenCameraInfo, true); // GarageMainScreen::HandleTick
 
 		// Texture caves
 		if (!DisableTextureReplacement)
@@ -207,9 +213,17 @@ int Init()
 		injector::MakeJMP(0x7BAEE0, IsLockedCodeCaveVisual, true); // CarCustomizeManager::IsCategoryLocked, Visual category
 
 		// Paint
-		injector::WriteMemory(0x8B8074, &CustomizePaint_RefreshHeader, true);
+		injector::WriteMemory(0x8B806C, &CustomizePaint_NotificationMessage, true); // CustomizePaint::vtable
+		injector::WriteMemory(0x8B8074, &CustomizePaint_RefreshHeader, true); // CustomizePaint::vtable
+		injector::MakeCALL(0x7C2ADF, CustomizePaint_Setup, true); // CustomizePaint::CustomizePaint
+		injector::WriteMemory(0x8B8078, &CustomizePaint_Setup, true); // CustomizePaint::vtable
 		injector::MakeJMP(0x7B8040, CustomizePaint_BuildSwatchList, true); // 6 references
-		injector::WriteMemory<int>(0x7BDD03, 4, true); // CustomizePaint::ScrollFilters
+		//injector::MakeCALL(0x7C0612, CustomizePaint_ScrollFilters, true); // CustomizePaint::NotificationMessage
+		//injector::MakeCALL(0x7C0926, CustomizePaint_ScrollFilters, true); // CustomizePaint::NotificationMessage
+		injector::MakeCALL(0x7C0AF9, CustomizePaint_SetupVinylColor, true); // CustomizePaint::Setup
+		injector::WriteMemory(0x7AEB22, &Showcase_FromColor, true); // CarCustomizeManager::RelinquishControl
+		injector::WriteMemory(0x7C3784, &Showcase_FromColor, true); // CarCustomizeManager::TakeControl
+
 
 		// Decals
 		injector::MakeJMP(0x7A7030, CustomizeDecals_GetSlotIDFromCategory, true); // 3 references
@@ -221,15 +235,7 @@ int Init()
 		// LOD Forcing option
 		injector::MakeJMP(0x751540, CarPart_GetModelNameHash, true); // 6 references
 
-		// Rims
-		CIniReader RimBrandsINI("UnlimiterData\\_RimBrands.ini");
-		int RimBrandsCount = RimBrandsINI.ReadInteger("RimBrands", "NumberOfRimBrands", DefaultRimBrandCount);
-		RimBrandsCount += 0x702;
-		injector::WriteMemory<short>(0x7A587D, RimBrandsCount, true); // TranslateCustomizeCatToMarker
-		injector::WriteMemory<short>(0x7AFEAD, RimBrandsCount, true); // GetMarkerNameFromCategory
-		injector::WriteMemory<short>(0x7B6098, RimBrandsCount, true); // CarCustomizeManager::GetUnlockHash
-		injector::WriteMemory<short>(0x7BAD74, RimBrandsCount, true); // CarCustomizeManager::IsCategoryLocked
-		injector::WriteMemory<short>(0x7BAF96, RimBrandsCount, true); // CarCustomizeManager::IsCategoryLocked
+		// Rims (Counts are initialized in UnlimiterData.h)
 		injector::MakeNOP(0x7A539F, 6, true); // CarCustomizeManager::IsCategoryNew, Rims category
 		injector::MakeJMP(0x7A539F, IsNewCodeCaveRims, true); // CarCustomizeManager::IsCategoryNew, Rims category
 		injector::WriteMemory(0x8B7FE0, &CustomizeRims_NotificationMessage, true); // CustomizeRims::vtable
@@ -239,16 +245,7 @@ int Init()
 		injector::MakeCALL(0x7BDB3A, CustomizeRims_BuildRimsList, true); // CustomizeRims::ScrollRimSizes
 		injector::MakeCALL(0x7BDB4F, CustomizeRims_BuildRimsList, true); // CustomizeRims::ScrollRimSizes
 		
-		// Vinyls
-		CIniReader VinylGroupsINI("UnlimiterData\\_VinylGroups.ini");
-		int VinylGroupsCount = VinylGroupsINI.ReadInteger("VinylGroups", "NumberOfVinylGroups", DefaultVinylGroupCount);
-		VinylGroupsCount += 0x402;
-		injector::WriteMemory<short>(0x7A5823, VinylGroupsCount, true); // TranslateCustomizeCatToMarker
-		injector::WriteMemory<short>(0x7AFE90, VinylGroupsCount, true); // GetMarkerNameFromCategory
-		injector::WriteMemory<short>(0x7B600C, VinylGroupsCount, true); // CarCustomizeManager::GetUnlockHash
-		injector::WriteMemory<short>(0x7BAEC3, VinylGroupsCount, true); // CarCustomizeManager::IsCategoryLocked
-		injector::WriteMemory<short>(0x7BAF10, VinylGroupsCount, true); // CarCustomizeManager::IsCategoryLocked
-		injector::WriteMemory<short>(0x7c0ae7, VinylGroupsCount, true); // CustomizePaint::Setup
+		// Vinyls (Counts are initialized in UnlimiterData.h)
 
 		// Fix rear rims
 		injector::MakeCALL(0x7498D0, CompositeRim, true); // CompositeSkin
@@ -411,7 +408,7 @@ int Init()
 	injector::MakeCALL(0x7A72AB, CarCustomizeManager_IsRotaryCar, true);
 
 	// Clone objects in FNG where needed
-	if (FNGFix)
+	if (EnableFNGFixes)
 	{
 		injector::MakeCALL(0x5C4D64, CloneObjectstoShowMoreItemsInMenu, true); // FEPackageReader::Load
 	}
@@ -419,34 +416,7 @@ int Init()
 	// Bonus Cars Hook
 	if (BonusCarsHook)
 	{
-		CIniReader BonusCars("UnlimiterData\\_BonusCars.ini");
-		int BonusCarsCount = BonusCars.ReadInteger("BonusCars", "NumberOfBonusCars", -1);
-		if (BonusCarsCount != -1)
-		{
-			/* Replace cover car
-			char* CoverCarPresetName = BonusCars.ReadString("BonusCar0", "PresetName", "M3GTRCAREERSTART"); // get car preset name
-			// Point any cover car name to the new name we have
-			// injector::WriteMemory(0x57F60E, CoverCarPresetName, true); // CareerSettings::ResumeCareer
-			injector::WriteMemory(0x58FF63, CoverCarPresetName, true); // sub_58FF60
-			injector::WriteMemory(0x7C2918, CoverCarPresetName, true); // UIQRCarSelect::Setup
-			injector::WriteMemory(0x7A3E4F, CoverCarPresetName, true); // IsValidMikeMannCar
-			injector::WriteMemory(0x590DA0, CoverCarPresetName, true); // FEPlayerCarDB::Default
-			injector::WriteMemory(0x590E8C, CoverCarPresetName, true); // FEPlayerCarDB::Default
-			*/
-			// Use hooked bonus cars on new save games
-			injector::MakeJMP(0x590D9F, FEPlayerCarDB_Default_BonusCarsCodeCave, true); // FEPlayerCarDB::Default
-
-			// Hook unlockers to check for new bonus cars
-			injector::MakeCALL(0x58AA63, UnlockSystem_IsBonusCarCEOnly, true); // UnlockSystem::IsCarUnlocked
-			injector::MakeCALL(0x58ADB5, UnlockSystem_IsBonusCarCEOnly, true); // UnlockSystem::IsBonusCarAvailable
-
-			// Hooks to get custom unlock conditions and texts from ini
-			injector::MakeCALL(0x58A55C, QuickRaceUnlocker_IsCarUnlocked, true); // OnlineUnlocker::IsCarUnlocked
-			injector::MakeCALL(0x58AA19, QuickRaceUnlocker_IsCarUnlocked, true); // UnlockSystem::IsCarUnlocked
-			injector::MakeCALL(0x58AA47, QuickRaceUnlocker_IsCarUnlocked, true); // UnlockSystem::IsCarUnlocked
-			injector::MakeCALL(0x7ADD80, UIQRCarSelect_GetBonusUnlockText, true); // UIQRCarSelect::RefreshHeader
-			injector::MakeCALL(0x7ADD8D, UIQRCarSelect_GetBonusUnlockBinNumber, true); // UIQRCarSelect::RefreshHeader
-		}
+		// Done in UnlimiterData.h, LoadBonusCars
 
 		// Skip RefreshBonusCarsList function, use regular checks instead. (Fixes crashes)
 		injector::WriteMemory<BYTE>(0x7BF7E5, 0xEB, true); // UIQRCarSelect::RefreshCarList

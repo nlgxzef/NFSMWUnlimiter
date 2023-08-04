@@ -1,8 +1,8 @@
 #pragma once
 
+#include "stdafx.h"
 #include "stdio.h"
 #include "InGameFunctions.h"
-#include "includes\IniReader.h"
 
 unsigned int PreviousCarTypeNameHash;
 bool Result;
@@ -19,18 +19,18 @@ bool GetForceLODA(unsigned int CarTypeNameHash)
     if (PreviousCarTypeNameHash == CarTypeNameHash) return Result; // If checked before for this car type, just return the result
     else PreviousCarTypeNameHash = CarTypeNameHash;
 
+    int CarType = ReplacementCar;
+
     DWORD* CarTypeInfo = GetCarTypeInfoFromHash(CarTypeNameHash);
-    if (!CarTypeInfo)
+    if (CarTypeInfo) CarType = CarTypeInfo[36];
+    else
     {
         Result = 0;
         return Result;
     }
 
-    sprintf(CarININame, "UnlimiterData\\%s.ini", (char*)CarTypeInfo);
-    CIniReader CarINI(CarININame);
-    CIniReader GeneralINI("UnlimiterData\\_General.ini");
 
-    Result = GetCarIntOption(CarINI, GeneralINI, "Main", "ForceLODA", 0) != 0;
+    Result = CarConfigs[CarType].Main.ForceLODA;
     return Result;
 }
 

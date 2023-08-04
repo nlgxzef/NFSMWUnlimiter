@@ -10,101 +10,95 @@ int __fastcall FEShoppingCartItem_GetCarPartCatHash(DWORD* _this, int EDX_Unused
     // Get CarType Info
     void* FECarRecord = *(void**)_FECarRecord;
     int CarTypeID = FECarRecord_GetType(FECarRecord);
-    sprintf(CarTypeName, GetCarTypeName(CarTypeID));
-
-    // Read Part Options for the car
-    sprintf(CarININame, "UnlimiterData\\%s.ini", CarTypeName);
-    CIniReader CarINI(CarININame);
-    CIniReader GeneralINI("UnlimiterData\\_General.ini");
 
     switch (CarSlotID)
     {
     case 0:
-        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsRoof", "CO_ROOF");
+        result = CarConfigs[CarTypeID].Names.PartsRoof;
         break;
     case 23:
-        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsBodyKits", "CO_BODY_KITS");
+        result = CarConfigs[CarTypeID].Names.PartsBodyKits;
         break;
     case 24:
-        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsBrakes", "CO_BRAKES");
+        result = CarConfigs[CarTypeID].Names.PartsBrakes;
         break;
     case 28:
-        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsInterior", "CO_INTERIOR");
+        result = CarConfigs[CarTypeID].Names.PartsInterior;
         break;
     case 29:
-        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsTaillights", "CO_TAILLIGHTS");
+        result = CarConfigs[CarTypeID].Names.PartsTaillights;
         break;
     case 31:
-        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsHeadlights", "CO_HEADLIGHTS");
+        result = CarConfigs[CarTypeID].Names.PartsHeadlights;
         break;
     case 33:
-        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsMirrors", "CO_SIDE_MIRROR");
+        result = CarConfigs[CarTypeID].Names.PartsMirrors;
         break;
     case 43:
-        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "VisualDriver", "CO_DRIVER");
+        result = CarConfigs[CarTypeID].Names.VisualDriver;
         break;
     case 44:
-        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsSpoilers", "CO_SPOILERS");
+        result = CarConfigs[CarTypeID].Names.PartsSpoilers;
         break;
     case 52:
-        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsAttachment0", "CO_ATTACHMENT_1");
+        result = CarConfigs[CarTypeID].Names.PartsAttachment0;
         break;
     case 53:
-        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsAttachment1", "CO_ATTACHMENT_2");
+        result = CarConfigs[CarTypeID].Names.PartsAttachment1;
         break;
     case 54:
-        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsAttachment2", "CO_ATTACHMENT_3");
+        result = CarConfigs[CarTypeID].Names.PartsAttachment2;
         break;
     case 55:
-        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsAttachment3", "CO_ATTACHMENT_4");
+        result = CarConfigs[CarTypeID].Names.PartsAttachment3;
         break;
     case 56:
-        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsAttachment4", "CO_ATTACHMENT_5");
+        result = CarConfigs[CarTypeID].Names.PartsAttachment4;
         break;
     case 57:
-        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsAttachment5", "CO_ATTACHMENT_6");
+        result = CarConfigs[CarTypeID].Names.PartsAttachment5;
         break;
     case 58:
-        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsAttachment6", "CO_ATTACHMENT_7");
+        result = CarConfigs[CarTypeID].Names.PartsAttachment6;
         break;
     case 59:
-        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsAttachment7", "CO_ATTACHMENT_8");
+        result = CarConfigs[CarTypeID].Names.PartsAttachment7;
         break;
     case 60:
-        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsAttachment8", "CO_ATTACHMENT_9");
+        result = CarConfigs[CarTypeID].Names.PartsAttachment8;
         break;
     case 61:
-        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsAttachment9", "CO_ATTACHMENT_10");
+        result = CarConfigs[CarTypeID].Names.PartsAttachment9;
         break;
     case 62:
-        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsRoofScoops", "CO_ROOF_SCOOPS");
+        result = CarConfigs[CarTypeID].Names.PartsRoofScoops;
         break;
     case 63:
-        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsHoods", "CO_HOODS");
+        result = CarConfigs[CarTypeID].Names.PartsHoods;
         break;
     case 64: // HEADLIGHT
-        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "VisualTires", "CO_TIRES");
+        result = CarConfigs[CarTypeID].Names.VisualTires;
         break;
     case 65: // BRAKELIGHT
-        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "VisualNeon", "CO_NEON");
+        result = CarConfigs[CarTypeID].Names.VisualNeon;
         break;
     case 66:
-        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsRims", "CO_RIMS");
+        result = CarConfigs[CarTypeID].Names.PartsRims;
         break;
     case 67:
-        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsRims", "CO_RIMS");
+        result = CarConfigs[CarTypeID].Names.PartsRims;
         break;
     case 69:
-        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "VisualLicensePlate", "CO_LICENSE_PLATE");
+        result = CarConfigs[CarTypeID].Names.VisualLicensePlate;
         break;
     case 76:
-        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "VisualPaint", "CO_PAINT");
+        result = CarConfigs[CarTypeID].Names.VisualPaint;
         break;
     case 77:
-        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "VisualVinyls", "CO_VINYLS");
+        result = CarConfigs[CarTypeID].Names.VisualVinyls;
         break;
     case 78:
-        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "VisualRimPaint", "CO_RIM_PAINT");
+        result = CarConfigs[CarTypeID].Names.VisualRimPaint;
         break;
     case 83:
     case 84:
@@ -114,7 +108,7 @@ int __fastcall FEShoppingCartItem_GetCarPartCatHash(DWORD* _this, int EDX_Unused
     case 88:
     case 89:
     case 90:
-        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "VisualDecalsWindshield", "CO_DECAL_WINDSHIELD");
+        result = CarConfigs[CarTypeID].Names.VisualDecalsWindshield;
         break;
     case 91:
     case 92:
@@ -124,7 +118,7 @@ int __fastcall FEShoppingCartItem_GetCarPartCatHash(DWORD* _this, int EDX_Unused
     case 96:
     case 97:
     case 98:
-        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "VisualDecalsRearWindow", "CO_DECAL_REAR_WINDOW");
+        result = CarConfigs[CarTypeID].Names.VisualDecalsRearWindow;
         break;
     case 99:
     case 100:
@@ -132,7 +126,7 @@ int __fastcall FEShoppingCartItem_GetCarPartCatHash(DWORD* _this, int EDX_Unused
     case 102:
     case 103:
     case 104:
-        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "VisualDecalsLeftDoor", "CO_DECAL_LEFT_DOOR");
+        result = CarConfigs[CarTypeID].Names.VisualDecalsLeftDoor;
         break;
     case 107:
     case 108:
@@ -140,10 +134,10 @@ int __fastcall FEShoppingCartItem_GetCarPartCatHash(DWORD* _this, int EDX_Unused
     case 110:
     case 111:
     case 112:
-        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "VisualDecalsRightDoor", "CO_DECAL_RIGHT_DOOR");
+        result = CarConfigs[CarTypeID].Names.VisualDecalsRightDoor;
         break;
     case 113: // DECAL_RIGHT_DOOR_TEX6
-        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "VisualNumbers", "CO_NUMBERS");
+        result = CarConfigs[CarTypeID].Names.VisualNumbers;
         break;
     case 115:
     case 116:
@@ -153,7 +147,7 @@ int __fastcall FEShoppingCartItem_GetCarPartCatHash(DWORD* _this, int EDX_Unused
     case 120:
     case 121:
     case 122:
-        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "VisualDecalsLeftQuarter", "CO_DECAL_LEFT_QUARTER");
+        result = CarConfigs[CarTypeID].Names.VisualDecalsLeftQuarter;
         break;
     case 123:
     case 124:
@@ -163,13 +157,13 @@ int __fastcall FEShoppingCartItem_GetCarPartCatHash(DWORD* _this, int EDX_Unused
     case 128:
     case 129:
     case 130:
-        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "VisualDecalsRightQuarter", "CO_DECAL_RIGHT_QUARTER");
+        result = CarConfigs[CarTypeID].Names.VisualDecalsRightQuarter;
         break;
     case 131:
-        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "VisualWindowTint", "CO_WINDOW_TINT");
+        result = CarConfigs[CarTypeID].Names.VisualWindowTint;
         break;
     case 132:
-        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "VisualCustomGauges", "CO_CUSTOM_HUD");
+        result = CarConfigs[CarTypeID].Names.VisualCustomGauges;
         break;
     default:
         result = 0;
@@ -185,38 +179,32 @@ unsigned int FEShoppingCartItem_GetPerfPkgCatHash(int PerfPkgType)
     // Get CarType Info
     void* FECarRecord = *(void**)_FECarRecord;
     int CarTypeID = FECarRecord_GetType(FECarRecord);
-    sprintf(CarTypeName, GetCarTypeName(CarTypeID));
-
-    // Read Part Options for the car
-    sprintf(CarININame, "UnlimiterData\\%s.ini", CarTypeName);
-    CIniReader CarINI(CarININame);
-    CIniReader GeneralINI("UnlimiterData\\_General.ini");
 
     result = 0;
     switch (PerfPkgType)
     {
     case 0:
-        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PerformanceTires", "CO_TIRES");
+        result = CarConfigs[CarTypeID].Names.PerformanceTires;
         break;
     case 1:
-        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PerformanceBrakes", "CO_BRAKES");
+        result = CarConfigs[CarTypeID].Names.PerformanceBrakes;
         break;
     case 2:
-        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PerformanceChassis", "CO_SUSPENSION");
+        result = CarConfigs[CarTypeID].Names.PerformanceChassis;
         break;
     case 3:
-        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PerformanceTransmission", "CO_TRANSMISSION");
+        result = CarConfigs[CarTypeID].Names.PerformanceTransmission;
         break;
     case 4:
-        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PerformanceEngine", "CO_ENGINE");
+        result = CarConfigs[CarTypeID].Names.PerformanceEngine;
         break;
     case 5:
         result = CarCustomizeManager_IsTurbo((DWORD*)_gCarCustomizeManager)
-            ? GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PerformanceTurbo", "CO_TURBO")
-            : GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PerformanceSupercharger", "CO_SUPERCHARGER");
+            ? CarConfigs[CarTypeID].Names.PerformanceTurbo
+            : CarConfigs[CarTypeID].Names.PerformanceSupercharger;
         break;
     case 6:
-        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PerformanceNitrous", "CO_NITROUS");
+        result = CarConfigs[CarTypeID].Names.PerformanceNitrous;
         break;
     default:
         return result;
@@ -227,81 +215,256 @@ unsigned int FEShoppingCartItem_GetPerfPkgCatHash(int PerfPkgType)
 unsigned int FEShoppingCartItem_GetPerfPkgLevelHash(int PerfPkgType, int PerfPkgLevel)
 {
     unsigned int result; // eax
-    char buf[64];
 
     // Get CarType Info
     void* FECarRecord = *(void**)_FECarRecord;
     int CarTypeID = FECarRecord_GetType(FECarRecord);
-    sprintf(CarTypeName, GetCarTypeName(CarTypeID));
-
-    // Read Part Options for the car
-    sprintf(CarININame, "UnlimiterData\\%s.ini", CarTypeName);
-    CIniReader CarINI(CarININame);
-    CIniReader GeneralINI("UnlimiterData\\_General.ini");
-
-    sprintf(buf, "Performance");
 
     switch (PerfPkgType)
     {
-    case 0:
-        strcat(buf, "Tires");
+    case 0: // Tires
+        switch (PerfPkgLevel)
+        {
+        case 0:
+        default:
+            result = CarConfigs[CarTypeID].Names.PerformanceTiresStock;
+            break;
+        case 1:
+            result = CarConfigs[CarTypeID].Names.PerformanceTiresStreet;
+            break;
+        case 2:
+            result = CarConfigs[CarTypeID].Names.PerformanceTiresSuperStreet;
+            break;
+        case 3:
+            result = CarConfigs[CarTypeID].Names.PerformanceTiresRace;
+            break;
+        case 4:
+            result = CarConfigs[CarTypeID].Names.PerformanceTiresPro;
+            break;
+        case 5:
+            result = CarConfigs[CarTypeID].Names.PerformanceTiresSuperPro;
+            break;
+        case 6:
+            result = CarConfigs[CarTypeID].Names.PerformanceTiresUltimate;
+            break;
+        case 7:
+            result = CarConfigs[CarTypeID].Names.PerformanceTiresJunkman;
+            break;
+        }
         break;
-    case 1:
-        strcat(buf, "Brakes");
+    case 1: // Brakes
+        switch (PerfPkgLevel)
+        {
+        case 0:
+        default:
+            result = CarConfigs[CarTypeID].Names.PerformanceBrakesStock;
+            break;
+        case 1:
+            result = CarConfigs[CarTypeID].Names.PerformanceBrakesStreet;
+            break;
+        case 2:
+            result = CarConfigs[CarTypeID].Names.PerformanceBrakesSuperStreet;
+            break;
+        case 3:
+            result = CarConfigs[CarTypeID].Names.PerformanceBrakesRace;
+            break;
+        case 4:
+            result = CarConfigs[CarTypeID].Names.PerformanceBrakesPro;
+            break;
+        case 5:
+            result = CarConfigs[CarTypeID].Names.PerformanceBrakesSuperPro;
+            break;
+        case 6:
+            result = CarConfigs[CarTypeID].Names.PerformanceBrakesUltimate;
+            break;
+        case 7:
+            result = CarConfigs[CarTypeID].Names.PerformanceBrakesJunkman;
+            break;
+        }
         break;
-    case 2:
-        strcat(buf, "Chassis");
+    case 2: // Suspension
+        switch (PerfPkgLevel)
+        {
+        case 0:
+        default:
+            result = CarConfigs[CarTypeID].Names.PerformanceChassisStock;
+            break;
+        case 1:
+            result = CarConfigs[CarTypeID].Names.PerformanceChassisStreet;
+            break;
+        case 2:
+            result = CarConfigs[CarTypeID].Names.PerformanceChassisSuperStreet;
+            break;
+        case 3:
+            result = CarConfigs[CarTypeID].Names.PerformanceChassisRace;
+            break;
+        case 4:
+            result = CarConfigs[CarTypeID].Names.PerformanceChassisPro;
+            break;
+        case 5:
+            result = CarConfigs[CarTypeID].Names.PerformanceChassisSuperPro;
+            break;
+        case 6:
+            result = CarConfigs[CarTypeID].Names.PerformanceChassisUltimate;
+            break;
+        case 7:
+            result = CarConfigs[CarTypeID].Names.PerformanceChassisJunkman;
+            break;
+        }
         break;
-    case 3:
-        strcat(buf, "Transmission");
+    case 3: // Transmission
+        switch (PerfPkgLevel)
+        {
+        case 0:
+        default:
+            result = CarConfigs[CarTypeID].Names.PerformanceTransmissionStock;
+            break;
+        case 1:
+            result = CarConfigs[CarTypeID].Names.PerformanceTransmissionStreet;
+            break;
+        case 2:
+            result = CarConfigs[CarTypeID].Names.PerformanceTransmissionSuperStreet;
+            break;
+        case 3:
+            result = CarConfigs[CarTypeID].Names.PerformanceTransmissionRace;
+            break;
+        case 4:
+            result = CarConfigs[CarTypeID].Names.PerformanceTransmissionPro;
+            break;
+        case 5:
+            result = CarConfigs[CarTypeID].Names.PerformanceTransmissionSuperPro;
+            break;
+        case 6:
+            result = CarConfigs[CarTypeID].Names.PerformanceTransmissionUltimate;
+            break;
+        case 7:
+            result = CarConfigs[CarTypeID].Names.PerformanceTransmissionJunkman;
+            break;
+        }
         break;
-    case 4:
-        strcat(buf, "Engine");
+    case 4: // Engine
+        switch (PerfPkgLevel)
+        {
+        case 0:
+        default:
+            result = CarConfigs[CarTypeID].Names.PerformanceEngineStock;
+            break;
+        case 1:
+            result = CarConfigs[CarTypeID].Names.PerformanceEngineStreet;
+            break;
+        case 2:
+            result = CarConfigs[CarTypeID].Names.PerformanceEngineSuperStreet;
+            break;
+        case 3:
+            result = CarConfigs[CarTypeID].Names.PerformanceEngineRace;
+            break;
+        case 4:
+            result = CarConfigs[CarTypeID].Names.PerformanceEnginePro;
+            break;
+        case 5:
+            result = CarConfigs[CarTypeID].Names.PerformanceEngineSuperPro;
+            break;
+        case 6:
+            result = CarConfigs[CarTypeID].Names.PerformanceEngineUltimate;
+            break;
+        case 7:
+            result = CarConfigs[CarTypeID].Names.PerformanceEngineJunkman;
+            break;
+        }
         break;
-    case 5:
-        strcat(buf, CarCustomizeManager_IsTurbo((DWORD*)_gCarCustomizeManager) ? "Turbo" : "Supercharger");
+    case 5: // Turbo/Supercharger
+        if (CarCustomizeManager_IsTurbo((DWORD*)_gCarCustomizeManager))
+        {
+            switch (PerfPkgLevel)
+            {
+            case 0:
+            default:
+                result = CarConfigs[CarTypeID].Names.PerformanceTurboStock;
+                break;
+            case 1:
+                result = CarConfigs[CarTypeID].Names.PerformanceTurboStreet;
+                break;
+            case 2:
+                result = CarConfigs[CarTypeID].Names.PerformanceTurboSuperStreet;
+                break;
+            case 3:
+                result = CarConfigs[CarTypeID].Names.PerformanceTurboRace;
+                break;
+            case 4:
+                result = CarConfigs[CarTypeID].Names.PerformanceTurboPro;
+                break;
+            case 5:
+                result = CarConfigs[CarTypeID].Names.PerformanceTurboSuperPro;
+                break;
+            case 6:
+                result = CarConfigs[CarTypeID].Names.PerformanceTurboUltimate;
+                break;
+            case 7:
+                result = CarConfigs[CarTypeID].Names.PerformanceTurboJunkman;
+                break;
+            }
+        }
+        else
+        {
+            switch (PerfPkgLevel)
+            {
+            case 0:
+            default:
+                result = CarConfigs[CarTypeID].Names.PerformanceSuperchargerStock;
+                break;
+            case 1:
+                result = CarConfigs[CarTypeID].Names.PerformanceSuperchargerStreet;
+                break;
+            case 2:
+                result = CarConfigs[CarTypeID].Names.PerformanceSuperchargerSuperStreet;
+                break;
+            case 3:
+                result = CarConfigs[CarTypeID].Names.PerformanceSuperchargerRace;
+                break;
+            case 4:
+                result = CarConfigs[CarTypeID].Names.PerformanceSuperchargerPro;
+                break;
+            case 5:
+                result = CarConfigs[CarTypeID].Names.PerformanceSuperchargerSuperPro;
+                break;
+            case 6:
+                result = CarConfigs[CarTypeID].Names.PerformanceSuperchargerUltimate;
+                break;
+            case 7:
+                result = CarConfigs[CarTypeID].Names.PerformanceSuperchargerJunkman;
+                break;
+            }
+        }
         break;
-    case 6:
-        strcat(buf, "Nitrous");
-        break;
-    default:
-        break;
-    }
-
-    switch (PerfPkgLevel)
-    {
-    case 0:
-    default:
-        strcat(buf, "Stock");
-        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", buf, "PN_LEVEL_0");
-        break;
-    case 1:
-        strcat(buf, "Street");
-        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", buf, "PN_LEVEL_1");
-        break;
-    case 2:
-        strcat(buf, "SuperStreet");
-        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", buf, "PN_LEVEL_2");
-        break;
-    case 3:
-        strcat(buf, "Race");
-        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", buf, "PN_LEVEL_3");
-        break;
-    case 4:
-        strcat(buf, "Pro");
-        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", buf, "PN_LEVEL_4");
-        break;
-    case 5:
-        strcat(buf, "SuperPro");
-        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", buf, "PN_LEVEL_5");
-        break;
-    case 6:
-        strcat(buf, "Ultimate");
-        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", buf, "PN_LEVEL_6");
-        break;
-    case 7:
-        strcat(buf, "Junkman");
-        result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", buf, "PN_LEVEL_JUNKMAN");
+    case 6: // Nitrous
+        switch (PerfPkgLevel)
+        {
+        case 0:
+        default:
+            result = CarConfigs[CarTypeID].Names.PerformanceNitrousStock;
+            break;
+        case 1:
+            result = CarConfigs[CarTypeID].Names.PerformanceNitrousStreet;
+            break;
+        case 2:
+            result = CarConfigs[CarTypeID].Names.PerformanceNitrousSuperStreet;
+            break;
+        case 3:
+            result = CarConfigs[CarTypeID].Names.PerformanceNitrousRace;
+            break;
+        case 4:
+            result = CarConfigs[CarTypeID].Names.PerformanceNitrousPro;
+            break;
+        case 5:
+            result = CarConfigs[CarTypeID].Names.PerformanceNitrousSuperPro;
+            break;
+        case 6:
+            result = CarConfigs[CarTypeID].Names.PerformanceNitrousUltimate;
+            break;
+        case 7:
+            result = CarConfigs[CarTypeID].Names.PerformanceNitrousJunkman;
+            break;
+        }
         break;
     }
 
@@ -353,10 +516,10 @@ void __fastcall FEShoppingCartItem_DrawPartName(DWORD* FEShoppingCartItem)
         case 62:
         case 63:
             ThePartInCart = *(DWORD**)(SelectablePart + 12);
-            if (!CarPart_HasAppliedAttribute(ThePartInCart, bStringHash("CARBONFIBRE")))
+            if (!CarPart_HasAppliedAttribute(ThePartInCart, bStringHash((char*)"CARBONFIBRE")))
                 goto LABEL_68;
             ThePartInCart = *(DWORD**)(SelectablePart + 12);
-            if (!CarPart_GetAppliedAttributeIParam(ThePartInCart, bStringHash("CARBONFIBRE"), 0))
+            if (!CarPart_GetAppliedAttributeIParam(ThePartInCart, bStringHash((char*)"CARBONFIBRE"), 0))
                 goto LABEL_68;
             CurrLanguage = GetCurrentLanguage();
             ThePartInCart = *(DWORD**)(SelectablePart + 12);
@@ -364,12 +527,12 @@ void __fastcall FEShoppingCartItem_DrawPartName(DWORD* FEShoppingCartItem)
             CarSlotID = *(DWORD*)(SelectablePart + 16);
             if (CurrLanguage == 1)
             {
-                PartNameHash = CarPart_GetAppliedAttributeUParam(ThePartInCart, bStringHash("LANGUAGEHASH"), 0);
+                PartNameHash = CarPart_GetAppliedAttributeUParam(ThePartInCart, bStringHash((char*)"LANGUAGEHASH"), 0);
                 PartName = GetLocalizedString(PartNameHash);
                 PartMaterialName = GetLocalizedString(0x5415B874);// CARBON
                 goto LABEL_62;
             }
-            PartNameHash = CarPart_GetAppliedAttributeUParam(ThePartInCart, bStringHash("LANGUAGEHASH"), 0);
+            PartNameHash = CarPart_GetAppliedAttributeUParam(ThePartInCart, bStringHash((char*)"LANGUAGEHASH"), 0);
             PartName = GetLocalizedString(PartNameHash);
             PartMaterialName = GetLocalizedString(0x5415B874);// CARBON
             goto LABEL_64;
@@ -378,7 +541,7 @@ void __fastcall FEShoppingCartItem_DrawPartName(DWORD* FEShoppingCartItem)
             ThePartInCart = *(DWORD**)(SelectablePart + 12);
             if (ThePartInCart == CarCustomizeManager_GetStockCarPart((DWORD*)_gCarCustomizeManager, 66))
                 goto LABEL_66;
-            PartNameHash = CarPart_GetAppliedAttributeUParam(ThePartInCart, bStringHash("LANGUAGEHASH"), 0);
+            PartNameHash = CarPart_GetAppliedAttributeUParam(ThePartInCart, bStringHash((char*)"LANGUAGEHASH"), 0);
             if (PartNameHash) PartName = GetLocalizedString(PartNameHash);
             else PartName = CarPart_GetName(*(DWORD**)(SelectablePart + 12));
             bSNPrintf(PartNameBuf, 64, "%s", PartName);
@@ -440,7 +603,7 @@ void __fastcall FEShoppingCartItem_DrawPartName(DWORD* FEShoppingCartItem)
             CartItemName = *((DWORD**)FEShoppingCartItem + 11);
             if (CurrLanguage == 1)
             {
-                SpeechColourNameHash = CarPart_GetAppliedAttributeUParam(ThePartInCart, bStringHash("SPEECHCOLOUR"), 0);
+                SpeechColourNameHash = CarPart_GetAppliedAttributeUParam(ThePartInCart, bStringHash((char*)"SPEECHCOLOUR"), 0);
                 SpeechColourName = GetLocalizedString(SpeechColourNameHash);
                 PaintTypeName = GetLocalizedString(PaintTypeNameHash);
                 PartCategoryNameHash = FEShoppingCartItem_GetCarPartCatHash(FEShoppingCartItem, 0, CarSlotID);
@@ -449,7 +612,7 @@ void __fastcall FEShoppingCartItem_DrawPartName(DWORD* FEShoppingCartItem)
             }
             else
             {
-                SpeechColourNameHash = CarPart_GetAppliedAttributeUParam(ThePartInCart, bStringHash("SPEECHCOLOUR"), 0);
+                SpeechColourNameHash = CarPart_GetAppliedAttributeUParam(ThePartInCart, bStringHash((char*)"SPEECHCOLOUR"), 0);
                 SpeechColourName = GetLocalizedString(SpeechColourNameHash);
                 PaintTypeName = GetLocalizedString(PaintTypeNameHash);
                 PartCategoryNameHash = FEShoppingCartItem_GetCarPartCatHash(FEShoppingCartItem, 0, CarSlotID);
@@ -476,7 +639,7 @@ void __fastcall FEShoppingCartItem_DrawPartName(DWORD* FEShoppingCartItem)
             CarSlotID = *(DWORD*)(SelectablePart + 16);
             if (CurrLanguage == 1)
             {
-                SpeechColourNameHash = CarPart_GetAppliedAttributeUParam(ThePartInCart, bStringHash("SPEECHCOLOUR"), 0);
+                SpeechColourNameHash = CarPart_GetAppliedAttributeUParam(ThePartInCart, bStringHash((char*)"SPEECHCOLOUR"), 0);
                 PartName = GetLocalizedString(SpeechColourNameHash);
                 PartMaterialName = GetLocalizedString(0xB3100A3E);// CP_FILTER_RIM
             LABEL_62:
@@ -486,7 +649,7 @@ void __fastcall FEShoppingCartItem_DrawPartName(DWORD* FEShoppingCartItem)
             }
             else
             {
-                SpeechColourNameHash = CarPart_GetAppliedAttributeUParam(ThePartInCart, bStringHash("SPEECHCOLOUR"), 0);
+                SpeechColourNameHash = CarPart_GetAppliedAttributeUParam(ThePartInCart, bStringHash((char*)"SPEECHCOLOUR"), 0);
                 PartName = GetLocalizedString(SpeechColourNameHash);
                 PartMaterialName = GetLocalizedString(0xB3100A3E);
             LABEL_64:
@@ -544,7 +707,7 @@ void __fastcall FEShoppingCartItem_DrawPartName(DWORD* FEShoppingCartItem)
             {
                 CarPart_GetAppliedAttributeUParam(ThePartInCart, 0xEBB03E66, 0);// BRAND_NAME
                 ThePartInCart = *(DWORD**)(SelectablePart + 12);
-                CarPart_GetAppliedAttributeUParam(ThePartInCart, bStringHash("NAME"), 0);
+                CarPart_GetAppliedAttributeUParam(ThePartInCart, bStringHash((char*)"NAME"), 0);
                 switch (*(DWORD*)(SelectablePart + 16))
                 {
                 case 83:
@@ -553,7 +716,7 @@ void __fastcall FEShoppingCartItem_DrawPartName(DWORD* FEShoppingCartItem)
                 case 107:
                 case 115:
                 case 123:
-                    DecalSlotNameHash = bStringHash("CO_DECAL_SLOT_1");
+                    DecalSlotNameHash = bStringHash((char*)"CO_DECAL_SLOT_1");
                     goto LABEL_45;
                 case 84:
                 case 92:
@@ -561,7 +724,7 @@ void __fastcall FEShoppingCartItem_DrawPartName(DWORD* FEShoppingCartItem)
                 case 108:
                 case 116:
                 case 124:
-                    DecalSlotNameHash = bStringHash("CO_DECAL_SLOT_2");
+                    DecalSlotNameHash = bStringHash((char*)"CO_DECAL_SLOT_2");
                     goto LABEL_45;
                 case 85:
                 case 93:
@@ -569,7 +732,7 @@ void __fastcall FEShoppingCartItem_DrawPartName(DWORD* FEShoppingCartItem)
                 case 109:
                 case 117:
                 case 125:
-                    DecalSlotNameHash = bStringHash("CO_DECAL_SLOT_3");
+                    DecalSlotNameHash = bStringHash((char*)"CO_DECAL_SLOT_3");
                     goto LABEL_45;
                 case 86:
                 case 94:
@@ -577,7 +740,7 @@ void __fastcall FEShoppingCartItem_DrawPartName(DWORD* FEShoppingCartItem)
                 case 110:
                 case 118:
                 case 126:
-                    DecalSlotNameHash = bStringHash("CO_DECAL_SLOT_4");
+                    DecalSlotNameHash = bStringHash((char*)"CO_DECAL_SLOT_4");
                     goto LABEL_45;
                 case 87:
                 case 95:
@@ -585,7 +748,7 @@ void __fastcall FEShoppingCartItem_DrawPartName(DWORD* FEShoppingCartItem)
                 case 111:
                 case 119:
                 case 127:
-                    DecalSlotNameHash = bStringHash("CO_DECAL_SLOT_5");
+                    DecalSlotNameHash = bStringHash((char*)"CO_DECAL_SLOT_5");
                     goto LABEL_45;
                 case 88:
                 case 96:
@@ -593,19 +756,19 @@ void __fastcall FEShoppingCartItem_DrawPartName(DWORD* FEShoppingCartItem)
                 case 112:
                 case 120:
                 case 128:
-                    DecalSlotNameHash = bStringHash("CO_DECAL_SLOT_6");
+                    DecalSlotNameHash = bStringHash((char*)"CO_DECAL_SLOT_6");
                     goto LABEL_45;
                 case 89:
                 case 97:
                 case 121:
                 case 129:
-                    DecalSlotNameHash = bStringHash("CO_DECAL_SLOT_7");
+                    DecalSlotNameHash = bStringHash((char*)"CO_DECAL_SLOT_7");
                     goto LABEL_45;
                 case 90:
                 case 98:
                 case 122:
                 case 130:
-                    DecalSlotNameHash = bStringHash("CO_DECAL_SLOT_8");
+                    DecalSlotNameHash = bStringHash((char*)"CO_DECAL_SLOT_8");
                     //goto LABEL_45;
                 LABEL_45:
                     CurrLanguage = GetCurrentLanguage();
@@ -725,7 +888,7 @@ void __fastcall FEShoppingCartItem_DrawPartName(DWORD* FEShoppingCartItem)
         LABEL_68:
             ThePartInCart = *(DWORD**)(SelectablePart + 12);
         LABEL_69:
-            if (!CarPart_HasAppliedAttribute(ThePartInCart, bStringHash("LANGUAGEHASH")))
+            if (!CarPart_HasAppliedAttribute(ThePartInCart, bStringHash((char*)"LANGUAGEHASH")))
             {
                 CurrLanguage = GetCurrentLanguage();
                 ThePartInCart = *(DWORD**)(SelectablePart + 12);
@@ -755,14 +918,14 @@ void __fastcall FEShoppingCartItem_DrawPartName(DWORD* FEShoppingCartItem)
             CarSlotID = *(DWORD*)(SelectablePart + 16);
             if (CurrLanguage == 1)
             {
-                PartNameHash = CarPart_GetAppliedAttributeUParam(ThePartInCart, bStringHash("LANGUAGEHASH"), 0);
+                PartNameHash = CarPart_GetAppliedAttributeUParam(ThePartInCart, bStringHash((char*)"LANGUAGEHASH"), 0);
                 PartName = GetLocalizedString(PartNameHash);
                 PartCategoryNameHash = FEShoppingCartItem_GetCarPartCatHash(FEShoppingCartItem, 0, CarSlotID);
                 PartCategoryName = GetLocalizedString(PartCategoryNameHash);
                 FEPrintf_obj(CartItemName, "%s : %s", PartCategoryName, PartName);
                 return;
             }
-            PartNameHash = CarPart_GetAppliedAttributeUParam(ThePartInCart, bStringHash("LANGUAGEHASH"), 0);
+            PartNameHash = CarPart_GetAppliedAttributeUParam(ThePartInCart, bStringHash((char*)"LANGUAGEHASH"), 0);
             PartName = GetLocalizedString(PartNameHash);
             PartCategoryNameHash = FEShoppingCartItem_GetCarPartCatHash(FEShoppingCartItem, 0, CarSlotID);
             break;

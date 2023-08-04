@@ -2,26 +2,22 @@
 
 #include "stdio.h"
 #include "InGameFunctions.h"
-#include "includes\IniReader.h"
 
 bool UnlockSystem_IsBonusCarCEOnly(int PresetNameHash)
 {
-	char BonusCarNameBuf[16];
-	CIniReader BonusCars("UnlimiterData\\_BonusCars.ini");
 	char* PresetName;
 
-	int NumberOfBonusCars = BonusCars.ReadInteger("BonusCars", "NumberOfBonusCars", -1);
+	int NumberOfBonusCars = BonusCars.size();
 
 	// Check if any of our custom bonus cars are marked as CE only
-	for (int i = 0; i <= NumberOfBonusCars; i++)
+	for (int i = 0; i < NumberOfBonusCars; i++)
 	{
-		sprintf(BonusCarNameBuf, "BonusCar%d", i);
-		if (BonusCars.ReadInteger(BonusCarNameBuf, "Category", 0xF0008) == 0xF0008)
+		if (BonusCars[i].Category == 0xF0008)
 		{
-			PresetName = BonusCars.ReadString(BonusCarNameBuf, "PresetName", "");
+			PresetName = BonusCars[i].PresetName;
 			if (FEHashUpper(PresetName) == PresetNameHash)
 			{
-				return BonusCars.ReadInteger(BonusCarNameBuf, "CEOnly", 0) != 0;
+				return BonusCars[i].CEOnly;
 			}
 		}
 	}
@@ -46,5 +42,5 @@ int UnlockSystem_GetCarPartCost(int UnlockFilter, int CarSlotID, DWORD* CarPart,
 		if (FEPartInfo) Cost = FEPartInfo[2];
 	}
 	
-	return CarPart_GetAppliedAttributeIParam(CarPart, bStringHash("COST"), (int)Cost);
+	return CarPart_GetAppliedAttributeIParam(CarPart, bStringHash((char*)"COST"), (int)Cost);
 }

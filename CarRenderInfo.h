@@ -3,7 +3,7 @@
 #include "InGameFunctions.h"
 
 char TextureName[255];
-char* NormalMapSuffix = "_N";
+char* NormalMapSuffix = (char*)"_N";
 int InteriorTextureHash, InteriorNormalTextureHash;
 
 int UsedCarTextureReplace(int* UsedCarTextureTable, int NumberOfTextures, int SourceTextureHash, int DestinationTextureHash)
@@ -102,8 +102,8 @@ void __declspec(naked) TextureReplacementCodeCave()
 			*(CarRenderInfo + 0xB4) = texHash;
 			*(CarRenderInfo + 0xB5) = -1;
 			// normal map
-			InteriorNormalTextureHash = bStringHash2("_N", texHash);
-			*(CarRenderInfo + 0xCE) = bStringHash2("_N", origTexHash);
+			InteriorNormalTextureHash = bStringHash2((char*)"_N", texHash);
+			*(CarRenderInfo + 0xCE) = bStringHash2((char*)"_N", origTexHash);
 			*(CarRenderInfo + 0xCF) = InteriorNormalTextureHash;
 			*(CarRenderInfo + 0xD0) = -1;
 		}
@@ -179,12 +179,12 @@ void __fastcall CarRenderInfo_UpdateWheelYRenderOffset(DWORD* CarRenderInfo, voi
 				DWORD* BodyKitCarPart = RideInfo_GetPart(TheRideInfo, 23); // BODY_KIT
 				if (BodyKitCarPart)
 				{
-					KitNumber = CarPart_GetAppliedAttributeIParam(BodyKitCarPart, bStringHash("KITNUMBER"), 0);
+					KitNumber = CarPart_GetAppliedAttributeIParam(BodyKitCarPart, bStringHash((char*)"KITNUMBER"), 0);
 					// Read offset attributes from body kit
-					BodyKitFrontTireOffset = CarPart_GetAppliedAttributeFParam(BodyKitCarPart, 0, bStringHash("FRONT_TIRE_OFFSET"), 0.0f);
-					BodyKitRearTireOffset = CarPart_GetAppliedAttributeFParam(BodyKitCarPart, 0, bStringHash("REAR_TIRE_OFFSET"), 0.0f);
-					TireSkidWidthFront = CarPart_GetAppliedAttributeFParam(BodyKitCarPart, 0, bStringHash("FRONT_TIRE_WIDTH"), 0.0f);
-					TireSkidWidthRear = CarPart_GetAppliedAttributeFParam(BodyKitCarPart, 0, bStringHash("REAR_TIRE_WIDTH"), 0.0f);
+					BodyKitFrontTireOffset = CarPart_GetAppliedAttributeFParam(BodyKitCarPart, 0, bStringHash((char*)"FRONT_TIRE_OFFSET"), 0.0f);
+					BodyKitRearTireOffset = CarPart_GetAppliedAttributeFParam(BodyKitCarPart, 0, bStringHash((char*)"REAR_TIRE_OFFSET"), 0.0f);
+					TireSkidWidthFront = CarPart_GetAppliedAttributeFParam(BodyKitCarPart, 0, bStringHash((char*)"FRONT_TIRE_WIDTH"), 0.0f);
+					TireSkidWidthRear = CarPart_GetAppliedAttributeFParam(BodyKitCarPart, 0, bStringHash((char*)"REAR_TIRE_WIDTH"), 0.0f);
 				}
 
 				// todo (in v4): Read offset attributes from spacer parts
@@ -296,8 +296,8 @@ void __fastcall CarRenderInfo_UpdateWheelYRenderOffset(DWORD* CarRenderInfo, voi
 	DWORD* RearWheeleModel = (DWORD*)(CarRenderInfo[TireLOD + 1072] & 0xFFFFFFFC); // eModel
 	DWORD* FrontBrakePositionMarker = 0, *RearBrakePositionMarker = 0;
 
-	if (FrontWheeleModel) FrontBrakePositionMarker = (DWORD*)eModel_GetPositionMarker(FrontWheeleModel, bStringHash("FRONT_BRAKE"));
-	if (RearWheeleModel) RearBrakePositionMarker = (DWORD*)eModel_GetPositionMarker(RearWheeleModel, bStringHash("REAR_BRAKE"));
+	if (FrontWheeleModel) FrontBrakePositionMarker = (DWORD*)eModel_GetPositionMarker(FrontWheeleModel, bStringHash((char*)"FRONT_BRAKE"));
+	if (RearWheeleModel) RearBrakePositionMarker = (DWORD*)eModel_GetPositionMarker(RearWheeleModel, bStringHash((char*)"REAR_BRAKE"));
 
 	if (FrontBrakePositionMarker) CarRenderInfo[84] = FrontBrakePositionMarker[17]; // Y Position
 	else CarRenderInfo[84] = 0;
@@ -307,7 +307,7 @@ void __fastcall CarRenderInfo_UpdateWheelYRenderOffset(DWORD* CarRenderInfo, voi
 	{
 		if (RearWheeleModel)
 		{
-			RearBrakePositionMarker = (DWORD*)eModel_GetPositionMarker(RearWheeleModel, bStringHash("FRONT_BRAKE"));
+			RearBrakePositionMarker = (DWORD*)eModel_GetPositionMarker(RearWheeleModel, bStringHash((char*)"FRONT_BRAKE"));
 			if (RearBrakePositionMarker) CarRenderInfo[85] = RearBrakePositionMarker[17];
 			else CarRenderInfo[85] = 0;
 		}
@@ -357,8 +357,8 @@ DWORD GetNeonTextureHash(DWORD* _RideInfo)
 	DWORD* NeonPart = RideInfo_GetPart(_RideInfo, 65); // BRAKELIGHT
 	if (NeonPart)
 	{
-		if (!CarPart_GetAppliedAttributeIParam(NeonPart, bStringHash("STOCK"), 0)) // If not stock
-			return CarPart_GetAppliedAttributeIParam(NeonPart, bStringHash("TEXTURE_NAME"), bStringHash("CARSHADOW_NEON")); // Custom texture or CARSHADOW_NEON
+		if (!CarPart_GetAppliedAttributeIParam(NeonPart, bStringHash((char*)"STOCK"), 0)) // If not stock
+			return CarPart_GetAppliedAttributeIParam(NeonPart, bStringHash((char*)"TEXTURE_NAME"), bStringHash((char*)"CARSHADOW_NEON")); // Custom texture or CARSHADOW_NEON
 	}
 
 	return 0;
@@ -366,12 +366,12 @@ DWORD GetNeonTextureHash(DWORD* _RideInfo)
 
 DWORD GetShadowCutTextureHash(DWORD* _RideInfo)
 {
-	DWORD DefaultShadowCutTextureHash = bStringHash("CARSHADOW_NEON_CUT");
+	DWORD DefaultShadowCutTextureHash = bStringHash((char*)"CARSHADOW_NEON_CUT");
 	
 	DWORD NeonTextureHash = GetNeonTextureHash(_RideInfo);
 	if (NeonTextureHash)
 	{
-		DWORD ShadowCutTextureHash = bStringHash2("_CUT", NeonTextureHash);
+		DWORD ShadowCutTextureHash = bStringHash2((char*)"_CUT", NeonTextureHash);
 		if (GetTextureInfo(ShadowCutTextureHash, 0, 0)) return ShadowCutTextureHash;
 		else if (GetTextureInfo(DefaultShadowCutTextureHash, 0, 0)) return DefaultShadowCutTextureHash;
 	}
@@ -417,16 +417,16 @@ int __stdcall SetNeonColor(DWORD* _CarRenderInfo, int OriginalColor)
 	float br = 1.0f;
 	if (NeonPart)
 	{
-		if (!CarPart_GetAppliedAttributeIParam(NeonPart, bStringHash("STOCK"), 0)) // If not stock
+		if (!CarPart_GetAppliedAttributeIParam(NeonPart, bStringHash((char*)"STOCK"), 0)) // If not stock
 		{
-			r = CarPart_GetAppliedAttributeIParam(NeonPart, bStringHash("RED"), 0) % 256;
-			g = CarPart_GetAppliedAttributeIParam(NeonPart, bStringHash("GREEN"), 0) % 256;
-			b = CarPart_GetAppliedAttributeIParam(NeonPart, bStringHash("BLUE"), 0) % 256;
-			a = CarPart_GetAppliedAttributeIParam(NeonPart, bStringHash("ALPHA"), 0) % 256;
-			r2 = CarPart_GetAppliedAttributeIParam(NeonPart, bStringHash("RED2"), r) % 256;
-			g2 = CarPart_GetAppliedAttributeIParam(NeonPart, bStringHash("GREEN2"), g) % 256;
-			b2 = CarPart_GetAppliedAttributeIParam(NeonPart, bStringHash("BLUE2"), b) % 256;
-			a2 = CarPart_GetAppliedAttributeIParam(NeonPart, bStringHash("ALPHA2"), a) % 256;
+			r = CarPart_GetAppliedAttributeIParam(NeonPart, bStringHash((char*)"RED"), 0) % 256;
+			g = CarPart_GetAppliedAttributeIParam(NeonPart, bStringHash((char*)"GREEN"), 0) % 256;
+			b = CarPart_GetAppliedAttributeIParam(NeonPart, bStringHash((char*)"BLUE"), 0) % 256;
+			a = CarPart_GetAppliedAttributeIParam(NeonPart, bStringHash((char*)"ALPHA"), 0) % 256;
+			r2 = CarPart_GetAppliedAttributeIParam(NeonPart, bStringHash((char*)"RED2"), r) % 256;
+			g2 = CarPart_GetAppliedAttributeIParam(NeonPart, bStringHash((char*)"GREEN2"), g) % 256;
+			b2 = CarPart_GetAppliedAttributeIParam(NeonPart, bStringHash((char*)"BLUE2"), b) % 256;
+			a2 = CarPart_GetAppliedAttributeIParam(NeonPart, bStringHash((char*)"ALPHA2"), a) % 256;
 
 			// Multiply alphas for shadow
 			a *= 4;
@@ -524,7 +524,7 @@ DWORD __stdcall GetShadowStyle(DWORD* _CarRenderInfo)
 {
 	AddRenderInfo(_CarRenderInfo);
 	DWORD cutHash = GetShadowCutTextureHash((DWORD*)_CarRenderInfo[33]);
-	return cutHash ? cutHash : bStringHash("CARSHADOW");
+	return cutHash ? cutHash : bStringHash((char*)"CARSHADOW");
 }
 
 DWORD _ShadowStyleBackup;
@@ -569,9 +569,9 @@ void eRenderLightFlare_Hook(DWORD* view, DWORD* light_flare, float* local_world,
 					DWORD* RHeadlightPart = RideInfo_GetPart(RideInfo, 40); // RIGHT_HEADLIGHT
 					if (RHeadlightPart)
 					{
-						int r = CarPart_GetAppliedAttributeIParam(RHeadlightPart, bStringHash("RED"), 0) % 256;
-						int g = CarPart_GetAppliedAttributeIParam(RHeadlightPart, bStringHash("GREEN"), 0) % 256;
-						int b = CarPart_GetAppliedAttributeIParam(RHeadlightPart, bStringHash("BLUE"), 0) % 256;
+						int r = CarPart_GetAppliedAttributeIParam(RHeadlightPart, bStringHash((char*)"RED"), 0) % 256;
+						int g = CarPart_GetAppliedAttributeIParam(RHeadlightPart, bStringHash((char*)"GREEN"), 0) % 256;
+						int b = CarPart_GetAppliedAttributeIParam(RHeadlightPart, bStringHash((char*)"BLUE"), 0) % 256;
 
 						// If no color attribute is present, use the values from LEFT_HEADLIGHT instead
 						if (r == 0 && g == 0 && b == 0)
@@ -579,9 +579,9 @@ void eRenderLightFlare_Hook(DWORD* view, DWORD* light_flare, float* local_world,
 							DWORD* HeadlightPart = RideInfo_GetPart(RideInfo, 31); // LEFT_HEADLIGHT
 							if (HeadlightPart)
 							{
-								r = CarPart_GetAppliedAttributeIParam(HeadlightPart, bStringHash("RED"), 0) % 256;
-								g = CarPart_GetAppliedAttributeIParam(HeadlightPart, bStringHash("GREEN"), 0) % 256;
-								b = CarPart_GetAppliedAttributeIParam(HeadlightPart, bStringHash("BLUE"), 0) % 256;
+								r = CarPart_GetAppliedAttributeIParam(HeadlightPart, bStringHash((char*)"RED"), 0) % 256;
+								g = CarPart_GetAppliedAttributeIParam(HeadlightPart, bStringHash((char*)"GREEN"), 0) % 256;
+								b = CarPart_GetAppliedAttributeIParam(HeadlightPart, bStringHash((char*)"BLUE"), 0) % 256;
 							}
 						}
 
@@ -602,9 +602,9 @@ void eRenderLightFlare_Hook(DWORD* view, DWORD* light_flare, float* local_world,
 					DWORD* HeadlightPart = RideInfo_GetPart(RideInfo, 31); // LEFT_HEADLIGHT
 					if (HeadlightPart)
 					{
-						int r = CarPart_GetAppliedAttributeIParam(HeadlightPart, bStringHash("DISPRED"), 0) % 256;
-						int g = CarPart_GetAppliedAttributeIParam(HeadlightPart, bStringHash("DISPGREEN"), 0) % 256;
-						int b = CarPart_GetAppliedAttributeIParam(HeadlightPart, bStringHash("DISPBLUE"), 0) % 256;
+						int r = CarPart_GetAppliedAttributeIParam(HeadlightPart, bStringHash((char*)"DISPRED"), 0) % 256;
+						int g = CarPart_GetAppliedAttributeIParam(HeadlightPart, bStringHash((char*)"DISPGREEN"), 0) % 256;
+						int b = CarPart_GetAppliedAttributeIParam(HeadlightPart, bStringHash((char*)"DISPBLUE"), 0) % 256;
 
 						// eLightFlare->ColourTint (normally unused in MW)
 						light_flare[3] = r + (g << 8) + (b << 16);
@@ -623,9 +623,9 @@ void eRenderLightFlare_Hook(DWORD* view, DWORD* light_flare, float* local_world,
 					DWORD* HeadlightPart = RideInfo_GetPart(RideInfo, 31); // LEFT_HEADLIGHT
 					if (HeadlightPart)
 					{
-						int r = CarPart_GetAppliedAttributeIParam(HeadlightPart, bStringHash("RED"), 0) % 256;
-						int g = CarPart_GetAppliedAttributeIParam(HeadlightPart, bStringHash("GREEN"), 0) % 256;
-						int b = CarPart_GetAppliedAttributeIParam(HeadlightPart, bStringHash("BLUE"), 0) % 256;
+						int r = CarPart_GetAppliedAttributeIParam(HeadlightPart, bStringHash((char*)"RED"), 0) % 256;
+						int g = CarPart_GetAppliedAttributeIParam(HeadlightPart, bStringHash((char*)"GREEN"), 0) % 256;
+						int b = CarPart_GetAppliedAttributeIParam(HeadlightPart, bStringHash((char*)"BLUE"), 0) % 256;
 
 						// eLightFlare->ColourTint (normally unused in MW)
 						light_flare[3] = r + (g << 8) + (b << 16);
@@ -644,9 +644,9 @@ void eRenderLightFlare_Hook(DWORD* view, DWORD* light_flare, float* local_world,
 					DWORD* RBrakelightPart = RideInfo_GetPart(RideInfo, 38); // RIGHT_BRAKELIGHT
 					if (RBrakelightPart)
 					{
-						int r = CarPart_GetAppliedAttributeIParam(RBrakelightPart, bStringHash("RED"), 0) % 256;
-						int g = CarPart_GetAppliedAttributeIParam(RBrakelightPart, bStringHash("GREEN"), 0) % 256;
-						int b = CarPart_GetAppliedAttributeIParam(RBrakelightPart, bStringHash("BLUE"), 0) % 256;
+						int r = CarPart_GetAppliedAttributeIParam(RBrakelightPart, bStringHash((char*)"RED"), 0) % 256;
+						int g = CarPart_GetAppliedAttributeIParam(RBrakelightPart, bStringHash((char*)"GREEN"), 0) % 256;
+						int b = CarPart_GetAppliedAttributeIParam(RBrakelightPart, bStringHash((char*)"BLUE"), 0) % 256;
 
 						// If no color attribute is present, use the values from LEFT_BRAKELIGHT instead
 						if (r == 0 && g == 0 && b == 0)
@@ -654,9 +654,9 @@ void eRenderLightFlare_Hook(DWORD* view, DWORD* light_flare, float* local_world,
 							DWORD* BrakelightPart = RideInfo_GetPart(RideInfo, 29); // LEFT_BRAKELIGHT
 							if (BrakelightPart)
 							{
-								r = CarPart_GetAppliedAttributeIParam(BrakelightPart, bStringHash("RED"), 0) % 256;
-								g = CarPart_GetAppliedAttributeIParam(BrakelightPart, bStringHash("GREEN"), 0) % 256;
-								b = CarPart_GetAppliedAttributeIParam(BrakelightPart, bStringHash("BLUE"), 0) % 256;
+								r = CarPart_GetAppliedAttributeIParam(BrakelightPart, bStringHash((char*)"RED"), 0) % 256;
+								g = CarPart_GetAppliedAttributeIParam(BrakelightPart, bStringHash((char*)"GREEN"), 0) % 256;
+								b = CarPart_GetAppliedAttributeIParam(BrakelightPart, bStringHash((char*)"BLUE"), 0) % 256;
 							}
 						}
 
@@ -677,9 +677,9 @@ void eRenderLightFlare_Hook(DWORD* view, DWORD* light_flare, float* local_world,
 					DWORD* BrakelightPart = RideInfo_GetPart(RideInfo, 29); // LEFT_BRAKELIGHT
 					if (BrakelightPart)
 					{
-						int r = CarPart_GetAppliedAttributeIParam(BrakelightPart, bStringHash("DISPRED"), 0) % 256;
-						int g = CarPart_GetAppliedAttributeIParam(BrakelightPart, bStringHash("DISPGREEN"), 0) % 256;
-						int b = CarPart_GetAppliedAttributeIParam(BrakelightPart, bStringHash("DISPBLUE"), 0) % 256;
+						int r = CarPart_GetAppliedAttributeIParam(BrakelightPart, bStringHash((char*)"DISPRED"), 0) % 256;
+						int g = CarPart_GetAppliedAttributeIParam(BrakelightPart, bStringHash((char*)"DISPGREEN"), 0) % 256;
+						int b = CarPart_GetAppliedAttributeIParam(BrakelightPart, bStringHash((char*)"DISPBLUE"), 0) % 256;
 
 						// eLightFlare->ColourTint (normally unused in MW)
 						light_flare[3] = r + (g << 8) + (b << 16);
@@ -698,9 +698,9 @@ void eRenderLightFlare_Hook(DWORD* view, DWORD* light_flare, float* local_world,
 					DWORD* BrakelightPart = RideInfo_GetPart(RideInfo, 29); // LEFT_BRAKELIGHT
 					if (BrakelightPart)
 					{
-						int r = CarPart_GetAppliedAttributeIParam(BrakelightPart, bStringHash("RED"), 0) % 256;
-						int g = CarPart_GetAppliedAttributeIParam(BrakelightPart, bStringHash("GREEN"), 0) % 256;
-						int b = CarPart_GetAppliedAttributeIParam(BrakelightPart, bStringHash("BLUE"), 0) % 256;
+						int r = CarPart_GetAppliedAttributeIParam(BrakelightPart, bStringHash((char*)"RED"), 0) % 256;
+						int g = CarPart_GetAppliedAttributeIParam(BrakelightPart, bStringHash((char*)"GREEN"), 0) % 256;
+						int b = CarPart_GetAppliedAttributeIParam(BrakelightPart, bStringHash((char*)"BLUE"), 0) % 256;
 
 						// eLightFlare->ColourTint (normally unused in MW)
 						light_flare[3] = r + (g << 8) + (b << 16);
@@ -719,9 +719,9 @@ void eRenderLightFlare_Hook(DWORD* view, DWORD* light_flare, float* local_world,
 					DWORD* RBrakelightPart = RideInfo_GetPart(RideInfo, 38); // RIGHT_BRAKELIGHT
 					if (RBrakelightPart)
 					{
-						int r = CarPart_GetAppliedAttributeIParam(RBrakelightPart, bStringHash("RED2"), 0) % 256;
-						int g = CarPart_GetAppliedAttributeIParam(RBrakelightPart, bStringHash("GREEN2"), 0) % 256;
-						int b = CarPart_GetAppliedAttributeIParam(RBrakelightPart, bStringHash("BLUE2"), 0) % 256;
+						int r = CarPart_GetAppliedAttributeIParam(RBrakelightPart, bStringHash((char*)"RED2"), 0) % 256;
+						int g = CarPart_GetAppliedAttributeIParam(RBrakelightPart, bStringHash((char*)"GREEN2"), 0) % 256;
+						int b = CarPart_GetAppliedAttributeIParam(RBrakelightPart, bStringHash((char*)"BLUE2"), 0) % 256;
 
 						// If no color attribute is present, use the values from LEFT_BRAKELIGHT instead
 						if (r == 0 && g == 0 && b == 0)
@@ -729,9 +729,9 @@ void eRenderLightFlare_Hook(DWORD* view, DWORD* light_flare, float* local_world,
 							DWORD* BrakelightPart = RideInfo_GetPart(RideInfo, 29); // LEFT_BRAKELIGHT
 							if (BrakelightPart)
 							{
-								r = CarPart_GetAppliedAttributeIParam(BrakelightPart, bStringHash("RED2"), 0) % 256;
-								g = CarPart_GetAppliedAttributeIParam(BrakelightPart, bStringHash("GREEN2"), 0) % 256;
-								b = CarPart_GetAppliedAttributeIParam(BrakelightPart, bStringHash("BLUE2"), 0) % 256;
+								r = CarPart_GetAppliedAttributeIParam(BrakelightPart, bStringHash((char*)"RED2"), 0) % 256;
+								g = CarPart_GetAppliedAttributeIParam(BrakelightPart, bStringHash((char*)"GREEN2"), 0) % 256;
+								b = CarPart_GetAppliedAttributeIParam(BrakelightPart, bStringHash((char*)"BLUE2"), 0) % 256;
 							}
 						}
 
@@ -752,9 +752,9 @@ void eRenderLightFlare_Hook(DWORD* view, DWORD* light_flare, float* local_world,
 					DWORD* BrakelightPart = RideInfo_GetPart(RideInfo, 29); // LEFT_BRAKELIGHT
 					if (BrakelightPart)
 					{
-						int r = CarPart_GetAppliedAttributeIParam(BrakelightPart, bStringHash("RED2"), 0) % 256;
-						int g = CarPart_GetAppliedAttributeIParam(BrakelightPart, bStringHash("GREEN2"), 0) % 256;
-						int b = CarPart_GetAppliedAttributeIParam(BrakelightPart, bStringHash("BLUE2"), 0) % 256;
+						int r = CarPart_GetAppliedAttributeIParam(BrakelightPart, bStringHash((char*)"RED2"), 0) % 256;
+						int g = CarPart_GetAppliedAttributeIParam(BrakelightPart, bStringHash((char*)"GREEN2"), 0) % 256;
+						int b = CarPart_GetAppliedAttributeIParam(BrakelightPart, bStringHash((char*)"BLUE2"), 0) % 256;
 
 						// eLightFlare->ColourTint (normally unused in MW)
 						light_flare[3] = r + (g << 8) + (b << 16);
@@ -808,9 +808,9 @@ void __fastcall CarRenderInfo_RenderTextureHeadlights_Hook(DWORD* CarRenderInfo,
 			DWORD* RHeadlightPart = RideInfo_GetPart(RideInfo, 40); // RIGHT_HEADLIGHT
 			if (RHeadlightPart)
 			{
-				int r = CarPart_GetAppliedAttributeIParam(RHeadlightPart, bStringHash("RED"), 0) % 256;
-				int g = CarPart_GetAppliedAttributeIParam(RHeadlightPart, bStringHash("GREEN"), 0) % 256;
-				int b = CarPart_GetAppliedAttributeIParam(RHeadlightPart, bStringHash("BLUE"), 0) % 256;
+				int r = CarPart_GetAppliedAttributeIParam(RHeadlightPart, bStringHash((char*)"RED"), 0) % 256;
+				int g = CarPart_GetAppliedAttributeIParam(RHeadlightPart, bStringHash((char*)"GREEN"), 0) % 256;
+				int b = CarPart_GetAppliedAttributeIParam(RHeadlightPart, bStringHash((char*)"BLUE"), 0) % 256;
 
 				// If no color attribute is present, use the values from LEFT_HEADLIGHT instead
 				if (r == 0 && g == 0 && b == 0)
@@ -818,9 +818,9 @@ void __fastcall CarRenderInfo_RenderTextureHeadlights_Hook(DWORD* CarRenderInfo,
 					DWORD* HeadlightPart = RideInfo_GetPart(RideInfo, 31); // LEFT_HEADLIGHT
 					if (HeadlightPart)
 					{
-						r = CarPart_GetAppliedAttributeIParam(HeadlightPart, bStringHash("RED"), 0) % 256;
-						g = CarPart_GetAppliedAttributeIParam(HeadlightPart, bStringHash("GREEN"), 0) % 256;
-						b = CarPart_GetAppliedAttributeIParam(HeadlightPart, bStringHash("BLUE"), 0) % 256;
+						r = CarPart_GetAppliedAttributeIParam(HeadlightPart, bStringHash((char*)"RED"), 0) % 256;
+						g = CarPart_GetAppliedAttributeIParam(HeadlightPart, bStringHash((char*)"GREEN"), 0) % 256;
+						b = CarPart_GetAppliedAttributeIParam(HeadlightPart, bStringHash((char*)"BLUE"), 0) % 256;
 					}
 				}
 
@@ -832,9 +832,9 @@ void __fastcall CarRenderInfo_RenderTextureHeadlights_Hook(DWORD* CarRenderInfo,
 			DWORD* HeadlightPart = RideInfo_GetPart(RideInfo, 31); // LEFT_HEADLIGHT
 			if (HeadlightPart)
 			{
-				int r = CarPart_GetAppliedAttributeIParam(HeadlightPart, bStringHash("RED"), 0) % 256;
-				int g = CarPart_GetAppliedAttributeIParam(HeadlightPart, bStringHash("GREEN"), 0) % 256;
-				int b = CarPart_GetAppliedAttributeIParam(HeadlightPart, bStringHash("BLUE"), 0) % 256;
+				int r = CarPart_GetAppliedAttributeIParam(HeadlightPart, bStringHash((char*)"RED"), 0) % 256;
+				int g = CarPart_GetAppliedAttributeIParam(HeadlightPart, bStringHash((char*)"GREEN"), 0) % 256;
+				int b = CarPart_GetAppliedAttributeIParam(HeadlightPart, bStringHash((char*)"BLUE"), 0) % 256;
 
 				if (r == 0 && g == 0 && b == 0) hcLC = 0x40CCCCCC;
 				else hcLC = r + (g << 8) + (b << 16) + (0x40 << 24);
@@ -882,7 +882,7 @@ float __stdcall GetCamber(DWORD* _CarRenderInfo, float original, bool isRear)
 		if (BodyKitCarPart)
 		{
 			// Read camber attributes from body kit
-			Camber = CarPart_GetAppliedAttributeFParam(BodyKitCarPart, 0, isRear ? bStringHash("REAR_CAMBER") : bStringHash("FRONT_CAMBER"), original);
+			Camber = CarPart_GetAppliedAttributeFParam(BodyKitCarPart, 0, isRear ? bStringHash((char*)"REAR_CAMBER") : bStringHash((char*)"FRONT_CAMBER"), original);
 		}
 	}
 
@@ -940,7 +940,7 @@ float __stdcall GetRideHeight(DWORD* _CarRenderInfo, float original)
 		if (BodyKitCarPart)
 		{
 			// Read height attribute from body kit
-			RideHeight = CarPart_GetAppliedAttributeFParam(BodyKitCarPart, 0, bStringHash("RIDE_HEIGHT"), original);
+			RideHeight = CarPart_GetAppliedAttributeFParam(BodyKitCarPart, 0, bStringHash((char*)"RIDE_HEIGHT"), original);
 		}
 	}
 

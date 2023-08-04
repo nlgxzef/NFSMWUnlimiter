@@ -12,7 +12,6 @@ void __fastcall TireState_DoSkids_Hook(DWORD* _TireState, DWORD* _CarRenderConn,
 	float BodyTireWidth = SkidWidth;
 	float _SkidWidth = SkidWidth;
 	float BodyTireOffset = 0.0f;
-	int WheelID = 0;
 	BYTE OffsetInMM;
 	bool IsRear;
 
@@ -38,10 +37,10 @@ void __fastcall TireState_DoSkids_Hook(DWORD* _TireState, DWORD* _CarRenderConn,
 				DWORD* BodyKitCarPart = RideInfo_GetPart(TheRideInfo, 23); // BODY_KIT
 				if (BodyKitCarPart)
 				{
-					KitNumber = CarPart_GetAppliedAttributeIParam(BodyKitCarPart, bStringHash("KITNUMBER"), 0);
+					KitNumber = CarPart_GetAppliedAttributeIParam(BodyKitCarPart, bStringHash((char*)"KITNUMBER"), 0);
 					// Read offset attributes from body kit
-					BodyTireOffset = CarPart_GetAppliedAttributeFParam(BodyKitCarPart, 0, IsRear ? bStringHash("REAR_TIRE_OFFSET") : bStringHash("FRONT_TIRE_OFFSET"), 0.0f);
-					BodyTireWidth = CarPart_GetAppliedAttributeFParam(BodyKitCarPart, 0, IsRear ? bStringHash("REAR_TIRE_WIDTH") : bStringHash("FRONT_TIRE_WIDTH"), SkidWidth);
+					BodyTireOffset = CarPart_GetAppliedAttributeFParam(BodyKitCarPart, 0, IsRear ? bStringHash((char*)"REAR_TIRE_OFFSET") : bStringHash((char*)"FRONT_TIRE_OFFSET"), 0.0f);
+					BodyTireWidth = CarPart_GetAppliedAttributeFParam(BodyKitCarPart, 0, IsRear ? bStringHash((char*)"REAR_TIRE_WIDTH") : bStringHash((char*)"FRONT_TIRE_WIDTH"), SkidWidth);
 				}
 
 				// Get KitWheelOffsetFront/Rear

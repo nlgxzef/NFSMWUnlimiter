@@ -1,6 +1,5 @@
 #include "stdio.h"
 #include "InGameFunctions.h"
-#include "includes\IniReader.h"
 
 void __fastcall CustomizeParts_dtor_Hook(DWORD* _CustomizeParts, void* EDX_Unused)
 {
@@ -265,7 +264,7 @@ void __fastcall CustomizeParts_RefreshHeader(DWORD* _CustomizeParts, void* EDX_U
 				CarCustomizeManager_PreviewPart((DWORD*)_gCarCustomizeManager, SelectedPart[4], (DWORD*)SelectedPart[3]);
 			}
 
-			DWORD LanguageHash = CarPart_GetAppliedAttributeUParam((DWORD*)(SelectedPart[3]), bStringHash("LANGUAGEHASH"), 0);
+			DWORD LanguageHash = CarPart_GetAppliedAttributeUParam((DWORD*)(SelectedPart[3]), bStringHash((char*)"LANGUAGEHASH"), 0);
 			if (LanguageHash)
 				FEngSetLanguageHash((char const*)_CustomizeParts[4], 0x5E7B09C9, LanguageHash);
 			else FEPrintf((char const*)_CustomizeParts[4], 0x5E7B09C9, "%s", CarPart_GetName((DWORD*)(SelectedPart[3])));
@@ -299,38 +298,27 @@ void __fastcall CustomizeParts_Setup(DWORD* _CustomizeParts, void* EDX_Unused)
 	int CarTypeID = FECarRecord_GetType(FECarRecord);
 	sprintf(CarTypeName, GetCarTypeName(CarTypeID));
 
-	// Read Part Options for the car
-	sprintf(CarININame, "UnlimiterData\\%s.ini", CarTypeName);
-	CIniReader CarINI(CarININame);
-	CIniReader GeneralINI("UnlimiterData\\_General.ini");
-
 	// Vinyls
 	if (MenuID >= 0x402 && MenuID <= 0x4FF)
 	{
 		CarSlotID = 77;
-
-		CIniReader VinylGroupsINI("UnlimiterData\\_VinylGroups.ini");
 		int i = MenuID - 0x402;
 
 		if (i == 0)
 		{
-			sprintf(VinylBrandID, "Group%d", 0);
-			sprintf(VinylBrandIcon, GetCarTextOption(CarINI, GeneralINI, "Icons", "VisualVinylsCustom", ""));
-			sprintf(VinylBrandString, GetCarTextOption(CarINI, GeneralINI, "Names", "VisualVinylsCustom", ""));
+			PartIconNormal = CarConfigs[CarTypeID].Icons.VisualVinylsCustom;
+			_CustomizeParts[87] = CarConfigs[CarTypeID].Names.VisualVinylsCustom;
 
-			if (bStringHash(VinylBrandIcon) == -1) sprintf(VinylBrandIcon, VinylGroupsINI.ReadString(VinylBrandID, "Texture", GetDefaultVinylGroupTexture(0)));
-			if (bStringHash(VinylBrandString) == -1) sprintf(VinylBrandString, VinylGroupsINI.ReadString(VinylBrandID, "String", GetDefaultVinylGroupString(0)));
+			if (PartIconNormal == -1) PartIconNormal = VinylGroups[i].TextureHash;
+			if (_CustomizeParts[87] == -1) _CustomizeParts[87] = VinylGroups[i].StringHash;
 		}
 		else
 		{
-			sprintf(VinylBrandID, "Group%d", i);
-			sprintf(VinylBrandIcon, VinylGroupsINI.ReadString(VinylBrandID, "Texture", GetDefaultVinylGroupTexture(i)));
-			sprintf(VinylBrandString, VinylGroupsINI.ReadString(VinylBrandID, "String", GetDefaultVinylGroupString(i)));
+			PartIconNormal = VinylGroups[i].TextureHash;
+			_CustomizeParts[87] = VinylGroups[i].StringHash;
 		}
-		PartCategory = VinylGroupsINI.ReadInteger(VinylBrandID, "Index", GetDefaultVinylGroupIndex(i));
 
-		PartIconNormal = bStringHash(VinylBrandIcon);
-		_CustomizeParts[87] = bStringHash(VinylBrandString);
+		PartCategory = VinylGroups[i].Index;
 		
 		if (dword_9BA080) TheActiveCarPart = (DWORD*)dword_9BA080[3];
 		else TheActiveCarPart = CarCustomizeManager_GetActivePartFromSlot((DWORD*)_gCarCustomizeManager, CarSlotID);
@@ -343,133 +331,133 @@ void __fastcall CustomizeParts_Setup(DWORD* _CustomizeParts, void* EDX_Unused)
 		case 0x101:
 			CarSlotID = 23; // BODY
 			PartIconNormal = CustomizeIsInBackRoom() != 0
-				? GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "BackroomPartsBodyKits", "MARKER_ICON_PARTS_BODYKITS")
-				: GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "PartsBodyKits", "VISUAL_PART_BODY");
-			_CustomizeParts[87] = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsBodyKits", "CO_BODY_KITS");
+				? CarConfigs[CarTypeID].Icons.BackroomPartsBodyKits
+				: CarConfigs[CarTypeID].Icons.PartsBodyKits;
+			_CustomizeParts[87] = CarConfigs[CarTypeID].Names.PartsBodyKits;
 			break;
 
 		case 0x104:
 			CarSlotID = 63; // HOOD
 			PartIconNormal = CustomizeIsInBackRoom() != 0
-				? GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "BackroomPartsHoods", "MARKER_ICON_PARTS_HOODS")
-				: GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "PartsHoods", "VISUAL_PART_HOOD");
+				? CarConfigs[CarTypeID].Icons.BackroomPartsHoods
+				: CarConfigs[CarTypeID].Icons.PartsHoods;
 			PartIconCF = CustomizeIsInBackRoom() != 0
-				? GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "BackroomPartsHoodsCF", "MARKER_ICON_PARTS_CF_HOODS")
-				: GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "PartsHoodsCF", "VISUAL_PART_HOOD_CARBON");
-			_CustomizeParts[87] = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsHoods", "CO_HOODS");
+				? CarConfigs[CarTypeID].Icons.BackroomPartsHoodsCF
+				: CarConfigs[CarTypeID].Icons.PartsHoodsCF;
+			_CustomizeParts[87] = CarConfigs[CarTypeID].Names.PartsHoods;
 			break;
 
 		case 0x105:
 			CarSlotID = 62; // ROOF
 			PartIconNormal = CustomizeIsInBackRoom() != 0
-				? GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "BackroomPartsRoofScoops", "MARKER_ICON_PARTS_ROOFSCOOPS")
-				: GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "PartsRoofScoops", "VISUAL_PART_ROOF_SCOOP");
+				? CarConfigs[CarTypeID].Icons.BackroomPartsRoofScoops
+				: CarConfigs[CarTypeID].Icons.PartsRoofScoops;
 			PartIconCF = CustomizeIsInBackRoom() != 0
-				? GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "BackroomPartsRoofScoopsCF", "MARKER_ICON_PARTS_CF_ROOFSCOOPS")
-				: GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "PartsRoofScoopsCF", "VISUAL_PART_ROOF_SCOOP_CARBON");
-			_CustomizeParts[87] = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsRoofScoops", "CO_ROOF_SCOOPS");
+				? CarConfigs[CarTypeID].Icons.BackroomPartsRoofScoopsCF
+				: CarConfigs[CarTypeID].Icons.PartsRoofScoopsCF;
+			_CustomizeParts[87] = CarConfigs[CarTypeID].Names.PartsRoofScoops;
 			break;
 
 		case 0x106:
 			CarSlotID = 28; // INTERIOR
-			PartIconNormal = GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "PartsInterior", "VISUAL_PART_INTERIOR");
-			_CustomizeParts[87] = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsInterior", "CO_INTERIOR");
+			PartIconNormal = CarConfigs[CarTypeID].Icons.PartsInterior;
+			_CustomizeParts[87] = CarConfigs[CarTypeID].Names.PartsInterior;
 			break;
 
 		case 0x107: // Roof
 			CarSlotID = 0; // BASE
-			PartIconNormal = GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "PartsRoof", "VISUAL_PART_ROOF");
-			_CustomizeParts[87] = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsRoof", "CO_ROOF");
+			PartIconNormal = CarConfigs[CarTypeID].Icons.PartsRoof;
+			_CustomizeParts[87] = CarConfigs[CarTypeID].Names.PartsRoof;
 			break;
 
 		case 0x108: // Brake
 			CarSlotID = 24; // FRONT_BRAKE
-			PartIconNormal = GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "PartsBrakes", "VISUAL_PART_BRAKE");
-			_CustomizeParts[87] = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsBrakes", "CO_BRAKES");
+			PartIconNormal = CarConfigs[CarTypeID].Icons.PartsBrakes;
+			_CustomizeParts[87] = CarConfigs[CarTypeID].Names.PartsBrakes;
 			break;
 
 		case 0x109: // Headlight
 			CarSlotID = 31; // LEFT_HEADLIGHT
-			PartIconNormal = GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "PartsHeadlights", "VISUAL_PART_HEAD_LIGHTS");
-			_CustomizeParts[87] = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsHeadlights", "CO_HEADLIGHTS");
+			PartIconNormal = CarConfigs[CarTypeID].Icons.PartsHeadlights;
+			_CustomizeParts[87] = CarConfigs[CarTypeID].Names.PartsHeadlights;
 			break;
 
 		case 0x10A: // Brakelight
 			CarSlotID = 29; // LEFT_BRAKELIGHT
-			PartIconNormal = GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "PartsTaillights", "VISUAL_PART_TAIL_LIGHTS");
-			_CustomizeParts[87] = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsTaillights", "CO_TAILLIGHTS");
+			PartIconNormal = CarConfigs[CarTypeID].Icons.PartsTaillights;
+			_CustomizeParts[87] = CarConfigs[CarTypeID].Names.PartsTaillights;
 			break;
 
 		case 0x10B: // Mirror
 			CarSlotID = 33; // LEFT_SIDE_MIRROR
-			PartIconNormal = GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "PartsMirrors", "VISUAL_PART_SIDE_MIRROR");
-			_CustomizeParts[87] = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsMirrors", "CO_SIDE_MIRROR");
+			PartIconNormal = CarConfigs[CarTypeID].Icons.PartsMirrors;
+			_CustomizeParts[87] = CarConfigs[CarTypeID].Names.PartsMirrors;
 			break;
 
 		case 0x10D: // Attachment 1
 			CarSlotID = 52; // ATTACHMENT0
-			PartIconNormal = GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "PartsAttachment0", "VISUAL_PART_ATTACHMENT");
-			_CustomizeParts[87] = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsAttachment0", "CO_ATTACHMENT_1");
+			PartIconNormal = CarConfigs[CarTypeID].Icons.PartsAttachment0;
+			_CustomizeParts[87] = CarConfigs[CarTypeID].Names.PartsAttachment0;
 			break;
 
 		case 0x10E: // Attachment 2
 			CarSlotID = 53; // ATTACHMENT1
-			PartIconNormal = GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "PartsAttachment1", "VISUAL_PART_ATTACHMENT");
-			_CustomizeParts[87] = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsAttachment1", "CO_ATTACHMENT_2");
+			PartIconNormal = CarConfigs[CarTypeID].Icons.PartsAttachment1;
+			_CustomizeParts[87] = CarConfigs[CarTypeID].Names.PartsAttachment1;
 			break;
 
 		case 0x10F: // Attachment 3
 			CarSlotID = 54; // ATTACHMENT2
-			PartIconNormal = GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "PartsAttachment2", "VISUAL_PART_ATTACHMENT");
-			_CustomizeParts[87] = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsAttachment2", "CO_ATTACHMENT_3");
+			PartIconNormal = CarConfigs[CarTypeID].Icons.PartsAttachment2;
+			_CustomizeParts[87] = CarConfigs[CarTypeID].Names.PartsAttachment2;
 			break;
 
 		case 0x110: // Attachment 4
 			CarSlotID = 55; // ATTACHMENT3
-			PartIconNormal = GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "PartsAttachment3", "VISUAL_PART_ATTACHMENT");
-			_CustomizeParts[87] = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsAttachment3", "CO_ATTACHMENT_4");
+			PartIconNormal = CarConfigs[CarTypeID].Icons.PartsAttachment3;
+			_CustomizeParts[87] = CarConfigs[CarTypeID].Names.PartsAttachment3;
 			break;
 
 		case 0x111: // Attachment 5
 			CarSlotID = 56; // ATTACHMENT4
-			PartIconNormal = GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "PartsAttachment4", "VISUAL_PART_ATTACHMENT");
-			_CustomizeParts[87] = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsAttachment4", "CO_ATTACHMENT_5");
+			PartIconNormal = CarConfigs[CarTypeID].Icons.PartsAttachment4;
+			_CustomizeParts[87] = CarConfigs[CarTypeID].Names.PartsAttachment4;
 			break;
 
 		case 0x112: // Attachment 6
 			CarSlotID = 57; // ATTACHMENT5
-			PartIconNormal = GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "PartsAttachment5", "VISUAL_PART_ATTACHMENT");
-			_CustomizeParts[87] = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsAttachment5", "CO_ATTACHMENT_6");
+			PartIconNormal = CarConfigs[CarTypeID].Icons.PartsAttachment5;
+			_CustomizeParts[87] = CarConfigs[CarTypeID].Names.PartsAttachment5;
 			break;
 
 		case 0x113: // Attachment 7
 			CarSlotID = 58; // ATTACHMENT6
-			PartIconNormal = GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "PartsAttachment6", "VISUAL_PART_ATTACHMENT");
-			_CustomizeParts[87] = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsAttachment6", "CO_ATTACHMENT_7");
+			PartIconNormal = CarConfigs[CarTypeID].Icons.PartsAttachment6;
+			_CustomizeParts[87] = CarConfigs[CarTypeID].Names.PartsAttachment6;
 			break;
 
 		case 0x114: // Attachment 8
 			CarSlotID = 59; // ATTACHMENT7
-			PartIconNormal = GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "PartsAttachment7", "VISUAL_PART_ATTACHMENT");
-			_CustomizeParts[87] = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsAttachment7", "CO_ATTACHMENT_8");
+			PartIconNormal = CarConfigs[CarTypeID].Icons.PartsAttachment7;
+			_CustomizeParts[87] = CarConfigs[CarTypeID].Names.PartsAttachment7;
 			break;
 
 		case 0x115: // Attachment 9
 			CarSlotID = 60; // ATTACHMENT8
-			PartIconNormal = GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "PartsAttachment8", "VISUAL_PART_ATTACHMENT");
-			_CustomizeParts[87] = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsAttachment8", "CO_ATTACHMENT_9");
+			PartIconNormal = CarConfigs[CarTypeID].Icons.PartsAttachment8;
+			_CustomizeParts[87] = CarConfigs[CarTypeID].Names.PartsAttachment8;
 			break;
 
 		case 0x116: // Attachment 10
 			CarSlotID = 61; // ATTACHMENT9
-			PartIconNormal = GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "PartsAttachment9", "VISUAL_PART_ATTACHMENT");
-			_CustomizeParts[87] = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsAttachment9", "CO_ATTACHMENT_10");
+			PartIconNormal = CarConfigs[CarTypeID].Icons.PartsAttachment9;
+			_CustomizeParts[87] = CarConfigs[CarTypeID].Names.PartsAttachment9;
 			break;
 
 		case 0x304: // Window Tint
 			CarSlotID = 131; // WINDOW_TINT
-			PartIconNormal = GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "VisualWindowTint", "VISUAL_PART_WINDOW_TINTING");
-			_CustomizeParts[87] = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "VisualWindowTint", "CO_WINDOW_TINT");
+			PartIconNormal = CarConfigs[CarTypeID].Icons.VisualWindowTint;
+			_CustomizeParts[87] = CarConfigs[CarTypeID].Names.VisualWindowTint;
 			break;
 
 		case 0x307: // Custom Gauges
@@ -487,51 +475,51 @@ void __fastcall CustomizeParts_Setup(DWORD* _CustomizeParts, void* EDX_Unused)
 
 			CarSlotID = 132; // CUSTOM_HUD
 			PartIconNormal = CustomizeIsInBackRoom() != 0
-				? GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "BackroomVisualCustomGauges", "MARKER_ICON_VISUAL_HUD")
-				: GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "VisualCustomGauges", "VISUAL_PART_HUDS");
-			_CustomizeParts[87] = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "VisualCustomGauges", "CO_CUSTOM_HUD");
+				? CarConfigs[CarTypeID].Icons.BackroomVisualCustomGauges
+				: CarConfigs[CarTypeID].Icons.VisualCustomGauges;
+			_CustomizeParts[87] = CarConfigs[CarTypeID].Names.VisualCustomGauges;
 			break;
 
 		case 0x308: // Drivers
 			CarSlotID = 43; // DRIVER
-			PartIconNormal = GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "VisualDriver", "VISUAL_PART_DRIVER");
-			_CustomizeParts[87] = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "VisualDriver", "CO_DRIVER");
+			PartIconNormal = CarConfigs[CarTypeID].Icons.VisualDriver;
+			_CustomizeParts[87] = CarConfigs[CarTypeID].Names.VisualDriver;
 			break;
 
 		case 0x309: // License Plates
 			CarSlotID = 69; // LICENSE_PLATE
-			PartIconNormal = GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "VisualLicensePlate", "VISUAL_PART_LICENSE_PLATE");
-			_CustomizeParts[87] = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "VisualLicensePlate", "CO_LICENSE_PLATE");
+			PartIconNormal = CarConfigs[CarTypeID].Icons.VisualLicensePlate;
+			_CustomizeParts[87] = CarConfigs[CarTypeID].Names.VisualLicensePlate;
 			break;
 
 		case 0x314: // Tires
 			CarSlotID = 64; // HEADLIGHT
-			PartIconNormal = GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "VisualTires", "VISUAL_PART_TIRE");
-			_CustomizeParts[87] = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "VisualTires", "CO_TIRES");
+			PartIconNormal = CarConfigs[CarTypeID].Icons.VisualTires;
+			_CustomizeParts[87] = CarConfigs[CarTypeID].Names.VisualTires;
 			break;
 
 		case 0x315: // Neon
 			CarSlotID = 65; // BRAKELIGHT
-			PartIconNormal = GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "VisualNeon", "VISUAL_PART_NEON");
-			_CustomizeParts[87] = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "VisualNeon", "CO_NEON");
+			PartIconNormal = CarConfigs[CarTypeID].Icons.VisualNeon;
+			_CustomizeParts[87] = CarConfigs[CarTypeID].Names.VisualNeon;
 			break;
 
 		case 0x316: // Empty Slot
 			CarSlotID = 68; // SPINNER
-			PartIconNormal = bStringHash("VISUAL_PART_SPINNER");
-			_CustomizeParts[87] = bStringHash("CO_SPINNER");
+			PartIconNormal = bStringHash((char*)"VISUAL_PART_SPINNER");
+			_CustomizeParts[87] = bStringHash((char*)"CO_SPINNER");
 			break;
 
 		case 0x317: // Empty Slot
 			CarSlotID = 137; // WHEEL_MANUFACTURER
-			PartIconNormal = bStringHash("VISUAL_PART_WHEEL_MANUFACTURER");
-			_CustomizeParts[87] = bStringHash("CO_WHEEL_MANUFACTURER");
+			PartIconNormal = bStringHash((char*)"VISUAL_PART_WHEEL_MANUFACTURER");
+			_CustomizeParts[87] = bStringHash((char*)"CO_WHEEL_MANUFACTURER");
 			break;
 
 		case 0x318: // Empty Slot
 			CarSlotID = 138; // MISC
-			PartIconNormal = bStringHash("VISUAL_PART_MISC");
-			_CustomizeParts[87] = bStringHash("CO_MISC");
+			PartIconNormal = bStringHash((char*)"VISUAL_PART_MISC");
+			_CustomizeParts[87] = bStringHash((char*)"CO_MISC");
 			break;
 		}
 
@@ -586,9 +574,9 @@ AddToList:
 
 	LABEL_46:
 		// Choose Part Icon
-		PartIconCustom = CarPart_GetAppliedAttributeIParam(ACarPart, bStringHash("TEXTUREHASH"), 0);
+		PartIconCustom = CarPart_GetAppliedAttributeIParam(ACarPart, bStringHash((char*)"TEXTUREHASH"), 0);
 		if (PartIconCustom) NewPartIcon = PartIconCustom;
-		else if (CarPart_GetAppliedAttributeIParam(ACarPart, bStringHash("CARBONFIBRE"), 0) && PartIconCF) NewPartIcon = PartIconCF;
+		else if (CarPart_GetAppliedAttributeIParam(ACarPart, bStringHash((char*)"CARBONFIBRE"), 0) && PartIconCF) NewPartIcon = PartIconCF;
 		else NewPartIcon = PartIconNormal;
 	
 		PartName = *(BYTE*)(TheSelectablePart[3] + 5) >> 5;

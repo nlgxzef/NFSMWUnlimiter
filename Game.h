@@ -40,7 +40,7 @@ DWORD GetWheelTextureHash(DWORD* _RideInfo, int index)
 	DWORD* RimPart = RideInfo_GetPart(_RideInfo, index == 0 ? 66 : 67); // ? FRONT_WHEEL : REAR_WHEEL
 	if (!RimPart) return 0;
 
-	return bStringHash2("_WHEEL", CarPart_GetTextureNameHash(RimPart));
+	return bStringHash2((char*)"_WHEEL", CarPart_GetTextureNameHash(RimPart));
 }
 
 DWORD GetWheelTextureMaskHash(DWORD* _RideInfo, int index)
@@ -48,7 +48,7 @@ DWORD GetWheelTextureMaskHash(DWORD* _RideInfo, int index)
 	DWORD* RimPart = RideInfo_GetPart(_RideInfo, index == 0 ? 66 : 67); // ? FRONT_WHEEL : REAR_WHEEL
 	if (!RimPart) return 0;
 
-	return bStringHash2("_WHEEL_INNER_MASK", CarPart_GetTextureNameHash(RimPart));
+	return bStringHash2((char*)"_WHEEL_INNER_MASK", CarPart_GetTextureNameHash(RimPart));
 }
 
 void CompositeRim(DWORD* _RideInfo)
@@ -131,75 +131,335 @@ DWORD FindScreenInfo(char const* ScreenName, int MenuID)
 DWORD FindScreenCameraInfo(DWORD ScreenInfo)
 {
 	DWORD result = FindScreenCameraInfo_Game(ScreenInfo);
-	if (MenuID_Backup <= 0x100 || ScreenInfo == Attrib_StringToLowerCaseKey("customize_customizemain_257")) return result;
+	if (MenuID_Backup <= 0x101 && MenuID_Backup >= 0x9FF) return result;
 
 	// Get CarType Info
 	void* FECarRecord = *(void**)_FECarRecord;
-	int CarTypeID = FECarRecord_GetType(FECarRecord);
-	sprintf(CarTypeName, GetCarTypeName(CarTypeID));
+	if ((MenuID_Backup <= 0x101 && MenuID_Backup >= 0x9FF) || !FECarRecord) return result;
 
-	// Read Camera Options for the car
-	sprintf(CarININame, "UnlimiterData\\%s.ini", CarTypeName);
-	CIniReader CarINI(CarININame);
-	CIniReader GeneralINI("UnlimiterData\\_General.ini");
+	int CarTypeID = FECarRecord_GetType(FECarRecord);
 
 	DWORD CustomAngle = 0;
-
-	switch (MenuID_Backup)
+	if (MenuID_Backup >= 0x701 && MenuID_Backup <= 0x7FF) // Rims
 	{
-		// Parts sub menus
-		case 0x101:
-			CustomAngle = GetCarTextOptionVLTHash(CarINI, GeneralINI, "Cameras", "PartsBodyKits", "");
+		switch (RimsToCustomize)
+		{
+		case -1:
+			CustomAngle = CarConfigs[CarTypeID].Cameras.PartsRimsBrandRear;
 			break;
-		case 0x102:
-			CustomAngle = GetCarTextOptionVLTHash(CarINI, GeneralINI, "Cameras", "PartsSpoilers", "");
+		case 0:
+			CustomAngle = CarConfigs[CarTypeID].Cameras.PartsRimsBrandAll;
 			break;
-		case 0x103:
-			CustomAngle = GetCarTextOptionVLTHash(CarINI, GeneralINI, "Cameras", "PartsRims", "");
+		case 1:
+			CustomAngle = CarConfigs[CarTypeID].Cameras.PartsRimsBrand;
 			break;
-		case 0x104:
-			CustomAngle = GetCarTextOptionVLTHash(CarINI, GeneralINI, "Cameras", "PartsHoods", "");
+		}
+	}
+	else if (MenuID_Backup >= 0x401 && MenuID_Backup <= 0x4FF) // Vinyls
+	{
+		CustomAngle = CarConfigs[CarTypeID].Cameras.VisualVinylsGroup;
+	}
+	else if (MenuID_Backup >= 0x601 && MenuID_Backup <= 0x608) // Decal slots
+	{
+		switch (*(int*)CustomizeDecals_CurrentDecalLocation) // 0x501 - 0x506
+		{
+		case 0x501:
+		default:
+			switch (MenuID_Backup)
+			{
+			case 0x601:
+			default:
+				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsWindshield1;                          // DECAL_FRONT_WINDOW_TEX0
+				break;
+			case 0x602:
+				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsWindshield2;
+				break;
+			case 0x603:
+				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsWindshield3;
+				break;
+			case 0x604:
+				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsWindshield4;
+				break;
+			case 0x605:
+				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsWindshield5;
+				break;
+			case 0x606:
+				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsWindshield6;
+				break;
+			case 0x607:
+				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsWindshield7;
+				break;
+			case 0x608:
+				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsWindshield8;
+				break;
+			}
 			break;
-		case 0x105:
-			CustomAngle = GetCarTextOptionVLTHash(CarINI, GeneralINI, "Cameras", "PartsRoofScoops", "");
+		case 0x502:
+			switch (MenuID_Backup)
+			{
+			case 0x601:
+			default:
+				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsRearWindow1;                          // DECAL_REAR_WINDOW_TEX0
+				break;
+			case 0x602:
+				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsRearWindow2;
+				break;
+			case 0x603:
+				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsRearWindow3;
+				break;
+			case 0x604:
+				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsRearWindow4;
+				break;
+			case 0x605:
+				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsRearWindow5;
+				break;
+			case 0x606:
+				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsRearWindow6;
+				break;
+			case 0x607:
+				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsRearWindow7;
+				break;
+			case 0x608:
+				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsRearWindow8;
+				break;
+			}
 			break;
-		case 0x106:
-			CustomAngle = GetCarTextOptionVLTHash(CarINI, GeneralINI, "Cameras", "PartsInterior", "");
+		case 0x503:
+			switch (MenuID_Backup)
+			{
+			case 0x601:
+			default:
+				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsLeftDoor1;                          // DECAL_LEFT_DOOR_TEX0
+				break;
+			case 0x602:
+				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsLeftDoor2;
+				break;
+			case 0x603:
+				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsLeftDoor3;
+				break;
+			case 0x604:
+				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsLeftDoor4;
+				break;
+			case 0x605:
+				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsLeftDoor5;
+				break;
+			case 0x606:
+				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsLeftDoor6;
+				break;
+			}
 			break;
-		case 0x107:
-			CustomAngle = GetCarTextOptionVLTHash(CarINI, GeneralINI, "Cameras", "PartsRoof", "");
-			break; 
-		case 0x108:
-			CustomAngle = GetCarTextOptionVLTHash(CarINI, GeneralINI, "Cameras", "PartsBrakes", "");
-			break; 
-		case 0x109:
-			CustomAngle = GetCarTextOptionVLTHash(CarINI, GeneralINI, "Cameras", "PartsHeadlights", "");
+		case 0x504:
+			switch (MenuID_Backup)
+			{
+			case 0x601:
+			default:
+				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsRightDoor1;                         // DECAL_RIGHT_DOOR_TEX0
+				break;
+			case 0x602:
+				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsRightDoor2;
+				break;
+			case 0x603:
+				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsRightDoor3;
+				break;
+			case 0x604:
+				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsRightDoor4;
+				break;
+			case 0x605:
+				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsRightDoor5;
+				break;
+			case 0x606:
+				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsRightDoor6;
+				break;
+			}
 			break;
-		case 0x10A:
-			CustomAngle = GetCarTextOptionVLTHash(CarINI, GeneralINI, "Cameras", "PartsTaillights", "");
+		case 0x505:
+			switch (MenuID_Backup)
+			{
+			case 0x601:
+			default:
+				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsLeftQuarter1;                          // DECAL_LEFT_QUARTER_TEX0
+				break;
+			case 0x602:
+				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsLeftQuarter2;
+				break;
+			case 0x603:
+				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsLeftQuarter3;
+				break;
+			case 0x604:
+				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsLeftQuarter4;
+				break;
+			case 0x605:
+				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsLeftQuarter5;
+				break;
+			case 0x606:
+				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsLeftQuarter6;
+				break;
+			case 0x607:
+				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsLeftQuarter7;
+				break;
+			case 0x608:
+				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsLeftQuarter8;
+				break;
+			}
 			break;
-		case 0x10B:
-			CustomAngle = GetCarTextOptionVLTHash(CarINI, GeneralINI, "Cameras", "PartsMirrors", "");
+		case 0x506:
+			switch (MenuID_Backup)
+			{
+			case 0x601:
+			default:
+				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsRightQuarter1;                          // DECAL_RIGHT_QUARTER_TEX0
+				break;
+			case 0x602:
+				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsRightQuarter2;
+				break;
+			case 0x603:
+				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsRightQuarter3;
+				break;
+			case 0x604:
+				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsRightQuarter4;
+				break;
+			case 0x605:
+				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsRightQuarter5;
+				break;
+			case 0x606:
+				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsRightQuarter6;
+				break;
+			case 0x607:
+				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsRightQuarter7;
+				break;
+			case 0x608:
+				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsRightQuarter8;
+				break;
+			}
 			break;
-		case 0x10C:
-			CustomAngle = GetCarTextOptionVLTHash(CarINI, GeneralINI, "Cameras", "PartsAttachments", "");
+		}
+	}
+	else
+	{
+		switch (MenuID_Backup)
+		{
+			default:
+				CustomAngle = FindScreenCameraInfo_Game(ScreenInfo);
 			break;
-		case 0x10D:
-			CustomAngle = GetCarTextOptionVLTHash(CarINI, GeneralINI, "Cameras", "PartsAttachment1", "");
-			break;
-		case 0x10E:
-			CustomAngle = GetCarTextOptionVLTHash(CarINI, GeneralINI, "Cameras", "PartsAttachment2", "");
-			break;
-		case 0x10F:
-			CustomAngle = GetCarTextOptionVLTHash(CarINI, GeneralINI, "Cameras", "PartsAttachment3", "");
-			break;
-		case 0x110:
-			CustomAngle = GetCarTextOptionVLTHash(CarINI, GeneralINI, "Cameras", "PartsAttachment4", "");
-			break;
-		case 0x111:
-			CustomAngle = GetCarTextOptionVLTHash(CarINI, GeneralINI, "Cameras", "PartsAttachment5", "");
-			break;
-
+			// Parts sub menus
+			case 0x101:
+				CustomAngle = CarConfigs[CarTypeID].Cameras.PartsBodyKits;
+				break;
+			case 0x102:
+				CustomAngle = CarConfigs[CarTypeID].Cameras.PartsSpoilers;
+				break;
+			case 0x103:
+				CustomAngle = CarConfigs[CarTypeID].Cameras.PartsRims;
+				break;
+			case 0x104:
+				CustomAngle = CarConfigs[CarTypeID].Cameras.PartsHoods;
+				break;
+			case 0x105:
+				CustomAngle = CarConfigs[CarTypeID].Cameras.PartsRoofScoops;
+				break;
+			case 0x106:
+				CustomAngle = CarConfigs[CarTypeID].Cameras.PartsInterior;
+				break;
+			case 0x107:
+				CustomAngle = CarConfigs[CarTypeID].Cameras.PartsRoof;
+				break; 
+			case 0x108:
+				CustomAngle = CarConfigs[CarTypeID].Cameras.PartsBrakes;
+				break; 
+			case 0x109:
+				CustomAngle = CarConfigs[CarTypeID].Cameras.PartsHeadlights;
+				break;
+			case 0x10A:
+				CustomAngle = CarConfigs[CarTypeID].Cameras.PartsTaillights;
+				break;
+			case 0x10B:
+				CustomAngle = CarConfigs[CarTypeID].Cameras.PartsMirrors;
+				break;
+			case 0x10C:
+				CustomAngle = CarConfigs[CarTypeID].Cameras.PartsAttachments;
+				break;
+			case 0x10D:
+				CustomAngle = CarConfigs[CarTypeID].Cameras.PartsAttachment0;
+				break;
+			case 0x10E:
+				CustomAngle = CarConfigs[CarTypeID].Cameras.PartsAttachment1;
+				break;
+			case 0x10F:
+				CustomAngle = CarConfigs[CarTypeID].Cameras.PartsAttachment2;
+				break;
+			case 0x110:
+				CustomAngle = CarConfigs[CarTypeID].Cameras.PartsAttachment3;
+				break;
+			case 0x111:
+				CustomAngle = CarConfigs[CarTypeID].Cameras.PartsAttachment4;
+				break;
+			case 0x112:
+				CustomAngle = CarConfigs[CarTypeID].Cameras.PartsAttachment5;
+				break;
+			case 0x113:
+				CustomAngle = CarConfigs[CarTypeID].Cameras.PartsAttachment6;
+				break;
+			case 0x114:
+				CustomAngle = CarConfigs[CarTypeID].Cameras.PartsAttachment7;
+				break;
+			case 0x115:
+				CustomAngle = CarConfigs[CarTypeID].Cameras.PartsAttachment8;
+				break;
+			case 0x116:
+				CustomAngle = CarConfigs[CarTypeID].Cameras.PartsAttachment9;
+				break;
+			case 0x301:
+				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualPaint;
+				break;
+			case 0x302:
+				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualVinyls;
+				break;
+			case 0x303:
+				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualRimPaint;
+				break;
+			case 0x304:
+				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualWindowTint;
+				break;
+			case 0x305:
+				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecals;
+				break;
+			case 0x306:
+				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualNumbers;
+				break;
+			case 0x307:
+				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualCustomGauges;
+				break;
+			case 0x308:
+				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDriver;
+				break;
+			case 0x309:
+				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualLicensePlate;
+				break;
+			case 0x314:
+				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualTires;
+				break;
+			case 0x315:
+				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualNeon;
+				break;
+			case 0x501:
+				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsWindshield;
+				break;
+			case 0x502:
+				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsRearWindow;
+				break;
+			case 0x503:
+				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsLeftDoor;
+				break;
+			case 0x504:
+				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsRightDoor;
+				break;
+			case 0x505:
+				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsLeftQuarter;
+				break;
+			case 0x506:
+				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsRightQuarter;
+				break;
+		}
 	}
 
 	if (CustomAngle != 0 && CustomAngle != 0x82FC1624) result = CustomAngle;

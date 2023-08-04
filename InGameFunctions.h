@@ -2,7 +2,6 @@
 
 #include "stdio.h"
 #include <windows.h>
-#include "GlobalVariables.h"
 
 unsigned int(__thiscall* CustomizeCategoryScreen_AddCustomOption)(void* TheThis, const char* Package, unsigned int TextureHash, unsigned int LanguageHash, unsigned int BrandID) = (unsigned int(__thiscall*)(void*, const char*, unsigned int, unsigned int, unsigned int))0x7BB560;
 unsigned int(__thiscall* IconScrollerMenu_AddOption)(void* TheThis, DWORD* IconOption) = (unsigned int(__thiscall*)(void*, DWORD*))0x573960;
@@ -124,8 +123,10 @@ DWORD*(__thiscall* ArrayScroller_GetSlotAt)(DWORD* ArrayScroller, int SlotIndex)
 DWORD*(__thiscall* ArrayScroller_GetDatumAt)(DWORD* ArrayScroller, int SlotIndex) = (DWORD*(__thiscall*)(DWORD*, int))0x588250;
 void(__thiscall* ArrayScroller_SetInitialPosition)(DWORD* ArrayScroller, int SlotIndex) = (void(__thiscall*)(DWORD*, int))0x593560;
 void(__thiscall* ArrayScroller_AddDatum)(DWORD* ArrayScroller, DWORD* ArrayDatum) = (void(__thiscall*)(DWORD*, DWORD*))0x59BD30;
+void(__thiscall* ArrayScroller_AddSlot)(DWORD* ArrayScroller, DWORD* ArraySlot) = (void(__thiscall*)(DWORD*, DWORD*))0x5881F0;
 void(__thiscall* ArrayScroller_ClearData)(DWORD* ArrayScroller) = (void(__thiscall*)(DWORD*))0x593880;
 void(__thiscall* ArrayDatum_ArrayDatum)(DWORD* ArrayDatum, DWORD unk1, DWORD unk2) = (void(__thiscall*)(DWORD*, DWORD, DWORD))0x5881C0;
+DWORD* (__thiscall* ArraySlot_ArraySlot)(DWORD* ArraySlot, DWORD* FEObject) = (DWORD * (__thiscall*)(DWORD*, DWORD*))0x588100;
 DWORD* (__cdecl* FEngFindScreen)(const char* pkg_name) = (DWORD*(__cdecl*)(const char*))0x591E90;
 int(__cdecl* FEngMapJoyParamToJoyport)(int prm) = (int(__cdecl*)(int))0x572FF0;
 void(__thiscall* cFrontendDatabase_SetPlayersJoystickPort)(DWORD* FEDatabase, int Player, int Port) = (void(__thiscall*)(DWORD*, int, int))0x56DBA0;
@@ -188,6 +189,7 @@ DWORD(__thiscall* CustomizePerformance_GetPerfPkgBrand_Game)(DWORD* CustomizePer
 void(__cdecl* CustomizeShoppingCart_ExitShoppingCart_Game)() = (void(__cdecl*)())0x7A60E0;
 int(__cdecl* CarCustomizeManager_GetUnlockFilter)() = (int(__cdecl*)())0x7A4DB0;
 void(__thiscall* CarCustomizeManager_MaxOutPerformance)(DWORD* CarCustomizeManager) = (void(__thiscall*)(DWORD*))0x7B5BB0;
+void(__thiscall* CarCustomizeManager_ResetPreview)(DWORD* CarCustomizeManager) = (void(__thiscall*)(DWORD*))0x7B5A50;
 DWORD* (__thiscall* IconPanel_GetOption)(DWORD* IconPanel, int Option) = (DWORD * (__thiscall*)(DWORD*, int))0x5870F0;
 int(__thiscall* sub_50E780)(DWORD* dis) = (int(__thiscall*)(DWORD*))0x50E780;
 void(__thiscall* CustomizeCategoryScreen_NotificationMessage)(DWORD* _CustomizeCategoryScreen, DWORD MessageHash, DWORD* FEObject, DWORD param1, DWORD param2) = (void(__thiscall*)(DWORD*, DWORD, DWORD*, DWORD, DWORD))0x7BB680;
@@ -221,3 +223,4 @@ DWORD*(*FEManager_Get)() = (DWORD*(*)())0x516E10;
 void(__thiscall* FEManager_SetGarageType)(DWORD* FEManager, int GarageType) = (void(__thiscall*)(DWORD*, int))0x516E30;
 void(__thiscall* CustomizeCategoryScreen_RefreshHeader)(DWORD* CustomizeCategoryScreen) = (void(__thiscall*)(DWORD*))0x7B0E00;
 bool(__thiscall* CarCustomizeManager_IsCategoryNew_Game)(DWORD* CustomizeCategoryScreen, unsigned int MenuID) = (bool(__thiscall*)(DWORD*, unsigned int))0x7A50E0;
+void(__thiscall* CustomizePaint_Setup_Game)(DWORD* CustomizePaint) = (void(__thiscall*)(DWORD*))0x7C0980;

@@ -2,13 +2,7 @@
 
 #include "stdio.h"
 #include "InGameFunctions.h"
-
-#define NumFECarRecords 200
-#define NumFECustomizationRecords 75
-#define NumCarSlots 139
-#define CarNameLength 32
-#define PresetNameLength 32
-#define PresetFileLength 0x290
+#include "GlobalVariables.h"
 
 static injector::hook_back<HRESULT(WINAPI*)(HWND, int, HANDLE, DWORD, LPSTR)> hb_SHGetFolderPathA;
 

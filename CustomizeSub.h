@@ -1,9 +1,9 @@
 #include "stdio.h"
 #include "InGameFunctions.h"
-#include "includes\IniReader.h"
 #include "CarCustomizeManager.h"
 #include "CustomizeShoppingCart.h"
 #include "Helpers.h"
+#include "UnlimiterData.h"
 #include "IconScroller.h"
 
 // TODO: Reimplement the spoiler and vinyl categories functions to support v4+ custom icons and names
@@ -16,158 +16,152 @@ int __fastcall CustomizeSub_SetupParts(DWORD* _CustomizeSub, void* EDX_Unused)
     // Get CarType Info
     void* FECarRecord = *(void**)_FECarRecord;
     int CarTypeID = FECarRecord_GetType(FECarRecord);
-    sprintf(CarTypeName, GetCarTypeName(CarTypeID));
-
-    // Read Part Options for the car
-    sprintf(CarININame, "UnlimiterData\\%s.ini", CarTypeName);
-    CIniReader CarINI(CarININame);
-    CIniReader GeneralINI("UnlimiterData\\_General.ini");
 
     _CustomizeCategoryScreen = _CustomizeSub;
     _CustomizeSub[108] = CustomizeIsInBackRoom() != 0
-        ? GetCarTextOptionHash(CarINI, GeneralINI, "Names", "BackroomParts", "CO_BACKROOM_PARTS")
-        : GetCarTextOptionHash(CarINI, GeneralINI, "Names", "Parts", "CO_PARTS");
+        ? CarConfigs[CarTypeID].Names.BackroomParts
+        : CarConfigs[CarTypeID].Names.Parts;
     CustomizeSetInParts(1);
     _CustomizeCategoryScreen[83] = *(DWORD*)g_pCustomizeMainPkg;
 
     if (CustomizeIsInBackRoom())
     {
-        if (GetCarIntOption(CarINI, GeneralINI, "Parts", "BodyKits", 1) != 0)
+        if (CarConfigs[CarTypeID].Parts.BodyKits)
         CustomizeCategoryScreen_AddCustomOption(
             _CustomizeCategoryScreen,
             *(char**)g_pCustomizePartsPkg,
-            GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "BackroomPartsBodyKits", "MARKER_ICON_PARTS_BODYKITS"),
-            GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsBodyKits", "CO_BODY_KITS"),
+            CarConfigs[CarTypeID].Icons.BackroomPartsBodyKits,
+            CarConfigs[CarTypeID].Names.PartsBodyKits,
             0x101);
-        if (GetCarIntOption(CarINI, GeneralINI, "Parts", "Spoilers", 1) != 0)
+        if (CarConfigs[CarTypeID].Parts.Spoilers)
         CustomizeCategoryScreen_AddCustomOption(
             _CustomizeCategoryScreen,
             *(char**)g_pCustomizeSpoilerPkg,
-            GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "BackroomPartsSpoilers", "MARKER_ICON_PARTS_SPOILERS"),
-            GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsSpoilers", "CO_SPOILERS"),
+            CarConfigs[CarTypeID].Icons.BackroomPartsSpoilers,
+            CarConfigs[CarTypeID].Names.PartsSpoilers,
             0x102);
-        if (GetCarIntOption(CarINI, GeneralINI, "Parts", "Rims", 1) != 0)
+        if (CarConfigs[CarTypeID].Parts.Rims)
         CustomizeCategoryScreen_AddCustomOption(
             _CustomizeCategoryScreen,
             *(char**)g_pCustomizeSubTopPkg,
-            GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "BackroomPartsRims", "MARKER_ICON_PARTS_RIMS"),
-            GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsRims", "CO_RIMS"),
+            CarConfigs[CarTypeID].Icons.BackroomPartsRims,
+            CarConfigs[CarTypeID].Names.PartsRims,
             0x103);
-        if (GetCarIntOption(CarINI, GeneralINI, "Parts", "Hoods", 1) != 0)
+        if (CarConfigs[CarTypeID].Parts.Hoods)
         CustomizeCategoryScreen_AddCustomOption(
             _CustomizeCategoryScreen,
             *(char**)g_pCustomizePartsPkg,
-            GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "BackroomPartsHoods", "MARKER_ICON_PARTS_HOODS"),
-            GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsHoods", "CO_HOODS"),
+            CarConfigs[CarTypeID].Icons.BackroomPartsHoods,
+            CarConfigs[CarTypeID].Names.PartsHoods,
             0x104);
-        if (GetCarIntOption(CarINI, GeneralINI, "Parts", "RoofScoops", 1) != 0)
+        if (CarConfigs[CarTypeID].Parts.RoofScoops)
         CustomizeCategoryScreen_AddCustomOption(
             _CustomizeCategoryScreen,
             *(char**)g_pCustomizePartsPkg,
-            GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "BackroomPartsRoofScoops", "MARKER_ICON_PARTS_ROOFSCOOPS"),
-            GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsRoofScoops", "CO_ROOF_SCOOPS"),
+            CarConfigs[CarTypeID].Icons.BackroomPartsRoofScoops,
+            CarConfigs[CarTypeID].Names.PartsRoofScoops,
             0x105);
-        if (BETACompatibility && (GetCarIntOption(CarINI, GeneralINI, "Visual", "CustomGauges", 1) != 0))
+        if (BETACompatibility && CarConfigs[CarTypeID].Visual.CustomGauges)
         CustomizeCategoryScreen_AddCustomOption(
             _CustomizeCategoryScreen,
             *(char**)g_pCustomizeHudPkg,
-            GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "BackroomVisualCustomGauges", "MARKER_ICON_VISUAL_HUD"),
-            GetCarTextOptionHash(CarINI, GeneralINI, "Names", "VisualCustomGauges", "CO_CUSTOM_HUD"),
+            CarConfigs[CarTypeID].Icons.BackroomVisualCustomGauges,
+            CarConfigs[CarTypeID].Names.VisualCustomGauges,
             0x307);
     }
     else
     {
-        if (GetCarIntOption(CarINI, GeneralINI, "Parts", "BodyKits", 1) != 0)
+        if (CarConfigs[CarTypeID].Parts.BodyKits)
         CustomizeCategoryScreen_AddCustomOption(
             _CustomizeCategoryScreen,
             *(char**)g_pCustomizePartsPkg,
-            GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "PartsBodyKits", "VISUAL_PART_BODY"),
-            GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsBodyKits", "CO_BODY_KITS"),
+            CarConfigs[CarTypeID].Icons.PartsBodyKits,
+            CarConfigs[CarTypeID].Names.PartsBodyKits,
             0x101);
-        if (GetCarIntOption(CarINI, GeneralINI, "Parts", "Spoilers", 1) != 0)
+        if (CarConfigs[CarTypeID].Parts.Spoilers)
         CustomizeCategoryScreen_AddCustomOption(
             _CustomizeCategoryScreen,
             *(char**)g_pCustomizeSpoilerPkg,
-            GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "PartsSpoilers", "VISUAL_PART_SPOILER"),
-            GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsSpoilers", "CO_SPOILERS"),
+            CarConfigs[CarTypeID].Icons.PartsSpoilers,
+            CarConfigs[CarTypeID].Names.PartsSpoilers,
             0x102);
-        if (GetCarIntOption(CarINI, GeneralINI, "Parts", "Rims", 1) != 0)
+        if (CarConfigs[CarTypeID].Parts.Rims)
         CustomizeCategoryScreen_AddCustomOption(
             _CustomizeCategoryScreen,
             *(char**)g_pCustomizeSubTopPkg,
-            GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "PartsRims", "VISUAL_PART_RIMS"),
-            GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsRims", "CO_RIMS"),
+            CarConfigs[CarTypeID].Icons.PartsRims,
+            CarConfigs[CarTypeID].Names.PartsRims,
             0x103);
-        if (GetCarIntOption(CarINI, GeneralINI, "Parts", "Hoods", 1) != 0)
+        if (CarConfigs[CarTypeID].Parts.Hoods)
         CustomizeCategoryScreen_AddCustomOption(
             _CustomizeCategoryScreen,
             *(char**)g_pCustomizePartsPkg,
-            GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "PartsHoods", "VISUAL_PART_HOOD"),
-            GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsHoods", "CO_HOODS"),
+            CarConfigs[CarTypeID].Icons.PartsHoods,
+            CarConfigs[CarTypeID].Names.PartsHoods,
             0x104);
-        if (GetCarIntOption(CarINI, GeneralINI, "Parts", "RoofScoops", 1) != 0)
+        if (CarConfigs[CarTypeID].Parts.RoofScoops)
         CustomizeCategoryScreen_AddCustomOption(
             _CustomizeCategoryScreen,
             *(char**)g_pCustomizePartsPkg,
-            GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "PartsRoofScoops", "VISUAL_PART_ROOF_SCOOP"),
-            GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsRoofScoops", "CO_ROOF_SCOOPS"),
+            CarConfigs[CarTypeID].Icons.PartsRoofScoops,
+            CarConfigs[CarTypeID].Names.PartsRoofScoops,
             0x105);
         // New options
-        if (GetCarIntOption(CarINI, GeneralINI, "Parts", "Interior", 0) != 0)
+        if (CarConfigs[CarTypeID].Parts.Interior)
         CustomizeCategoryScreen_AddCustomOption(
             _CustomizeCategoryScreen,
             *(char**)g_pCustomizePartsPkg,
-            GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "PartsInterior", "VISUAL_PART_INTERIOR"),
-            GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsInterior", "CO_INTERIOR"),
+            CarConfigs[CarTypeID].Icons.PartsInterior,
+            CarConfigs[CarTypeID].Names.PartsInterior,
             0x106);
-        if (GetCarIntOption(CarINI, GeneralINI, "Parts", "Roof", 0) != 0)
+        if (CarConfigs[CarTypeID].Parts.Roof)
         CustomizeCategoryScreen_AddCustomOption(
             _CustomizeCategoryScreen,
             *(char**)g_pCustomizePartsPkg,
-            GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "PartsRoof", "VISUAL_PART_ROOF"),
-            GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsRoof", "CO_ROOF"),
+            CarConfigs[CarTypeID].Icons.PartsRoof,
+            CarConfigs[CarTypeID].Names.PartsRoof,
             0x107);
-        if (GetCarIntOption(CarINI, GeneralINI, "Parts", "Brakes", 0) != 0)
+        if (CarConfigs[CarTypeID].Parts.Brakes)
         CustomizeCategoryScreen_AddCustomOption(
             _CustomizeCategoryScreen,
             *(char**)g_pCustomizePartsPkg,
-            GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "PartsBrakes", "VISUAL_PART_BRAKE"),
-            GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsBrakes", "CO_BRAKES"),
+            CarConfigs[CarTypeID].Icons.PartsBrakes,
+            CarConfigs[CarTypeID].Names.PartsBrakes,
             0x108);
-        if (GetCarIntOption(CarINI, GeneralINI, "Parts", "Headlights", 0) != 0)
+        if (CarConfigs[CarTypeID].Parts.Headlights)
         CustomizeCategoryScreen_AddCustomOption(
             _CustomizeCategoryScreen,
             *(char**)g_pCustomizePartsPkg,
-            GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "PartsHeadlights", "VISUAL_PART_HEAD_LIGHTS"),
-            GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsHeadlights", "CO_HEADLIGHTS"),
+            CarConfigs[CarTypeID].Icons.PartsHeadlights,
+            CarConfigs[CarTypeID].Names.PartsHeadlights,
             0x109);
-        if (GetCarIntOption(CarINI, GeneralINI, "Parts", "Taillights", 0) != 0)
+        if (CarConfigs[CarTypeID].Parts.Taillights)
         CustomizeCategoryScreen_AddCustomOption(
             _CustomizeCategoryScreen,
             *(char**)g_pCustomizePartsPkg,
-            GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "PartsTaillights", "VISUAL_PART_TAIL_LIGHTS"),
-            GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsTaillights", "CO_TAILLIGHTS"),
+            CarConfigs[CarTypeID].Icons.PartsTaillights,
+            CarConfigs[CarTypeID].Names.PartsTaillights,
             0x10A);
-        if (GetCarIntOption(CarINI, GeneralINI, "Parts", "Mirrors", 0) != 0)
+        if (CarConfigs[CarTypeID].Parts.Mirrors)
         CustomizeCategoryScreen_AddCustomOption(
             _CustomizeCategoryScreen,
             *(char**)g_pCustomizePartsPkg,
-            GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "PartsMirrors", "VISUAL_PART_SIDE_MIRROR"),
-            GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsMirrors", "CO_SIDE_MIRROR"),
+            CarConfigs[CarTypeID].Icons.PartsMirrors,
+            CarConfigs[CarTypeID].Names.PartsMirrors,
             0x10B);
-        if (GetCarIntOption(CarINI, GeneralINI, "Parts", "Attachments", 0) >= 1)
+        if (CarConfigs[CarTypeID].Parts.Attachments >= 1)
         CustomizeCategoryScreen_AddCustomOption(
             _CustomizeCategoryScreen,
             *(char**)g_pCustomizeSubTopPkg,
-            GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "PartsAttachments", "VISUAL_PART_ATTACHMENT"),
-            GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsAttachments", "CO_ATTACHMENTS"),
+            CarConfigs[CarTypeID].Icons.PartsAttachments,
+            CarConfigs[CarTypeID].Names.PartsAttachments,
             0x10C);
-        if (BETACompatibility && (GetCarIntOption(CarINI, GeneralINI, "Visual", "CustomGauges", 1) != 0))
+        if (BETACompatibility && CarConfigs[CarTypeID].Visual.CustomGauges)
         CustomizeCategoryScreen_AddCustomOption(
             _CustomizeCategoryScreen,
             *(char**)g_pCustomizeHudPkg,
-            GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "VisualCustomGauges", "VISUAL_PART_HUDS"),
-            GetCarTextOptionHash(CarINI, GeneralINI, "Names", "VisualCustomGauges", "CO_CUSTOM_HUD"),
+            CarConfigs[CarTypeID].Icons.VisualCustomGauges,
+            CarConfigs[CarTypeID].Names.VisualCustomGauges,
             0x307);
     }
     InitialPosition = IconScroller_GetOptionIndexWithID(_CustomizeCategoryScreen + 11, EDX_Unused, _CustomizeCategoryScreen[85]);
@@ -193,31 +187,103 @@ int __fastcall CustomizeSub_SetupAttachments(DWORD* _CustomizeSub, void* EDX_Unu
     // Get CarType Info
     void* FECarRecord = *(void**)_FECarRecord;
     int CarTypeID = FECarRecord_GetType(FECarRecord);
-    sprintf(CarTypeName, GetCarTypeName(CarTypeID));
-    //printf("NFSMWUnlimiter/ExtraCustomization: Entering attachments menu, CarType: %s\n", CarTypeName);
-
-    // Read Part Options for the car
-    sprintf(CarININame, "UnlimiterData\\%s.ini", CarTypeName);
-    CIniReader CarINI(CarININame);
-    CIniReader GeneralINI("UnlimiterData\\_General.ini");
 
     _CustomizeCategoryScreen = _CustomizeSub;
-    _CustomizeSub[108] = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsAttachments", "CO_ATTACHMENTS");
+    _CustomizeSub[108] = CarConfigs[CarTypeID].Names.PartsAttachments;
     _CustomizeCategoryScreen[83] = *(DWORD*)g_pCustomizeSubPkg;
-    
-    int AttachmentCount = GetCarIntOption(CarINI, GeneralINI, "Parts", "Attachments", 0) % 11;
-    
-    for (int i = 1; i <= AttachmentCount; i++)
-    {
-        sprintf(AttachmentString, "PartsAttachment%d", i-1);
-        sprintf(AttachmentDefaultString, "CO_ATTACHMENT_%d", i);
 
+    int CurrAttachment = 1;
+    int NumAttachments = CarConfigs[CarTypeID].Parts.Attachments;
+    
+    if (CurrAttachment <= NumAttachments)
+    {
         CustomizeCategoryScreen_AddCustomOption(
             _CustomizeCategoryScreen,
             *(char**)g_pCustomizePartsPkg,
-            GetCarTextOptionHash(CarINI, GeneralINI, "Icons", AttachmentString, "VISUAL_PART_ATTACHMENT"),
-            GetCarTextOptionHash(CarINI, GeneralINI, "Names", AttachmentString, AttachmentDefaultString),
-            0x10C + i);
+            CarConfigs[CarTypeID].Icons.PartsAttachment0,
+            CarConfigs[CarTypeID].Names.PartsAttachment0,
+            0x10C + CurrAttachment++);
+    }
+    if (CurrAttachment <= NumAttachments)
+    {
+        CustomizeCategoryScreen_AddCustomOption(
+            _CustomizeCategoryScreen,
+            *(char**)g_pCustomizePartsPkg,
+            CarConfigs[CarTypeID].Icons.PartsAttachment1,
+            CarConfigs[CarTypeID].Names.PartsAttachment1,
+            0x10C + CurrAttachment++);
+    }
+    if (CurrAttachment <= NumAttachments)
+    {
+        CustomizeCategoryScreen_AddCustomOption(
+            _CustomizeCategoryScreen,
+            *(char**)g_pCustomizePartsPkg,
+            CarConfigs[CarTypeID].Icons.PartsAttachment2,
+            CarConfigs[CarTypeID].Names.PartsAttachment2,
+            0x10C + CurrAttachment++);
+    }
+    if (CurrAttachment <= NumAttachments)
+    {
+        CustomizeCategoryScreen_AddCustomOption(
+            _CustomizeCategoryScreen,
+            *(char**)g_pCustomizePartsPkg,
+            CarConfigs[CarTypeID].Icons.PartsAttachment3,
+            CarConfigs[CarTypeID].Names.PartsAttachment3,
+            0x10C + CurrAttachment++);
+    }
+    if (CurrAttachment <= NumAttachments)
+    {
+        CustomizeCategoryScreen_AddCustomOption(
+            _CustomizeCategoryScreen,
+            *(char**)g_pCustomizePartsPkg,
+            CarConfigs[CarTypeID].Icons.PartsAttachment4,
+            CarConfigs[CarTypeID].Names.PartsAttachment4,
+            0x10C + CurrAttachment++);
+    }
+    if (CurrAttachment <= NumAttachments)
+    {
+        CustomizeCategoryScreen_AddCustomOption(
+            _CustomizeCategoryScreen,
+            *(char**)g_pCustomizePartsPkg,
+            CarConfigs[CarTypeID].Icons.PartsAttachment5,
+            CarConfigs[CarTypeID].Names.PartsAttachment5,
+            0x10C + CurrAttachment++);
+    }
+    if (CurrAttachment <= NumAttachments)
+    {
+        CustomizeCategoryScreen_AddCustomOption(
+            _CustomizeCategoryScreen,
+            *(char**)g_pCustomizePartsPkg,
+            CarConfigs[CarTypeID].Icons.PartsAttachment6,
+            CarConfigs[CarTypeID].Names.PartsAttachment6,
+            0x10C + CurrAttachment++);
+    }
+    if (CurrAttachment <= NumAttachments)
+    {
+        CustomizeCategoryScreen_AddCustomOption(
+            _CustomizeCategoryScreen,
+            *(char**)g_pCustomizePartsPkg,
+            CarConfigs[CarTypeID].Icons.PartsAttachment7,
+            CarConfigs[CarTypeID].Names.PartsAttachment7,
+            0x10C + CurrAttachment++);
+    }
+    if (CurrAttachment <= NumAttachments)
+    {
+        CustomizeCategoryScreen_AddCustomOption(
+            _CustomizeCategoryScreen,
+            *(char**)g_pCustomizePartsPkg,
+            CarConfigs[CarTypeID].Icons.PartsAttachment8,
+            CarConfigs[CarTypeID].Names.PartsAttachment8,
+            0x10C + CurrAttachment++);
+    }
+    if (CurrAttachment <= NumAttachments)
+    {
+        CustomizeCategoryScreen_AddCustomOption(
+            _CustomizeCategoryScreen,
+            *(char**)g_pCustomizePartsPkg,
+            CarConfigs[CarTypeID].Icons.PartsAttachment9,
+            CarConfigs[CarTypeID].Names.PartsAttachment9,
+            0x10C + CurrAttachment++);
     }
 
     if (_CustomizeCategoryScreen[85] == 0x801)
@@ -248,13 +314,11 @@ int __fastcall CustomizeSub_SetupAttachments(DWORD* _CustomizeSub, void* EDX_Unu
 
 int __fastcall CustomizeSub_GetRimBrandIndex(DWORD* CustomizeSub, void* EDX_Unused, unsigned int WheelManufacturerHash)
 {
-    CIniReader RimBrandsINI("UnlimiterData\\_RimBrands.ini");
-    int RimBrandsCount = RimBrandsINI.ReadInteger("RimBrands", "NumberOfRimBrands", DefaultRimBrandCount);
+    int RimBrandsCount = RimBrands.size();
 
-    for (int i = 0; i <= RimBrandsCount; i++)
+    for (int i = 0; i < RimBrandsCount; i++)
     {
-        sprintf(RimBrandID, "Brand%d", i);
-        if (bStringHash(RimBrandsINI.ReadString(RimBrandID, "BrandName", GetDefaultRimBrandName(i))) == WheelManufacturerHash) return i + 2;
+        if (RimBrands[i].BrandNameHash == WheelManufacturerHash) return i + 2;
     }
 
     return 1;
@@ -277,22 +341,15 @@ int __fastcall CustomizeSub_SetupRimBrands(DWORD* _CustomizeSub, void* EDX_Unuse
     DWORD ARimPart[11]; // [esp+10h] [ebp-38h] BYREF
     //int v16; // [esp+44h] [ebp-4h]
 
-    CIniReader RimBrandsINI("UnlimiterData\\_RimBrands.ini");
-    int RimBrandsCount = RimBrandsINI.ReadInteger("RimBrands", "NumberOfRimBrands", DefaultRimBrandCount);
+    int RimBrandsCount = RimBrands.size();
 
     DWORD* FEDatabase = *(DWORD**)_FEDatabase;
 
     // Get CarType Info
     void* FECarRecord = *(void**)_FECarRecord;
     int CarTypeID = FECarRecord_GetType(FECarRecord);
-    sprintf(CarTypeName, GetCarTypeName(CarTypeID));
 
-    // Read Part Options for the car
-    sprintf(CarININame, "UnlimiterData\\%s.ini", CarTypeName);
-    CIniReader CarINI(CarININame);
-    CIniReader GeneralINI("UnlimiterData\\_General.ini");
-
-    _CustomizeSub[108] = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsRimsBrand", "CO_RIM_BRAND");
+    _CustomizeSub[108] = CarConfigs[CarTypeID].Names.PartsRimsBrand;
     _CustomizeSub[83] = *(DWORD*)g_pCustomizeSubPkg;
 
     StockPart = CarCustomizeManager_GetStockCarPart((DWORD*)_gCarCustomizeManager, RimsToCustomize == -1 ? 67 : 66); // FRONT_WHEEL
@@ -340,30 +397,31 @@ int __fastcall CustomizeSub_SetupRimBrands(DWORD* _CustomizeSub, void* EDX_Unuse
     IconScrollerMenu_AddOption(_CustomizeSub, StockRimIconOption);
 
     // Check if the car has OEM rims
-    bool HasNoCustomRims = GetCarIntOption(CarINI, GeneralINI, "Parts", "RimsCustom", 0) == 0;
+    bool HasNoCustomRims = CarConfigs[CarTypeID].Parts.RimsCustom == 0;
+
+    DWORD RimBrandIconHash = -1;
+    DWORD RimBrandNameHash = -1;
 
     // Add the brands from ini
-    for (int i = 0; i <= RimBrandsCount; i++)
+    for (int i = 0; i < RimBrandsCount; i++)
     {
         if (i == 0)
         {
             if (HasNoCustomRims) continue;
 
-            sprintf(RimBrandID, "Brand%d", i);
-            sprintf(RimBrandIcon, GetCarTextOption(CarINI, GeneralINI, "Icons", "PartsRimsCustom", ""));
-            sprintf(RimBrandString, GetCarTextOption(CarINI, GeneralINI, "Names", "PartsRimsCustom", ""));
+            RimBrandIconHash = CarConfigs[CarTypeID].Icons.PartsRimsCustom;
+            RimBrandNameHash = CarConfigs[CarTypeID].Names.PartsRimsCustom;
 
-            if (bStringHash(RimBrandIcon) == -1) sprintf(RimBrandIcon, RimBrandsINI.ReadString(RimBrandID, "Texture", GetDefaultRimBrandTexture(i)));
-            if (bStringHash(RimBrandString) == -1) sprintf(RimBrandString, RimBrandsINI.ReadString(RimBrandID, "String", GetDefaultRimBrandString(i)));
+            if (RimBrandIconHash == -1) RimBrandIconHash = RimBrands[i].TextureHash;
+            if (RimBrandNameHash == -1) RimBrandNameHash = RimBrands[i].StringHash;
         }
         else
         {
-            sprintf(RimBrandID, "Brand%d", i);
-            sprintf(RimBrandIcon, RimBrandsINI.ReadString(RimBrandID, "Texture", GetDefaultRimBrandTexture(i)));
-            sprintf(RimBrandString, RimBrandsINI.ReadString(RimBrandID, "String", GetDefaultRimBrandString(i)));
+            RimBrandIconHash = RimBrands[i].TextureHash;
+            RimBrandNameHash = RimBrands[i].StringHash;
         }
 
-        CustomizeCategoryScreen_AddCustomOption(_CustomizeSub, *(char**)g_pCustomizeRimsPkg, bStringHash(RimBrandIcon), bStringHash(RimBrandString), 0x702 + i);
+        CustomizeCategoryScreen_AddCustomOption(_CustomizeSub, *(char**)g_pCustomizeRimsPkg, RimBrandIconHash, RimBrandNameHash, 0x702 + i);
     }
 
     ARimPart[0] = SelectablePart_vtable;
@@ -431,80 +489,74 @@ int __fastcall CustomizeSub_SetupPerformance(DWORD* _CustomizeSub, void* EDX_Unu
     // Get CarType Info
     void* FECarRecord = *(void**)_FECarRecord;
     int CarTypeID = FECarRecord_GetType(FECarRecord);
-    sprintf(CarTypeName, GetCarTypeName(CarTypeID));
-
-    // Read Part Options for the car
-    sprintf(CarININame, "UnlimiterData\\%s.ini", CarTypeName);
-    CIniReader CarINI(CarININame);
-    CIniReader GeneralINI("UnlimiterData\\_General.ini");
 
     _CustomizeCategoryScreen = _CustomizeSub;
     _CustomizeSub[108] = CustomizeIsInBackRoom() != 0
-        ? GetCarTextOptionHash(CarINI, GeneralINI, "Names", "BackroomPerformance", "CO_BACKROOM_PERFORMANCE")
-        : GetCarTextOptionHash(CarINI, GeneralINI, "Names", "Performance", "CO_PERFORMANCE");
+        ? CarConfigs[CarTypeID].Names.BackroomPerformance
+        : CarConfigs[CarTypeID].Names.Performance;
 
     _CustomizeSub[83] = *(DWORD*)g_pCustomizeMainPkg;
     CustomizeSetInPerformance(1);
 
     if (CustomizeIsInBackRoom())
     {
-        if (GetCarIntOption(CarINI, GeneralINI, "Performance", "Engine", 1) != 0)
+        if (CarConfigs[CarTypeID].Performance.Engine)
             CustomizeCategoryScreen_AddCustomOption(
                 _CustomizeSub,
                 *(char**)g_pCustomizePerfPkg,
-                GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "BackroomPerformanceEngine", "MARKER_ICON_PERFORMANCE_ENGINE"),
-                GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PerformanceEngine", "CO_ENGINE"),
+                CarConfigs[CarTypeID].Icons.BackroomPerformanceEngine,
+                CarConfigs[CarTypeID].Names.PerformanceEngine,
                 0x201);
 
-        if (GetCarIntOption(CarINI, GeneralINI, "Performance", "Transmission", 1) != 0)
+        if (CarConfigs[CarTypeID].Performance.Transmission)
             CustomizeCategoryScreen_AddCustomOption(
                 _CustomizeSub,
                 *(char**)g_pCustomizePerfPkg,
-                GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "BackroomPerformanceTransmission", "MARKER_ICON_PERFORMANCE_TRANSMISSION"),
-                GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PerformanceTransmission", "CO_TRANSMISSION"),
+                CarConfigs[CarTypeID].Icons.BackroomPerformanceTransmission,
+                CarConfigs[CarTypeID].Names.PerformanceTransmission,
                 0x202);
 
-        if (GetCarIntOption(CarINI, GeneralINI, "Performance", "Chassis", 1) != 0)
+        if (CarConfigs[CarTypeID].Performance.Chassis)
             CustomizeCategoryScreen_AddCustomOption(
                 _CustomizeSub,
                 *(char**)g_pCustomizePerfPkg,
-                GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "BackroomPerformanceChassis", "MARKER_ICON_CHASSIS"),
-                GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PerformanceChassis", "CO_SUSPENSION"),
+                CarConfigs[CarTypeID].Icons.BackroomPerformanceChassis,
+                CarConfigs[CarTypeID].Names.PerformanceChassis,
                 0x203);
 
-        if (GetCarIntOption(CarINI, GeneralINI, "Performance", "Nitrous", 1) != 0)
+        if (CarConfigs[CarTypeID].Performance.Nitrous)
             CustomizeCategoryScreen_AddCustomOption(
                 _CustomizeSub,
                 *(char**)g_pCustomizePerfPkg,
-                GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "BackroomPerformanceNitrous", "MARKER_ICON_PERFORMANCE_N2O"),
-                GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PerformanceNitrous", "CO_NITROUS"),
+                CarConfigs[CarTypeID].Icons.BackroomPerformanceNitrous,
+                CarConfigs[CarTypeID].Names.PerformanceNitrous,
                 0x204);
 
-        if (GetCarIntOption(CarINI, GeneralINI, "Performance", "Tires", 1) != 0)
+        if (CarConfigs[CarTypeID].Performance.Tires)
             CustomizeCategoryScreen_AddCustomOption(
                 _CustomizeSub,
                 *(char**)g_pCustomizePerfPkg,
-                GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "BackroomPerformanceTires", "MARKER_ICON_TIRES"),
-                GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PerformanceTires", "CO_TIRES"),
+                CarConfigs[CarTypeID].Icons.BackroomPerformanceTires,
+                CarConfigs[CarTypeID].Names.PerformanceTires,
                 0x205);
 
-        if (GetCarIntOption(CarINI, GeneralINI, "Performance", "Brakes", 1) != 0)
+        if (CarConfigs[CarTypeID].Performance.Brakes)
             CustomizeCategoryScreen_AddCustomOption(
                 _CustomizeSub,
                 *(char**)g_pCustomizePerfPkg,
-                GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "BackroomPerformanceBrakes", "MARKER_ICON_PERFORMANCE_BRAKES"),
-                GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PerformanceBrakes", "CO_BRAKES"),
+                CarConfigs[CarTypeID].Icons.BackroomPerformanceBrakes,
+                CarConfigs[CarTypeID].Names.PerformanceBrakes,
                 0x206);
 
-        if (GetCarIntOption(CarINI, GeneralINI, "Performance", "Induction", 1) != 0)
+        if (CarConfigs[CarTypeID].Performance.Induction)
         {
             if (CarCustomizeManager_IsTurbo((DWORD*)_gCarCustomizeManager))
             {
                 CustomizeCategoryScreen_AddCustomOption(
                     _CustomizeSub,
                     *(char**)g_pCustomizePerfPkg,
-                    GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "BackroomPerformanceTurbo", "MARKER_ICON_PERFORMANCE_TURBO"),
-                    GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PerformanceTurbo", "CO_TURBO"),
+                    CarConfigs[CarTypeID].Icons.BackroomPerformanceTurbo,
+                    CarConfigs[CarTypeID].Names.PerformanceTurbo,
                     0x207);
             }
             else
@@ -512,8 +564,8 @@ int __fastcall CustomizeSub_SetupPerformance(DWORD* _CustomizeSub, void* EDX_Unu
                 CustomizeCategoryScreen_AddCustomOption(
                     _CustomizeSub,
                     *(char**)g_pCustomizePerfPkg,
-                    GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "BackroomPerformanceSupercharger", "MARKER_ICON_PERFORMANCE_SUPERCHARGER"),
-                    GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PerformanceSupercharger", "CO_SUPERCHARGER"),
+                    CarConfigs[CarTypeID].Icons.BackroomPerformanceSupercharger,
+                    CarConfigs[CarTypeID].Names.PerformanceSupercharger,
                     0x207);
             }
         }
@@ -521,63 +573,63 @@ int __fastcall CustomizeSub_SetupPerformance(DWORD* _CustomizeSub, void* EDX_Unu
 
     else
     {
-        if (GetCarIntOption(CarINI, GeneralINI, "Performance", "Engine", 1) != 0)
+        if (CarConfigs[CarTypeID].Performance.Engine)
             CustomizeCategoryScreen_AddCustomOption(
                 _CustomizeSub,
                 *(char**)g_pCustomizePerfPkg,
-                GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "PerformanceEngine", "PERFORMANCE_ENGINE"),
-                GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PerformanceEngine", "CO_ENGINE"),
+                CarConfigs[CarTypeID].Icons.PerformanceEngine,
+                CarConfigs[CarTypeID].Names.PerformanceEngine,
                 0x201);
 
-        if (GetCarIntOption(CarINI, GeneralINI, "Performance", "Transmission", 1) != 0)
+        if (CarConfigs[CarTypeID].Performance.Transmission)
             CustomizeCategoryScreen_AddCustomOption(
                 _CustomizeSub,
                 *(char**)g_pCustomizePerfPkg,
-                GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "PerformanceTransmission", "PERFORMANCE_TRANSMISSION"),
-                GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PerformanceTransmission", "CO_TRANSMISSION"),
+                CarConfigs[CarTypeID].Icons.PerformanceTransmission,
+                CarConfigs[CarTypeID].Names.PerformanceTransmission,
                 0x202);
 
-        if (GetCarIntOption(CarINI, GeneralINI, "Performance", "Chassis", 1) != 0)
+        if (CarConfigs[CarTypeID].Performance.Chassis)
             CustomizeCategoryScreen_AddCustomOption(
                 _CustomizeSub,
                 *(char**)g_pCustomizePerfPkg,
-                GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "PerformanceChassis", "PERFORMANCE_SUSPENSION"),
-                GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PerformanceChassis", "CO_SUSPENSION"),
+                CarConfigs[CarTypeID].Icons.PerformanceChassis,
+                CarConfigs[CarTypeID].Names.PerformanceChassis,
                 0x203);
 
-        if (GetCarIntOption(CarINI, GeneralINI, "Performance", "Nitrous", 1) != 0)
+        if (CarConfigs[CarTypeID].Performance.Nitrous)
             CustomizeCategoryScreen_AddCustomOption(
                 _CustomizeSub,
                 *(char**)g_pCustomizePerfPkg,
-                GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "PerformanceNitrous", "PERFORMANCE_NITROUS"),
-                GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PerformanceNitrous", "CO_NITROUS"),
+                CarConfigs[CarTypeID].Icons.PerformanceNitrous,
+                CarConfigs[CarTypeID].Names.PerformanceNitrous,
                 0x204);
 
-        if (GetCarIntOption(CarINI, GeneralINI, "Performance", "Tires", 1) != 0)
+        if (CarConfigs[CarTypeID].Performance.Tires)
             CustomizeCategoryScreen_AddCustomOption(
                 _CustomizeSub,
                 *(char**)g_pCustomizePerfPkg,
-                GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "PerformanceTires", "PERFORMANCE_TIRES"),
-                GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PerformanceTires", "CO_TIRES"),
+                CarConfigs[CarTypeID].Icons.PerformanceTires,
+                CarConfigs[CarTypeID].Names.PerformanceTires,
                 0x205);
 
-        if (GetCarIntOption(CarINI, GeneralINI, "Performance", "Brakes", 1) != 0)
+        if (CarConfigs[CarTypeID].Performance.Brakes)
             CustomizeCategoryScreen_AddCustomOption(
                 _CustomizeSub,
                 *(char**)g_pCustomizePerfPkg,
-                GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "PerformanceBrakes", "PERFORMANCE_BRAKES"),
-                GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PerformanceBrakes", "CO_BRAKES"),
+                CarConfigs[CarTypeID].Icons.PerformanceBrakes,
+                CarConfigs[CarTypeID].Names.PerformanceBrakes,
                 0x206);
 
-        if (GetCarIntOption(CarINI, GeneralINI, "Performance", "Induction", 1) != 0)
+        if (CarConfigs[CarTypeID].Performance.Induction)
         {
             if (CarCustomizeManager_IsTurbo((DWORD*)_gCarCustomizeManager))
             {
                 CustomizeCategoryScreen_AddCustomOption(
                     _CustomizeSub,
                     *(char**)g_pCustomizePerfPkg,
-                    GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "PerformanceTurbo", "PERFORMANCE_TURBO"),
-                    GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PerformanceTurbo", "CO_TURBO"),
+                    CarConfigs[CarTypeID].Icons.PerformanceTurbo,
+                    CarConfigs[CarTypeID].Names.PerformanceTurbo,
                     0x207);
             }
             else
@@ -585,8 +637,8 @@ int __fastcall CustomizeSub_SetupPerformance(DWORD* _CustomizeSub, void* EDX_Unu
                 CustomizeCategoryScreen_AddCustomOption(
                     _CustomizeSub,
                     *(char**)g_pCustomizePerfPkg,
-                    GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "PerformanceSupercharger", "PERFORMANCE_SUPERCHARGER"),
-                    GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PerformanceSupercharger", "CO_SUPERCHARGER"),
+                    CarConfigs[CarTypeID].Icons.PerformanceSupercharger,
+                    CarConfigs[CarTypeID].Names.PerformanceSupercharger,
                     0x207);
             }
         }
@@ -613,134 +665,128 @@ int __fastcall CustomizeSub_SetupVisual(DWORD* _CustomizeSub, void *EDX_Unused)
     // Get CarType Info
     void* FECarRecord = *(void**)_FECarRecord;
     int CarTypeID = FECarRecord_GetType(FECarRecord);
-    sprintf(CarTypeName, GetCarTypeName(CarTypeID));
-
-    // Read Part Options for the car
-    sprintf(CarININame, "UnlimiterData\\%s.ini", CarTypeName);
-    CIniReader CarINI(CarININame);
-    CIniReader GeneralINI("UnlimiterData\\_General.ini");
 
     _CustomizeCategoryScreen = _CustomizeSub;
-    _CustomizeSub[108] = CustomizeIsInBackRoom() != 0 
-        ? GetCarTextOptionHash(CarINI, GeneralINI, "Names", "BackroomVisual", "CO_BACKROOM_VISUAL")
-        : GetCarTextOptionHash(CarINI, GeneralINI, "Names", "Visual", "CO_VISUAL");
+    _CustomizeSub[108] = CustomizeIsInBackRoom() != 0
+        ? CarConfigs[CarTypeID].Names.BackroomVisual
+        : CarConfigs[CarTypeID].Names.Visual;
 
     _CustomizeCategoryScreen[83] = *(DWORD*)g_pCustomizeMainPkg;
 
     if (CustomizeIsInBackRoom())
     {
-        if (GetCarIntOption(CarINI, GeneralINI, "Visual", "Paint", 1) != 0)
+        if (CarConfigs[CarTypeID].Visual.Paint)
         CustomizeCategoryScreen_AddCustomOption(
             _CustomizeCategoryScreen,
             *(char**)g_pCustomizePaintPkg,
-            GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "BackroomVisualPaint", "MARKER_ICON_VISUAL_PAINT"),
-            GetCarTextOptionHash(CarINI, GeneralINI, "Names", "VisualPaint", "CO_PAINT"),
+            CarConfigs[CarTypeID].Icons.BackroomVisualPaint,
+            CarConfigs[CarTypeID].Names.VisualPaint,
             0x301);
         if (!HPCCompatibility)
         {
-            if (GetCarIntOption(CarINI, GeneralINI, "Visual", "Vinyls", 1) != 0)
+            if (CarConfigs[CarTypeID].Visual.Vinyls)
                 CustomizeCategoryScreen_AddCustomOption(
                     _CustomizeCategoryScreen,
                     *(char**)g_pCustomizeSubTopPkg,
-                    GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "BackroomVisualVinyls", "MARKER_ICON_VISUAL_VINYLS"),
-                    GetCarTextOptionHash(CarINI, GeneralINI, "Names", "VisualVinyls", "CO_VINYLS"),
+                    CarConfigs[CarTypeID].Icons.BackroomVisualVinyls,
+                    CarConfigs[CarTypeID].Names.VisualVinyls,
                     0x302);
-            if ((GetCarIntOption(CarINI, GeneralINI, "Visual", "Decals", 1) != 0) && !IsMenuEmpty_Decals(CarINI, GeneralINI))
+            if (CarConfigs[CarTypeID].Visual.Decals && !IsMenuEmpty_Decals(CarTypeID))
                 CustomizeCategoryScreen_AddCustomOption(
                     _CustomizeCategoryScreen,
                     *(char**)g_pCustomizeSubTopPkg,
-                    GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "BackroomVisualDecals", "MARKER_ICON_VISUAL_DECALS"),
-                    GetCarTextOptionHash(CarINI, GeneralINI, "Names", "VisualDecals", "CO_DECALS"),
+                    CarConfigs[CarTypeID].Icons.BackroomVisualDecals,
+                    CarConfigs[CarTypeID].Names.VisualDecals,
                     0x305);
-            if (!BETACompatibility && (GetCarIntOption(CarINI, GeneralINI, "Visual", "CustomGauges", 1) != 0))
+            if (!BETACompatibility && CarConfigs[CarTypeID].Visual.CustomGauges)
                 CustomizeCategoryScreen_AddCustomOption(
                     _CustomizeCategoryScreen,
                     *(char**)g_pCustomizeHudPkg,
-                    GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "BackroomVisualCustomGauges", "MARKER_ICON_VISUAL_HUD"),
-                    GetCarTextOptionHash(CarINI, GeneralINI, "Names", "VisualCustomGauges", "CO_CUSTOM_HUD"),
+                    CarConfigs[CarTypeID].Icons.BackroomVisualCustomGauges,
+                    CarConfigs[CarTypeID].Names.VisualCustomGauges,
                     0x307);
         }
     }
     else
     {
-        if (GetCarIntOption(CarINI, GeneralINI, "Visual", "Paint", 1) != 0)
+        if (CarConfigs[CarTypeID].Visual.Paint)
         CustomizeCategoryScreen_AddCustomOption(
             _CustomizeCategoryScreen,
             *(char**)g_pCustomizePaintPkg,
-            GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "VisualPaint", "PAINT_MOD_BASE"),
-            GetCarTextOptionHash(CarINI, GeneralINI, "Names", "VisualPaint", "CO_PAINT"),
+            CarConfigs[CarTypeID].Icons.VisualPaint,
+            CarConfigs[CarTypeID].Names.VisualPaint,
             0x301);
         if (!HPCCompatibility)
         {
-            if (GetCarIntOption(CarINI, GeneralINI, "Visual", "Vinyls", 1) != 0)
+            if (CarConfigs[CarTypeID].Visual.Vinyls)
                 CustomizeCategoryScreen_AddCustomOption(
                     _CustomizeCategoryScreen,
                     *(char**)g_pCustomizeSubTopPkg,
-                    GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "VisualVinyls", "VISUAL_PART_VINYL"),
-                    GetCarTextOptionHash(CarINI, GeneralINI, "Names", "VisualVinyls", "CO_VINYLS"),
+                    CarConfigs[CarTypeID].Icons.VisualVinyls,
+                    CarConfigs[CarTypeID].Names.VisualVinyls,
                     0x302);
-            if (GetCarIntOption(CarINI, GeneralINI, "Visual", "RimPaint", 1) != 0)
+            if (CarConfigs[CarTypeID].Visual.RimPaint)
                 CustomizeCategoryScreen_AddCustomOption(
                     _CustomizeCategoryScreen,
                     *(char**)g_pCustomizePaintPkg,
-                    GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "VisualRimPaint", "PAINT_MOD_PART_RIMS"),
-                    GetCarTextOptionHash(CarINI, GeneralINI, "Names", "VisualRimPaint", "CO_RIM_PAINT"),
+                    CarConfigs[CarTypeID].Icons.VisualRimPaint,
+                    CarConfigs[CarTypeID].Names.VisualRimPaint,
                     0x303);
-            if (GetCarIntOption(CarINI, GeneralINI, "Visual", "WindowTint", 1) != 0)
+            if (CarConfigs[CarTypeID].Visual.WindowTint)
                 CustomizeCategoryScreen_AddCustomOption(
                     _CustomizeCategoryScreen,
                     *(char**)g_pCustomizePartsPkg,
-                    GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "VisualWindowTint", "VISUAL_PART_WINDOW_TINTING"),
-                    GetCarTextOptionHash(CarINI, GeneralINI, "Names", "VisualWindowTint", "CO_WINDOW_TINT"),
+                    CarConfigs[CarTypeID].Icons.VisualWindowTint,
+                    CarConfigs[CarTypeID].Names.VisualWindowTint,
                     0x304);
-            if ((GetCarIntOption(CarINI, GeneralINI, "Visual", "Decals", 1) != 0) && !IsMenuEmpty_Decals(CarINI, GeneralINI))
+            if (CarConfigs[CarTypeID].Visual.Decals && !IsMenuEmpty_Decals(CarTypeID))
                 CustomizeCategoryScreen_AddCustomOption(
                     _CustomizeCategoryScreen,
                     *(char**)g_pCustomizeSubTopPkg,
-                    GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "VisualDecals", "VISUAL_PART_DECALS"),
-                    GetCarTextOptionHash(CarINI, GeneralINI, "Names", "VisualDecals", "CO_DECALS"),
+                    CarConfigs[CarTypeID].Icons.VisualDecals,
+                    CarConfigs[CarTypeID].Names.VisualDecals,
                     0x305);
-            if (GetCarIntOption(CarINI, GeneralINI, "Visual", "Numbers", 1) != 0)
+            if (CarConfigs[CarTypeID].Visual.Numbers)
                 CustomizeCategoryScreen_AddCustomOption(
                     _CustomizeCategoryScreen,
                     "Numbers.fng",
-                    GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "VisualNumbers", "VISUAL_PART_NUMBERS"),
-                    GetCarTextOptionHash(CarINI, GeneralINI, "Names", "VisualNumbers", "CO_NUMBERS"),
+                    CarConfigs[CarTypeID].Icons.VisualNumbers,
+                    CarConfigs[CarTypeID].Names.VisualNumbers,
                     0x306);
-            if (!BETACompatibility && (GetCarIntOption(CarINI, GeneralINI, "Visual", "CustomGauges", 1) != 0))
+            if (!BETACompatibility && CarConfigs[CarTypeID].Visual.CustomGauges)
                 CustomizeCategoryScreen_AddCustomOption(
                     _CustomizeCategoryScreen,
                     *(char**)g_pCustomizeHudPkg,
-                    GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "VisualCustomGauges", "VISUAL_PART_HUDS"),
-                    GetCarTextOptionHash(CarINI, GeneralINI, "Names", "VisualCustomGauges", "CO_CUSTOM_HUD"),
+                    CarConfigs[CarTypeID].Icons.VisualCustomGauges,
+                    CarConfigs[CarTypeID].Names.VisualCustomGauges,
                     0x307);
-            if (GetCarIntOption(CarINI, GeneralINI, "Visual", "Driver", 0) != 0)
+            if (CarConfigs[CarTypeID].Visual.Driver)
                 CustomizeCategoryScreen_AddCustomOption(
                     _CustomizeCategoryScreen,
                     *(char**)g_pCustomizePartsPkg,
-                    GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "VisualDriver", "VISUAL_PART_DRIVER"),
-                    GetCarTextOptionHash(CarINI, GeneralINI, "Names", "VisualDriver", "CO_DRIVER"),
+                    CarConfigs[CarTypeID].Icons.VisualDriver,
+                    CarConfigs[CarTypeID].Names.VisualDriver,
                     0x308);
-            if (GetCarIntOption(CarINI, GeneralINI, "Visual", "LicensePlate", 0) != 0)
+            if (CarConfigs[CarTypeID].Visual.LicensePlate)
                 CustomizeCategoryScreen_AddCustomOption(
                     _CustomizeCategoryScreen,
                     *(char**)g_pCustomizePartsPkg,
-                    GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "VisualLicensePlate", "VISUAL_PART_LICENSE_PLATE"),
-                    GetCarTextOptionHash(CarINI, GeneralINI, "Names", "VisualLicensePlate", "CO_LICENSE_PLATE"),
+                    CarConfigs[CarTypeID].Icons.VisualLicensePlate,
+                    CarConfigs[CarTypeID].Names.VisualLicensePlate,
                     0x309);
-            if (GetCarIntOption(CarINI, GeneralINI, "Visual", "Tires", 0) != 0)
+            if (CarConfigs[CarTypeID].Visual.Tires)
                 CustomizeCategoryScreen_AddCustomOption(
                     _CustomizeCategoryScreen,
                     *(char**)g_pCustomizePartsPkg,
-                    GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "VisualTires", "VISUAL_PART_TIRE"),
-                    GetCarTextOptionHash(CarINI, GeneralINI, "Names", "VisualTires", "CO_TIRES"),
+                    CarConfigs[CarTypeID].Icons.VisualTires,
+                    CarConfigs[CarTypeID].Names.VisualTires,
                     0x314);
-            if (GetCarIntOption(CarINI, GeneralINI, "Visual", "Neon", 0) != 0)
+            if (CarConfigs[CarTypeID].Visual.Neon)
                 CustomizeCategoryScreen_AddCustomOption(
                     _CustomizeCategoryScreen,
                     *(char**)g_pCustomizePartsPkg,
-                    GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "VisualNeon", "VISUAL_PART_NEON"),
-                    GetCarTextOptionHash(CarINI, GeneralINI, "Names", "VisualNeon", "CO_NEON"),
+                    CarConfigs[CarTypeID].Icons.VisualNeon,
+                    CarConfigs[CarTypeID].Names.VisualNeon,
                     0x315);
         }
     }
@@ -765,45 +811,39 @@ void __fastcall CustomizeSub_SetupDecalLocations(DWORD* CustomizeSub, void* EDX_
     // Get CarType Info
     void* FECarRecord = *(void**)_FECarRecord;
     int CarTypeID = FECarRecord_GetType(FECarRecord);
-    sprintf(CarTypeName, GetCarTypeName(CarTypeID));
 
-    // Read Part Options for the car
-    sprintf(CarININame, "UnlimiterData\\%s.ini", CarTypeName);
-    CIniReader CarINI(CarININame);
-    CIniReader GeneralINI("UnlimiterData\\_General.ini");
-
-    CustomizeSub[108] = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "VisualDecalsLocation", "CO_DECAL_LOCATION");
+    CustomizeSub[108] = CarConfigs[CarTypeID].Names.VisualDecalsLocation;
     CustomizeSub[83] = *(DWORD*)g_pCustomizeSubPkg;
 
-    if (GetCarIntOption(CarINI, GeneralINI, "Visual", "DecalsWindshield", 1) != 0)
+    if (CarConfigs[CarTypeID].Visual.DecalsWindshield)
         CustomizeCategoryScreen_AddCustomOption(CustomizeSub, *(char**)g_pCustomizeSubTopPkg,
-            GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "VisualDecalsWindshield", "DECAL_ZONE_WINDSHIELD"),
-            GetCarTextOptionHash(CarINI, GeneralINI, "Names", "VisualDecalsWindshield", "CO_DECAL_WINDSHIELD"),
+            CarConfigs[CarTypeID].Icons.VisualDecalsWindshield,
+            CarConfigs[CarTypeID].Names.VisualDecalsWindshield,
             0x501);
-    if (GetCarIntOption(CarINI, GeneralINI, "Visual", "DecalsRearWindow", 1) != 0)
+    if (CarConfigs[CarTypeID].Visual.DecalsRearWindow)
         CustomizeCategoryScreen_AddCustomOption(CustomizeSub, *(char**)g_pCustomizeSubTopPkg,
-            GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "VisualDecalsRearWindow", "DECAL_ZONE_REARWINDOW"),
-            GetCarTextOptionHash(CarINI, GeneralINI, "Names", "VisualDecalsRearWindow", "CO_DECAL_REAR_WINDOW"),
+            CarConfigs[CarTypeID].Icons.VisualDecalsRearWindow,
+            CarConfigs[CarTypeID].Names.VisualDecalsRearWindow,
             0x502);
-    if (GetCarIntOption(CarINI, GeneralINI, "Visual", "DecalsLeftDoor", 1) != 0)
+    if (CarConfigs[CarTypeID].Visual.DecalsLeftDoor)
         CustomizeCategoryScreen_AddCustomOption(CustomizeSub, *(char**)g_pCustomizeSubTopPkg,
-            GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "VisualDecalsLeftDoor", "DECAL_ZONE_LEFTDOOR"),
-            GetCarTextOptionHash(CarINI, GeneralINI, "Names", "VisualDecalsLeftDoor", "CO_DECAL_LEFT_DOOR"),
+            CarConfigs[CarTypeID].Icons.VisualDecalsLeftDoor,
+            CarConfigs[CarTypeID].Names.VisualDecalsLeftDoor,
             0x503);
-    if (GetCarIntOption(CarINI, GeneralINI, "Visual", "DecalsRightDoor", 1) != 0)
+    if (CarConfigs[CarTypeID].Visual.DecalsRightDoor)
         CustomizeCategoryScreen_AddCustomOption(CustomizeSub, *(char**)g_pCustomizeSubTopPkg,
-            GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "VisualDecalsRightDoor", "DECAL_ZONE_RIGHTDOOR"),
-            GetCarTextOptionHash(CarINI, GeneralINI, "Names", "VisualDecalsRightDoor", "CO_DECAL_RIGHT_DOOR"),
+            CarConfigs[CarTypeID].Icons.VisualDecalsRightDoor,
+            CarConfigs[CarTypeID].Names.VisualDecalsRightDoor,
             0x504);
-    if (GetCarIntOption(CarINI, GeneralINI, "Visual", "DecalsLeftQuarter", 1) != 0)
+    if (CarConfigs[CarTypeID].Visual.DecalsLeftQuarter)
         CustomizeCategoryScreen_AddCustomOption(CustomizeSub, *(char**)g_pCustomizeSubTopPkg,
-            GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "VisualDecalsLeftQuarter", "DECAL_ZONE_LEFTPANEL"),
-            GetCarTextOptionHash(CarINI, GeneralINI, "Names", "VisualDecalsLeftQuarter", "CO_DECAL_LEFT_QUARTER"),
+            CarConfigs[CarTypeID].Icons.VisualDecalsLeftQuarter,
+            CarConfigs[CarTypeID].Names.VisualDecalsLeftQuarter,
             0x505);
-    if (GetCarIntOption(CarINI, GeneralINI, "Visual", "DecalsRightQuarter", 1) != 0)
+    if (CarConfigs[CarTypeID].Visual.DecalsRightQuarter)
         CustomizeCategoryScreen_AddCustomOption(CustomizeSub, *(char**)g_pCustomizeSubTopPkg,
-            GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "VisualDecalsRightQuarter", "DECAL_ZONE_RIGHTPANEL"),
-            GetCarTextOptionHash(CarINI, GeneralINI, "Names", "VisualDecalsRightQuarter", "CO_DECAL_RIGHT_QUARTER"),
+            CarConfigs[CarTypeID].Icons.VisualDecalsRightQuarter,
+            CarConfigs[CarTypeID].Names.VisualDecalsRightQuarter,
             0x506);
     
     PreviousMenu = CustomizeSub[85];
@@ -841,6 +881,7 @@ void __fastcall CustomizeSub_SetupDecalPositions(DWORD* CustomizeSub, void* EDX_
     unsigned int InitialPosition; // eax
     DWORD* DecalPart;
     int NumDecals;
+    int CurrDecal = 1;
 
     // Get car and customization record
     DWORD* FEDatabase = *(DWORD**)_FEDatabase;
@@ -848,14 +889,8 @@ void __fastcall CustomizeSub_SetupDecalPositions(DWORD* CustomizeSub, void* EDX_
     DWORD* CustomizationRecord = FEPlayerCarDB_GetCustomizationRecordByHandle((DWORD*)(*((DWORD*)FEDatabase + 4) + 0x414), *((BYTE*)FECarRecord + 16));
 
     int CarTypeID = FECarRecord_GetType(FECarRecord);
-    sprintf(CarTypeName, GetCarTypeName(CarTypeID));
 
-    // Read Part Options for the car
-    sprintf(CarININame, "UnlimiterData\\%s.ini", CarTypeName);
-    CIniReader CarINI(CarININame);
-    CIniReader GeneralINI("UnlimiterData\\_General.ini");
-
-    CustomizeSub[108] = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "VisualDecalsPosition", "CO_DECAL_POSITION");
+    CustomizeSub[108] = CarConfigs[CarTypeID].Names.VisualDecalsPosition;
     CustomizeSub[83] = *(DWORD*)g_pCustomizeSubTopPkg;
     
     switch (CustomizeSub[84])
@@ -867,23 +902,83 @@ void __fastcall CustomizeSub_SetupDecalPositions(DWORD* CustomizeSub, void* EDX_
         // look for the NUM_DECALS attribute
         if (DecalPart)
         {
-            NumDecals = CarPart_GetAppliedAttributeIParam(DecalPart, bStringHash("NUM_DECALS"), 0);
+            NumDecals = CarPart_GetAppliedAttributeIParam(DecalPart, bStringHash((char*)"NUM_DECALS"), 0);
             if (NumDecals <= 0 || NumDecals >= 8) NumDecals = 1;
         }
         else NumDecals = 1;
 
-        // Create menu options accordingly
-        for (int i = 1; i <= NumDecals; i++)
+        if (CurrDecal <= NumDecals)
         {
-            sprintf(DecalMenuString, "VisualDecalsWindshield%d", i);
-            sprintf(DecalMenuDefaultString, "CO_DECAL_SLOT_%d", i);
-
-            CustomizeCategoryScreen_AddCustomOption(CustomizeSub, *(char**)g_pCustomizeDecalsPkg,
-                GetCarTextOptionHash(CarINI, GeneralINI, "Icons", DecalMenuString, "DECAL_ZONE_WINDSHIELD"),
-                GetCarTextOptionHash(CarINI, GeneralINI, "Names", DecalMenuString, DecalMenuDefaultString),
-                0x600 + i);
+            CustomizeCategoryScreen_AddCustomOption(
+                CustomizeSub,
+                *(char**)g_pCustomizeDecalsPkg,
+                CarConfigs[CarTypeID].Icons.VisualDecalsWindshield1,
+                CarConfigs[CarTypeID].Names.VisualDecalsWindshield1,
+                0x600 + CurrDecal++);
         }
-
+        if (CurrDecal <= NumDecals)
+        {
+            CustomizeCategoryScreen_AddCustomOption(
+                CustomizeSub,
+                *(char**)g_pCustomizeDecalsPkg,
+                CarConfigs[CarTypeID].Icons.VisualDecalsWindshield2,
+                CarConfigs[CarTypeID].Names.VisualDecalsWindshield2,
+                0x600 + CurrDecal++);
+        }
+        if (CurrDecal <= NumDecals)
+        {
+            CustomizeCategoryScreen_AddCustomOption(
+                CustomizeSub,
+                *(char**)g_pCustomizeDecalsPkg,
+                CarConfigs[CarTypeID].Icons.VisualDecalsWindshield3,
+                CarConfigs[CarTypeID].Names.VisualDecalsWindshield3,
+                0x600 + CurrDecal++);
+        }
+        if (CurrDecal <= NumDecals)
+        {
+            CustomizeCategoryScreen_AddCustomOption(
+                CustomizeSub,
+                *(char**)g_pCustomizeDecalsPkg,
+                CarConfigs[CarTypeID].Icons.VisualDecalsWindshield4,
+                CarConfigs[CarTypeID].Names.VisualDecalsWindshield4,
+                0x600 + CurrDecal++);
+        }
+        if (CurrDecal <= NumDecals)
+        {
+            CustomizeCategoryScreen_AddCustomOption(
+                CustomizeSub,
+                *(char**)g_pCustomizeDecalsPkg,
+                CarConfigs[CarTypeID].Icons.VisualDecalsWindshield5,
+                CarConfigs[CarTypeID].Names.VisualDecalsWindshield5,
+                0x600 + CurrDecal++);
+        }
+        if (CurrDecal <= NumDecals)
+        {
+            CustomizeCategoryScreen_AddCustomOption(
+                CustomizeSub,
+                *(char**)g_pCustomizeDecalsPkg,
+                CarConfigs[CarTypeID].Icons.VisualDecalsWindshield6,
+                CarConfigs[CarTypeID].Names.VisualDecalsWindshield6,
+                0x600 + CurrDecal++);
+        }
+        if (CurrDecal <= NumDecals)
+        {
+            CustomizeCategoryScreen_AddCustomOption(
+                CustomizeSub,
+                *(char**)g_pCustomizeDecalsPkg,
+                CarConfigs[CarTypeID].Icons.VisualDecalsWindshield7,
+                CarConfigs[CarTypeID].Names.VisualDecalsWindshield7,
+                0x600 + CurrDecal++);
+        }
+        if (CurrDecal <= NumDecals)
+        {
+            CustomizeCategoryScreen_AddCustomOption(
+                CustomizeSub,
+                *(char**)g_pCustomizeDecalsPkg,
+                CarConfigs[CarTypeID].Icons.VisualDecalsWindshield8,
+                CarConfigs[CarTypeID].Names.VisualDecalsWindshield8,
+                0x600 + CurrDecal++);
+        }
         break;
     case 0x502: // Rear Window
         // Get decal part
@@ -892,23 +987,83 @@ void __fastcall CustomizeSub_SetupDecalPositions(DWORD* CustomizeSub, void* EDX_
         // look for the NUM_DECALS attribute
         if (DecalPart)
         {
-            NumDecals = CarPart_GetAppliedAttributeIParam(DecalPart, bStringHash("NUM_DECALS"), 0);
+            NumDecals = CarPart_GetAppliedAttributeIParam(DecalPart, bStringHash((char*)"NUM_DECALS"), 0);
             if (NumDecals <= 0 || NumDecals >= 8) NumDecals = 1;
         }
         else NumDecals = 1;
 
-        // Create menu options accordingly
-        for (int i = 1; i <= NumDecals; i++)
+        if (CurrDecal <= NumDecals)
         {
-            sprintf(DecalMenuString, "VisualDecalsRearWindow%d", i);
-            sprintf(DecalMenuDefaultString, "CO_DECAL_SLOT_%d", i);
-
-            CustomizeCategoryScreen_AddCustomOption(CustomizeSub, *(char**)g_pCustomizeDecalsPkg,
-                GetCarTextOptionHash(CarINI, GeneralINI, "Icons", DecalMenuString, "DECAL_ZONE_REARWINDOW"),
-                GetCarTextOptionHash(CarINI, GeneralINI, "Names", DecalMenuString, DecalMenuDefaultString),
-                0x600 + i);
+            CustomizeCategoryScreen_AddCustomOption(
+                CustomizeSub,
+                *(char**)g_pCustomizeDecalsPkg,
+                CarConfigs[CarTypeID].Icons.VisualDecalsRearWindow1,
+                CarConfigs[CarTypeID].Names.VisualDecalsRearWindow1,
+                0x600 + CurrDecal++);
         }
-
+        if (CurrDecal <= NumDecals)
+        {
+            CustomizeCategoryScreen_AddCustomOption(
+                CustomizeSub,
+                *(char**)g_pCustomizeDecalsPkg,
+                CarConfigs[CarTypeID].Icons.VisualDecalsRearWindow2,
+                CarConfigs[CarTypeID].Names.VisualDecalsRearWindow2,
+                0x600 + CurrDecal++);
+        }
+        if (CurrDecal <= NumDecals)
+        {
+            CustomizeCategoryScreen_AddCustomOption(
+                CustomizeSub,
+                *(char**)g_pCustomizeDecalsPkg,
+                CarConfigs[CarTypeID].Icons.VisualDecalsRearWindow3,
+                CarConfigs[CarTypeID].Names.VisualDecalsRearWindow3,
+                0x600 + CurrDecal++);
+        }
+        if (CurrDecal <= NumDecals)
+        {
+            CustomizeCategoryScreen_AddCustomOption(
+                CustomizeSub,
+                *(char**)g_pCustomizeDecalsPkg,
+                CarConfigs[CarTypeID].Icons.VisualDecalsRearWindow4,
+                CarConfigs[CarTypeID].Names.VisualDecalsRearWindow4,
+                0x600 + CurrDecal++);
+        }
+        if (CurrDecal <= NumDecals)
+        {
+            CustomizeCategoryScreen_AddCustomOption(
+                CustomizeSub,
+                *(char**)g_pCustomizeDecalsPkg,
+                CarConfigs[CarTypeID].Icons.VisualDecalsRearWindow5,
+                CarConfigs[CarTypeID].Names.VisualDecalsRearWindow5,
+                0x600 + CurrDecal++);
+        }
+        if (CurrDecal <= NumDecals)
+        {
+            CustomizeCategoryScreen_AddCustomOption(
+                CustomizeSub,
+                *(char**)g_pCustomizeDecalsPkg,
+                CarConfigs[CarTypeID].Icons.VisualDecalsRearWindow6,
+                CarConfigs[CarTypeID].Names.VisualDecalsRearWindow6,
+                0x600 + CurrDecal++);
+        }
+        if (CurrDecal <= NumDecals)
+        {
+            CustomizeCategoryScreen_AddCustomOption(
+                CustomizeSub,
+                *(char**)g_pCustomizeDecalsPkg,
+                CarConfigs[CarTypeID].Icons.VisualDecalsRearWindow7,
+                CarConfigs[CarTypeID].Names.VisualDecalsRearWindow7,
+                0x600 + CurrDecal++);
+        }
+        if (CurrDecal <= NumDecals)
+        {
+            CustomizeCategoryScreen_AddCustomOption(
+                CustomizeSub,
+                *(char**)g_pCustomizeDecalsPkg,
+                CarConfigs[CarTypeID].Icons.VisualDecalsRearWindow8,
+                CarConfigs[CarTypeID].Names.VisualDecalsRearWindow8,
+                0x600 + CurrDecal++);
+        }
         break;
     case 0x503: // Left Door
     // Get decal part
@@ -917,22 +1072,64 @@ void __fastcall CustomizeSub_SetupDecalPositions(DWORD* CustomizeSub, void* EDX_
         // look for the NUM_DECALS attribute
         if (DecalPart)
         {
-            NumDecals = CarPart_GetAppliedAttributeIParam(DecalPart, bStringHash("NUM_DECALS"), 0);
+            NumDecals = CarPart_GetAppliedAttributeIParam(DecalPart, bStringHash((char*)"NUM_DECALS"), 0);
             if (NumDecals <= 0 || NumDecals >= 6) NumDecals = 6;
         }
         else NumDecals = 6;
 
-        // Create menu options accordingly
-        for (int i = 1; i <= NumDecals; i++)
+        if (CurrDecal <= NumDecals)
         {
-            sprintf(DecalMenuString, "VisualDecalsLeftDoor%d", i);
-            sprintf(DecalMenuDefaultTexture, "DECAL_LEFTDOOR_SLOT%d", i);
-            sprintf(DecalMenuDefaultString, "CO_DECAL_SLOT_%d", i);
-
-            CustomizeCategoryScreen_AddCustomOption(CustomizeSub, *(char**)g_pCustomizeDecalsPkg,
-                GetCarTextOptionHash(CarINI, GeneralINI, "Icons", DecalMenuString, DecalMenuDefaultTexture),
-                GetCarTextOptionHash(CarINI, GeneralINI, "Names", DecalMenuString, DecalMenuDefaultString),
-                0x600 + i);
+            CustomizeCategoryScreen_AddCustomOption(
+                CustomizeSub,
+                *(char**)g_pCustomizeDecalsPkg,
+                CarConfigs[CarTypeID].Icons.VisualDecalsLeftDoor1,
+                CarConfigs[CarTypeID].Names.VisualDecalsLeftDoor1,
+                0x600 + CurrDecal++);
+        }
+        if (CurrDecal <= NumDecals)
+        {
+            CustomizeCategoryScreen_AddCustomOption(
+                CustomizeSub,
+                *(char**)g_pCustomizeDecalsPkg,
+                CarConfigs[CarTypeID].Icons.VisualDecalsLeftDoor2,
+                CarConfigs[CarTypeID].Names.VisualDecalsLeftDoor2,
+                0x600 + CurrDecal++);
+        }
+        if (CurrDecal <= NumDecals)
+        {
+            CustomizeCategoryScreen_AddCustomOption(
+                CustomizeSub,
+                *(char**)g_pCustomizeDecalsPkg,
+                CarConfigs[CarTypeID].Icons.VisualDecalsLeftDoor3,
+                CarConfigs[CarTypeID].Names.VisualDecalsLeftDoor3,
+                0x600 + CurrDecal++);
+        }
+        if (CurrDecal <= NumDecals)
+        {
+            CustomizeCategoryScreen_AddCustomOption(
+                CustomizeSub,
+                *(char**)g_pCustomizeDecalsPkg,
+                CarConfigs[CarTypeID].Icons.VisualDecalsLeftDoor4,
+                CarConfigs[CarTypeID].Names.VisualDecalsLeftDoor4,
+                0x600 + CurrDecal++);
+        }
+        if (CurrDecal <= NumDecals)
+        {
+            CustomizeCategoryScreen_AddCustomOption(
+                CustomizeSub,
+                *(char**)g_pCustomizeDecalsPkg,
+                CarConfigs[CarTypeID].Icons.VisualDecalsLeftDoor5,
+                CarConfigs[CarTypeID].Names.VisualDecalsLeftDoor5,
+                0x600 + CurrDecal++);
+        }
+        if (CurrDecal <= NumDecals)
+        {
+            CustomizeCategoryScreen_AddCustomOption(
+                CustomizeSub,
+                *(char**)g_pCustomizeDecalsPkg,
+                CarConfigs[CarTypeID].Icons.VisualDecalsLeftDoor6,
+                CarConfigs[CarTypeID].Names.VisualDecalsLeftDoor6,
+                0x600 + CurrDecal++);
         }
 
         break;
@@ -943,22 +1140,64 @@ void __fastcall CustomizeSub_SetupDecalPositions(DWORD* CustomizeSub, void* EDX_
         // look for the NUM_DECALS attribute
         if (DecalPart)
         {
-            NumDecals = CarPart_GetAppliedAttributeIParam(DecalPart, bStringHash("NUM_DECALS"), 0);
+            NumDecals = CarPart_GetAppliedAttributeIParam(DecalPart, bStringHash((char*)"NUM_DECALS"), 0);
             if (NumDecals <= 0 || NumDecals >= 6) NumDecals = 6;
         }
         else NumDecals = 6;
 
-        // Create menu options accordingly
-        for (int i = 1; i <= NumDecals; i++)
+        if (CurrDecal <= NumDecals)
         {
-            sprintf(DecalMenuString, "VisualDecalsRightDoor%d", i);
-            sprintf(DecalMenuDefaultTexture, "DECAL_RIGHTDOOR_SLOT%d", i);
-            sprintf(DecalMenuDefaultString, "CO_DECAL_SLOT_%d", i);
-
-            CustomizeCategoryScreen_AddCustomOption(CustomizeSub, *(char**)g_pCustomizeDecalsPkg,
-                GetCarTextOptionHash(CarINI, GeneralINI, "Icons", DecalMenuString, DecalMenuDefaultTexture),
-                GetCarTextOptionHash(CarINI, GeneralINI, "Names", DecalMenuString, DecalMenuDefaultString),
-                0x600 + i);
+            CustomizeCategoryScreen_AddCustomOption(
+                CustomizeSub,
+                *(char**)g_pCustomizeDecalsPkg,
+                CarConfigs[CarTypeID].Icons.VisualDecalsRightDoor1,
+                CarConfigs[CarTypeID].Names.VisualDecalsRightDoor1,
+                0x600 + CurrDecal++);
+        }
+        if (CurrDecal <= NumDecals)
+        {
+            CustomizeCategoryScreen_AddCustomOption(
+                CustomizeSub,
+                *(char**)g_pCustomizeDecalsPkg,
+                CarConfigs[CarTypeID].Icons.VisualDecalsRightDoor2,
+                CarConfigs[CarTypeID].Names.VisualDecalsRightDoor2,
+                0x600 + CurrDecal++);
+        }
+        if (CurrDecal <= NumDecals)
+        {
+            CustomizeCategoryScreen_AddCustomOption(
+                CustomizeSub,
+                *(char**)g_pCustomizeDecalsPkg,
+                CarConfigs[CarTypeID].Icons.VisualDecalsRightDoor3,
+                CarConfigs[CarTypeID].Names.VisualDecalsRightDoor3,
+                0x600 + CurrDecal++);
+        }
+        if (CurrDecal <= NumDecals)
+        {
+            CustomizeCategoryScreen_AddCustomOption(
+                CustomizeSub,
+                *(char**)g_pCustomizeDecalsPkg,
+                CarConfigs[CarTypeID].Icons.VisualDecalsRightDoor4,
+                CarConfigs[CarTypeID].Names.VisualDecalsRightDoor4,
+                0x600 + CurrDecal++);
+        }
+        if (CurrDecal <= NumDecals)
+        {
+            CustomizeCategoryScreen_AddCustomOption(
+                CustomizeSub,
+                *(char**)g_pCustomizeDecalsPkg,
+                CarConfigs[CarTypeID].Icons.VisualDecalsRightDoor5,
+                CarConfigs[CarTypeID].Names.VisualDecalsRightDoor5,
+                0x600 + CurrDecal++);
+        }
+        if (CurrDecal <= NumDecals)
+        {
+            CustomizeCategoryScreen_AddCustomOption(
+                CustomizeSub,
+                *(char**)g_pCustomizeDecalsPkg,
+                CarConfigs[CarTypeID].Icons.VisualDecalsRightDoor6,
+                CarConfigs[CarTypeID].Names.VisualDecalsRightDoor6,
+                0x600 + CurrDecal++);
         }
 
         break;
@@ -969,23 +1208,83 @@ void __fastcall CustomizeSub_SetupDecalPositions(DWORD* CustomizeSub, void* EDX_
         // look for the NUM_DECALS attribute
         if (DecalPart)
         {
-            NumDecals = CarPart_GetAppliedAttributeIParam(DecalPart, bStringHash("NUM_DECALS"), 0);
+            NumDecals = CarPart_GetAppliedAttributeIParam(DecalPart, bStringHash((char*)"NUM_DECALS"), 0);
             if (NumDecals <= 0 || NumDecals >= 8) NumDecals = 1;
         }
         else NumDecals = 1;
 
-        // Create menu options accordingly
-        for (int i = 1; i <= NumDecals; i++)
+        if (CurrDecal <= NumDecals)
         {
-            sprintf(DecalMenuString, "VisualDecalsLeftQuarter%d", i);
-            sprintf(DecalMenuDefaultString, "CO_DECAL_SLOT_%d", i);
-
-            CustomizeCategoryScreen_AddCustomOption(CustomizeSub, *(char**)g_pCustomizeDecalsPkg,
-                GetCarTextOptionHash(CarINI, GeneralINI, "Icons", DecalMenuString, "DECAL_ZONE_LEFTPANEL"),
-                GetCarTextOptionHash(CarINI, GeneralINI, "Names", DecalMenuString, DecalMenuDefaultString),
-                0x600 + i);
+            CustomizeCategoryScreen_AddCustomOption(
+                CustomizeSub,
+                *(char**)g_pCustomizeDecalsPkg,
+                CarConfigs[CarTypeID].Icons.VisualDecalsLeftQuarter1,
+                CarConfigs[CarTypeID].Names.VisualDecalsLeftQuarter1,
+                0x600 + CurrDecal++);
         }
-
+        if (CurrDecal <= NumDecals)
+        {
+            CustomizeCategoryScreen_AddCustomOption(
+                CustomizeSub,
+                *(char**)g_pCustomizeDecalsPkg,
+                CarConfigs[CarTypeID].Icons.VisualDecalsLeftQuarter2,
+                CarConfigs[CarTypeID].Names.VisualDecalsLeftQuarter2,
+                0x600 + CurrDecal++);
+        }
+        if (CurrDecal <= NumDecals)
+        {
+            CustomizeCategoryScreen_AddCustomOption(
+                CustomizeSub,
+                *(char**)g_pCustomizeDecalsPkg,
+                CarConfigs[CarTypeID].Icons.VisualDecalsLeftQuarter3,
+                CarConfigs[CarTypeID].Names.VisualDecalsLeftQuarter3,
+                0x600 + CurrDecal++);
+        }
+        if (CurrDecal <= NumDecals)
+        {
+            CustomizeCategoryScreen_AddCustomOption(
+                CustomizeSub,
+                *(char**)g_pCustomizeDecalsPkg,
+                CarConfigs[CarTypeID].Icons.VisualDecalsLeftQuarter4,
+                CarConfigs[CarTypeID].Names.VisualDecalsLeftQuarter4,
+                0x600 + CurrDecal++);
+        }
+        if (CurrDecal <= NumDecals)
+        {
+            CustomizeCategoryScreen_AddCustomOption(
+                CustomizeSub,
+                *(char**)g_pCustomizeDecalsPkg,
+                CarConfigs[CarTypeID].Icons.VisualDecalsLeftQuarter5,
+                CarConfigs[CarTypeID].Names.VisualDecalsLeftQuarter5,
+                0x600 + CurrDecal++);
+        }
+        if (CurrDecal <= NumDecals)
+        {
+            CustomizeCategoryScreen_AddCustomOption(
+                CustomizeSub,
+                *(char**)g_pCustomizeDecalsPkg,
+                CarConfigs[CarTypeID].Icons.VisualDecalsLeftQuarter6,
+                CarConfigs[CarTypeID].Names.VisualDecalsLeftQuarter6,
+                0x600 + CurrDecal++);
+        }
+        if (CurrDecal <= NumDecals)
+        {
+            CustomizeCategoryScreen_AddCustomOption(
+                CustomizeSub,
+                *(char**)g_pCustomizeDecalsPkg,
+                CarConfigs[CarTypeID].Icons.VisualDecalsLeftQuarter7,
+                CarConfigs[CarTypeID].Names.VisualDecalsLeftQuarter7,
+                0x600 + CurrDecal++);
+        }
+        if (CurrDecal <= NumDecals)
+        {
+            CustomizeCategoryScreen_AddCustomOption(
+                CustomizeSub,
+                *(char**)g_pCustomizeDecalsPkg,
+                CarConfigs[CarTypeID].Icons.VisualDecalsLeftQuarter8,
+                CarConfigs[CarTypeID].Names.VisualDecalsLeftQuarter8,
+                0x600 + CurrDecal++);
+        }
         break;
     case 0x506: // Right Quarter
         // Get decal part
@@ -994,23 +1293,83 @@ void __fastcall CustomizeSub_SetupDecalPositions(DWORD* CustomizeSub, void* EDX_
         // look for the NUM_DECALS attribute
         if (DecalPart)
         {
-            NumDecals = CarPart_GetAppliedAttributeIParam(DecalPart, bStringHash("NUM_DECALS"), 0);
+            NumDecals = CarPart_GetAppliedAttributeIParam(DecalPart, bStringHash((char*)"NUM_DECALS"), 0);
             if (NumDecals <= 0 || NumDecals >= 8) NumDecals = 1;
         }
         else NumDecals = 1;
 
-        // Create menu options accordingly
-        for (int i = 1; i <= NumDecals; i++)
+        if (CurrDecal <= NumDecals)
         {
-            sprintf(DecalMenuString, "VisualDecalsRightQuarter%d", i);
-            sprintf(DecalMenuDefaultString, "CO_DECAL_SLOT_%d", i);
-
-            CustomizeCategoryScreen_AddCustomOption(CustomizeSub, *(char**)g_pCustomizeDecalsPkg,
-                GetCarTextOptionHash(CarINI, GeneralINI, "Icons", DecalMenuString, "DECAL_ZONE_RIGHTPANEL"),
-                GetCarTextOptionHash(CarINI, GeneralINI, "Names", DecalMenuString, DecalMenuDefaultString),
-                0x600 + i);
+            CustomizeCategoryScreen_AddCustomOption(
+                CustomizeSub,
+                *(char**)g_pCustomizeDecalsPkg,
+                CarConfigs[CarTypeID].Icons.VisualDecalsRightQuarter1,
+                CarConfigs[CarTypeID].Names.VisualDecalsRightQuarter1,
+                0x600 + CurrDecal++);
         }
-
+        if (CurrDecal <= NumDecals)
+        {
+            CustomizeCategoryScreen_AddCustomOption(
+                CustomizeSub,
+                *(char**)g_pCustomizeDecalsPkg,
+                CarConfigs[CarTypeID].Icons.VisualDecalsRightQuarter2,
+                CarConfigs[CarTypeID].Names.VisualDecalsRightQuarter2,
+                0x600 + CurrDecal++);
+        }
+        if (CurrDecal <= NumDecals)
+        {
+            CustomizeCategoryScreen_AddCustomOption(
+                CustomizeSub,
+                *(char**)g_pCustomizeDecalsPkg,
+                CarConfigs[CarTypeID].Icons.VisualDecalsRightQuarter3,
+                CarConfigs[CarTypeID].Names.VisualDecalsRightQuarter3,
+                0x600 + CurrDecal++);
+        }
+        if (CurrDecal <= NumDecals)
+        {
+            CustomizeCategoryScreen_AddCustomOption(
+                CustomizeSub,
+                *(char**)g_pCustomizeDecalsPkg,
+                CarConfigs[CarTypeID].Icons.VisualDecalsRightQuarter4,
+                CarConfigs[CarTypeID].Names.VisualDecalsRightQuarter4,
+                0x600 + CurrDecal++);
+        }
+        if (CurrDecal <= NumDecals)
+        {
+            CustomizeCategoryScreen_AddCustomOption(
+                CustomizeSub,
+                *(char**)g_pCustomizeDecalsPkg,
+                CarConfigs[CarTypeID].Icons.VisualDecalsRightQuarter5,
+                CarConfigs[CarTypeID].Names.VisualDecalsRightQuarter5,
+                0x600 + CurrDecal++);
+        }
+        if (CurrDecal <= NumDecals)
+        {
+            CustomizeCategoryScreen_AddCustomOption(
+                CustomizeSub,
+                *(char**)g_pCustomizeDecalsPkg,
+                CarConfigs[CarTypeID].Icons.VisualDecalsRightQuarter6,
+                CarConfigs[CarTypeID].Names.VisualDecalsRightQuarter6,
+                0x600 + CurrDecal++);
+        }
+        if (CurrDecal <= NumDecals)
+        {
+            CustomizeCategoryScreen_AddCustomOption(
+                CustomizeSub,
+                *(char**)g_pCustomizeDecalsPkg,
+                CarConfigs[CarTypeID].Icons.VisualDecalsRightQuarter7,
+                CarConfigs[CarTypeID].Names.VisualDecalsRightQuarter7,
+                0x600 + CurrDecal++);
+        }
+        if (CurrDecal <= NumDecals)
+        {
+            CustomizeCategoryScreen_AddCustomOption(
+                CustomizeSub,
+                *(char**)g_pCustomizeDecalsPkg,
+                CarConfigs[CarTypeID].Icons.VisualDecalsRightQuarter8,
+                CarConfigs[CarTypeID].Names.VisualDecalsRightQuarter8,
+                0x600 + CurrDecal++);
+        }
         break;
     }
 
@@ -1043,13 +1402,11 @@ void __fastcall CustomizeSub_SetupDecalPositions(DWORD* CustomizeSub, void* EDX_
 
 int CustomizeSub_GetVinylGroupIndex(int group)
 {
-    CIniReader VinylGroupsINI("UnlimiterData\\_VinylGroups.ini");
-    int VinylGroupsCount = VinylGroupsINI.ReadInteger("VinylGroups", "NumberOfVinylGroups", DefaultVinylGroupCount);
+    int VinylGroupsCount = VinylGroups.size();
 
-    for (int i = 0; i <= VinylGroupsCount; i++)
+    for (int i = 0; i < VinylGroupsCount; i++)
     {
-        sprintf(VinylBrandID, "Group%d", i);
-        if (VinylGroupsINI.ReadInteger(VinylBrandID, "Index", GetDefaultVinylGroupIndex(i)) == group) return i + 2;
+        if (VinylGroups[i].Index == group) return i + 2;
     }
 
     return 1;
@@ -1072,22 +1429,15 @@ int __fastcall CustomizeSub_SetupVinylGroups(DWORD* _CustomizeSub, void* EDX_Unu
     DWORD AVinylPart[11]; // [esp+10h] [ebp-38h] BYREF
     //int v16; // [esp+44h] [ebp-4h]
 
-    CIniReader VinylGroupsINI("UnlimiterData\\_VinylGroups.ini");
-    int VinylGroupsCount = VinylGroupsINI.ReadInteger("VinylGroups", "NumberOfVinylGroups", DefaultVinylGroupCount);
+    int VinylGroupsCount = VinylGroups.size();
 
     DWORD* FEDatabase = *(DWORD**)_FEDatabase;
 
     // Get CarType Info
     void* FECarRecord = *(void**)_FECarRecord;
     int CarTypeID = FECarRecord_GetType(FECarRecord);
-    sprintf(CarTypeName, GetCarTypeName(CarTypeID));
 
-    // Read Part Options for the car
-    sprintf(CarININame, "UnlimiterData\\%s.ini", CarTypeName);
-    CIniReader CarINI(CarININame);
-    CIniReader GeneralINI("UnlimiterData\\_General.ini");
-
-    _CustomizeSub[108] = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "VisualVinylsGroup", "CO_VINYL_STYLE");
+    _CustomizeSub[108] = CarConfigs[CarTypeID].Names.VisualVinylsGroup;
     _CustomizeSub[83] = *(DWORD*)g_pCustomizeSubPkg;
 
     VinylSelectablePart = (DWORD*)j_malloc(0x2C);
@@ -1132,30 +1482,31 @@ int __fastcall CustomizeSub_SetupVinylGroups(DWORD* _CustomizeSub, void* EDX_Unu
     IconScrollerMenu_AddOption(_CustomizeSub, StockVinylIconOption);
 
     // Check if the car has OEM vinyls
-    bool HasNoCustomVinyls = GetCarIntOption(CarINI, GeneralINI, "Visual", "VinylsCustom", 0) == 0;
+    bool HasNoCustomVinyls = CarConfigs[CarTypeID].Visual.VinylsCustom == 0;
+
+    DWORD VinylBrandIconHash = -1;
+    DWORD VinylBrandNameHash = -1;
 
     // Add the brands from ini
-    for (int i = 0; i <= VinylGroupsCount; i++)
+    for (int i = 0; i < VinylGroupsCount; i++)
     {
         if (i == 0)
         {
             if (HasNoCustomVinyls) continue;
 
-            sprintf(VinylBrandID, "Group%d", i);
-            sprintf(VinylBrandIcon, GetCarTextOption(CarINI, GeneralINI, "Icons", "VisualVinylsCustom", ""));
-            sprintf(VinylBrandString, GetCarTextOption(CarINI, GeneralINI, "Names", "VisualVinylsCustom", ""));
+            VinylBrandIconHash = CarConfigs[CarTypeID].Icons.VisualVinylsCustom;
+            VinylBrandNameHash = CarConfigs[CarTypeID].Names.VisualVinylsCustom;
 
-            if (bStringHash(VinylBrandIcon) == -1) sprintf(VinylBrandIcon, VinylGroupsINI.ReadString(VinylBrandID, "Texture", GetDefaultVinylGroupTexture(i)));
-            if (bStringHash(VinylBrandString) == -1) sprintf(VinylBrandString, VinylGroupsINI.ReadString(VinylBrandID, "String", GetDefaultVinylGroupString(i)));
+            if (VinylBrandIconHash == -1) VinylBrandIconHash = VinylGroups[i].TextureHash;
+            if (VinylBrandNameHash == -1) VinylBrandNameHash = VinylGroups[i].StringHash;
         }
         else
         {
-            sprintf(VinylBrandID, "Group%d", i);
-            sprintf(VinylBrandIcon, VinylGroupsINI.ReadString(VinylBrandID, "Texture", GetDefaultVinylGroupTexture(i)));
-            sprintf(VinylBrandString, VinylGroupsINI.ReadString(VinylBrandID, "String", GetDefaultVinylGroupString(i)));
+            VinylBrandIconHash = VinylGroups[i].TextureHash;
+            VinylBrandNameHash = VinylGroups[i].StringHash;
         }
 
-        CustomizeCategoryScreen_AddCustomOption(_CustomizeSub, *(char**)g_pCustomizePartsPkg, bStringHash(VinylBrandIcon), bStringHash(VinylBrandString), 0x402 + i);
+        CustomizeCategoryScreen_AddCustomOption(_CustomizeSub, *(char**)g_pCustomizePartsPkg, VinylBrandIconHash, VinylBrandNameHash, 0x402 + i);
     }
 
     AVinylPart[0] = SelectablePart_vtable;
@@ -1326,7 +1677,7 @@ void __fastcall CustomizeSub_NotificationMessage(DWORD* _CustomizeSub, void* EDX
         if (PartMenuID == 0x401) // Stock vinyl
         {
             CarSlotID = 77; // VINYL_LAYER0
-            for (int i = 0; i < 3; ++i)
+            for (int i = 0; i < 4; ++i)
             {
                 TheSelectablePart = (DWORD*)CarCustomizeManager_IsPartTypeInCart_ID((DWORD*)_gCarCustomizeManager, i + 79);
                 if (TheSelectablePart)
@@ -1405,15 +1756,15 @@ void __fastcall CustomizeSub_NotificationMessage(DWORD* _CustomizeSub, void* EDX
                         {
                         case 0x103: // Rims
                             DialogInterface_ShowThreeButtons((char const*)_CustomizeSub[4], "", 3, 
-                                bStringHash("CUSTOMIZE_FRONT_WHEEL"), 
-                                bStringHash("CUSTOMIZE_REAR_WHEEL"), 
-                                bStringHash("CUSTOMIZE_ALL_WHEELS"), 
-                                bStringHash("CUSTOMIZE_FRONT_WHEEL"), 
-                                bStringHash("CUSTOMIZE_REAR_WHEEL"), 
-                                bStringHash("CUSTOMIZE_ALL_WHEELS"), 
+                                bStringHash((char*)"CUSTOMIZE_FRONT_WHEEL"), 
+                                bStringHash((char*)"CUSTOMIZE_REAR_WHEEL"), 
+                                bStringHash((char*)"CUSTOMIZE_ALL_WHEELS"), 
+                                bStringHash((char*)"CUSTOMIZE_FRONT_WHEEL"), 
+                                bStringHash((char*)"CUSTOMIZE_REAR_WHEEL"), 
+                                bStringHash((char*)"CUSTOMIZE_ALL_WHEELS"), 
                                 0xB4EDEB6D,
                                 2, 
-                                bStringHash("CUSTOMIZE_CHOOSE_FRONT_REAR_WHEEL"));
+                                bStringHash((char*)"CUSTOMIZE_CHOOSE_FRONT_REAR_WHEEL"));
                             return;
                             
                         default:

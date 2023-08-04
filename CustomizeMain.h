@@ -144,19 +144,14 @@ void __fastcall CustomizeMain_BuildOptionsList(DWORD* CustomizeMain, void* EDX_U
 	int CarTypeID = FECarRecord_GetType(FECarRecord);
 	sprintf(CarTypeName, GetCarTypeName(CarTypeID));
 
-	// Read Part Options for the car
-	sprintf(CarININame, "UnlimiterData\\%s.ini", CarTypeName);
-	CIniReader CarINI(CarININame);
-	CIniReader GeneralINI("UnlimiterData\\_General.ini");
-
-	if (IsMenuEmpty_CustomizeMain(CarINI, GeneralINI)) // Throw an error and add a dummy option if the menu is empty
+	if (IsMenuEmpty_CustomizeMain(CarTypeID)) // Throw an error and add a dummy option if the menu is empty
 	{
 		CustomizeCategoryScreen_AddCustomOption(CustomizeMain, (char const*)CustomizeMain[4],
-			bStringHash("BROWSER_NOT_APPLICABLE"),
-			bStringHash("NOT_APPLICABLE"),
+			bStringHash((char*)"BROWSER_NOT_APPLICABLE"),
+			bStringHash((char*)"NOT_APPLICABLE"),
 			0);
 
-		DialogInterface_ShowOk((char const*)CustomizeMain[4], "", 1, bStringHash("CUSTOMIZE_NO_OPTIONS"));
+		DialogInterface_ShowOk((char const*)CustomizeMain[4], "", 1, bStringHash((char*)"CUSTOMIZE_NO_OPTIONS"));
 	}
 		
 
@@ -164,44 +159,44 @@ void __fastcall CustomizeMain_BuildOptionsList(DWORD* CustomizeMain, void* EDX_U
 	{
 		if (!HPCCompatibility)
 		{
-			if ((GetCarIntOption(CarINI, GeneralINI, "Main", "Parts", 1)) && !IsMenuEmpty_PartsBackroom(CarINI, GeneralINI))
+			if (CarConfigs[CarTypeID].Main.Parts && !IsMenuEmpty_PartsBackroom(CarTypeID))
 			CustomizeCategoryScreen_AddCustomOption(CustomizeMain, *(char**)g_pCustomizeSubPkg,
-				GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "BackroomParts", "MARKER_ICON_PARTS"),
-				GetCarTextOptionHash(CarINI, GeneralINI, "Names", "Parts", "CO_PARTS"),
+				CarConfigs[CarTypeID].Icons.BackroomParts,
+				CarConfigs[CarTypeID].Names.Parts,
 				0x801); // Body Backroom
 
-			if ((GetCarIntOption(CarINI, GeneralINI, "Main", "Performance", 1)) && !IsMenuEmpty_Performance(CarINI, GeneralINI))
+			if (CarConfigs[CarTypeID].Main.Performance && !IsMenuEmpty_Performance(CarTypeID))
 			CustomizeCategoryScreen_AddCustomOption(CustomizeMain, *(char**)g_pCustomizeSubPkg,
-				GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "BackroomPerformance", "MARKER_ICON_PERFORMANCE"),
-				GetCarTextOptionHash(CarINI, GeneralINI, "Names", "Performance", "CO_PERFORMANCE"),
+				CarConfigs[CarTypeID].Icons.BackroomPerformance,
+				CarConfigs[CarTypeID].Names.Performance,
 				0x802); // Performance Backroom
 		}
-		if ((GetCarIntOption(CarINI, GeneralINI, "Main", "Visual", 1)) && !IsMenuEmpty_VisualBackroom(CarINI, GeneralINI))
+		if (CarConfigs[CarTypeID].Main.Visual && !IsMenuEmpty_VisualBackroom(CarTypeID))
 		CustomizeCategoryScreen_AddCustomOption(CustomizeMain, *(char**)g_pCustomizeSubPkg,
-			GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "BackroomVisual", "MARKER_ICON_VISUAL"),
-			GetCarTextOptionHash(CarINI, GeneralINI, "Names", "Visual", "CO_VISUAL"),
+			CarConfigs[CarTypeID].Icons.BackroomVisual,
+			CarConfigs[CarTypeID].Names.Visual,
 			0x803); // Visuals Backroom
 	}
 	else
 	{
 		if (!HPCCompatibility)
 		{
-			if ((GetCarIntOption(CarINI, GeneralINI, "Main", "Parts", 1)) && !IsMenuEmpty_Parts(CarINI, GeneralINI))
+			if (CarConfigs[CarTypeID].Main.Parts && !IsMenuEmpty_Parts(CarTypeID))
 			CustomizeCategoryScreen_AddCustomOption(CustomizeMain, *(char**)g_pCustomizeSubPkg,
-				GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "Parts", "BROWSER_PARTS"),
-				GetCarTextOptionHash(CarINI, GeneralINI, "Names", "Parts", "CO_PARTS"),
+				CarConfigs[CarTypeID].Icons.Parts,
+				CarConfigs[CarTypeID].Names.Parts,
 				0x801); // Body
 
-			if ((GetCarIntOption(CarINI, GeneralINI, "Main", "Performance", 1)) && !IsMenuEmpty_Performance(CarINI, GeneralINI))
+			if (CarConfigs[CarTypeID].Main.Performance && !IsMenuEmpty_Performance(CarTypeID))
 			CustomizeMain[106] = CustomizeCategoryScreen_AddCustomOption(CustomizeMain, *(char**)g_pCustomizeSubPkg,
-				GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "Performance", "BROWSER_PERFORMANCE"),
-				GetCarTextOptionHash(CarINI, GeneralINI, "Names", "Performance", "CO_PERFORMANCE"),
+				CarConfigs[CarTypeID].Icons.Performance,
+				CarConfigs[CarTypeID].Names.Performance,
 				0x802); // Performance
 		}
-		if ((GetCarIntOption(CarINI, GeneralINI, "Main", "Visual", 1)) && !IsMenuEmpty_Visual(CarINI, GeneralINI))
+		if (CarConfigs[CarTypeID].Main.Visual && !IsMenuEmpty_Visual(CarTypeID))
 		CustomizeCategoryScreen_AddCustomOption(CustomizeMain, *(char**)g_pCustomizeSubPkg,
-			GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "Visual", "BROWSER_VISUAL"),
-			GetCarTextOptionHash(CarINI, GeneralINI, "Names", "Visual", "CO_VISUAL"),
+			CarConfigs[CarTypeID].Icons.Visual,
+			CarConfigs[CarTypeID].Names.Visual,
 			0x803); // Visuals
 	}
 }

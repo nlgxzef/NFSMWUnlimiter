@@ -1,32 +1,24 @@
 #include "stdio.h"
 #include "InGameFunctions.h"
-#include "includes\IniReader.h"
 
 unsigned int __fastcall CustomizeRims_GetCategoryBrandHash(DWORD* CustomizeRims, int EDX_Unused)
 {
-    CIniReader RimBrandsINI("UnlimiterData\\_RimBrands.ini");
-
     int CurrCategoryID = (CustomizeRims[82] - 0x702);
 
-    int RimBrandsCount = RimBrandsINI.ReadInteger("RimBrands", "NumberOfRimBrands", DefaultRimBrandCount);
-    if (RimBrandsCount < CurrCategoryID) return 0;
+    int RimBrandsCount = RimBrands.size();
+    if (RimBrandsCount <= CurrCategoryID) return -1;
     
-    sprintf(RimBrandID, "Brand%d", CurrCategoryID);
-    return bStringHash(RimBrandsINI.ReadString(RimBrandID, "BrandName", GetDefaultRimBrandName(CurrCategoryID)));
+    return RimBrands[CurrCategoryID].BrandNameHash;
 }
 
 bool IsNoRimSize(int BrandID)
 {
-    CIniReader RimBrandsINI("UnlimiterData\\_RimBrands.ini");
-    
     int CurrCategoryID = (BrandID - 0x702);
 
-    int RimBrandsCount = RimBrandsINI.ReadInteger("RimBrands", "NumberOfRimBrands", DefaultRimBrandCount);
-    if (RimBrandsCount < CurrCategoryID) return 0;
+    int RimBrandsCount = RimBrands.size();
+    if (RimBrandsCount <= CurrCategoryID) return 0;
 
-    sprintf(RimBrandID, "Brand%d", CurrCategoryID);
-    
-    return RimBrandsINI.ReadInteger(RimBrandID, "NoRimSize", CurrCategoryID ? 0 : 1) != 0;
+    return RimBrands[CurrCategoryID].NoRimSize;
 }
 
 void __fastcall CustomizeRims_RefreshHeader(DWORD* CustomizeRims, void* EDX_Unused)
@@ -62,7 +54,7 @@ void __fastcall CustomizeRims_RefreshHeader(DWORD* CustomizeRims, void* EDX_Unus
         }
         FEPrintf((char const*)CustomizeRims[4], 0xE6782841, "%$d\"", CustomizeRims[111]); // inch
         
-        DWORD LanguageHash = CarPart_GetAppliedAttributeUParam((DWORD*)(SelectedPart[3]), bStringHash("LANGUAGEHASH"), 0);
+        DWORD LanguageHash = CarPart_GetAppliedAttributeUParam((DWORD*)(SelectedPart[3]), bStringHash((char*)"LANGUAGEHASH"), 0);
         if (LanguageHash)
         {
             FEngSetLanguageHash((char const*)CustomizeRims[4], 0x5E7B09C9, LanguageHash);
@@ -228,11 +220,12 @@ void __fastcall CustomizeRims_BuildRimsList(DWORD* _CustomizeRims, void* EDX_Unu
         *(DWORD**)(v6 + 4) = v8;
         v9 = v7[2];
         TheSelectablePart = v7 - 1;
-        if (IsNoRimSize(_CustomizeRims[82]) || (_CustomizeRims[111] == CarPart_GetAppliedAttributeIParam((DWORD*)v9, 0xEB0101E2, 0))) // Inner Radius || IsNoRimSize
+        if ((IsNoRimSize(_CustomizeRims[82]) || (_CustomizeRims[111] == CarPart_GetAppliedAttributeIParam((DWORD*)v9, 0xEB0101E2, 0))) // Inner Radius matches || IsNoRimSize 
+            && (!CarPart_GetAppliedAttributeIParam((DWORD*)v9, bStringHash((char*)"REAR"), 0))) // && Has no rear attribute applied
         {
             UnlockHash = CarCustomizeManager_GetUnlockHash((DWORD*)_gCarCustomizeManager, _CustomizeRims[82], TheSelectablePart[5]);
             TheCarPart = (DWORD*)TheSelectablePart[3];
-            PartIcon = CarPart_GetAppliedAttributeIParam(TheCarPart, bStringHash("TEXTUREHASH"), 0x294D2A3);
+            PartIcon = CarPart_GetAppliedAttributeIParam(TheCarPart, bStringHash((char*)"TEXTUREHASH"), 0x294D2A3);
             PartName = *(BYTE*)(TheSelectablePart[3] + 5) >> 5;
             IsLocked = CarCustomizeManager_IsPartLocked((DWORD*)_gCarCustomizeManager, TheSelectablePart, 0);
             CustomizationScreen_AddPartOption(_CustomizeRims, TheSelectablePart, PartIcon, PartName, 0, UnlockHash, IsLocked);
@@ -284,12 +277,6 @@ void __fastcall CustomizeRims_Setup(DWORD* _CustomizeRims, void* EDX_Unused)
     // Get CarType Info
     void* FECarRecord = *(void**)_FECarRecord;
     int CarTypeID = FECarRecord_GetType(FECarRecord);
-    sprintf(CarTypeName, GetCarTypeName(CarTypeID));
-
-    // Read Part Options for the car
-    sprintf(CarININame, "UnlimiterData\\%s.ini", CarTypeName);
-    CIniReader CarINI(CarININame);
-    CIniReader GeneralINI("UnlimiterData\\_General.ini");
 
     FEPackage = (const char*)_CustomizeRims[4];
     _CustomizeRims[87] = 0xE167F7C8; //GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsSpoilers", "CO_SPOILERS");

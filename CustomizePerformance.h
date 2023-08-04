@@ -1,91 +1,448 @@
 #include "stdio.h"
 #include "InGameFunctions.h"
-#include "includes\IniReader.h"
 
 #include "CarCustomizeManager.h"
 #include "FEShoppingCartItem.h"
 
 DWORD __fastcall CustomizePerformance_GetPerfPkgDesc(DWORD* _CustomizePerformance, void* EDX_Unused, int PerformancePartType, int UpgradePackage, int UpgradePart, bool IsTurbo)
 {
-    unsigned int result; // eax
-    char buf[64];
-    char bufd[64];
+    unsigned int result = 0; // eax
 
     // Get CarType Info
     void* FECarRecord = *(void**)_FECarRecord;
     int CarTypeID = FECarRecord_GetType(FECarRecord);
-    sprintf(CarTypeName, GetCarTypeName(CarTypeID));
-
-    // Read Part Options for the car
-    sprintf(CarININame, "UnlimiterData\\%s.ini", CarTypeName);
-    CIniReader CarINI(CarININame);
-    CIniReader GeneralINI("UnlimiterData\\_General.ini");
 
     if (UpgradePackage)
     {
         switch (PerformancePartType)
         {
         case 0: // Tires
-            sprintf(bufd, "PD_TIRES_%d_%d", UpgradePackage, UpgradePart);
-            sprintf(buf, "PerformanceTiresLevel%dItem%d", UpgradePackage, UpgradePart);
-            result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", buf, bufd);
+            switch (UpgradePackage)
+            {
+            case 1:
+                switch (UpgradePart)
+                {
+                case 1:
+                    result = CarConfigs[CarTypeID].Names.PerformanceTiresLevel1Item1;
+                    break;
+                case 2:
+                    result = CarConfigs[CarTypeID].Names.PerformanceTiresLevel1Item2;
+                    break;
+                case 3:
+                    result = CarConfigs[CarTypeID].Names.PerformanceTiresLevel1Item3;
+                    break;
+                }
+                break;
+            case 2:
+                switch (UpgradePart)
+                {
+                case 1:
+                    result = CarConfigs[CarTypeID].Names.PerformanceTiresLevel2Item1;
+                    break;
+                case 2:
+                    result = CarConfigs[CarTypeID].Names.PerformanceTiresLevel2Item2;
+                    break;
+                case 3:
+                    result = CarConfigs[CarTypeID].Names.PerformanceTiresLevel2Item3;
+                    break;
+                }
+                break;
+            case 3:
+                switch (UpgradePart)
+                {
+                case 1:
+                    result = CarConfigs[CarTypeID].Names.PerformanceTiresLevel3Item1;
+                    break;
+                case 2:
+                    result = CarConfigs[CarTypeID].Names.PerformanceTiresLevel3Item2;
+                    break;
+                case 3:
+                    result = CarConfigs[CarTypeID].Names.PerformanceTiresLevel3Item3;
+                    break;
+                }
+                break;
+            }
             break;
         case 1: // Brakes
-            sprintf(bufd, "PD_BRAKES_%d_%d", UpgradePackage, UpgradePart);
-            sprintf(buf, "PerformanceBrakesLevel%dItem%d", UpgradePackage, UpgradePart);
-            result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", buf, bufd);
+            switch (UpgradePackage)
+            {
+            case 1:
+                switch (UpgradePart)
+                {
+                case 1:
+                    result = CarConfigs[CarTypeID].Names.PerformanceBrakesLevel1Item1;
+                    break;
+                case 2:
+                    result = CarConfigs[CarTypeID].Names.PerformanceBrakesLevel1Item2;
+                    break;
+                case 3:
+                    result = CarConfigs[CarTypeID].Names.PerformanceBrakesLevel1Item3;
+                    break;
+                }
+                break;
+            case 2:
+                switch (UpgradePart)
+                {
+                case 1:
+                    result = CarConfigs[CarTypeID].Names.PerformanceBrakesLevel2Item1;
+                    break;
+                case 2:
+                    result = CarConfigs[CarTypeID].Names.PerformanceBrakesLevel2Item2;
+                    break;
+                case 3:
+                    result = CarConfigs[CarTypeID].Names.PerformanceBrakesLevel2Item3;
+                    break;
+                }
+                break;
+            case 3:
+                switch (UpgradePart)
+                {
+                case 1:
+                    result = CarConfigs[CarTypeID].Names.PerformanceBrakesLevel3Item1;
+                    break;
+                case 2:
+                    result = CarConfigs[CarTypeID].Names.PerformanceBrakesLevel3Item2;
+                    break;
+                case 3:
+                    result = CarConfigs[CarTypeID].Names.PerformanceBrakesLevel3Item3;
+                    break;
+                }
+                break;
+            case 4:
+                switch (UpgradePart)
+                {
+                case 1:
+                    result = CarConfigs[CarTypeID].Names.PerformanceBrakesLevel4Item1;
+                    break;
+                case 2:
+                    result = CarConfigs[CarTypeID].Names.PerformanceBrakesLevel4Item2;
+                    break;
+                case 3:
+                    result = CarConfigs[CarTypeID].Names.PerformanceBrakesLevel4Item3;
+                    break;
+                }
+                break;
+            }
             break;
         case 2: // Suspension
-            sprintf(bufd, "PD_CHASSIS_%d_%d", UpgradePackage, UpgradePart);
-            sprintf(buf, "PerformanceChassisLevel%dItem%d", UpgradePackage, UpgradePart);
-            result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", buf, bufd);
+            switch (UpgradePackage)
+            {
+            case 1:
+                switch (UpgradePart)
+                {
+                case 1:
+                    result = CarConfigs[CarTypeID].Names.PerformanceChassisLevel1Item1;
+                    break;
+                case 2:
+                    result = CarConfigs[CarTypeID].Names.PerformanceChassisLevel1Item2;
+                    break;
+                case 3:
+                    result = CarConfigs[CarTypeID].Names.PerformanceChassisLevel1Item3;
+                    break;
+                }
+                break;
+            case 2:
+                switch (UpgradePart)
+                {
+                case 1:
+                    result = CarConfigs[CarTypeID].Names.PerformanceChassisLevel2Item1;
+                    break;
+                case 2:
+                    result = CarConfigs[CarTypeID].Names.PerformanceChassisLevel2Item2;
+                    break;
+                case 3:
+                    result = CarConfigs[CarTypeID].Names.PerformanceChassisLevel2Item3;
+                    break;
+                }
+                break;
+            case 3:
+                switch (UpgradePart)
+                {
+                case 1:
+                    result = CarConfigs[CarTypeID].Names.PerformanceChassisLevel3Item1;
+                    break;
+                case 2:
+                    result = CarConfigs[CarTypeID].Names.PerformanceChassisLevel3Item2;
+                    break;
+                case 3:
+                    result = CarConfigs[CarTypeID].Names.PerformanceChassisLevel3Item3;
+                    break;
+                }
+                break;
+            }
             break;
         case 3: // Transmission
-            sprintf(bufd, "PD_TRANSMISSION_%d_%d", UpgradePackage, UpgradePart);
-            sprintf(buf, "PerformanceTransmissionLevel%dItem%d", UpgradePackage, UpgradePart);
-            result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", buf, bufd);
+            switch (UpgradePackage)
+            {
+            case 1:
+                switch (UpgradePart)
+                {
+                case 1:
+                    result = CarConfigs[CarTypeID].Names.PerformanceTransmissionLevel1Item1;
+                    break;
+                case 2:
+                    result = CarConfigs[CarTypeID].Names.PerformanceTransmissionLevel1Item2;
+                    break;
+                case 3:
+                    result = CarConfigs[CarTypeID].Names.PerformanceTransmissionLevel1Item3;
+                    break;
+                }
+                break;
+            case 2:
+                switch (UpgradePart)
+                {
+                case 1:
+                    result = CarConfigs[CarTypeID].Names.PerformanceTransmissionLevel2Item1;
+                    break;
+                case 2:
+                    result = CarConfigs[CarTypeID].Names.PerformanceTransmissionLevel2Item2;
+                    break;
+                case 3:
+                    result = CarConfigs[CarTypeID].Names.PerformanceTransmissionLevel2Item3;
+                    break;
+                }
+                break;
+            case 3:
+                switch (UpgradePart)
+                {
+                case 1:
+                    result = CarConfigs[CarTypeID].Names.PerformanceTransmissionLevel3Item1;
+                    break;
+                case 2:
+                    result = CarConfigs[CarTypeID].Names.PerformanceTransmissionLevel3Item2;
+                    break;
+                case 3:
+                    result = CarConfigs[CarTypeID].Names.PerformanceTransmissionLevel3Item3;
+                    break;
+                }
+                break;
+            case 4:
+                switch (UpgradePart)
+                {
+                case 1:
+                    result = CarConfigs[CarTypeID].Names.PerformanceTransmissionLevel4Item1;
+                    break;
+                case 2:
+                    result = CarConfigs[CarTypeID].Names.PerformanceTransmissionLevel4Item2;
+                    break;
+                case 3:
+                    result = CarConfigs[CarTypeID].Names.PerformanceTransmissionLevel4Item3;
+                    break;
+                }
+                break;
+            }
             break;
         case 4: // Engine
-            if (CarCustomizeManager_IsCastrolCar((DWORD*)_gCarCustomizeManager, 0) && UpgradePackage == 4 && UpgradePart == 3)
+            switch (UpgradePackage)
             {
-                sprintf(bufd, "PD_ENGINE_%d_%d_CASTROL", UpgradePackage, UpgradePart);
-                sprintf(buf, "PerformanceEngineLevel%dItem%dCastrol", UpgradePackage, UpgradePart);
-                result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", buf, bufd);
-            }
-            else if (CarCustomizeManager_IsRotaryCar((DWORD*)_gCarCustomizeManager, 0) && (UpgradePackage == 2 || UpgradePackage == 4) && UpgradePart == 1)
-            {
-                sprintf(bufd, "PD_ENGINE_%d_%d_ROTARY", UpgradePackage, UpgradePart);
-                sprintf(buf, "PerformanceEngineLevel%dItem%dRotary", UpgradePackage, UpgradePart);
-                result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", buf, bufd);
-            }
-            else
-            {
-                sprintf(bufd, "PD_ENGINE_%d_%d", UpgradePackage, UpgradePart);
-                sprintf(buf, "PerformanceEngineLevel%dItem%d", UpgradePackage, UpgradePart);
-                result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", buf, bufd);
+            case 1:
+                switch (UpgradePart)
+                {
+                case 1:
+                    result = CarConfigs[CarTypeID].Names.PerformanceEngineLevel1Item1;
+                    break;
+                case 2:
+                    result = CarConfigs[CarTypeID].Names.PerformanceEngineLevel1Item2;
+                    break;
+                case 3:
+                    result = CarConfigs[CarTypeID].Names.PerformanceEngineLevel1Item3;
+                    break;
+                }
+                break;
+            case 2:
+                switch (UpgradePart)
+                {
+                case 1:
+                    result = CarCustomizeManager_IsRotaryCar((DWORD*)_gCarCustomizeManager, 0)
+                        ? CarConfigs[CarTypeID].Names.PerformanceEngineLevel2Item1Rotary
+                        : CarConfigs[CarTypeID].Names.PerformanceEngineLevel2Item1;
+                    break;
+                case 2:
+                    result = CarConfigs[CarTypeID].Names.PerformanceEngineLevel2Item2;
+                    break;
+                case 3:
+                    result = CarConfigs[CarTypeID].Names.PerformanceEngineLevel2Item3;
+                    break;
+                }
+                break;
+            case 3:
+                switch (UpgradePart)
+                {
+                case 1:
+                    result = CarConfigs[CarTypeID].Names.PerformanceEngineLevel3Item1;
+                    break;
+                case 2:
+                    result = CarConfigs[CarTypeID].Names.PerformanceEngineLevel3Item2;
+                    break;
+                case 3:
+                    result = CarConfigs[CarTypeID].Names.PerformanceEngineLevel3Item3;
+                    break;
+                }
+                break;
+            case 4:
+                switch (UpgradePart)
+                {
+                case 1:
+                    result = CarCustomizeManager_IsRotaryCar((DWORD*)_gCarCustomizeManager, 0)
+                        ? CarConfigs[CarTypeID].Names.PerformanceEngineLevel4Item1Rotary
+                        : CarConfigs[CarTypeID].Names.PerformanceEngineLevel4Item1;
+                    break;
+                case 2:
+                    result = CarConfigs[CarTypeID].Names.PerformanceEngineLevel4Item2;
+                    break;
+                case 3:
+                    result = CarCustomizeManager_IsCastrolCar((DWORD*)_gCarCustomizeManager, 0)
+                        ? CarConfigs[CarTypeID].Names.PerformanceEngineLevel4Item3Castrol
+                        : CarConfigs[CarTypeID].Names.PerformanceEngineLevel4Item3;
+                    break;
+                }
+                break;
             }
             break;
         case 5: // Turbo/Supercharger
             if (IsTurbo)
             {
-                sprintf(bufd, "PD_TURBO_%d_%d", UpgradePackage, UpgradePart);
-                sprintf(buf, "PerformanceTurboLevel%dItem%d", UpgradePackage, UpgradePart);
-                result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", buf, bufd);
+                switch (UpgradePackage)
+                {
+                case 1:
+                    switch (UpgradePart)
+                    {
+                    case 1:
+                        result = CarConfigs[CarTypeID].Names.PerformanceTurboLevel1Item1;
+                        break;
+                    case 2:
+                        result = CarConfigs[CarTypeID].Names.PerformanceTurboLevel1Item2;
+                        break;
+                    case 3:
+                        result = CarConfigs[CarTypeID].Names.PerformanceTurboLevel1Item3;
+                        break;
+                    }
+                    break;
+                case 2:
+                    switch (UpgradePart)
+                    {
+                    case 1:
+                        result = CarConfigs[CarTypeID].Names.PerformanceTurboLevel2Item1;
+                        break;
+                    case 2:
+                        result = CarConfigs[CarTypeID].Names.PerformanceTurboLevel2Item2;
+                        break;
+                    case 3:
+                        result = CarConfigs[CarTypeID].Names.PerformanceTurboLevel2Item3;
+                        break;
+                    }
+                    break;
+                case 3:
+                    switch (UpgradePart)
+                    {
+                    case 1:
+                        result = CarConfigs[CarTypeID].Names.PerformanceTurboLevel3Item1;
+                        break;
+                    case 2:
+                        result = CarConfigs[CarTypeID].Names.PerformanceTurboLevel3Item2;
+                        break;
+                    case 3:
+                        result = CarConfigs[CarTypeID].Names.PerformanceTurboLevel3Item3;
+                        break;
+                    }
+                    break;
+                }
             }
             else
             {
-                sprintf(bufd, "PD_SUPERCHARGER_%d_%d", UpgradePackage, UpgradePart);
-                sprintf(buf, "PerformanceSuperchargerLevel%dItem%d", UpgradePackage, UpgradePart);
-                result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", buf, bufd);
+                switch (UpgradePackage)
+                {
+                case 1:
+                    switch (UpgradePart)
+                    {
+                    case 1:
+                        result = CarConfigs[CarTypeID].Names.PerformanceSuperchargerLevel1Item1;
+                        break;
+                    case 2:
+                        result = CarConfigs[CarTypeID].Names.PerformanceSuperchargerLevel1Item2;
+                        break;
+                    case 3:
+                        result = CarConfigs[CarTypeID].Names.PerformanceSuperchargerLevel1Item3;
+                        break;
+                    }
+                    break;
+                case 2:
+                    switch (UpgradePart)
+                    {
+                    case 1:
+                        result = CarConfigs[CarTypeID].Names.PerformanceSuperchargerLevel2Item1;
+                        break;
+                    case 2:
+                        result = CarConfigs[CarTypeID].Names.PerformanceSuperchargerLevel2Item2;
+                        break;
+                    case 3:
+                        result = CarConfigs[CarTypeID].Names.PerformanceSuperchargerLevel2Item3;
+                        break;
+                    }
+                    break;
+                case 3:
+                    switch (UpgradePart)
+                    {
+                    case 1:
+                        result = CarConfigs[CarTypeID].Names.PerformanceSuperchargerLevel3Item1;
+                        break;
+                    case 2:
+                        result = CarConfigs[CarTypeID].Names.PerformanceSuperchargerLevel3Item2;
+                        break;
+                    case 3:
+                        result = CarConfigs[CarTypeID].Names.PerformanceSuperchargerLevel3Item3;
+                        break;
+                    }
+                    break;
+                }
             }
             break;
         case 6: // Nitrous
-            sprintf(bufd, "PD_NITROUS_%d_%d", UpgradePackage, UpgradePart);
-            sprintf(buf, "PerformanceNitrousLevel%dItem%d", UpgradePackage, UpgradePart);
-            result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", buf, bufd);
-            break;
-        default:
-            result = 0;
+            switch (UpgradePackage)
+            {
+            case 1:
+                switch (UpgradePart)
+                {
+                case 1:
+                    result = CarConfigs[CarTypeID].Names.PerformanceNitrousLevel1Item1;
+                    break;
+                case 2:
+                    result = CarConfigs[CarTypeID].Names.PerformanceNitrousLevel1Item2;
+                    break;
+                case 3:
+                    result = CarConfigs[CarTypeID].Names.PerformanceNitrousLevel1Item3;
+                    break;
+                }
+                break;
+            case 2:
+                switch (UpgradePart)
+                {
+                case 1:
+                    result = CarConfigs[CarTypeID].Names.PerformanceNitrousLevel2Item1;
+                    break;
+                case 2:
+                    result = CarConfigs[CarTypeID].Names.PerformanceNitrousLevel2Item2;
+                    break;
+                case 3:
+                    result = CarConfigs[CarTypeID].Names.PerformanceNitrousLevel2Item3;
+                    break;
+                }
+                break;
+            case 3:
+                switch (UpgradePart)
+                {
+                case 1:
+                    result = CarConfigs[CarTypeID].Names.PerformanceNitrousLevel3Item1;
+                    break;
+                case 2:
+                    result = CarConfigs[CarTypeID].Names.PerformanceNitrousLevel3Item2;
+                    break;
+                case 3:
+                    result = CarConfigs[CarTypeID].Names.PerformanceNitrousLevel3Item3;
+                    break;
+                }
+                break;
+            }
             break;
         }
     }
@@ -94,105 +451,472 @@ DWORD __fastcall CustomizePerformance_GetPerfPkgDesc(DWORD* _CustomizePerformanc
         switch (PerformancePartType)
         {
         case 0: // Tires
-            result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PerformanceTiresJunkmanItem", "PD_TIRES_JUNKMAN"); // PD_TIRES_JUNKMAN
+            result = CarConfigs[CarTypeID].Names.PerformanceTiresJunkmanItem; // PD_TIRES_JUNKMAN
             break;
         case 1: // Brakes
-            result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PerformanceBrakesJunkmanItem", "PD_BRAKES_JUNKMAN"); // PD_BRAKES_JUNKMAN
+            result = CarConfigs[CarTypeID].Names.PerformanceBrakesJunkmanItem; // PD_BRAKES_JUNKMAN
             break;
         case 2: // Suspension
-            result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PerformanceChassisJunkmanItem", "PD_CHASSIS_JUNKMAN"); // PD_CHASSIS_JUNKMAN
+            result = CarConfigs[CarTypeID].Names.PerformanceChassisJunkmanItem; // PD_CHASSIS_JUNKMAN
             break;
         case 3: // Transmission
-            result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PerformanceTransmissionJunkmanItem", "PD_TRANSMISSION_JUNKMAN"); // PD_TRANSMISSION_JUNKMAN
+            result = CarConfigs[CarTypeID].Names.PerformanceTransmissionJunkmanItem; // PD_TRANSMISSION_JUNKMAN
             break;
         case 4: // Engine
-            result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PerformanceEngineJunkmanItem", "PD_ENGINE_JUNKMAN"); // PD_ENGINE_JUNKMAN
+            result = CarConfigs[CarTypeID].Names.PerformanceEngineJunkmanItem; // PD_ENGINE_JUNKMAN
             break;
         case 5: // Turbo/Supercharger
-            result = IsTurbo ? GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PerformanceTurboJunkmanItem", "PD_TURBO_JUNKMAN") // PD_TURBO_JUNKMAN
-            : GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PerformanceSuperchargerJunkmanItem", "PD_SUPERCHARGER_JUNKMAN"); // PD_SUPERCHARGER_JUNKMAN
+            result = IsTurbo ? CarConfigs[CarTypeID].Names.PerformanceTurboJunkmanItem // PD_TURBO_JUNKMAN
+            : CarConfigs[CarTypeID].Names.PerformanceSuperchargerJunkmanItem; // PD_SUPERCHARGER_JUNKMAN
             break;
         case 6: // Nitrous
-            result = GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PerformanceNitrousJunkmanItem", "PD_NITROUS_JUNKMAN"); // PD_NITROUS_JUNKMAN
-            break;
-        default:
-            result = 0;
+            result = CarConfigs[CarTypeID].Names.PerformanceNitrousJunkmanItem; // PD_NITROUS_JUNKMAN
             break;
         }
     }
+    if (result == -1) result = 0;
     return result;
 }
 
 DWORD __fastcall CustomizePerformance_GetPerfPkgBrand(DWORD* _CustomizePerformance, void* EDX_Unused, int PerformancePartType, int UpgradePackage, int UpgradePart, bool IsTurbo)
 {
-    unsigned int result; // eax
-    char buf[64];
+    unsigned int result = -1; // eax
 
     // Get CarType Info
     void* FECarRecord = *(void**)_FECarRecord;
     int CarTypeID = FECarRecord_GetType(FECarRecord);
-    sprintf(CarTypeName, GetCarTypeName(CarTypeID));
-
-    // Read Part Options for the car
-    sprintf(CarININame, "UnlimiterData\\%s.ini", CarTypeName);
-    CIniReader CarINI(CarININame);
-    CIniReader GeneralINI("UnlimiterData\\_General.ini");
 
     if (UpgradePackage)
     {
         switch (PerformancePartType)
         {
         case 0: // Tires
-            sprintf(buf, "PerformanceTiresLevel%dItem%d", UpgradePackage, UpgradePart);
-            result = GetCarTextOptionHash(CarINI, GeneralINI, "Icons", buf, "");
+            switch (UpgradePackage)
+            {
+            case 1:
+                switch (UpgradePart)
+                {
+                case 1:
+                    result = CarConfigs[CarTypeID].Icons.PerformanceTiresLevel1Item1;
+                    break;
+                case 2:
+                    result = CarConfigs[CarTypeID].Icons.PerformanceTiresLevel1Item2;
+                    break;
+                case 3:
+                    result = CarConfigs[CarTypeID].Icons.PerformanceTiresLevel1Item3;
+                    break;
+                }
+                break;
+            case 2:
+                switch (UpgradePart)
+                {
+                case 1:
+                    result = CarConfigs[CarTypeID].Icons.PerformanceTiresLevel2Item1;
+                    break;
+                case 2:
+                    result = CarConfigs[CarTypeID].Icons.PerformanceTiresLevel2Item2;
+                    break;
+                case 3:
+                    result = CarConfigs[CarTypeID].Icons.PerformanceTiresLevel2Item3;
+                    break;
+                }
+                break;
+            case 3:
+                switch (UpgradePart)
+                {
+                case 1:
+                    result = CarConfigs[CarTypeID].Icons.PerformanceTiresLevel3Item1;
+                    break;
+                case 2:
+                    result = CarConfigs[CarTypeID].Icons.PerformanceTiresLevel3Item2;
+                    break;
+                case 3:
+                    result = CarConfigs[CarTypeID].Icons.PerformanceTiresLevel3Item3;
+                    break;
+                }
+                break;
+            }
             break;
         case 1: // Brakes
-            sprintf(buf, "PerformanceBrakesLevel%dItem%d", UpgradePackage, UpgradePart);
-            result = GetCarTextOptionHash(CarINI, GeneralINI, "Icons", buf, "");
+            switch (UpgradePackage)
+            {
+            case 1:
+                switch (UpgradePart)
+                {
+                case 1:
+                    result = CarConfigs[CarTypeID].Icons.PerformanceBrakesLevel1Item1;
+                    break;
+                case 2:
+                    result = CarConfigs[CarTypeID].Icons.PerformanceBrakesLevel1Item2;
+                    break;
+                case 3:
+                    result = CarConfigs[CarTypeID].Icons.PerformanceBrakesLevel1Item3;
+                    break;
+                }
+                break;
+            case 2:
+                switch (UpgradePart)
+                {
+                case 1:
+                    result = CarConfigs[CarTypeID].Icons.PerformanceBrakesLevel2Item1;
+                    break;
+                case 2:
+                    result = CarConfigs[CarTypeID].Icons.PerformanceBrakesLevel2Item2;
+                    break;
+                case 3:
+                    result = CarConfigs[CarTypeID].Icons.PerformanceBrakesLevel2Item3;
+                    break;
+                }
+                break;
+            case 3:
+                switch (UpgradePart)
+                {
+                case 1:
+                    result = CarConfigs[CarTypeID].Icons.PerformanceBrakesLevel3Item1;
+                    break;
+                case 2:
+                    result = CarConfigs[CarTypeID].Icons.PerformanceBrakesLevel3Item2;
+                    break;
+                case 3:
+                    result = CarConfigs[CarTypeID].Icons.PerformanceBrakesLevel3Item3;
+                    break;
+                }
+                break;
+            case 4:
+                switch (UpgradePart)
+                {
+                case 1:
+                    result = CarConfigs[CarTypeID].Icons.PerformanceBrakesLevel4Item1;
+                    break;
+                case 2:
+                    result = CarConfigs[CarTypeID].Icons.PerformanceBrakesLevel4Item2;
+                    break;
+                case 3:
+                    result = CarConfigs[CarTypeID].Icons.PerformanceBrakesLevel4Item3;
+                    break;
+                }
+                break;
+            }
             break;
         case 2: // Suspension
-            sprintf(buf, "PerformanceChassisLevel%dItem%d", UpgradePackage, UpgradePart);
-            result = GetCarTextOptionHash(CarINI, GeneralINI, "Icons", buf, "");
+            switch (UpgradePackage)
+            {
+            case 1:
+                switch (UpgradePart)
+                {
+                case 1:
+                    result = CarConfigs[CarTypeID].Icons.PerformanceChassisLevel1Item1;
+                    break;
+                case 2:
+                    result = CarConfigs[CarTypeID].Icons.PerformanceChassisLevel1Item2;
+                    break;
+                case 3:
+                    result = CarConfigs[CarTypeID].Icons.PerformanceChassisLevel1Item3;
+                    break;
+                }
+                break;
+            case 2:
+                switch (UpgradePart)
+                {
+                case 1:
+                    result = CarConfigs[CarTypeID].Icons.PerformanceChassisLevel2Item1;
+                    break;
+                case 2:
+                    result = CarConfigs[CarTypeID].Icons.PerformanceChassisLevel2Item2;
+                    break;
+                case 3:
+                    result = CarConfigs[CarTypeID].Icons.PerformanceChassisLevel2Item3;
+                    break;
+                }
+                break;
+            case 3:
+                switch (UpgradePart)
+                {
+                case 1:
+                    result = CarConfigs[CarTypeID].Icons.PerformanceChassisLevel3Item1;
+                    break;
+                case 2:
+                    result = CarConfigs[CarTypeID].Icons.PerformanceChassisLevel3Item2;
+                    break;
+                case 3:
+                    result = CarConfigs[CarTypeID].Icons.PerformanceChassisLevel3Item3;
+                    break;
+                }
+                break;
+            }
             break;
         case 3: // Transmission
-            sprintf(buf, "PerformanceTransmissionLevel%dItem%d", UpgradePackage, UpgradePart);
-            result = GetCarTextOptionHash(CarINI, GeneralINI, "Icons", buf, "");
+            switch (UpgradePackage)
+            {
+            case 1:
+                switch (UpgradePart)
+                {
+                case 1:
+                    result = CarConfigs[CarTypeID].Icons.PerformanceTransmissionLevel1Item1;
+                    break;
+                case 2:
+                    result = CarConfigs[CarTypeID].Icons.PerformanceTransmissionLevel1Item2;
+                    break;
+                case 3:
+                    result = CarConfigs[CarTypeID].Icons.PerformanceTransmissionLevel1Item3;
+                    break;
+                }
+                break;
+            case 2:
+                switch (UpgradePart)
+                {
+                case 1:
+                    result = CarConfigs[CarTypeID].Icons.PerformanceTransmissionLevel2Item1;
+                    break;
+                case 2:
+                    result = CarConfigs[CarTypeID].Icons.PerformanceTransmissionLevel2Item2;
+                    break;
+                case 3:
+                    result = CarConfigs[CarTypeID].Icons.PerformanceTransmissionLevel2Item3;
+                    break;
+                }
+                break;
+            case 3:
+                switch (UpgradePart)
+                {
+                case 1:
+                    result = CarConfigs[CarTypeID].Icons.PerformanceTransmissionLevel3Item1;
+                    break;
+                case 2:
+                    result = CarConfigs[CarTypeID].Icons.PerformanceTransmissionLevel3Item2;
+                    break;
+                case 3:
+                    result = CarConfigs[CarTypeID].Icons.PerformanceTransmissionLevel3Item3;
+                    break;
+                }
+                break;
+            case 4:
+                switch (UpgradePart)
+                {
+                case 1:
+                    result = CarConfigs[CarTypeID].Icons.PerformanceTransmissionLevel4Item1;
+                    break;
+                case 2:
+                    result = CarConfigs[CarTypeID].Icons.PerformanceTransmissionLevel4Item2;
+                    break;
+                case 3:
+                    result = CarConfigs[CarTypeID].Icons.PerformanceTransmissionLevel4Item3;
+                    break;
+                }
+                break;
+            }
             break;
         case 4: // Engine
-            if (CarCustomizeManager_IsCastrolCar((DWORD*)_gCarCustomizeManager, 0) && UpgradePackage == 4 && UpgradePart == 3)
+            switch (UpgradePackage)
             {
-                sprintf(buf, "PerformanceEngineLevel%dItem%dCastrol", UpgradePackage, UpgradePart);
-                result = GetCarTextOptionHash(CarINI, GeneralINI, "Icons", buf, "");
-            }
-            else if (CarCustomizeManager_IsRotaryCar((DWORD*)_gCarCustomizeManager, 0) && (UpgradePackage == 2 || UpgradePackage == 4) && UpgradePart == 1)
-            {
-                sprintf(buf, "PerformanceEngineLevel%dItem%dRotary", UpgradePackage, UpgradePart);
-                result = GetCarTextOptionHash(CarINI, GeneralINI, "Icons", buf, "");
-            }
-            else
-            {
-                sprintf(buf, "PerformanceEngineLevel%dItem%d", UpgradePackage, UpgradePart);
-                result = GetCarTextOptionHash(CarINI, GeneralINI, "Icons", buf, "");
+            case 1:
+                switch (UpgradePart)
+                {
+                case 1:
+                    result = CarConfigs[CarTypeID].Icons.PerformanceEngineLevel1Item1;
+                    break;
+                case 2:
+                    result = CarConfigs[CarTypeID].Icons.PerformanceEngineLevel1Item2;
+                    break;
+                case 3:
+                    result = CarConfigs[CarTypeID].Icons.PerformanceEngineLevel1Item3;
+                    break;
+                }
+                break;
+            case 2:
+                switch (UpgradePart)
+                {
+                case 1:
+                    result = CarCustomizeManager_IsRotaryCar((DWORD*)_gCarCustomizeManager, 0)
+                        ? CarConfigs[CarTypeID].Icons.PerformanceEngineLevel2Item1Rotary
+                        : CarConfigs[CarTypeID].Icons.PerformanceEngineLevel2Item1;
+                    break;
+                case 2:
+                    result = CarConfigs[CarTypeID].Icons.PerformanceEngineLevel2Item2;
+                    break;
+                case 3:
+                    result = CarConfigs[CarTypeID].Icons.PerformanceEngineLevel2Item3;
+                    break;
+                }
+                break;
+            case 3:
+                switch (UpgradePart)
+                {
+                case 1:
+                    result = CarConfigs[CarTypeID].Icons.PerformanceEngineLevel3Item1;
+                    break;
+                case 2:
+                    result = CarConfigs[CarTypeID].Icons.PerformanceEngineLevel3Item2;
+                    break;
+                case 3:
+                    result = CarConfigs[CarTypeID].Icons.PerformanceEngineLevel3Item3;
+                    break;
+                }
+                break;
+            case 4:
+                switch (UpgradePart)
+                {
+                case 1:
+                    result = CarCustomizeManager_IsRotaryCar((DWORD*)_gCarCustomizeManager, 0)
+                        ? CarConfigs[CarTypeID].Icons.PerformanceEngineLevel4Item1Rotary
+                        : CarConfigs[CarTypeID].Icons.PerformanceEngineLevel4Item1;
+                    break;
+                case 2:
+                    result = CarConfigs[CarTypeID].Icons.PerformanceEngineLevel4Item2;
+                    break;
+                case 3:
+                    result = CarCustomizeManager_IsCastrolCar((DWORD*)_gCarCustomizeManager, 0)
+                        ? CarConfigs[CarTypeID].Icons.PerformanceEngineLevel4Item3Castrol
+                        : CarConfigs[CarTypeID].Icons.PerformanceEngineLevel4Item3;
+                    break;
+                }
+                break;
             }
             break;
         case 5: // Turbo/Supercharger
             if (IsTurbo)
             {
-                sprintf(buf, "PerformanceTurboLevel%dItem%d", UpgradePackage, UpgradePart);
-                result = GetCarTextOptionHash(CarINI, GeneralINI, "Icons", buf, "");
+                switch (UpgradePackage)
+                {
+                case 1:
+                    switch (UpgradePart)
+                    {
+                    case 1:
+                        result = CarConfigs[CarTypeID].Icons.PerformanceTurboLevel1Item1;
+                        break;
+                    case 2:
+                        result = CarConfigs[CarTypeID].Icons.PerformanceTurboLevel1Item2;
+                        break;
+                    case 3:
+                        result = CarConfigs[CarTypeID].Icons.PerformanceTurboLevel1Item3;
+                        break;
+                    }
+                    break;
+                case 2:
+                    switch (UpgradePart)
+                    {
+                    case 1:
+                        result = CarConfigs[CarTypeID].Icons.PerformanceTurboLevel2Item1;
+                        break;
+                    case 2:
+                        result = CarConfigs[CarTypeID].Icons.PerformanceTurboLevel2Item2;
+                        break;
+                    case 3:
+                        result = CarConfigs[CarTypeID].Icons.PerformanceTurboLevel2Item3;
+                        break;
+                    }
+                    break;
+                case 3:
+                    switch (UpgradePart)
+                    {
+                    case 1:
+                        result = CarConfigs[CarTypeID].Icons.PerformanceTurboLevel3Item1;
+                        break;
+                    case 2:
+                        result = CarConfigs[CarTypeID].Icons.PerformanceTurboLevel3Item2;
+                        break;
+                    case 3:
+                        result = CarConfigs[CarTypeID].Icons.PerformanceTurboLevel3Item3;
+                        break;
+                    }
+                    break;
+                }
             }
             else
             {
-                sprintf(buf, "PerformanceSuperchargerLevel%dItem%d", UpgradePackage, UpgradePart);
-                result = GetCarTextOptionHash(CarINI, GeneralINI, "Icons", buf, "");
+                switch (UpgradePackage)
+                {
+                case 1:
+                    switch (UpgradePart)
+                    {
+                    case 1:
+                        result = CarConfigs[CarTypeID].Icons.PerformanceSuperchargerLevel1Item1;
+                        break;
+                    case 2:
+                        result = CarConfigs[CarTypeID].Icons.PerformanceSuperchargerLevel1Item2;
+                        break;
+                    case 3:
+                        result = CarConfigs[CarTypeID].Icons.PerformanceSuperchargerLevel1Item3;
+                        break;
+                    }
+                    break;
+                case 2:
+                    switch (UpgradePart)
+                    {
+                    case 1:
+                        result = CarConfigs[CarTypeID].Icons.PerformanceSuperchargerLevel2Item1;
+                        break;
+                    case 2:
+                        result = CarConfigs[CarTypeID].Icons.PerformanceSuperchargerLevel2Item2;
+                        break;
+                    case 3:
+                        result = CarConfigs[CarTypeID].Icons.PerformanceSuperchargerLevel2Item3;
+                        break;
+                    }
+                    break;
+                case 3:
+                    switch (UpgradePart)
+                    {
+                    case 1:
+                        result = CarConfigs[CarTypeID].Icons.PerformanceSuperchargerLevel3Item1;
+                        break;
+                    case 2:
+                        result = CarConfigs[CarTypeID].Icons.PerformanceSuperchargerLevel3Item2;
+                        break;
+                    case 3:
+                        result = CarConfigs[CarTypeID].Icons.PerformanceSuperchargerLevel3Item3;
+                        break;
+                    }
+                    break;
+                }
             }
             break;
         case 6: // Nitrous
-            sprintf(buf, "PerformanceNitrousLevel%dItem%d", UpgradePackage, UpgradePart);
-            result = GetCarTextOptionHash(CarINI, GeneralINI, "Icons", buf, "");
-            break;
-        default:
-            result = -1;
+            switch (UpgradePackage)
+            {
+            case 1:
+                switch (UpgradePart)
+                {
+                case 1:
+                    result = CarConfigs[CarTypeID].Icons.PerformanceNitrousLevel1Item1;
+                    break;
+                case 2:
+                    result = CarConfigs[CarTypeID].Icons.PerformanceNitrousLevel1Item2;
+                    break;
+                case 3:
+                    result = CarConfigs[CarTypeID].Icons.PerformanceNitrousLevel1Item3;
+                    break;
+                }
+                break;
+            case 2:
+                switch (UpgradePart)
+                {
+                case 1:
+                    result = CarConfigs[CarTypeID].Icons.PerformanceNitrousLevel2Item1;
+                    break;
+                case 2:
+                    result = CarConfigs[CarTypeID].Icons.PerformanceNitrousLevel2Item2;
+                    break;
+                case 3:
+                    result = CarConfigs[CarTypeID].Icons.PerformanceNitrousLevel2Item3;
+                    break;
+                }
+                break;
+            case 3:
+                switch (UpgradePart)
+                {
+                case 1:
+                    result = CarConfigs[CarTypeID].Icons.PerformanceNitrousLevel3Item1;
+                    break;
+                case 2:
+                    result = CarConfigs[CarTypeID].Icons.PerformanceNitrousLevel3Item2;
+                    break;
+                case 3:
+                    result = CarConfigs[CarTypeID].Icons.PerformanceNitrousLevel3Item3;
+                    break;
+                }
+                break;
+            }
             break;
         }
     }
@@ -201,26 +925,26 @@ DWORD __fastcall CustomizePerformance_GetPerfPkgBrand(DWORD* _CustomizePerforman
         switch (PerformancePartType)
         {
         case 0: // Tires
-            result = GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "PerformanceTiresJunkmanItem", "");
+            result = CarConfigs[CarTypeID].Icons.PerformanceTiresJunkmanItem;
             break;
         case 1: // Brakes
-            result = GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "PerformanceBrakesJunkmanItem", "");
+            result = CarConfigs[CarTypeID].Icons.PerformanceBrakesJunkmanItem;
             break;
         case 2: // Suspension
-            result = GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "PerformanceChassisJunkmanItem", "");
+            result = CarConfigs[CarTypeID].Icons.PerformanceChassisJunkmanItem;
             break;
         case 3: // Transmission
-            result = GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "PerformanceTransmissionJunkmanItem", "");
+            result = CarConfigs[CarTypeID].Icons.PerformanceTransmissionJunkmanItem;
             break;
         case 4: // Engine
-            result = GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "PerformanceEngineJunkmanItem", "");
+            result = CarConfigs[CarTypeID].Icons.PerformanceEngineJunkmanItem;
             break;
         case 5: // Turbo/Supercharger
-            result = IsTurbo ? GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "PerformanceTurboJunkmanItem", "")
-                : GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "PerformanceSuperchargerJunkmanItem", "");
+            result = IsTurbo ? CarConfigs[CarTypeID].Icons.PerformanceTurboJunkmanItem
+            : CarConfigs[CarTypeID].Icons.PerformanceSuperchargerJunkmanItem;
             break;
         case 6: // Nitrous
-            result = GetCarTextOptionHash(CarINI, GeneralINI, "Icons", "PerformanceNitrousJunkmanItem", "");
+            result = CarConfigs[CarTypeID].Icons.PerformanceNitrousJunkmanItem;
             break;
         default:
             result = -1;
@@ -236,81 +960,256 @@ DWORD __fastcall CustomizePerformance_GetPerfPkgBrand(DWORD* _CustomizePerforman
 unsigned int CustomizePerformance_GetPerfPkgLevelIconHash(int PerfPkgType, int PerfPkgLevel)
 {
     unsigned int result; // eax
-    char buf[64];
 
     // Get CarType Info
     void* FECarRecord = *(void**)_FECarRecord;
     int CarTypeID = FECarRecord_GetType(FECarRecord);
-    sprintf(CarTypeName, GetCarTypeName(CarTypeID));
-
-    // Read Part Options for the car
-    sprintf(CarININame, "UnlimiterData\\%s.ini", CarTypeName);
-    CIniReader CarINI(CarININame);
-    CIniReader GeneralINI("UnlimiterData\\_General.ini");
-
-    sprintf(buf, "Performance");
 
     switch (PerfPkgType)
     {
-    case 0:
-        strcat(buf, "Tires");
+    case 0: // Tires
+        switch (PerfPkgLevel)
+        {
+        case 0:
+        default:
+            result = CarConfigs[CarTypeID].Icons.PerformanceTiresStock;
+            break;
+        case 1:
+            result = CarConfigs[CarTypeID].Icons.PerformanceTiresStreet;
+            break;
+        case 2:
+            result = CarConfigs[CarTypeID].Icons.PerformanceTiresSuperStreet;
+            break;
+        case 3:
+            result = CarConfigs[CarTypeID].Icons.PerformanceTiresRace;
+            break;
+        case 4:
+            result = CarConfigs[CarTypeID].Icons.PerformanceTiresPro;
+            break;
+        case 5:
+            result = CarConfigs[CarTypeID].Icons.PerformanceTiresSuperPro;
+            break;
+        case 6:
+            result = CarConfigs[CarTypeID].Icons.PerformanceTiresUltimate;
+            break;
+        case 7:
+            result = CarConfigs[CarTypeID].Icons.PerformanceTiresJunkman;
+            break;
+        }
         break;
-    case 1:
-        strcat(buf, "Brakes");
+    case 1: // Brakes
+        switch (PerfPkgLevel)
+        {
+        case 0:
+        default:
+            result = CarConfigs[CarTypeID].Icons.PerformanceBrakesStock;
+            break;
+        case 1:
+            result = CarConfigs[CarTypeID].Icons.PerformanceBrakesStreet;
+            break;
+        case 2:
+            result = CarConfigs[CarTypeID].Icons.PerformanceBrakesSuperStreet;
+            break;
+        case 3:
+            result = CarConfigs[CarTypeID].Icons.PerformanceBrakesRace;
+            break;
+        case 4:
+            result = CarConfigs[CarTypeID].Icons.PerformanceBrakesPro;
+            break;
+        case 5:
+            result = CarConfigs[CarTypeID].Icons.PerformanceBrakesSuperPro;
+            break;
+        case 6:
+            result = CarConfigs[CarTypeID].Icons.PerformanceBrakesUltimate;
+            break;
+        case 7:
+            result = CarConfigs[CarTypeID].Icons.PerformanceBrakesJunkman;
+            break;
+        }
         break;
-    case 2:
-        strcat(buf, "Chassis");
+    case 2: // Suspension
+        switch (PerfPkgLevel)
+        {
+        case 0:
+        default:
+            result = CarConfigs[CarTypeID].Icons.PerformanceChassisStock;
+            break;
+        case 1:
+            result = CarConfigs[CarTypeID].Icons.PerformanceChassisStreet;
+            break;
+        case 2:
+            result = CarConfigs[CarTypeID].Icons.PerformanceChassisSuperStreet;
+            break;
+        case 3:
+            result = CarConfigs[CarTypeID].Icons.PerformanceChassisRace;
+            break;
+        case 4:
+            result = CarConfigs[CarTypeID].Icons.PerformanceChassisPro;
+            break;
+        case 5:
+            result = CarConfigs[CarTypeID].Icons.PerformanceChassisSuperPro;
+            break;
+        case 6:
+            result = CarConfigs[CarTypeID].Icons.PerformanceChassisUltimate;
+            break;
+        case 7:
+            result = CarConfigs[CarTypeID].Icons.PerformanceChassisJunkman;
+            break;
+        }
         break;
-    case 3:
-        strcat(buf, "Transmission");
+    case 3: // Transmission
+        switch (PerfPkgLevel)
+        {
+        case 0:
+        default:
+            result = CarConfigs[CarTypeID].Icons.PerformanceTransmissionStock;
+            break;
+        case 1:
+            result = CarConfigs[CarTypeID].Icons.PerformanceTransmissionStreet;
+            break;
+        case 2:
+            result = CarConfigs[CarTypeID].Icons.PerformanceTransmissionSuperStreet;
+            break;
+        case 3:
+            result = CarConfigs[CarTypeID].Icons.PerformanceTransmissionRace;
+            break;
+        case 4:
+            result = CarConfigs[CarTypeID].Icons.PerformanceTransmissionPro;
+            break;
+        case 5:
+            result = CarConfigs[CarTypeID].Icons.PerformanceTransmissionSuperPro;
+            break;
+        case 6:
+            result = CarConfigs[CarTypeID].Icons.PerformanceTransmissionUltimate;
+            break;
+        case 7:
+            result = CarConfigs[CarTypeID].Icons.PerformanceTransmissionJunkman;
+            break;
+        }
         break;
-    case 4:
-        strcat(buf, "Engine");
+    case 4: // Engine
+        switch (PerfPkgLevel)
+        {
+        case 0:
+        default:
+            result = CarConfigs[CarTypeID].Icons.PerformanceEngineStock;
+            break;
+        case 1:
+            result = CarConfigs[CarTypeID].Icons.PerformanceEngineStreet;
+            break;
+        case 2:
+            result = CarConfigs[CarTypeID].Icons.PerformanceEngineSuperStreet;
+            break;
+        case 3:
+            result = CarConfigs[CarTypeID].Icons.PerformanceEngineRace;
+            break;
+        case 4:
+            result = CarConfigs[CarTypeID].Icons.PerformanceEnginePro;
+            break;
+        case 5:
+            result = CarConfigs[CarTypeID].Icons.PerformanceEngineSuperPro;
+            break;
+        case 6:
+            result = CarConfigs[CarTypeID].Icons.PerformanceEngineUltimate;
+            break;
+        case 7:
+            result = CarConfigs[CarTypeID].Icons.PerformanceEngineJunkman;
+            break;
+        }
         break;
-    case 5:
-        strcat(buf, CarCustomizeManager_IsTurbo((DWORD*)_gCarCustomizeManager) ? "Turbo" : "Supercharger");
+    case 5: // Turbo/Supercharger
+        if (CarCustomizeManager_IsTurbo((DWORD*)_gCarCustomizeManager))
+        {
+            switch (PerfPkgLevel)
+            {
+            case 0:
+            default:
+                result = CarConfigs[CarTypeID].Icons.PerformanceTurboStock;
+                break;
+            case 1:
+                result = CarConfigs[CarTypeID].Icons.PerformanceTurboStreet;
+                break;
+            case 2:
+                result = CarConfigs[CarTypeID].Icons.PerformanceTurboSuperStreet;
+                break;
+            case 3:
+                result = CarConfigs[CarTypeID].Icons.PerformanceTurboRace;
+                break;
+            case 4:
+                result = CarConfigs[CarTypeID].Icons.PerformanceTurboPro;
+                break;
+            case 5:
+                result = CarConfigs[CarTypeID].Icons.PerformanceTurboSuperPro;
+                break;
+            case 6:
+                result = CarConfigs[CarTypeID].Icons.PerformanceTurboUltimate;
+                break;
+            case 7:
+                result = CarConfigs[CarTypeID].Icons.PerformanceTurboJunkman;
+                break;
+            }
+        }
+        else
+        {
+            switch (PerfPkgLevel)
+            {
+            case 0:
+            default:
+                result = CarConfigs[CarTypeID].Icons.PerformanceSuperchargerStock;
+                break;
+            case 1:
+                result = CarConfigs[CarTypeID].Icons.PerformanceSuperchargerStreet;
+                break;
+            case 2:
+                result = CarConfigs[CarTypeID].Icons.PerformanceSuperchargerSuperStreet;
+                break;
+            case 3:
+                result = CarConfigs[CarTypeID].Icons.PerformanceSuperchargerRace;
+                break;
+            case 4:
+                result = CarConfigs[CarTypeID].Icons.PerformanceSuperchargerPro;
+                break;
+            case 5:
+                result = CarConfigs[CarTypeID].Icons.PerformanceSuperchargerSuperPro;
+                break;
+            case 6:
+                result = CarConfigs[CarTypeID].Icons.PerformanceSuperchargerUltimate;
+                break;
+            case 7:
+                result = CarConfigs[CarTypeID].Icons.PerformanceSuperchargerJunkman;
+                break;
+            }
+        }
         break;
-    case 6:
-        strcat(buf, "Nitrous");
-        break;
-    default:
-        break;
-    }
-
-    switch (PerfPkgLevel)
-    {
-    case 0:
-    default:
-        strcat(buf, "Stock");
-        result = GetCarTextOptionHash(CarINI, GeneralINI, "Icons", buf, "PERFORMANCE_ICON_BASE_PACKAGE");
-        break;
-    case 1:
-        strcat(buf, "Street");
-        result = GetCarTextOptionHash(CarINI, GeneralINI, "Icons", buf, "PERFORMANCE_ICON_PACKAGE_1");
-        break;
-    case 2:
-        strcat(buf, "SuperStreet");
-        result = GetCarTextOptionHash(CarINI, GeneralINI, "Icons", buf, "PERFORMANCE_ICON_PACKAGE_1");
-        break;
-    case 3:
-        strcat(buf, "Race");
-        result = GetCarTextOptionHash(CarINI, GeneralINI, "Icons", buf, "PERFORMANCE_ICON_PACKAGE_1");
-        break;
-    case 4:
-        strcat(buf, "Pro");
-        result = GetCarTextOptionHash(CarINI, GeneralINI, "Icons", buf, "PERFORMANCE_ICON_PACKAGE_1");
-        break;
-    case 5:
-        strcat(buf, "SuperPro");
-        result = GetCarTextOptionHash(CarINI, GeneralINI, "Icons", buf, "PERFORMANCE_ICON_PACKAGE_1");
-        break;
-    case 6:
-        strcat(buf, "Ultimate");
-        result = GetCarTextOptionHash(CarINI, GeneralINI, "Icons", buf, "PERFORMANCE_ICON_PACKAGE_1");
-        break;
-    case 7:
-        strcat(buf, "Junkman");
-        result = GetCarTextOptionHash(CarINI, GeneralINI, "Icons", buf, "PERFORMANCE_ICON_PACKAGE_1");
+    case 6: // Nitrous
+        switch (PerfPkgLevel)
+        {
+        case 0:
+        default:
+            result = CarConfigs[CarTypeID].Icons.PerformanceNitrousStock;
+            break;
+        case 1:
+            result = CarConfigs[CarTypeID].Icons.PerformanceNitrousStreet;
+            break;
+        case 2:
+            result = CarConfigs[CarTypeID].Icons.PerformanceNitrousSuperStreet;
+            break;
+        case 3:
+            result = CarConfigs[CarTypeID].Icons.PerformanceNitrousRace;
+            break;
+        case 4:
+            result = CarConfigs[CarTypeID].Icons.PerformanceNitrousPro;
+            break;
+        case 5:
+            result = CarConfigs[CarTypeID].Icons.PerformanceNitrousSuperPro;
+            break;
+        case 6:
+            result = CarConfigs[CarTypeID].Icons.PerformanceNitrousUltimate;
+            break;
+        case 7:
+            result = CarConfigs[CarTypeID].Icons.PerformanceNitrousJunkman;
+            break;
+        }
         break;
     }
 
@@ -330,7 +1229,7 @@ void __fastcall CustomizePerformance_RefreshHeader(DWORD* _CustomizePerformance,
     DWORD* Slider2 = _CustomizePerformance + 134;
     DWORD* Slider3 = _CustomizePerformance + 151;
 
-    DWORD PackageLevelHash = bStringHash("PN_LEVEL_0");
+    DWORD PackageLevelHash = bStringHash((char*)"PN_LEVEL_0");
 
     DWORD* FECarRecord = *(DWORD**)_FECarRecord;
 

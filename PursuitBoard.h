@@ -1,34 +1,32 @@
 #include "stdio.h"
 #include "InGameFunctions.h"
-#include "includes\IniReader.h"
 
-char StringID[15];
 char StringBuffer[64];
 
 int __fastcall PursuitBoard_SetNumCopsDestroyed(DWORD* PursuitBoard, int EDX_Unused, int NumberOfCopsDestroyed, unsigned int PVehicleHash, int ComboMultiplier, int BountyAward)
 {
-	CIniReader CopDestroyedStringsINI("UnlimiterData\\_CopDestroyedStrings.ini");
-	int CopDestroyedStringCount = CopDestroyedStringsINI.ReadInteger("CopDestroyedStrings", "NumberOfCopDestroyedStrings", -1);
-
-	if (CopDestroyedStringCount == -1) return PursuitBoard_SetNumCopsDestroyed_Game(PursuitBoard, NumberOfCopsDestroyed, PVehicleHash, ComboMultiplier, BountyAward);
+	int CopDestroyedStringCount = CopDestroyedStrings.size();
 
 	int result = PursuitBoard[11];
-	const char* CopDestroyedString;
+	const char* CopDestroyedString = 0;
 	DWORD* LocalPlayerPtr, * HudPtr, * GenericMessageHandle;
 
 	if (NumberOfCopsDestroyed != result)
 	{
 		if (NumberOfCopsDestroyed > result)
 		{
-			for (int i = 1; i <= CopDestroyedStringCount; i++)
+			for (int i = 1; i < CopDestroyedStringCount; i++)
 			{
-				sprintf(StringID, "String%d", i);
-				if (stringhash32(CopDestroyedStringsINI.ReadString(StringID, "PVehicle", "")) == PVehicleHash)
+				if (CopDestroyedStrings[i].PVehicle == PVehicleHash)
 				{
-					CopDestroyedString = GetLocalizedString(bStringHash(CopDestroyedStringsINI.ReadString(StringID, "String", "ERROR_DEFAULT_STRING")));
+					CopDestroyedString = GetLocalizedString(CopDestroyedStrings[i].StringHash);
 					break;
 				}
-				if (i == CopDestroyedStringCount) CopDestroyedString = 0;
+			}
+
+			if (!CopDestroyedString) // if doesn't exist
+			{
+				CopDestroyedString = GetLocalizedString(CopDestroyedStrings[0].StringHash); // use default one instead
 			}
 
 			if (CopDestroyedString)
@@ -44,7 +42,7 @@ int __fastcall PursuitBoard_SetNumCopsDestroyed(DWORD* PursuitBoard, int EDX_Unu
 					if (HudPtr)
 					{
 						GenericMessageHandle = UTL_COM_Object__IList_Find((DWORD*)HudPtr[1], IGenericMessage_IHandle);
-						if (GenericMessageHandle) result = GenericMessage_RequestGenericMessage(GenericMessageHandle, (char const*)StringBuffer, 0, 0x8AB83EDB, bStringHash("COPS_TAKENOUT_ICON"), bStringHash("COPS"), 2);
+						if (GenericMessageHandle) result = GenericMessage_RequestGenericMessage(GenericMessageHandle, (char const*)StringBuffer, 0, 0x8AB83EDB, bStringHash((char*)"COPS_TAKENOUT_ICON"), bStringHash((char*)"COPS"), 2);
 					}
 				}
 			}

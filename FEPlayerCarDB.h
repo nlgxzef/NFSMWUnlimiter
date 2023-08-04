@@ -1,23 +1,31 @@
+#pragma once
+
 #include "stdio.h"
 #include "InGameFunctions.h"
-#include "includes\IniReader.h"
 
 DWORD* _FEPlayerCarDB;
 
 void __fastcall FEPlayerCarDB_Default_CreateBonusCars(DWORD* FEPlayerCarDB, void* EDX_Unused)
 {
-	char BonusCarNameBuf[16];
-	CIniReader BonusCars("UnlimiterData\\_BonusCars.ini");
 	char* PresetName;
+	int CarRecordID;
+	int Category;
+	int NumberOfBonusCars = BonusCars.size();
 
-	int NumberOfBonusCars = BonusCars.ReadInteger("BonusCars", "NumberOfBonusCars", -1);
-
-	// Read ini entries to create bonus cars
-
-	for (int i = -1; i <= NumberOfBonusCars; i++)
+	for (int i = -1; i < NumberOfBonusCars; i++)
 	{
-		sprintf(BonusCarNameBuf, "BonusCar%d", i);
-		PresetName = BonusCars.ReadString(BonusCarNameBuf, "PresetName", "");
+		if (i == -1)
+		{
+			PresetName = DefaultBonusCar.PresetName;
+			CarRecordID = DefaultBonusCar.CarRecordID;
+			Category = DefaultBonusCar.Category;
+		}
+		else
+		{
+			PresetName = BonusCars[i].PresetName;
+			CarRecordID = BonusCars[i].CarRecordID;
+			Category = BonusCars[i].Category;
+		}
 
 		if (strcmp(PresetName, "")) // Check the name
 		{
@@ -30,11 +38,10 @@ void __fastcall FEPlayerCarDB_Default_CreateBonusCars(DWORD* FEPlayerCarDB, void
 				if (NewPresetCar)
 				{
 					// Check if the preset has a specific car record id
-					int CarRecordID = BonusCars.ReadInteger(BonusCarNameBuf, "CarRecordID", -1);
 					if (CarRecordID != -1) NewPresetCar[0] = CarRecordID;
 
-					// Check if the preset car needs to be in a specific category
-					NewPresetCar[3] = BonusCars.ReadInteger(BonusCarNameBuf, "Category", 0xF0008); // If no category is set, default to Bonus
+					// Set category
+					NewPresetCar[3] = Category;
 				}
 
 				Physics_Upgrades_Flush();

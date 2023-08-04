@@ -1,152 +1,267 @@
 #pragma once
 
+#include "stdafx.h"
+#include "stdio.h"
+#include "InGameFunctions.h"
+#include "GlobalVariables.h"
+
 inline bool DoesFileExist(char const* path)
 {
 	struct stat buffer;
 	return (stat(path, &buffer) == 0);
 }
 
-bool IsCop(BYTE CarTypeID)
+bool IsCop(int CarTypeID)
 {
 	return *(BYTE*)((*(DWORD*)CarTypeInfoArray) + CarTypeID * SingleCarTypeInfoBlockSize + 0x94) == 1;
 }
 
-char* GetCarTextOption(CIniReader& CarINI, CIniReader& GeneralINI, char* Section, char* Option, char const* DefaultValue)
+bool IsMenuEmpty_Parts(int CarTypeID)
 {
-	return CarINI.ReadString(Section, Option, GeneralINI.ReadString(Section, Option, DefaultValue));
-}
-
-int GetCarIntOption(CIniReader& CarINI, CIniReader& GeneralINI, char* Section, char* Option, int DefaultValue)
-{
-	return CarINI.ReadInteger(Section, Option, GeneralINI.ReadInteger(Section, Option, DefaultValue));
-}
-
-int GetCarFloatOption(CIniReader& CarINI, CIniReader& GeneralINI, char* Section, char* Option, float DefaultValue)
-{
-	return CarINI.ReadFloat(Section, Option, GeneralINI.ReadFloat(Section, Option, DefaultValue));
-}
-
-int GetCarTextOptionHash(CIniReader& CarINI, CIniReader& GeneralINI, char* Section, char* Option, char const* DefaultValue)
-{
-	return bStringHash(GetCarTextOption(CarINI, GeneralINI, Section, Option, DefaultValue));
-}
-
-int GetCarTextOptionVLTHash(CIniReader& CarINI, CIniReader& GeneralINI, char* Section, char* Option, char const* DefaultValue)
-{
-	return Attrib_StringToLowerCaseKey(GetCarTextOption(CarINI, GeneralINI, Section, Option, DefaultValue));
-}
-
-bool IsMenuEmpty_Parts(CIniReader& CarINI, CIniReader& GeneralINI)
-{
-	if (GetCarIntOption(CarINI, GeneralINI, "Parts", "BodyKits", 1) != 0) return 0;
-	if (GetCarIntOption(CarINI, GeneralINI, "Parts", "Spoilers", 1) != 0) return 0;
-	if (GetCarIntOption(CarINI, GeneralINI, "Parts", "Rims", 1) != 0) return 0;
-	if (GetCarIntOption(CarINI, GeneralINI, "Parts", "Hoods", 1) != 0) return 0;
-	if (GetCarIntOption(CarINI, GeneralINI, "Parts", "RoofScoops", 1) != 0) return 0;
-	if (GetCarIntOption(CarINI, GeneralINI, "Parts", "Interior", 0) != 0) return 0;
-	if (GetCarIntOption(CarINI, GeneralINI, "Parts", "Roof", 0) != 0) return 0;
-	if (GetCarIntOption(CarINI, GeneralINI, "Parts", "Brakes", 0) != 0) return 0;
-	if (GetCarIntOption(CarINI, GeneralINI, "Parts", "Headlights", 0) != 0) return 0;
-	if (GetCarIntOption(CarINI, GeneralINI, "Parts", "Taillights", 0) != 0) return 0;
-	if (GetCarIntOption(CarINI, GeneralINI, "Parts", "Mirrors", 0) != 0) return 0;
-	if (GetCarIntOption(CarINI, GeneralINI, "Parts", "Attachments", 0) >= 1) return 0;
-	if (BETACompatibility && (GetCarIntOption(CarINI, GeneralINI, "Visual", "CustomGauges", 1) != 0)) return 0;
+	if (CarConfigs[CarTypeID].Parts.BodyKits != 0) return 0;
+	if (CarConfigs[CarTypeID].Parts.Spoilers != 0) return 0;
+	if (CarConfigs[CarTypeID].Parts.Rims != 0) return 0;
+	if (CarConfigs[CarTypeID].Parts.Hoods != 0) return 0;
+	if (CarConfigs[CarTypeID].Parts.RoofScoops != 0) return 0;
+	if (CarConfigs[CarTypeID].Parts.Interior != 0) return 0;
+	if (CarConfigs[CarTypeID].Parts.Roof != 0) return 0;
+	if (CarConfigs[CarTypeID].Parts.Brakes != 0) return 0;
+	if (CarConfigs[CarTypeID].Parts.Headlights != 0) return 0;
+	if (CarConfigs[CarTypeID].Parts.Taillights != 0) return 0;
+	if (CarConfigs[CarTypeID].Parts.Mirrors != 0) return 0;
+	if (CarConfigs[CarTypeID].Parts.Attachments >= 1) return 0;
+	if (BETACompatibility && (CarConfigs[CarTypeID].Visual.CustomGauges != 0)) return 0;
 
 	return 1;
 }
 
-bool IsMenuEmpty_PartsBackroom(CIniReader& CarINI, CIniReader& GeneralINI)
+bool IsMenuEmpty_PartsBackroom(int CarTypeID)
 {
-	if (GetCarIntOption(CarINI, GeneralINI, "Parts", "BodyKits", 1) != 0) return 0;
-	if (GetCarIntOption(CarINI, GeneralINI, "Parts", "Spoilers", 1) != 0) return 0;
-	if (GetCarIntOption(CarINI, GeneralINI, "Parts", "Rims", 1) != 0) return 0;
-	if (GetCarIntOption(CarINI, GeneralINI, "Parts", "Hoods", 1) != 0) return 0;
-	if (GetCarIntOption(CarINI, GeneralINI, "Parts", "RoofScoops", 1) != 0) return 0;
-	if (BETACompatibility && (GetCarIntOption(CarINI, GeneralINI, "Visual", "CustomGauges", 1) != 0)) return 0;
+	if (CarConfigs[CarTypeID].Parts.BodyKits != 0) return 0;
+	if (CarConfigs[CarTypeID].Parts.Spoilers != 0) return 0;
+	if (CarConfigs[CarTypeID].Parts.Rims != 0) return 0;
+	if (CarConfigs[CarTypeID].Parts.Hoods != 0) return 0;
+	if (CarConfigs[CarTypeID].Parts.RoofScoops != 0) return 0;
+	if (BETACompatibility && (CarConfigs[CarTypeID].Visual.CustomGauges != 0)) return 0;
 
 	return 1;
 }
 
-bool IsMenuEmpty_Performance(CIniReader& CarINI, CIniReader& GeneralINI)
+bool IsMenuEmpty_Performance(int CarTypeID)
 {
-	if (GetCarIntOption(CarINI, GeneralINI, "Performance", "Engine", 1) != 0) return 0;
-	if (GetCarIntOption(CarINI, GeneralINI, "Performance", "Transmission", 1) != 0) return 0;
-	if (GetCarIntOption(CarINI, GeneralINI, "Performance", "Chassis", 1) != 0) return 0;
-	if (GetCarIntOption(CarINI, GeneralINI, "Performance", "Nitrous", 1) != 0) return 0;
-	if (GetCarIntOption(CarINI, GeneralINI, "Performance", "Tires", 1) != 0) return 0;
-	if (GetCarIntOption(CarINI, GeneralINI, "Performance", "Brakes", 1) != 0) return 0;
-	if (GetCarIntOption(CarINI, GeneralINI, "Performance", "Induction", 1) != 0) return 0;
+	if (CarConfigs[CarTypeID].Performance.Engine != 0) return 0;
+	if (CarConfigs[CarTypeID].Performance.Transmission != 0) return 0;
+	if (CarConfigs[CarTypeID].Performance.Chassis != 0) return 0;
+	if (CarConfigs[CarTypeID].Performance.Nitrous != 0) return 0;
+	if (CarConfigs[CarTypeID].Performance.Tires != 0) return 0;
+	if (CarConfigs[CarTypeID].Performance.Brakes != 0) return 0;
+	if (CarConfigs[CarTypeID].Performance.Induction != 0) return 0;
 
 	return 1;
 }
 
-bool IsMenuEmpty_Decals(CIniReader& CarINI, CIniReader& GeneralINI)
+bool IsMenuEmpty_Decals(int CarTypeID)
 {
-	if (GetCarIntOption(CarINI, GeneralINI, "Visuals", "DecalsWindshield", 1) != 0) return 0;
-	if (GetCarIntOption(CarINI, GeneralINI, "Visuals", "DecalsRearWindow", 1) != 0) return 0;
-	if (GetCarIntOption(CarINI, GeneralINI, "Visuals", "DecalsLeftDoor", 1) != 0) return 0;
-	if (GetCarIntOption(CarINI, GeneralINI, "Visuals", "DecalsRightDoor", 1) != 0) return 0;
-	if (GetCarIntOption(CarINI, GeneralINI, "Visuals", "DecalsLeftQuarter", 1) != 0) return 0;
-	if (GetCarIntOption(CarINI, GeneralINI, "Visuals", "DecalsRightQuarter", 1) != 0) return 0;
+	if (CarConfigs[CarTypeID].Visual.DecalsWindshield != 0) return 0;
+	if (CarConfigs[CarTypeID].Visual.DecalsRearWindow != 0) return 0;
+	if (CarConfigs[CarTypeID].Visual.DecalsLeftDoor != 0) return 0;
+	if (CarConfigs[CarTypeID].Visual.DecalsRightDoor != 0) return 0;
+	if (CarConfigs[CarTypeID].Visual.DecalsLeftQuarter != 0) return 0;
+	if (CarConfigs[CarTypeID].Visual.DecalsRightQuarter != 0) return 0;
 
 	return 1;
 }
 
-bool IsMenuEmpty_Visual(CIniReader& CarINI, CIniReader& GeneralINI)
+bool IsMenuEmpty_Visual(int CarTypeID)
 {
-	if (GetCarIntOption(CarINI, GeneralINI, "Visual", "Paint", 1) != 0) return 0;
-	if (GetCarIntOption(CarINI, GeneralINI, "Visual", "Vinyls", 1) != 0) return 0;
-	if (GetCarIntOption(CarINI, GeneralINI, "Visual", "RimPaint", 1) != 0) return 0;
-	if (GetCarIntOption(CarINI, GeneralINI, "Visual", "WindowTint", 1) != 0) return 0;
-	if (!IsMenuEmpty_Decals(CarINI, GeneralINI)) return 0;
-	if (GetCarIntOption(CarINI, GeneralINI, "Visual", "Numbers", 1) != 0) return 0;
-	if (!BETACompatibility && (GetCarIntOption(CarINI, GeneralINI, "Visual", "CustomGauges", 1) != 0)) return 0;
-	if (GetCarIntOption(CarINI, GeneralINI, "Visual", "Driver", 0) != 0) return 0;
-	if (GetCarIntOption(CarINI, GeneralINI, "Visual", "LicensePlate", 0) != 0) return 0;
-	if (GetCarIntOption(CarINI, GeneralINI, "Visual", "Tires", 0) != 0) return 0;
-	if (GetCarIntOption(CarINI, GeneralINI, "Visual", "Neon", 0) != 0) return 0;
+	if (CarConfigs[CarTypeID].Visual.Paint != 0) return 0;
+	if (CarConfigs[CarTypeID].Visual.Vinyls != 0) return 0;
+	if (CarConfigs[CarTypeID].Visual.RimPaint != 0) return 0;
+	if (CarConfigs[CarTypeID].Visual.WindowTint != 0) return 0;
+	if (!IsMenuEmpty_Decals(CarTypeID)) return 0;
+	if (CarConfigs[CarTypeID].Visual.Numbers != 0) return 0;
+	if (!BETACompatibility && (CarConfigs[CarTypeID].Visual.CustomGauges != 0)) return 0;
+	if (CarConfigs[CarTypeID].Visual.Driver != 0) return 0;
+	if (CarConfigs[CarTypeID].Visual.LicensePlate != 0) return 0;
+	if (CarConfigs[CarTypeID].Visual.Tires != 0) return 0;
+	if (CarConfigs[CarTypeID].Visual.Neon != 0) return 0;
 
 	return 1;
 }
 
-bool IsMenuEmpty_VisualBackroom(CIniReader& CarINI, CIniReader& GeneralINI)
+bool IsMenuEmpty_VisualBackroom(int CarTypeID)
 {
-	if (GetCarIntOption(CarINI, GeneralINI, "Visual", "Paint", 1) != 0) return 0;
-	if (GetCarIntOption(CarINI, GeneralINI, "Visual", "Vinyls", 1) != 0) return 0;
-	if (GetCarIntOption(CarINI, GeneralINI, "Visual", "Decals", 1) != 0) return 0;
-	if (!BETACompatibility && (GetCarIntOption(CarINI, GeneralINI, "Visual", "CustomGauges", 1) != 0)) return 0;
+	if (CarConfigs[CarTypeID].Visual.Paint != 0) return 0;
+	if (CarConfigs[CarTypeID].Visual.Vinyls != 0) return 0;
+	if (!IsMenuEmpty_Decals(CarTypeID)) return 0;
+	if (!BETACompatibility && (CarConfigs[CarTypeID].Visual.CustomGauges != 0)) return 0;
 
 	return 1;
 }
 
-bool IsMenuEmpty_CustomizeMain(CIniReader& CarINI, CIniReader& GeneralINI)
+bool IsMenuEmpty_CustomizeMain(int CarTypeID)
 {
 	if (!HPCCompatibility)
 	{
-		if (GetCarIntOption(CarINI, GeneralINI, "Main", "Parts", 1) != 0) return 0;
-		if (GetCarIntOption(CarINI, GeneralINI, "Main", "Performance", 1) != 0) return 0;
+		if (CarConfigs[CarTypeID].Main.Parts != 0) return 0;
+		if (CarConfigs[CarTypeID].Main.Performance != 0) return 0;
 	}
 
-	if (GetCarIntOption(CarINI, GeneralINI, "Main", "Visual", 1) != 0) return 0;
+	if (CarConfigs[CarTypeID].Main.Visual != 0) return 0;
 
 	return 1;
+}
+
+// mINI stuff
+
+int mINI_ReadInteger(mINI::INIStructure& ini, std::string Section, std::string Key, int DefaultValue = 0)
+{
+	int result = DefaultValue;
+
+	if (ini.has(Section) && ini[Section].has(Key))
+	{
+		try
+		{
+			result = std::stol(ini[Section][Key]);
+		}
+		catch (const std::exception& ex)
+		{
+			result = DefaultValue;
+		}
+	}
+
+	return result;
+}
+
+float mINI_ReadFloat(mINI::INIStructure& ini, std::string Section, std::string Key, float DefaultValue = 0.0f)
+{
+	float result = DefaultValue;
+
+	if (ini.has(Section) && ini[Section].has(Key))
+	{
+		try
+		{
+			result = std::stof(ini[Section][Key]);
+		}
+		catch (const std::exception& ex)
+		{
+			result = DefaultValue;
+		}
+	}
+
+	return result;
+}
+
+char* mINI_ReadString(mINI::INIStructure& ini, std::string Section, std::string Key, const char* DefaultValue = "")
+{
+	char* result = (char*)DefaultValue;
+
+	if (ini.has(Section) && ini[Section].has(Key))
+	{
+		try
+		{
+			result = (char*)ini[Section][Key].c_str();
+		}
+		catch (const std::exception& ex)
+		{
+			result = (char*)DefaultValue;
+		}
+	}
+
+	return result;
+}
+
+DWORD mINI_ReadHash(mINI::INIStructure& ini, std::string Section, std::string Key, DWORD DefaultValue = -1)
+{
+	DWORD result = DefaultValue;
+
+	if (ini.has(Section) && ini[Section].has(Key))
+	{
+		try
+		{
+			result = bStringHash((char*)ini[Section][Key].c_str());
+		}
+		catch (const std::exception& ex)
+		{
+			result = DefaultValue;
+		}
+	}
+
+	return result;
+}
+
+DWORD mINI_ReadHashS(mINI::INIStructure& ini, std::string Section, std::string Key, const char* DefaultValue = "")
+{
+	DWORD result = bStringHash((char*)DefaultValue);
+
+	if (ini.has(Section) && ini[Section].has(Key))
+	{
+		try
+		{
+			result = bStringHash((char*)ini[Section][Key].c_str());
+		}
+		catch (const std::exception& ex)
+		{
+			result = bStringHash((char*)DefaultValue);
+		}
+	}
+
+	return result;
+}
+
+DWORD mINI_ReadVLTHash(mINI::INIStructure& ini, std::string Section, std::string Key, DWORD DefaultValue = 0x82FC1624)
+{
+	DWORD result = DefaultValue;
+
+	if (ini.has(Section) && ini[Section].has(Key))
+	{
+		try
+		{
+			result = Attrib_StringToLowerCaseKey(ini[Section][Key].c_str());
+		}
+		catch (const std::exception& ex)
+		{
+			result = DefaultValue;
+		}
+	}
+
+	return result;
+}
+
+DWORD mINI_ReadVLTHashS(mINI::INIStructure& ini, std::string Section, std::string Key, const char* DefaultValue = "")
+{
+	DWORD result = Attrib_StringToLowerCaseKey(DefaultValue);
+
+	if (ini.has(Section) && ini[Section].has(Key))
+	{
+		try
+		{
+			result = Attrib_StringToLowerCaseKey(ini[Section][Key].c_str());
+		}
+		catch (const std::exception& ex)
+		{
+			result = Attrib_StringToLowerCaseKey(DefaultValue);
+		}
+	}
+
+	return result;
 }
 
 char* GetDefaultRimBrandName(int ID)
 {
-	if (ID > DefaultRimBrandCount) return "";
+	if (ID > DefaultRimBrandCount) return (char*)"";
 	else return DefaultRimBrandNames[ID];
 }
 
 char* GetDefaultRimBrandTexture(int ID)
 {
-	if (ID > DefaultRimBrandCount) return "";
+	if (ID > DefaultRimBrandCount) return (char*)"";
 	else return DefaultRimBrandTextures[ID];
 }
 
 char* GetDefaultRimBrandString(int ID)
 {
-	if (ID > DefaultRimBrandCount) return "";
+	if (ID > DefaultRimBrandCount) return (char*)"";
 	else return DefaultRimBrandStrings[ID];
 }
 
@@ -158,12 +273,36 @@ int GetDefaultVinylGroupIndex(int ID)
 
 char* GetDefaultVinylGroupTexture(int ID)
 {
-	if (ID > DefaultVinylGroupCount) return "";
+	if (ID > DefaultVinylGroupCount) return (char*)"";
 	else return DefaultVinylGroupTextures[ID];
 }
 
 char* GetDefaultVinylGroupString(int ID)
 {
-	if (ID > DefaultVinylGroupCount) return "";
+	if (ID > DefaultVinylGroupCount) return (char*)"";
 	else return DefaultVinylGroupStrings[ID];
+}
+
+char* GetDefaultPaintBrandName(int ID)
+{
+	if (ID > DefaultPaintBrandCount) return (char*)"";
+	else return DefaultPaintBrandNames[ID];
+}
+
+char* GetDefaultPaintBrandString(int ID)
+{
+	if (ID > DefaultPaintBrandCount) return (char*)"";
+	else return DefaultPaintBrandStrings[ID];
+}
+
+char* GetDefaultCopDestroyedStringPVehicle(int ID)
+{
+	if (ID > DefaultCopDestroyedStringCount) return (char*)"";
+	else return DefaultCopDestroyedStringPVehicles[ID];
+}
+
+char* GetDefaultCopDestroyedString(int ID)
+{
+	if (ID > DefaultCopDestroyedStringCount) return (char*)"";
+	else return DefaultCopDestroyedStrings[ID];
 }

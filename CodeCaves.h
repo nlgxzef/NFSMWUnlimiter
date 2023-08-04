@@ -148,6 +148,15 @@ void __declspec(naked) DoUnlimiterStuffCodeCave()
 	if (ReplacementCar > CarCount) ReplacementCar = 1;
 	injector::WriteMemory<int>(0x739909, ReplacementCar, true);
 
+	// load configs into UnlimiterData structs
+	LoadCarConfigs();
+	LoadBonusCars();
+	LoadCopDestroyedStrings();
+	LoadFNGFixes();
+	LoadPaintGroups();
+	LoadRimBrands();
+	LoadVinylGroups();
+
 	// Continue
 	__asm
 	{
