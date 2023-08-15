@@ -63,6 +63,7 @@
 #define _EnableReleasePrintf 0x90E630
 #define _MemoryCard_s_pThis 0x91CB20
 #define _gTradeInFactor 0x89F71C
+#define _CarSelectTireSteerAngle 0x905E20
 
 bool BETACompatibility = 0;
 bool HPCCompatibility = 0;
@@ -933,6 +934,7 @@ typedef struct
 {
 	int ForceCustomizationLevel;
 	bool CustomRandomParts;
+	bool RandomizeInTraffic;
 	bool Parts[NumCarSlots];
 } RandomPartsSection;
 typedef struct
@@ -1060,5 +1062,7 @@ std::vector<PaintGroup> PaintGroups;
 DWORD *Showcase_FromColor[MaximumPaintBrandCount]; // 0x9B9E3C (only has 3 spaces)
 DWORD SelectedPaints[MaximumPaintBrandCount]; // CustomizePaint[112]
 DWORD* SelectedPaintParts[MaximumPaintBrandCount]; // CustomizePaint[181]
+
+float CarSelectTireSteerAngle_Backup;
 
 std::filesystem::path CurrentWorkingDirectory;

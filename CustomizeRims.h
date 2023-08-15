@@ -227,7 +227,7 @@ void __fastcall CustomizeRims_BuildRimsList(DWORD* _CustomizeRims, void* EDX_Unu
             TheCarPart = (DWORD*)TheSelectablePart[3];
             PartIcon = CarPart_GetAppliedAttributeIParam(TheCarPart, bStringHash((char*)"TEXTUREHASH"), 0x294D2A3);
             PartName = *(BYTE*)(TheSelectablePart[3] + 5) >> 5;
-            IsLocked = CarCustomizeManager_IsPartLocked((DWORD*)_gCarCustomizeManager, TheSelectablePart, 0);
+            IsLocked = CarCustomizeManager_IsPartLocked((DWORD*)_gCarCustomizeManager, EDX_Unused, TheSelectablePart, 0);
             CustomizationScreen_AddPartOption(_CustomizeRims, TheSelectablePart, PartIcon, PartName, 0, UnlockHash, IsLocked);
             if (TheActivePart && *((DWORD**)TheSelectablePart + 3) == TheActivePart) IndexActive = i;
             ++i;

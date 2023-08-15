@@ -157,6 +157,9 @@ void __declspec(naked) DoUnlimiterStuffCodeCave()
 	LoadRimBrands();
 	LoadVinylGroups();
 
+	// Backup tire angle to use later
+	CarSelectTireSteerAngle_Backup = *(float*)_CarSelectTireSteerAngle;
+
 	// Continue
 	__asm
 	{

@@ -580,7 +580,7 @@ AddToList:
 		else NewPartIcon = PartIconNormal;
 	
 		PartName = *(BYTE*)(TheSelectablePart[3] + 5) >> 5;
-		IsLocked = CarCustomizeManager_IsPartLocked((DWORD*)_gCarCustomizeManager, TheSelectablePart, 0);
+		IsLocked = CarCustomizeManager_IsPartLocked((DWORD*)_gCarCustomizeManager, EDX_Unused, TheSelectablePart, 0);
 		CustomizationScreen_AddPartOption(_CustomizeParts, TheSelectablePart, NewPartIcon, PartName, 0, UnlockHash, IsLocked);
 
 		if (TheActiveCarPart && TheSelectablePart[3] == (DWORD)TheActiveCarPart) v28 = a8;

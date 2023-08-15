@@ -1529,7 +1529,7 @@ void __fastcall CustomizePerformance_Setup(DWORD* _CustomizePerformance, void* E
         v46 = *((DWORD*)v20 + 5);
         MaxLevel = Physics_Upgrades_GetMaxLevel((DWORD*)_PhysicsUpgrades, PerformancePartType);
         UnlockHash = CarCustomizeManager_GetUnlockHash((DWORD*)_gCarCustomizeManager, _CustomizePerformance[82], MaxPackages + v46 - MaxLevel);
-        IsLocked = CarCustomizeManager_IsPartLocked((DWORD*)_gCarCustomizeManager, v20, 0);
+        IsLocked = CarCustomizeManager_IsPartLocked((DWORD*)_gCarCustomizeManager, EDX_Unused, v20, 0);
         CustomizationScreen_AddPartOption(_CustomizePerformance, v20, CustomizePerformance_GetPerfPkgLevelIconHash(PerformancePartType, 6 + v46 - MaxLevel), unk_0a, 0, UnlockHash, IsLocked);
         v16 = (DWORD*)PartList[0];
     }

@@ -120,27 +120,26 @@ int GetTempCarSkinTextures(DWORD* textures_to_load, int num_textures, int max_te
 	return num_textures;
 }
 
-int MenuID_Backup;
-
-DWORD FindScreenInfo(char const* ScreenName, int MenuID)
-{
-	MenuID_Backup = MenuID; // Get menu ID to check for camera angle later.
-	return FindScreenInfo_Game(ScreenName, MenuID);
-}
-
 DWORD FindScreenCameraInfo(DWORD ScreenInfo)
 {
 	DWORD result = FindScreenCameraInfo_Game(ScreenInfo);
-	if (MenuID_Backup <= 0x101 && MenuID_Backup >= 0x9FF) return result;
+
+	DWORD* TheGarageMainScreen = GarageMainScreen_GetInstance();
+	if (!TheGarageMainScreen) return result;
+
+	int MenuID = TheGarageMainScreen[34];
+	if (MenuID <= 0x101 && MenuID >= 0x9FF) return result;
+
+	if (ScreenInfo != TheGarageMainScreen[29]) return result;
 
 	// Get CarType Info
 	void* FECarRecord = *(void**)_FECarRecord;
-	if ((MenuID_Backup <= 0x101 && MenuID_Backup >= 0x9FF) || !FECarRecord) return result;
+	if ((MenuID <= 0x101 && MenuID >= 0x8FF) || !FECarRecord) return result;
 
 	int CarTypeID = FECarRecord_GetType(FECarRecord);
 
 	DWORD CustomAngle = 0;
-	if (MenuID_Backup >= 0x701 && MenuID_Backup <= 0x7FF) // Rims
+	if (MenuID >= 0x701 && MenuID <= 0x7FF) // Rims
 	{
 		switch (RimsToCustomize)
 		{
@@ -155,17 +154,17 @@ DWORD FindScreenCameraInfo(DWORD ScreenInfo)
 			break;
 		}
 	}
-	else if (MenuID_Backup >= 0x401 && MenuID_Backup <= 0x4FF) // Vinyls
+	else if (MenuID >= 0x401 && MenuID <= 0x4FF) // Vinyls
 	{
 		CustomAngle = CarConfigs[CarTypeID].Cameras.VisualVinylsGroup;
 	}
-	else if (MenuID_Backup >= 0x601 && MenuID_Backup <= 0x608) // Decal slots
+	else if (MenuID >= 0x601 && MenuID <= 0x608) // Decal slots
 	{
 		switch (*(int*)CustomizeDecals_CurrentDecalLocation) // 0x501 - 0x506
 		{
 		case 0x501:
 		default:
-			switch (MenuID_Backup)
+			switch (MenuID)
 			{
 			case 0x601:
 			default:
@@ -195,7 +194,7 @@ DWORD FindScreenCameraInfo(DWORD ScreenInfo)
 			}
 			break;
 		case 0x502:
-			switch (MenuID_Backup)
+			switch (MenuID)
 			{
 			case 0x601:
 			default:
@@ -225,7 +224,7 @@ DWORD FindScreenCameraInfo(DWORD ScreenInfo)
 			}
 			break;
 		case 0x503:
-			switch (MenuID_Backup)
+			switch (MenuID)
 			{
 			case 0x601:
 			default:
@@ -249,7 +248,7 @@ DWORD FindScreenCameraInfo(DWORD ScreenInfo)
 			}
 			break;
 		case 0x504:
-			switch (MenuID_Backup)
+			switch (MenuID)
 			{
 			case 0x601:
 			default:
@@ -273,7 +272,7 @@ DWORD FindScreenCameraInfo(DWORD ScreenInfo)
 			}
 			break;
 		case 0x505:
-			switch (MenuID_Backup)
+			switch (MenuID)
 			{
 			case 0x601:
 			default:
@@ -303,7 +302,7 @@ DWORD FindScreenCameraInfo(DWORD ScreenInfo)
 			}
 			break;
 		case 0x506:
-			switch (MenuID_Backup)
+			switch (MenuID)
 			{
 			case 0x601:
 			default:
@@ -336,7 +335,7 @@ DWORD FindScreenCameraInfo(DWORD ScreenInfo)
 	}
 	else
 	{
-		switch (MenuID_Backup)
+		switch (MenuID)
 		{
 			default:
 				CustomAngle = FindScreenCameraInfo_Game(ScreenInfo);
@@ -462,6 +461,25 @@ DWORD FindScreenCameraInfo(DWORD ScreenInfo)
 		}
 	}
 
+	if (MenuID == 0x314)
+	{
+		AnimateValue(*(float*)_CarSelectTireSteerAngle, -20.0f, 3.0f);
+	}
+	else
+	{
+		AnimateValue(*(float*)_CarSelectTireSteerAngle, CarSelectTireSteerAngle_Backup, 3.0f);
+	}
+
 	if (CustomAngle != 0 && CustomAngle != 0x82FC1624) result = CustomAngle;
 	return result;
+}
+
+bool CarInfo_IsSkinned_Traffic(int CarTypeID)
+{
+	if (ShouldRandomizeInTraffic(CarTypeID))
+	{
+		return 1;
+	}
+
+	return CarInfo_IsSkinned_Game(CarTypeID);
 }

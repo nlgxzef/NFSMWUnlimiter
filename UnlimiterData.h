@@ -805,6 +805,7 @@ void LoadCarConfigs()
 	// RandomParts
 	DefaultCarConfig.RandomParts.ForceCustomizationLevel = mINI_ReadInteger(GeneralINI, "RandomParts", "ForceCustomizationLevel", -2);
 	DefaultCarConfig.RandomParts.CustomRandomParts = mINI_ReadInteger(GeneralINI, "RandomParts", "CustomRandomParts", 0) != 0;
+	DefaultCarConfig.RandomParts.RandomizeInTraffic = mINI_ReadInteger(GeneralINI, "RandomParts", "RandomizeInTraffic", 0) != 0;
 	for (int p = 0; p < NumCarSlots; p++) DefaultCarConfig.RandomParts.Parts[p] = 0;
 
 	DefaultCarConfig.RandomParts.Parts[23] = mINI_ReadInteger(GeneralINI, "RandomParts", "BodyKits", 0) != 0; // BODY
@@ -1688,6 +1689,10 @@ void LoadCarConfigs()
 		// RandomParts
 		ACarConfig.RandomParts.ForceCustomizationLevel = mINI_ReadInteger(CarINI, "RandomParts", "ForceCustomizationLevel", DefaultCarConfig.RandomParts.ForceCustomizationLevel);
 		ACarConfig.RandomParts.CustomRandomParts = mINI_ReadInteger(CarINI, "RandomParts", "CustomRandomParts", DefaultCarConfig.RandomParts.CustomRandomParts) != 0;
+		ACarConfig.RandomParts.RandomizeInTraffic = mINI_ReadInteger(CarINI, "RandomParts", "RandomizeInTraffic", DefaultCarConfig.RandomParts.RandomizeInTraffic) != 0;
+
+		if (RandomizeTraffic && ACarConfig.RandomParts.RandomizeInTraffic) SetSkinnable(i);
+
 		for (int p = 0; p < NumCarSlots; p++) ACarConfig.RandomParts.Parts[p] = DefaultCarConfig.RandomParts.Parts[p];
 
 		ACarConfig.RandomParts.Parts[23] = mINI_ReadInteger(CarINI, "RandomParts", "BodyKits", DefaultCarConfig.RandomParts.Parts[23]) != 0;

@@ -15,6 +15,8 @@ DWORD __fastcall CustomizePaint_CalcNameHash(DWORD* _CustomizePaint, void* EDX_U
 	void* FECarRecord = *(void**)_FECarRecord;
 	int CarTypeID = FECarRecord_GetType(FECarRecord);
 
+	DWORD* ActiveVinyl;
+
 	switch (MenuID)
 	{
 	case 0x301:
@@ -32,22 +34,32 @@ DWORD __fastcall CustomizePaint_CalcNameHash(DWORD* _CustomizePaint, void* EDX_U
 		break;
 
 	default: // Vinyls
+		ActiveVinyl = (DWORD*)CarCustomizeManager_GetActivePartFromSlot((DWORD*)_gCarCustomizeManager, 77); // VINYL_LAYER0
+
 		switch (PaintScrollerIndex)
 		{
 		case 0:
 			switch (VinylColorCount)
 			{
 			case 1:
-				result = 0xD8EE1A80; // CO_VINYL_COLOR
+				result = ActiveVinyl 
+					? CarPart_GetAppliedAttributeUParam(ActiveVinyl, bStringHash((char*)"COLOR0LANGUAGEHASH"), 0xD8EE1A80) 
+					: 0xD8EE1A80; // CO_VINYL_COLOR
 				break;
 			case 2:
-				result = 0x5198BA16; // CP_FILTER_COLOR_1_2
+				result = ActiveVinyl 
+					? CarPart_GetAppliedAttributeUParam(ActiveVinyl, bStringHash((char*)"COLOR0LANGUAGEHASH"), 0x5198BA16) 
+					: 0x5198BA16; // CP_FILTER_COLOR_1_2
 				break;
 			case 3:
-				result = 0x5198BA17; // CP_FILTER_COLOR_1_3
+				result = ActiveVinyl 
+					? CarPart_GetAppliedAttributeUParam(ActiveVinyl, bStringHash((char*)"COLOR0LANGUAGEHASH"), 0x5198BA17) 
+					: 0x5198BA17; // CP_FILTER_COLOR_1_3
 				break;
 			case 4:
-				result = 0x5198BA18; // CP_FILTER_COLOR_1_4
+				result = ActiveVinyl 
+					? CarPart_GetAppliedAttributeUParam(ActiveVinyl, bStringHash((char*)"COLOR0LANGUAGEHASH"), 0x5198BA18) 
+					: 0x5198BA18; // CP_FILTER_COLOR_1_4
 				break;
 			}
 			break;
@@ -55,13 +67,19 @@ DWORD __fastcall CustomizePaint_CalcNameHash(DWORD* _CustomizePaint, void* EDX_U
 			switch (VinylColorCount)
 			{
 			case 2:
-				result = 0x5198BE57; // CP_FILTER_COLOR_2_2
+				result = ActiveVinyl
+					? CarPart_GetAppliedAttributeUParam(ActiveVinyl, bStringHash((char*)"COLOR1LANGUAGEHASH"), 0x5198BE57)
+					: 0x5198BE57; // CP_FILTER_COLOR_2_2
 				break;
 			case 3:
-				result = 0x5198BE58; // CP_FILTER_COLOR_2_3
+				result = ActiveVinyl
+					? CarPart_GetAppliedAttributeUParam(ActiveVinyl, bStringHash((char*)"COLOR1LANGUAGEHASH"), 0x5198BE58)
+					: 0x5198BE58; // CP_FILTER_COLOR_2_3
 				break;
 			case 4:
-				result = 0x5198BE59; // CP_FILTER_COLOR_2_4
+				result = ActiveVinyl
+					? CarPart_GetAppliedAttributeUParam(ActiveVinyl, bStringHash((char*)"COLOR1LANGUAGEHASH"), 0x5198BE59)
+					: 0x5198BE59; // CP_FILTER_COLOR_2_4
 				break;
 			}
 			break;
@@ -69,14 +87,20 @@ DWORD __fastcall CustomizePaint_CalcNameHash(DWORD* _CustomizePaint, void* EDX_U
 			switch (VinylColorCount)
 			{
 			case 3:
-				result = 0x5198C299; // CP_FILTER_COLOR_3_3
+				result = ActiveVinyl
+					? CarPart_GetAppliedAttributeUParam(ActiveVinyl, bStringHash((char*)"COLOR2LANGUAGEHASH"), 0x5198C299)
+					: 0x5198C299; // CP_FILTER_COLOR_3_3
 				break;
 			case 4:
-				result = 0x5198C29A; // CP_FILTER_COLOR_3_4
+				result = ActiveVinyl
+					? CarPart_GetAppliedAttributeUParam(ActiveVinyl, bStringHash((char*)"COLOR2LANGUAGEHASH"), 0x5198C29A)
+					: 0x5198C29A; // CP_FILTER_COLOR_3_4
 				break;
 			}
 		case 3:
-			result = 0x5198C6DB; // CP_FILTER_COLOR_4_4
+			result = ActiveVinyl
+				? CarPart_GetAppliedAttributeUParam(ActiveVinyl, bStringHash((char*)"COLOR3LANGUAGEHASH"), 0x5198C6DB)
+				: 0x5198C6DB; // CP_FILTER_COLOR_4_4
 			break;
 		}
 	}

@@ -785,3 +785,15 @@ void __fastcall RideInfo_SetRandomParts(DWORD* RideInfo, void* EDX_Unused)
 	}
 
 }
+
+void __fastcall RideInfo_SetStockParts_Traffic(DWORD* TheRideInfo, void* EDX_Unused)
+{
+	RideInfo_SetStockParts_Game(TheRideInfo);
+
+	int CarTypeID = TheRideInfo[0];
+
+	if (ShouldRandomizeInTraffic(CarTypeID) && TheRideInfo[194] == 4)
+	{
+		RideInfo_SetRandomPart(TheRideInfo, 76, -1); // BASE_PAINT
+	}
+}

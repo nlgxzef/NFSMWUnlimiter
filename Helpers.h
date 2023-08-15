@@ -16,6 +16,22 @@ bool IsCop(int CarTypeID)
 	return *(BYTE*)((*(DWORD*)CarTypeInfoArray) + CarTypeID * SingleCarTypeInfoBlockSize + 0x94) == 1;
 }
 
+bool IsTraffic(int CarTypeID)
+{
+	return *(BYTE*)((*(DWORD*)CarTypeInfoArray) + CarTypeID * SingleCarTypeInfoBlockSize + 0x94) == 2;
+}
+
+void SetSkinnable(int CarTypeID)
+{
+	*(BYTE*)((*(DWORD*)CarTypeInfoArray) + CarTypeID * SingleCarTypeInfoBlockSize + 0xC7) = 1;
+}
+
+bool ShouldRandomizeInTraffic(int CarTypeID)
+{
+	return IsTraffic(CarTypeID)
+		&& CarConfigs[CarTypeID].RandomParts.RandomizeInTraffic;
+}
+
 bool IsMenuEmpty_Parts(int CarTypeID)
 {
 	if (CarConfigs[CarTypeID].Parts.BodyKits != 0) return 0;
@@ -305,4 +321,28 @@ char* GetDefaultCopDestroyedString(int ID)
 {
 	if (ID > DefaultCopDestroyedStringCount) return (char*)"";
 	else return DefaultCopDestroyedStrings[ID];
+}
+
+void AnimateValue(float& value, float target, float speed)
+{
+	int Direction;
+	float Dif;
+
+	if (value == target) return;
+	else if (value > target) Direction = -1;
+	else Direction = 1;
+
+	Dif = fabs(target);
+
+	switch (Direction)
+	{
+	case -1: // decrease
+		value -= Dif * speed * (*(float*)_RealTimeElapsedFrame);
+		if (value < target) value = target;
+		break;
+	case 1: // increase
+		value += Dif * speed * (*(float*)_RealTimeElapsedFrame);
+		if (value > target) value = target;
+		break;
+	}
 }
