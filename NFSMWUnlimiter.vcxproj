@@ -97,7 +97,6 @@ copy "$(TargetDir)*.pdb" "G:\Oyunlar\Need for Speed Most Wanted Dirty\scripts"  
     <ClInclude Include="CarCustomizeManager.h" />
     <ClInclude Include="CarRenderConn.h" />
     <ClInclude Include="CodeCaves.h" />
-    <ClInclude Include="CompositeSkin.h" />
     <ClInclude Include="CustomizeDecals.h" />
     <ClInclude Include="CustomizeMain.h" />
     <ClInclude Include="CustomizePaint.h" />
@@ -115,6 +114,7 @@ copy "$(TargetDir)*.pdb" "G:\Oyunlar\Need for Speed Most Wanted Dirty\scripts"  
     <ClInclude Include="FEShoppingCartItem.h" />
     <ClInclude Include="FrontEndRenderingCar.h" />
     <ClInclude Include="Game.h" />
+    <ClInclude Include="GarageMainScreen.h" />
     <ClInclude Include="GlobalVariables.h" />
     <ClInclude Include="GRacerInfo.h" />
     <ClInclude Include="Helpers.h" />

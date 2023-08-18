@@ -54,6 +54,7 @@
 #define _UnlockAllThings 0x926124
 #define _TweakKitWheelOffsetFront 0x9B0960
 #define _TweakKitWheelOffsetRear 0x9B0964
+#define _Showcase_FromArgs 0x9B9E80
 #define _Showcase_FromIndex 0x9B9E84
 #define _Showcase_FromFilter 0x905E38
 #define _Showcase_FromColor 0x9B9E3C
@@ -64,6 +65,9 @@
 #define _MemoryCard_s_pThis 0x91CB20
 #define _gTradeInFactor 0x89F71C
 #define _CarSelectTireSteerAngle 0x905E20
+#define _UsePrecompositeVinyls 0x9B09FC
+#define _StreamingTexturePackLoader 0x91A098
+#define _StreamingSolidPackLoader 0x91A060
 
 bool BETACompatibility = 0;
 bool HPCCompatibility = 0;
@@ -169,6 +173,11 @@ char* DefaultVinylGroupTextures[]
 	(char*)"VINYL_GROUP_UNIQUE",
 	(char*)"VINYL_GROUP_CONTEST",
 	(char*)"VINYL_GROUP_SPECIAL"
+};
+
+bool DefaultVinylGroupAltCameras[]
+{
+	1, 0, 1, 1, 0, 1, 1, 1, 1, 1
 };
 
 // Default values for Vinyl Groups if _PaintGroups.ini is N/A
@@ -1046,6 +1055,7 @@ typedef struct
 	int Index;
 	DWORD StringHash;
 	DWORD TextureHash;
+	bool UseAltCamera;
 } VinylGroup;
 
 std::vector<VinylGroup> VinylGroups;

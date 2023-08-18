@@ -138,7 +138,8 @@ int mINI_ReadInteger(mINI::INIStructure& ini, std::string Section, std::string K
 	{
 		try
 		{
-			result = std::stol(ini[Section][Key]);
+			if (ini[Section][Key].starts_with("0x") || ini[Section][Key].starts_with("-0x")) result = std::stol(ini[Section][Key], 0, 16);
+			else result = std::stol(ini[Section][Key]);
 		}
 		catch (const std::exception& ex)
 		{
@@ -297,6 +298,12 @@ char* GetDefaultVinylGroupString(int ID)
 {
 	if (ID > DefaultVinylGroupCount) return (char*)"";
 	else return DefaultVinylGroupStrings[ID];
+}
+
+bool GetDefaultVinylGroupAltCamera(int ID)
+{
+	if (ID > DefaultVinylGroupCount) return 1;
+	else return DefaultVinylGroupAltCameras[ID];
 }
 
 char* GetDefaultPaintBrandName(int ID)

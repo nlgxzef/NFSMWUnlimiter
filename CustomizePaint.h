@@ -97,6 +97,7 @@ DWORD __fastcall CustomizePaint_CalcNameHash(DWORD* _CustomizePaint, void* EDX_U
 					: 0x5198C29A; // CP_FILTER_COLOR_3_4
 				break;
 			}
+			break;
 		case 3:
 			result = ActiveVinyl
 				? CarPart_GetAppliedAttributeUParam(ActiveVinyl, bStringHash((char*)"COLOR3LANGUAGEHASH"), 0x5198C6DB)

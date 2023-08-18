@@ -1968,6 +1968,7 @@ void LoadVinylGroups()
 		AVinylGroup.Index = mINI_ReadInteger(VinylGroupsINI, VinylBrandID, "Index", GetDefaultVinylGroupIndex(i));
 		AVinylGroup.TextureHash = mINI_ReadHashS(VinylGroupsINI, VinylBrandID, "Texture", GetDefaultVinylGroupTexture(i));
 		AVinylGroup.StringHash = mINI_ReadHashS(VinylGroupsINI, VinylBrandID, "String", GetDefaultVinylGroupString(i));
+		AVinylGroup.UseAltCamera = mINI_ReadInteger(VinylGroupsINI, VinylBrandID, "UseAltCamera", GetDefaultVinylGroupAltCamera(i)) != 0;
 
 		VinylGroups_temp.push_back(AVinylGroup); // Add to temp list
 	}

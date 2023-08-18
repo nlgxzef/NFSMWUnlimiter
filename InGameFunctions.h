@@ -22,6 +22,7 @@ bool(__thiscall* CarPart_HasAppliedAttribute)(void* CarPart, unsigned int Attrib
 void*(__thiscall* CarPart_GetAttribute)(void* CarPart, unsigned int AttributeHash, void* Previous) = (void*(__thiscall*)(void*, unsigned int, void*))0x739730;
 unsigned int(__thiscall* CarPart_GetAppliedAttributeIParam)(void* CarPart, unsigned int AttributeHash, int ValueIfNotFound) = (unsigned int(__thiscall*)(void*, unsigned int, int))0x747AC0;
 unsigned int(__thiscall* CarPart_GetAppliedAttributeUParam)(void* CarPart, unsigned int AttributeHash, int ValueIfNotFound) = (unsigned int(__thiscall*)(void*, unsigned int, int))0x747AE0;
+char*(__thiscall* CarPart_GetAppliedAttributeString)(void* CarPart, unsigned int AttributeHash, char const* ValueIfNotFound) = (char*(__thiscall*)(void*, unsigned int, char const*))0x747A70;
 //int(__thiscall* CustomizeSub_SetupPerformance)(void* CustomizeSub) = (int(__thiscall*)(void*))0x7BBFD0;
 //int(__thiscall* CustomizeSub_SetupDecalPositions)(void* CustomizeSub) = (int(__thiscall*)(void*))0x7BCBB0;
 int(__thiscall* CustomizeSub_SetupRimBrands_Game)(void* CustomizeSub) = (int(__thiscall*)(void*))0x7BC3C0;
@@ -174,8 +175,8 @@ void(*eRenderLightFlare)(DWORD* view, DWORD* light_flare, float* local_world, fl
 void(__thiscall* CustomizationScreen_NotificationMessage)(DWORD* _CustomizationScreen, DWORD MessageHash, DWORD* FEObject, DWORD param1, DWORD param2) = (void(__thiscall*)(DWORD*, DWORD, DWORD*, DWORD, DWORD))0x7B7080;
 void(__thiscall* SelectablePart_copy)(DWORD* SelectablePart, DWORD* CopyFrom) = (void(__thiscall*)(DWORD*, DWORD*))0x7A9E60;
 int(*CompositeWheel)(DWORD* ride_info, DWORD dest_namehash, DWORD src_namehash, DWORD mask_namehash, int paint_slot) = (int(*)(DWORD*, DWORD, DWORD, DWORD, int))0x749A00;
-DWORD(*GetVinylLayerHash)(DWORD* RideInfo, int VinylLayer) = (DWORD(*)(DWORD*, int))0x73B440;
-DWORD(*GetVinylLayerMaskHash)(DWORD* RideInfo, int VinylLayer) = (DWORD(*)(DWORD*, int))0x749460;
+DWORD(*GetVinylLayerHash_Game)(DWORD* RideInfo, int VinylLayer) = (DWORD(*)(DWORD*, int))0x73B440;
+DWORD(*GetVinylLayerMaskHash_Game)(DWORD* RideInfo, int VinylLayer) = (DWORD(*)(DWORD*, int))0x749460;
 DWORD(*GetSpinnerTextureHash)(DWORD* RideInfo) = (DWORD(*)(DWORD*))0x749310;
 DWORD(*GetSpinnerTextureMaskHash)(DWORD* RideInfo) = (DWORD(*)(DWORD*))0x749350;
 DWORD*(__thiscall *eModel_GetPositionMarker)(DWORD* eModel, DWORD MarkerHash) = (DWORD*(__thiscall*)(DWORD*, DWORD))0x5016D0;
@@ -234,3 +235,7 @@ void(__thiscall* CustomizeCategoryScreen_RefreshHeader)(DWORD* CustomizeCategory
 bool(__thiscall* CarCustomizeManager_IsCategoryNew_Game)(DWORD* CustomizeCategoryScreen, unsigned int MenuID) = (bool(__thiscall*)(DWORD*, unsigned int))0x7A50E0;
 void(__thiscall* CustomizePaint_Setup_Game)(DWORD* CustomizePaint) = (void(__thiscall*)(DWORD*))0x7C0980;
 bool(*CarInfo_IsSkinned_Game)(int CarType) = (bool(*)(int))0x748230;
+bool(*eLoadStreamingTexturePack)(char* FileName, void(*)(unsigned int), unsigned int Unk1, int Unk2) = (bool(*)(char*, void(*)(unsigned int), unsigned int, int))0x00507DC0;
+int (*eDisplayFrame)() = (int (*)())0x6E7220;
+DWORD*(__thiscall* eStreamPackLoader_GetStreamingEntry)(DWORD* eStreamPackLoader, unsigned int EntryHash) = (DWORD * (__thiscall*)(DWORD*, unsigned int))0x500BC0;
+void(__thiscall* sub_7B3F30)(DWORD* bList) = (void(__thiscall*)(DWORD*))0x7B3F30;

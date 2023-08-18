@@ -81,8 +81,8 @@ int GetTempCarSkinTextures(DWORD* textures_to_load, int num_textures, int max_te
 	VinylPart = RideInfo_GetPart(ride, 77);
 	if (VinylPart)
 	{
-		VinylLayerHash = GetVinylLayerHash(ride, 0);
-		VinylLayerMaskHash = GetVinylLayerMaskHash(ride, 0);
+		VinylLayerHash = GetVinylLayerHash_Game(ride, 0);
+		VinylLayerMaskHash = GetVinylLayerMaskHash_Game(ride, 0);
 		num_textures += UsedCarTextureAddToTable(textures_to_load, num_textures, max_textures, VinylLayerHash);
 		num_textures += UsedCarTextureAddToTable(textures_to_load, num_textures, max_textures, VinylLayerMaskHash);
 	}
@@ -120,6 +120,21 @@ int GetTempCarSkinTextures(DWORD* textures_to_load, int num_textures, int max_te
 	return num_textures;
 }
 
+DWORD FindScreenInfo(char const* ScreenName, int MenuID)
+{
+	if (MenuID >= 0x701 && MenuID <= 0x7FF) // Rims (front)
+	{
+		return FindScreenInfo_Game("Rims.fng", -1);
+	}
+	else if (MenuID >= 0x402 && MenuID <= 0x4FF) // Vinyls
+	{
+		if (MenuID - 0x402 >= VinylGroups.size()) MenuID = 0x403;
+		else MenuID = VinylGroups[MenuID - 0x402].UseAltCamera ? 0x403 : 0x402;
+	}
+
+	return FindScreenInfo_Game(ScreenName, MenuID);
+}
+
 DWORD FindScreenCameraInfo(DWORD ScreenInfo)
 {
 	DWORD result = FindScreenCameraInfo_Game(ScreenInfo);
@@ -128,9 +143,6 @@ DWORD FindScreenCameraInfo(DWORD ScreenInfo)
 	if (!TheGarageMainScreen) return result;
 
 	int MenuID = TheGarageMainScreen[34];
-	if (MenuID <= 0x101 && MenuID >= 0x9FF) return result;
-
-	if (ScreenInfo != TheGarageMainScreen[29]) return result;
 
 	// Get CarType Info
 	void* FECarRecord = *(void**)_FECarRecord;

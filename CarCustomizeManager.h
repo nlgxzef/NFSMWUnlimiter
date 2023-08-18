@@ -393,6 +393,8 @@ bool __fastcall CarCustomizeManager_IsCategoryNew(DWORD* _CarCustomizeManager, v
 	int SubMenuIDMax = -1; // esi MAPDST
 	char UnlockFilter; // al
 
+	if (*(bool*)_UnlockAllThings) return 0;
+
 	// submenus
 	switch (MenuID)
 	{
@@ -619,6 +621,8 @@ bool __fastcall CarCustomizeManager_IsPartNew(DWORD* _CarCustomizeManager, void*
 	char UnlockFilter; // al MAPDST
 	int UpgradeLevel; // esi
 
+	if (*(bool*)_UnlockAllThings) return 0;
+
 	if (*((BYTE*)TheSelectablePart + 28)) // Performance Part
 	{
 		UnlockableID = MapPerfPkgToUnlockable(TheSelectablePart[6]);
@@ -643,6 +647,8 @@ bool __fastcall CarCustomizeManager_IsPartLocked(DWORD* _CarCustomizeManager, vo
 	bool result; // eax
 	int CarSlotID; // ebx
 	DWORD* TheCarPart; // edi
+
+	if (*(bool*)_UnlockAllThings) return 0;
 
 	if (*((BYTE*)TheSelectablePart + 28)) // Performance Part
 	{
@@ -731,6 +737,8 @@ bool __fastcall CarCustomizeManager_IsRimCategoryLocked(DWORD* _CarCustomizeMana
 	bool result = 1;
 	DWORD PartList[2];
 
+	if (*(bool*)_UnlockAllThings) return 0;
+
 	int CurrCategoryID = MenuID - 0x702;
 
 	int RimBrandsCount = RimBrands.size();
@@ -756,6 +764,7 @@ bool __fastcall CarCustomizeManager_IsRimCategoryLocked(DWORD* _CarCustomizeMana
 		if (NextSelectablePart) TheSelectablePart = NextSelectablePart - 1;
 		else TheSelectablePart = 0;
 	}
+	sub_7B3F30(PartList);
 
 	if (Backroom && !result) result = FEMarkerManager_GetNumMarkers((DWORD*)TheFEMarkerManager, 11, 0) <= 0;
 
@@ -770,6 +779,8 @@ bool __fastcall CarCustomizeManager_IsVinylCategoryLocked(DWORD* _CarCustomizeMa
 	int VinylGroupIndex = 0;
 	bool result = 1;
 	DWORD PartList[2];
+
+	if (*(bool*)_UnlockAllThings) return 0;
 
 	int CurrCategoryID = MenuID - 0x402;
 
@@ -796,6 +807,7 @@ bool __fastcall CarCustomizeManager_IsVinylCategoryLocked(DWORD* _CarCustomizeMa
 		if (NextSelectablePart) TheSelectablePart = NextSelectablePart - 1;
 		else TheSelectablePart = 0;
 	}
+	sub_7B3F30(PartList);
 
 	if (Backroom && !result) result = FEMarkerManager_GetNumMarkers((DWORD*)TheFEMarkerManager, 14, 0) <= 0;
 
@@ -811,6 +823,8 @@ bool __fastcall CarCustomizeManager_IsCategoryLocked(DWORD* _CarCustomizeManager
 	int SubMenuIDMax = -1; // esi MAPDST
 	char UnlockFilter; // al
 	int v3 = 0;
+
+	if (*(bool*)_UnlockAllThings) return 0;
 
 	// submenus
 	switch (MenuID)

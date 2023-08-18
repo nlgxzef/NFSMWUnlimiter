@@ -139,6 +139,10 @@ void __declspec(naked) MyCarsBackroomRoomChangeCodeCave2()
 
 void __fastcall CustomizeMain_BuildOptionsList(DWORD* CustomizeMain, void* EDX_Unused)
 {
+	// Fix camera angle variable
+	DWORD* TheGarageMainScreen = GarageMainScreen_GetInstance();
+	if (TheGarageMainScreen) TheGarageMainScreen[34] = 0;
+	
 	// Get CarType Info
 	void* FECarRecord = *(void**)_FECarRecord;
 	int CarTypeID = FECarRecord_GetType(FECarRecord);

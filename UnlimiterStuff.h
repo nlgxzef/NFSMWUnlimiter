@@ -35,9 +35,9 @@ bool ManuHook, ExtraCustomization, DisappearingWheelsFix, SecondaryLogoFix, Expa
 #include "UnlockSystem.h"
 #include "eModel.h"
 #include "FrontEndRenderingCar.h"
+#include "GarageMainScreen.h"
 #include "TireState.h"
 #include "CarRenderConn.h"
-//#include "CompositeSkin.h"
 #include "Presitter.h"
 #include "UserProfile.h"
 #include "MemcardCallbacks.h"
@@ -166,7 +166,10 @@ int Init()
 		injector::MakeJMP(0x7A5F40, FEShoppingCartItem_GetCarPartCatHash, true); // Add the new names for shopping cart, 18 calls
 
 		// Camera Hook
+		injector::MakeCALL(0x7B9FDC, FindScreenInfo, true); // GarageMainScreen::HandleTick
 		injector::MakeCALL(0x7B9FE4, FindScreenCameraInfo, true); // GarageMainScreen::HandleTick
+		injector::MakeJMP(0x7A2380, CamUserRotateCodeCave_GarageMainScreen_HandleJoyEvents, true); // Disable cam rotation via keyboard, GarageMainScreen::HandleJoyEvents
+		injector::WriteMemory<BYTE>(0x7BA070, 0x4B, true); // Check angle's (ebx+5a) cam_user_rotate instead of screen's (eax+5a), GarageMainScreen::HandleTick
 
 		// Texture caves
 		if (!DisableTextureReplacement)
