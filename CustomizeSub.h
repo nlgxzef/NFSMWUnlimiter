@@ -2,6 +2,7 @@
 #include "InGameFunctions.h"
 #include "CarCustomizeManager.h"
 #include "CustomizeShoppingCart.h"
+#include "SetStockRimOption.h"
 #include "Helpers.h"
 #include "UnlimiterData.h"
 #include "IconScroller.h"
@@ -373,7 +374,7 @@ int __fastcall CustomizeSub_SetupRimBrands(DWORD* _CustomizeSub, void* EDX_Unuse
         InstalledRim = 0;
     }
     
-    //if (CarCustomizeManager_IsPartInstalled((DWORD*)_gCarCustomizeManager, InstalledRim)) InstalledRim[8] = 16; // For some reason, this breaks stock rim option
+    if (CarCustomizeManager_IsPartInstalled((DWORD*)_gCarCustomizeManager, InstalledRim)) InstalledRim[8] = 16; // For some reason, this breaks stock rim option
 
     StockRimIconOption = (DWORD*)j_malloc(0x5C);
     //v16 = 0;
@@ -383,7 +384,7 @@ int __fastcall CustomizeSub_SetupRimBrands(DWORD* _CustomizeSub, void* EDX_Unuse
         StockRimIconOption[19] = _nullString;
         StockRimIconOption[21] = 1;
         StockRimIconOption[20] = 0x7010701;
-        StockRimIconOption[0] = SetStockPartOption_vtable;
+        StockRimIconOption[0] = (DWORD)SetStockRimOption_vTable;
         StockRimIconOption[22] = (DWORD)InstalledRim;
         *((BYTE*)StockRimIconOption + 69) = 1;
     }

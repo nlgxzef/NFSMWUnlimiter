@@ -91,6 +91,8 @@ int RenderFECarFlares = -1;
 
 int RimsToCustomize = 1; // -1 = Rear, 0 = All, 1 = Front
 
+bool InShowcase = 0;
+
 // Default values for Rim Brands if _RimBrands.ini is N/A
 #define DefaultRimBrandCount 10
 

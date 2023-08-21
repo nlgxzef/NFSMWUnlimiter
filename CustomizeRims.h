@@ -278,8 +278,25 @@ void __fastcall CustomizeRims_Setup(DWORD* _CustomizeRims, void* EDX_Unused)
     void* FECarRecord = *(void**)_FECarRecord;
     int CarTypeID = FECarRecord_GetType(FECarRecord);
 
+    int CurrCategoryID = (_CustomizeRims[82] - 0x702);
+
+    // Add the brands from ini
+    if (CurrCategoryID < RimBrands.size())
+    {
+        if (CurrCategoryID == 0)
+        {
+            _CustomizeRims[87] = CarConfigs[CarTypeID].Names.PartsRimsCustom;
+
+            if (_CustomizeRims[87] == -1) _CustomizeRims[87] = RimBrands[CurrCategoryID].StringHash;
+        }
+        else
+        {
+            _CustomizeRims[87] = RimBrands[CurrCategoryID].StringHash;
+        }
+    }
+    else _CustomizeRims[87] = 0xE167F7C8; // CO_RIM_STYLE
+
     FEPackage = (const char*)_CustomizeRims[4];
-    _CustomizeRims[87] = 0xE167F7C8; //GetCarTextOptionHash(CarINI, GeneralINI, "Names", "PartsSpoilers", "CO_SPOILERS");
     ArrowL = FEngFindImage(FEPackage, 0x91C4A50u);
     FEngSetButtonTexture(ArrowL, 0x5BC); // L1
     ArrowR = FEngFindImage(FEPackage, 0x2D145BE3u);

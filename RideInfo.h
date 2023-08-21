@@ -797,3 +797,25 @@ void __fastcall RideInfo_SetStockParts_Traffic(DWORD* TheRideInfo, void* EDX_Unu
 		RideInfo_SetRandomPart(TheRideInfo, 76, -1); // BASE_PAINT
 	}
 }
+
+void __fastcall RideInfo_SetCompositeNameHash(DWORD* RideInfo, void* EDX_Unused, int id)
+{
+	DWORD result; // eax
+	char CompNameBuf[64]; // [esp+Ch] [ebp-40h] BYREF
+
+	if (id < 1 || id > CarSkinCount)
+	{
+		*((BYTE*)RideInfo + 7) = 0;
+	}
+	else
+	{
+		*((BYTE*)RideInfo + 7) = 1;
+	}
+	sprintf(CompNameBuf, "DUMMY_SKIN%d", id);
+	RideInfo[15] = IsSkinnable(RideInfo[0]) ? bStringHash(CompNameBuf) : 0;
+	sprintf(CompNameBuf, "DUMMY_WHEEL%d", id);
+	RideInfo[16] = bStringHash(CompNameBuf);
+	sprintf(CompNameBuf, "DUMMY_SPINNER%d", id);
+	result = bStringHash(CompNameBuf);
+	RideInfo[17] = result;
+}

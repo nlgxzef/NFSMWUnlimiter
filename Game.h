@@ -475,11 +475,11 @@ DWORD FindScreenCameraInfo(DWORD ScreenInfo)
 
 	if (MenuID == 0x314)
 	{
-		AnimateValue(*(float*)_CarSelectTireSteerAngle, -20.0f, 3.0f);
+		AnimateValue(*(float*)_CarSelectTireSteerAngle, -20.0f, 50.0f * (*(float*)_RealTimeElapsedFrame));
 	}
 	else
 	{
-		AnimateValue(*(float*)_CarSelectTireSteerAngle, CarSelectTireSteerAngle_Backup, 3.0f);
+		AnimateValue(*(float*)_CarSelectTireSteerAngle, CarSelectTireSteerAngle_Backup, 50.0f * (*(float*)_RealTimeElapsedFrame));
 	}
 
 	if (CustomAngle != 0 && CustomAngle != 0x82FC1624) result = CustomAngle;

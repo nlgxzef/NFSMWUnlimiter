@@ -485,7 +485,7 @@ void __fastcall FEShoppingCartItem_DrawPartName(DWORD* FEShoppingCartItem)
     int RightDoorNumberRight; // eax
     DWORD* RightDoorNumberLeftPart; // ebp
     DWORD* RightDoorNumberRightPart; // ebx
-    DWORD DecalSlotNameHash; // ebx
+    DWORD SlotNameHash; // ebx
     const char* Decals; // eax MAPDST
     int PartNameBufLen; // eax
     DWORD* CartItemName; // ebx MAPDST
@@ -497,7 +497,7 @@ void __fastcall FEShoppingCartItem_DrawPartName(DWORD* FEShoppingCartItem)
     DWORD PartNameHash; // eax MAPDST
     const char* PaintTypeName; // [esp-8h] [ebp-5Ch] MAPDST
     const char* LeftNumberName; // [esp-8h] [ebp-5Ch] MAPDST
-    const char* DecalSlotName; // [esp-8h] [ebp-5Ch] MAPDST
+    const char* SlotName; // [esp-8h] [ebp-5Ch] MAPDST
     const char* Junkman; // [esp-4h] [ebp-58h] MAPDST
     const char* PartName; // [esp-4h] [ebp-58h] MAPDST
     const char* SpeechColourName; // [esp-4h] [ebp-58h] MAPDST
@@ -544,6 +544,11 @@ void __fastcall FEShoppingCartItem_DrawPartName(DWORD* FEShoppingCartItem)
             PartNameHash = CarPart_GetAppliedAttributeUParam(ThePartInCart, bStringHash((char*)"LANGUAGEHASH"), 0);
             if (PartNameHash) PartName = GetLocalizedString(PartNameHash);
             else PartName = CarPart_GetName(*(DWORD**)(SelectablePart + 12));
+
+            CarSlotID = *(DWORD*)(SelectablePart + 16);
+            SlotNameHash = CarSlotID == 67 ? bStringHash((char*)"CUSTOMIZE_REAR_WHEEL") : bStringHash((char*)"CUSTOMIZE_FRONT_WHEEL");
+            SlotName = GetLocalizedString(SlotNameHash);
+
             bSNPrintf(PartNameBuf, 64, "%s", PartName);
             PartNameBufLen = strlen(PartNameBuf);
             if (PartNameBufLen > 0)
@@ -557,20 +562,20 @@ void __fastcall FEShoppingCartItem_DrawPartName(DWORD* FEShoppingCartItem)
                 CurrLanguage = GetCurrentLanguage();
                 ThePartInCart = *(DWORD**)(SelectablePart + 12);
                 CartItemName = *((DWORD**)FEShoppingCartItem + 11);
-                CarSlotID = *(DWORD*)(SelectablePart + 16);
+                
                 if (CurrLanguage == 1)
                 {
                     InnerRadius = (char)CarPart_GetAppliedAttributeIParam(ThePartInCart, 0xEB0101E2, 0);// INNER_RADIUS
                     PartCategoryNameHash = FEShoppingCartItem_GetCarPartCatHash(FEShoppingCartItem, 0, CarSlotID);
                     PartCategoryName = GetLocalizedString(PartCategoryNameHash);
-                    FEPrintf_obj(CartItemName, "%s : %s %$d\"", PartCategoryName, PartNameBuf, InnerRadius);
+                    FEPrintf_obj(CartItemName, "%s - %s : %s %$d\"", PartCategoryName, SlotName, PartNameBuf, InnerRadius);
                 }
                 else
                 {
                     InnerRadius = (char)CarPart_GetAppliedAttributeIParam(ThePartInCart, 0xEB0101E2, 0);// INNER_RADIUS
                     PartCategoryNameHash = FEShoppingCartItem_GetCarPartCatHash(FEShoppingCartItem, 0, CarSlotID);
                     PartCategoryName = GetLocalizedString(PartCategoryNameHash);
-                    FEPrintf_obj(CartItemName, "%s: %s %$d\"", PartCategoryName, PartNameBuf, InnerRadius);
+                    FEPrintf_obj(CartItemName, "%s - %s: %s %$d\"", PartCategoryName, SlotName, PartNameBuf, InnerRadius);
                 }
             }
             return;
@@ -716,7 +721,7 @@ void __fastcall FEShoppingCartItem_DrawPartName(DWORD* FEShoppingCartItem)
                 case 107:
                 case 115:
                 case 123:
-                    DecalSlotNameHash = bStringHash((char*)"CO_DECAL_SLOT_1");
+                    SlotNameHash = bStringHash((char*)"CO_DECAL_SLOT_1");
                     goto LABEL_45;
                 case 84:
                 case 92:
@@ -724,7 +729,7 @@ void __fastcall FEShoppingCartItem_DrawPartName(DWORD* FEShoppingCartItem)
                 case 108:
                 case 116:
                 case 124:
-                    DecalSlotNameHash = bStringHash((char*)"CO_DECAL_SLOT_2");
+                    SlotNameHash = bStringHash((char*)"CO_DECAL_SLOT_2");
                     goto LABEL_45;
                 case 85:
                 case 93:
@@ -732,7 +737,7 @@ void __fastcall FEShoppingCartItem_DrawPartName(DWORD* FEShoppingCartItem)
                 case 109:
                 case 117:
                 case 125:
-                    DecalSlotNameHash = bStringHash((char*)"CO_DECAL_SLOT_3");
+                    SlotNameHash = bStringHash((char*)"CO_DECAL_SLOT_3");
                     goto LABEL_45;
                 case 86:
                 case 94:
@@ -740,7 +745,7 @@ void __fastcall FEShoppingCartItem_DrawPartName(DWORD* FEShoppingCartItem)
                 case 110:
                 case 118:
                 case 126:
-                    DecalSlotNameHash = bStringHash((char*)"CO_DECAL_SLOT_4");
+                    SlotNameHash = bStringHash((char*)"CO_DECAL_SLOT_4");
                     goto LABEL_45;
                 case 87:
                 case 95:
@@ -748,7 +753,7 @@ void __fastcall FEShoppingCartItem_DrawPartName(DWORD* FEShoppingCartItem)
                 case 111:
                 case 119:
                 case 127:
-                    DecalSlotNameHash = bStringHash((char*)"CO_DECAL_SLOT_5");
+                    SlotNameHash = bStringHash((char*)"CO_DECAL_SLOT_5");
                     goto LABEL_45;
                 case 88:
                 case 96:
@@ -756,19 +761,19 @@ void __fastcall FEShoppingCartItem_DrawPartName(DWORD* FEShoppingCartItem)
                 case 112:
                 case 120:
                 case 128:
-                    DecalSlotNameHash = bStringHash((char*)"CO_DECAL_SLOT_6");
+                    SlotNameHash = bStringHash((char*)"CO_DECAL_SLOT_6");
                     goto LABEL_45;
                 case 89:
                 case 97:
                 case 121:
                 case 129:
-                    DecalSlotNameHash = bStringHash((char*)"CO_DECAL_SLOT_7");
+                    SlotNameHash = bStringHash((char*)"CO_DECAL_SLOT_7");
                     goto LABEL_45;
                 case 90:
                 case 98:
                 case 122:
                 case 130:
-                    DecalSlotNameHash = bStringHash((char*)"CO_DECAL_SLOT_8");
+                    SlotNameHash = bStringHash((char*)"CO_DECAL_SLOT_8");
                     //goto LABEL_45;
                 LABEL_45:
                     CurrLanguage = GetCurrentLanguage();
@@ -778,20 +783,20 @@ void __fastcall FEShoppingCartItem_DrawPartName(DWORD* FEShoppingCartItem)
                     if (CurrLanguage == 1)
                     {
                         PartName = CarPart_GetName(ThePartInCart);
-                        DecalSlotName = GetLocalizedString(DecalSlotNameHash);
+                        SlotName = GetLocalizedString(SlotNameHash);
                         PartCategoryNameHash = FEShoppingCartItem_GetCarPartCatHash(FEShoppingCartItem, 0, CarSlotID);
                         PartCategoryName = GetLocalizedString(PartCategoryNameHash);
                         Decals = GetLocalizedString(0x955980BC);// CO_DECALS
-                        FEPrintf_obj(CartItemName, "%s : %s %s %s", Decals, PartCategoryName, DecalSlotName, PartName);
+                        FEPrintf_obj(CartItemName, "%s : %s %s %s", Decals, PartCategoryName, SlotName, PartName);
                     }
                     else
                     {
                         PartName = CarPart_GetName(ThePartInCart);
-                        DecalSlotName = GetLocalizedString(DecalSlotNameHash);
+                        SlotName = GetLocalizedString(SlotNameHash);
                         PartCategoryNameHash = FEShoppingCartItem_GetCarPartCatHash(FEShoppingCartItem, 0, CarSlotID);
                         PartCategoryName = GetLocalizedString(PartCategoryNameHash);
                         Decals = GetLocalizedString(0x955980BC);
-                        FEPrintf_obj(CartItemName, "%s: %s %s %s", Decals, PartCategoryName, DecalSlotName, PartName);
+                        FEPrintf_obj(CartItemName, "%s: %s %s %s", Decals, PartCategoryName, SlotName, PartName);
                     }
                     break;
                 default:

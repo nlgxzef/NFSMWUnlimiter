@@ -239,3 +239,5 @@ bool(*eLoadStreamingTexturePack)(char* FileName, void(*)(unsigned int), unsigned
 int (*eDisplayFrame)() = (int (*)())0x6E7220;
 DWORD*(__thiscall* eStreamPackLoader_GetStreamingEntry)(DWORD* eStreamPackLoader, unsigned int EntryHash) = (DWORD * (__thiscall*)(DWORD*, unsigned int))0x500BC0;
 void(__thiscall* sub_7B3F30)(DWORD* bList) = (void(__thiscall*)(DWORD*))0x7B3F30;
+void(__thiscall* Showcase_ctor)(DWORD* Showcase, DWORD* ScreenConstructorData) = (void(__thiscall*)(DWORD*, DWORD*))0x7A4680;
+void(__thiscall* Showcase_dtor)(DWORD* Showcase) = (void(__thiscall*)(DWORD*))0x7A4890;

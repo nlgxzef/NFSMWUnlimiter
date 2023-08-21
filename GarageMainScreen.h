@@ -7,8 +7,8 @@ void __declspec(naked) CamUserRotateCodeCave_GarageMainScreen_HandleJoyEvents()
 {
 	_asm
 	{
-		mov eax, dword ptr ds: [_Showcase_FromArgs] // check showcase mode
-		test eax,eax
+		mov al, byte ptr ds: [InShowcase] // check showcase mode
+		test al,al
 		jz loc_7A25DD
 		
 		mov al, byte ptr ds: [esi+0x78] // check cam_user_rotate

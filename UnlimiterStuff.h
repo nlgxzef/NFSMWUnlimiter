@@ -36,6 +36,7 @@ bool ManuHook, ExtraCustomization, DisappearingWheelsFix, SecondaryLogoFix, Expa
 #include "eModel.h"
 #include "FrontEndRenderingCar.h"
 #include "GarageMainScreen.h"
+#include "Showcase.h"
 #include "TireState.h"
 #include "CarRenderConn.h"
 #include "Presitter.h"
@@ -170,6 +171,10 @@ int Init()
 		injector::MakeCALL(0x7B9FE4, FindScreenCameraInfo, true); // GarageMainScreen::HandleTick
 		injector::MakeJMP(0x7A2380, CamUserRotateCodeCave_GarageMainScreen_HandleJoyEvents, true); // Disable cam rotation via keyboard, GarageMainScreen::HandleJoyEvents
 		injector::WriteMemory<BYTE>(0x7BA070, 0x4B, true); // Check angle's (ebx+5a) cam_user_rotate instead of screen's (eax+5a), GarageMainScreen::HandleTick
+
+		// Showcase mode check
+		injector::MakeCALL(0x570D56, Showcase_ctor_Hook, true); // CreateShowcase
+		injector::MakeCALL(0x7AEA93, Showcase_dtor_Hook, true); // Showcase::~Showcase
 
 		// Texture caves
 		if (!DisableTextureReplacement)
@@ -481,10 +486,15 @@ int Init()
 		injector::MakeRangedNOP(0x75D2BB, 0x75D2D6, true);
 		injector::WriteMemory<unsigned char>(0x75D2B6, CarSkinCount, true); // 4 -> 20
 
+		/*
 		// RideInfo::SetCompositeNameHash
 		injector::MakeRangedNOP(0x747F2B, 0x747F3B, true); // Skip precomposite skins
 		injector::MakeJMP(0x747F2B, 0x747F3B, true);
 		injector::WriteMemory<unsigned char>(0x747F22, CarSkinCount, true); // 4 -> 20
+		*/
+
+		injector::MakeCALL(0x75D2EE, RideInfo_SetCompositeNameHash, true); // VehicleRenderConn::Load
+		injector::MakeCALL(0x7A27CB, RideInfo_SetCompositeNameHash, true); // GarageCarLoader::LoadRideInfo
 	}
 
 #ifdef _DEBUG

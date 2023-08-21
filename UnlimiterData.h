@@ -365,7 +365,7 @@ void LoadCarConfigs()
 	DefaultCarConfig.Names.PartsSpoilers = mINI_ReadHashS(GeneralINI, "Names", "PartsSpoilers", "CO_SPOILERS");
 	DefaultCarConfig.Names.PartsRims = mINI_ReadHashS(GeneralINI, "Names", "PartsRims", "CO_RIMS");
 	DefaultCarConfig.Names.PartsRimsBrand = mINI_ReadHashS(GeneralINI, "Names", "PartsRimsBrand", "CO_RIM_BRAND");
-	DefaultCarConfig.Names.PartsRimsCustom = mINI_ReadHashS(GeneralINI, "Names", "PartsRimsCustom =");
+	DefaultCarConfig.Names.PartsRimsCustom = mINI_ReadHashS(GeneralINI, "Names", "PartsRimsCustom");
 	DefaultCarConfig.Names.PartsHoods = mINI_ReadHashS(GeneralINI, "Names", "PartsHoods", "CO_HOODS");
 	DefaultCarConfig.Names.PartsRoofScoops = mINI_ReadHashS(GeneralINI, "Names", "PartsRoofScoops", "CO_ROOF_SCOOPS");
 	DefaultCarConfig.Names.PartsInterior = mINI_ReadHashS(GeneralINI, "Names", "PartsInterior", "CO_INTERIOR");
