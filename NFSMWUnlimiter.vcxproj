@@ -45,12 +45,20 @@
     <LinkIncremental>true</LinkIncremental>
     <TargetExt>.asi</TargetExt>
     <TargetName>$(ProjectName)</TargetName>
+    <IncludePath>$(DXSDK_DIR)include;$(IncludePath)</IncludePath>
+    <ExternalIncludePath>$(ExternalIncludePath)</ExternalIncludePath>
+    <LibraryPath>$(DXSDK_DIR)lib\x86;$(LibraryPath)</LibraryPath>
+    <ReferencePath>$(ReferencePath)</ReferencePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <TargetExt>.asi</TargetExt>
     <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
     <TargetName>$(ProjectName)</TargetName>
+    <IncludePath>$(DXSDK_DIR)include;$(IncludePath)</IncludePath>
+    <ExternalIncludePath>$(ExternalIncludePath)</ExternalIncludePath>
+    <LibraryPath>$(DXSDK_DIR)lib\x86;$(LibraryPath)</LibraryPath>
+    <ReferencePath>$(ReferencePath)</ReferencePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -94,9 +102,14 @@ copy "$(TargetDir)*.pdb" "G:\Oyunlar\Need for Speed Most Wanted Dirty\scripts"  
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Attrib.h" />
+    <ClInclude Include="bMatrix.h" />
+    <ClInclude Include="bVector.h" />
     <ClInclude Include="CarCustomizeManager.h" />
     <ClInclude Include="CarRenderConn.h" />
+    <ClInclude Include="CarSlotID.h" />
     <ClInclude Include="CodeCaves.h" />
+    <ClInclude Include="Color.h" />
     <ClInclude Include="CustomizeDecals.h" />
     <ClInclude Include="CustomizeMain.h" />
     <ClInclude Include="CustomizePaint.h" />
@@ -106,7 +119,9 @@ copy "$(TargetDir)*.pdb" "G:\Oyunlar\Need for Speed Most Wanted Dirty\scripts"  
     <ClInclude Include="CustomizeShoppingCart.h" />
     <ClInclude Include="CustomizeSpoiler.h" />
     <ClInclude Include="CustomizeSub.h" />
+    <ClInclude Include="eLightFlare.h" />
     <ClInclude Include="eModel.h" />
+    <ClInclude Include="ePositionMarker.h" />
     <ClInclude Include="FECarRecord.h" />
     <ClInclude Include="FECustomizationRecord.h" />
     <ClInclude Include="FEPackage.h" />
@@ -121,11 +136,14 @@ copy "$(TargetDir)*.pdb" "G:\Oyunlar\Need for Speed Most Wanted Dirty\scripts"  
     <ClInclude Include="IconScroller.h" />
     <ClInclude Include="includes\ini.h" />
     <ClInclude Include="InGameFunctions.h" />
+    <ClInclude Include="InGameTypes.h" />
     <ClInclude Include="MemcardCallbacks.h" />
+    <ClInclude Include="MenuID.h" />
     <ClInclude Include="Presitter.h" />
     <ClInclude Include="PursuitBoard.h" />
     <ClInclude Include="QuickRaceUnlocker.h" />
     <ClInclude Include="RealmcIface_MemcardInterfaceImpl.h" />
+    <ClInclude Include="ReplacementTextureEntry.h" />
     <ClInclude Include="RideInfo.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="SetStockRimOption.h" />
@@ -140,7 +158,9 @@ copy "$(TargetDir)*.pdb" "G:\Oyunlar\Need for Speed Most Wanted Dirty\scripts"  
     <ClInclude Include="UnlimiterStuff.h" />
     <ClInclude Include="CarPart.h" />
     <ClInclude Include="UnlockSystem.h" />
+    <ClInclude Include="UsedCarTextureInfo.h" />
     <ClInclude Include="UserProfile.h" />
+    <ClInclude Include="VehicleRenderConn.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">

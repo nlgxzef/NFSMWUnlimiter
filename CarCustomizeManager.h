@@ -63,13 +63,13 @@ int __fastcall CarCustomizeManager_GetPartPrice(DWORD* _CarCustomizeManager, voi
 
             switch (CarSlotID)// Body and Visual Parts
             {
-            case 79:                                  // VINYL_COLOUR0_0
-            case 80:                                  // VINYL_COLOUR0_1
-            case 81:                                  // VINYL_COLOUR0_2
-            case 82:                                  // VINYL_COLOUR0_3
-            case 133:                                 // HUD_BACKING_COLOUR
-            case 134:                                 // HUD_NEEDLE_COLOUR
-            case 135:                                 // HUD_CHARACTER_COLOUR
+			case CAR_SLOT_ID::VINYL_COLOUR0_0:
+            case CAR_SLOT_ID::VINYL_COLOUR0_1:
+            case CAR_SLOT_ID::VINYL_COLOUR0_2:
+            case CAR_SLOT_ID::VINYL_COLOUR0_3:
+			case CAR_SLOT_ID::HUD_BACKING_COLOUR:
+			case CAR_SLOT_ID::HUD_NEEDLE_COLOUR:
+			case CAR_SLOT_ID::HUD_CHARACTER_COLOUR:
                 break;
             default:
                 UnlockFilter = CarCustomizeManager_GetUnlockFilter();
@@ -158,18 +158,36 @@ void __declspec(naked) IsLockedCodeCaveVisual()
     }
 }
 
+DWORD* __fastcall CarCustomizeManager_GetRealStockCarPart(DWORD* _CarCustomizeManager, void* EDX_Unused, int CarSlotID)
+{
+	int CarType = FECarRecord_GetType(*(void**)_FECarRecord);
+	return FindPartWithLevel(CarType, CarSlotID, 0);
+}
+
+bool __fastcall CarCustomizeManager_IsFrontRimStock(DWORD* _CarCustomizeManager, void* EDX_Unused)
+{
+	DWORD* StockFrontWheel = CarCustomizeManager_GetRealStockCarPart((DWORD*)_gCarCustomizeManager, EDX_Unused, CAR_SLOT_ID::FRONT_WHEEL);
+	DWORD* InstalledFrontWheel = CarCustomizeManager_GetInstalledCarPart((DWORD*)_gCarCustomizeManager, CAR_SLOT_ID::FRONT_WHEEL);
+	return StockFrontWheel == InstalledFrontWheel;
+}
+
+bool __fastcall CarCustomizeManager_IsRearRimStock(DWORD* _CarCustomizeManager, void* EDX_Unused)
+{
+	DWORD* StockRearWheel = CarCustomizeManager_GetRealStockCarPart((DWORD*)_gCarCustomizeManager, EDX_Unused, CAR_SLOT_ID::REAR_WHEEL);
+	DWORD* InstalledRearWheel = CarCustomizeManager_GetInstalledCarPart((DWORD*)_gCarCustomizeManager, CAR_SLOT_ID::REAR_WHEEL);
+	return StockRearWheel == InstalledRearWheel;
+}
+
+bool __fastcall CarCustomizeManager_IsRearRimInstalled(DWORD* _CarCustomizeManager, void* EDX_Unused)
+{
+	DWORD* InstalledRearWheel = CarCustomizeManager_GetInstalledCarPart((DWORD*)_gCarCustomizeManager, CAR_SLOT_ID::REAR_WHEEL);
+	return InstalledRearWheel;
+}
+
 bool __fastcall CarCustomizeManager_AreAllRimsStock(DWORD* _CarCustomizeManager, void* EDX_Unused)
 {
-    DWORD* StockFrontWheel = CarCustomizeManager_GetStockCarPart((DWORD*)_gCarCustomizeManager, 66); // FRONT_WHEEL
-    DWORD* StockRearWheel = CarCustomizeManager_GetStockCarPart((DWORD*)_gCarCustomizeManager, 67); // FRONT_WHEEL
-
-    DWORD* InstalledFrontWheel = CarCustomizeManager_GetInstalledCarPart((DWORD*)_gCarCustomizeManager, 66);
-    DWORD* InstalledRearWheel = CarCustomizeManager_GetInstalledCarPart((DWORD*)_gCarCustomizeManager, 67);
-
-    bool IsFrontStock = StockFrontWheel == InstalledFrontWheel;
-    bool IsRearStock = !InstalledRearWheel || StockRearWheel == InstalledRearWheel;
-
-    return IsFrontStock && IsRearStock;
+    return CarCustomizeManager_IsFrontRimStock(_CarCustomizeManager, 0) && 
+		(!CarCustomizeManager_IsRearRimInstalled(_CarCustomizeManager, 0) || CarCustomizeManager_IsRearRimStock(_CarCustomizeManager, 0));
 }
 
 bool CarCustomizeManager_IsCareerMode_CheckTCC()
@@ -201,181 +219,181 @@ void __fastcall CarCustomizeManager_UpdateHeatOnVehicle(DWORD* CarCustomizeManag
 
         switch (TheSelectablePart[4]) // CarSlotID
         {
-        case 23: // BODY
+		case CAR_SLOT_ID::BODY:
             CustomFECoolingValue = CarConfigs[CarType].FECooling.BodyKits;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             else FECareerRecord_AdjustHeatOnBodyKitApplied(FECareerRecord, HeatAdjustMultiplier);
             break;
-        case 44: // SPOILER
+		case CAR_SLOT_ID::SPOILER:
             CustomFECoolingValue = CarConfigs[CarType].FECooling.Spoilers;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             else FECareerRecord_AdjustHeatOnSpoilerApplied(FECareerRecord, HeatAdjustMultiplier);
             break;
-        case 62: // ROOF
+		case CAR_SLOT_ID::ROOF:
             CustomFECoolingValue = CarConfigs[CarType].FECooling.RoofScoops;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             else FECareerRecord_AdjustHeatOnRoofScoopApplied(FECareerRecord, HeatAdjustMultiplier);
             break;
-        case 63: // HOOD
+		case CAR_SLOT_ID::HOOD:
             CustomFECoolingValue = CarConfigs[CarType].FECooling.Hoods;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             else FECareerRecord_AdjustHeatOnHoodApplied(FECareerRecord, HeatAdjustMultiplier);
             break;
-        case 66: // FRONT_WHEEL
-        case 67: // REAR_WHEEL
+		case CAR_SLOT_ID::FRONT_WHEEL:
+		case CAR_SLOT_ID::REAR_WHEEL:
             CustomFECoolingValue = CarConfigs[CarType].FECooling.Rims;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             else FECareerRecord_AdjustHeatOnRimApplied(FECareerRecord, HeatAdjustMultiplier);
             break;
-        case 76: // BASE_PAINT
+		case CAR_SLOT_ID::BASE_PAINT:
             CustomFECoolingValue = CarConfigs[CarType].FECooling.Paint;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             else FECareerRecord_AdjustHeatOnPaintApplied(FECareerRecord, HeatAdjustMultiplier);
             break;
-        case 77: // VINYL_LAYER0
+		case CAR_SLOT_ID::VINYL_LAYER0:
             CustomFECoolingValue = CarConfigs[CarType].FECooling.Vinyls;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             else FECareerRecord_AdjustHeatOnVinylApplied(FECareerRecord, HeatAdjustMultiplier);
             break;
-        case 78: // PAINT_RIM
+		case CAR_SLOT_ID::PAINT_RIM:
             CustomFECoolingValue = CarConfigs[CarType].FECooling.RimPaint;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             else FECareerRecord_AdjustHeatOnRimPaintApplied(FECareerRecord, HeatAdjustMultiplier);
             break;
-        case 83: // DECAL_FRONT_WINDOW_TEX0
-        case 84: // DECAL_FRONT_WINDOW_TEX1
-        case 85: // DECAL_FRONT_WINDOW_TEX2
-        case 86: // DECAL_FRONT_WINDOW_TEX3
-        case 87: // DECAL_FRONT_WINDOW_TEX4
-        case 88: // DECAL_FRONT_WINDOW_TEX5
-        case 89: // DECAL_FRONT_WINDOW_TEX6
-        case 90: // DECAL_FRONT_WINDOW_TEX7
-        case 91: // DECAL_REAR_WINDOW_TEX0
-        case 92: // DECAL_REAR_WINDOW_TEX1
-        case 93: // DECAL_REAR_WINDOW_TEX2
-        case 94: // DECAL_REAR_WINDOW_TEX3
-        case 95: // DECAL_REAR_WINDOW_TEX4
-        case 96: // DECAL_REAR_WINDOW_TEX5
-        case 97: // DECAL_REAR_WINDOW_TEX6
-        case 98: // DECAL_REAR_WINDOW_TEX7
-        case 99: // DECAL_LEFT_DOOR_TEX0
-        case 100: // DECAL_LEFT_DOOR_TEX1
-        case 101: // DECAL_LEFT_DOOR_TEX2
-        case 102: // DECAL_LEFT_DOOR_TEX3
-        case 103: // DECAL_LEFT_DOOR_TEX4
-        case 104: // DECAL_LEFT_DOOR_TEX5
-        case 105: // DECAL_LEFT_DOOR_TEX6
-        case 106: // DECAL_LEFT_DOOR_TEX7
-        case 107: // DECAL_RIGHT_DOOR_TEX0
-        case 108: // DECAL_RIGHT_DOOR_TEX1
-        case 109: // DECAL_RIGHT_DOOR_TEX2
-        case 110: // DECAL_RIGHT_DOOR_TEX3
-        case 111: // DECAL_RIGHT_DOOR_TEX4
-        case 112: // DECAL_RIGHT_DOOR_TEX5
-        case 113: // DECAL_RIGHT_DOOR_TEX6
-        case 114: // DECAL_RIGHT_DOOR_TEX7
-        case 115: // DECAL_LEFT_QUARTER_TEX0
-        case 116: // DECAL_LEFT_QUARTER_TEX1
-        case 117: // DECAL_LEFT_QUARTER_TEX2
-        case 118: // DECAL_LEFT_QUARTER_TEX3
-        case 119: // DECAL_LEFT_QUARTER_TEX4
-        case 120: // DECAL_LEFT_QUARTER_TEX5
-        case 121: // DECAL_LEFT_QUARTER_TEX6
-        case 122: // DECAL_LEFT_QUARTER_TEX7
-        case 123: // DECAL_RIGHT_QUARTER_TEX0
-        case 124: // DECAL_RIGHT_QUARTER_TEX1
-        case 125: // DECAL_RIGHT_QUARTER_TEX2
-        case 126: // DECAL_RIGHT_QUARTER_TEX3
-        case 127: // DECAL_RIGHT_QUARTER_TEX4
-        case 128: // DECAL_RIGHT_QUARTER_TEX5
-        case 129: // DECAL_RIGHT_QUARTER_TEX6
-        case 130: // DECAL_RIGHT_QUARTER_TEX7
+        case CAR_SLOT_ID::DECAL_FRONT_WINDOW_TEX0:
+        case CAR_SLOT_ID::DECAL_FRONT_WINDOW_TEX1:
+        case CAR_SLOT_ID::DECAL_FRONT_WINDOW_TEX2:
+        case CAR_SLOT_ID::DECAL_FRONT_WINDOW_TEX3:
+        case CAR_SLOT_ID::DECAL_FRONT_WINDOW_TEX4:
+        case CAR_SLOT_ID::DECAL_FRONT_WINDOW_TEX5:
+        case CAR_SLOT_ID::DECAL_FRONT_WINDOW_TEX6:
+        case CAR_SLOT_ID::DECAL_FRONT_WINDOW_TEX7:
+        case CAR_SLOT_ID::DECAL_REAR_WINDOW_TEX0:
+        case CAR_SLOT_ID::DECAL_REAR_WINDOW_TEX1:
+        case CAR_SLOT_ID::DECAL_REAR_WINDOW_TEX2:
+        case CAR_SLOT_ID::DECAL_REAR_WINDOW_TEX3:
+        case CAR_SLOT_ID::DECAL_REAR_WINDOW_TEX4:
+        case CAR_SLOT_ID::DECAL_REAR_WINDOW_TEX5:
+        case CAR_SLOT_ID::DECAL_REAR_WINDOW_TEX6:
+        case CAR_SLOT_ID::DECAL_REAR_WINDOW_TEX7:
+        case CAR_SLOT_ID::DECAL_LEFT_DOOR_TEX0:
+        case CAR_SLOT_ID::DECAL_LEFT_DOOR_TEX1:
+        case CAR_SLOT_ID::DECAL_LEFT_DOOR_TEX2:
+        case CAR_SLOT_ID::DECAL_LEFT_DOOR_TEX3:
+        case CAR_SLOT_ID::DECAL_LEFT_DOOR_TEX4:
+        case CAR_SLOT_ID::DECAL_LEFT_DOOR_TEX5:
+        case CAR_SLOT_ID::DECAL_LEFT_DOOR_TEX6:
+        case CAR_SLOT_ID::DECAL_LEFT_DOOR_TEX7:
+        case CAR_SLOT_ID::DECAL_RIGHT_DOOR_TEX0:
+        case CAR_SLOT_ID::DECAL_RIGHT_DOOR_TEX1:
+        case CAR_SLOT_ID::DECAL_RIGHT_DOOR_TEX2:
+        case CAR_SLOT_ID::DECAL_RIGHT_DOOR_TEX3:
+        case CAR_SLOT_ID::DECAL_RIGHT_DOOR_TEX4:
+        case CAR_SLOT_ID::DECAL_RIGHT_DOOR_TEX5:
+        case CAR_SLOT_ID::DECAL_RIGHT_DOOR_TEX6:
+        case CAR_SLOT_ID::DECAL_RIGHT_DOOR_TEX7:
+        case CAR_SLOT_ID::DECAL_LEFT_QUARTER_TEX0:
+        case CAR_SLOT_ID::DECAL_LEFT_QUARTER_TEX1:
+        case CAR_SLOT_ID::DECAL_LEFT_QUARTER_TEX2:
+        case CAR_SLOT_ID::DECAL_LEFT_QUARTER_TEX3:
+        case CAR_SLOT_ID::DECAL_LEFT_QUARTER_TEX4:
+        case CAR_SLOT_ID::DECAL_LEFT_QUARTER_TEX5:
+        case CAR_SLOT_ID::DECAL_LEFT_QUARTER_TEX6:
+        case CAR_SLOT_ID::DECAL_LEFT_QUARTER_TEX7:
+        case CAR_SLOT_ID::DECAL_RIGHT_QUARTER_TEX0:
+        case CAR_SLOT_ID::DECAL_RIGHT_QUARTER_TEX1:
+        case CAR_SLOT_ID::DECAL_RIGHT_QUARTER_TEX2:
+        case CAR_SLOT_ID::DECAL_RIGHT_QUARTER_TEX3:
+        case CAR_SLOT_ID::DECAL_RIGHT_QUARTER_TEX4:
+        case CAR_SLOT_ID::DECAL_RIGHT_QUARTER_TEX5:
+        case CAR_SLOT_ID::DECAL_RIGHT_QUARTER_TEX6:
+        case CAR_SLOT_ID::DECAL_RIGHT_QUARTER_TEX7:
             CustomFECoolingValue = CarConfigs[CarType].FECooling.Decals;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             else FECareerRecord_AdjustHeatOnDecalApplied(FECareerRecord, HeatAdjustMultiplier);
             break;
-        case 131: // WINDOW_TINT
+		case CAR_SLOT_ID::WINDOW_TINT:
             CustomFECoolingValue = CarConfigs[CarType].FECooling.WindowTint;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             else FECareerRecord_AdjustHeatOnWindowTintApplied(FECareerRecord, HeatAdjustMultiplier);
             break;
-        case 28: // INTERIOR
+		case CAR_SLOT_ID::INTERIOR:
             CustomFECoolingValue = CarConfigs[CarType].FECooling.Interior;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             break;
-        case 0: // BASE
+		case CAR_SLOT_ID::BASE:
             CustomFECoolingValue = CarConfigs[CarType].FECooling.Roof;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             break;
-        case 24: // FRONT_BRAKE
+		case CAR_SLOT_ID::FRONT_BRAKE:
             CustomFECoolingValue = CarConfigs[CarType].FECooling.Brakes;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             break;
-        case 31: // LEFT_HEADLIGHT
+		case CAR_SLOT_ID::LEFT_HEADLIGHT:
             CustomFECoolingValue = CarConfigs[CarType].FECooling.Headlights;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             break;
-        case 29: // LEFT_BRAKELIGHT
+		case CAR_SLOT_ID::LEFT_BRAKELIGHT:
             CustomFECoolingValue = CarConfigs[CarType].FECooling.Taillights;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             break;
-        case 33: // LEFT_SIDE_MIRROR
+		case CAR_SLOT_ID::LEFT_SIDE_MIRROR:
             CustomFECoolingValue = CarConfigs[CarType].FECooling.Mirrors;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             break;
-        case 52: // ATTACHMENT0
+		case CAR_SLOT_ID::ATTACHMENT0:
             CustomFECoolingValue = CarConfigs[CarType].FECooling.Attachment0;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             break;
-        case 53: // ATTACHMENT1
+		case CAR_SLOT_ID::ATTACHMENT1:
             CustomFECoolingValue = CarConfigs[CarType].FECooling.Attachment1;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             break;
-        case 54: // ATTACHMENT2
+		case CAR_SLOT_ID::ATTACHMENT2:
             CustomFECoolingValue = CarConfigs[CarType].FECooling.Attachment2;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             break;
-        case 55: // ATTACHMENT3
+		case CAR_SLOT_ID::ATTACHMENT3:
             CustomFECoolingValue = CarConfigs[CarType].FECooling.Attachment3;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             break;
-        case 56: // ATTACHMENT4
+		case CAR_SLOT_ID::ATTACHMENT4:
             CustomFECoolingValue = CarConfigs[CarType].FECooling.Attachment4;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             break;
-        case 57: // ATTACHMENT5
+		case CAR_SLOT_ID::ATTACHMENT5:
             CustomFECoolingValue = CarConfigs[CarType].FECooling.Attachment5;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             break;
-        case 58: // ATTACHMENT6
+		case CAR_SLOT_ID::ATTACHMENT6:
             CustomFECoolingValue = CarConfigs[CarType].FECooling.Attachment6;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             break;
-        case 59: // ATTACHMENT7
+		case CAR_SLOT_ID::ATTACHMENT7:
             CustomFECoolingValue = CarConfigs[CarType].FECooling.Attachment7;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             break;
-        case 60: // ATTACHMENT8
+		case CAR_SLOT_ID::ATTACHMENT8:
             CustomFECoolingValue = CarConfigs[CarType].FECooling.Attachment8;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             break;
-        case 61: // ATTACHMENT9
+		case CAR_SLOT_ID::ATTACHMENT9:
             CustomFECoolingValue = CarConfigs[CarType].FECooling.Attachment9;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             break;
-        case 43: // DRIVER
+		case CAR_SLOT_ID::DRIVER:
             CustomFECoolingValue = CarConfigs[CarType].FECooling.Driver;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             break;
-        case 69: // LICENSE_PLATE
+		case CAR_SLOT_ID::LICENSE_PLATE:
             CustomFECoolingValue = CarConfigs[CarType].FECooling.LicensePlate;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             break;
-        case 64: // HEADLIGHT
+		case CAR_SLOT_ID::HEADLIGHT:
             CustomFECoolingValue = CarConfigs[CarType].FECooling.Tires;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             break;
-        case 65: // BRAKELIGHT
+		case CAR_SLOT_ID::BRAKELIGHT:
             CustomFECoolingValue = CarConfigs[CarType].FECooling.Neon;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             break;
@@ -398,39 +416,39 @@ bool __fastcall CarCustomizeManager_IsCategoryNew(DWORD* _CarCustomizeManager, v
 	// submenus
 	switch (MenuID)
 	{
-	case 0x801: // Parts
-		SubMenuID = 0x101;
-		SubMenuIDMax = 0x10D;
+	case MenuID::CustomizeCategory_Parts:
+		SubMenuID = MenuID::Customize_Parts_Bodykits;
+		SubMenuIDMax = MenuID::Customize_Parts_Attachments;
 		break;
 
-	case 0x802: // Performance
-		SubMenuID = 0x201;
-		SubMenuIDMax = 0x207;
+	case MenuID::CustomizeCategory_Performance:
+		SubMenuID = MenuID::Customize_Performance_Engine;
+		SubMenuIDMax = MenuID::Customize_Performance_Induction;
 		break;
 
-	case 0x803: // Visual
-		SubMenuID = 0x301;
-		SubMenuIDMax = 0x315;
+	case MenuID::CustomizeCategory_Visual:
+		SubMenuID = MenuID::Customize_Visual_Paint;
+		SubMenuIDMax = MenuID::Customize_Visual_Neon;
 		break;
 
-	case 0x103: // Rims
-		SubMenuID = 0x702;
-		SubMenuIDMax = 0x701 + RimBrands.size();
+	case MenuID::Customize_Parts_Rims: // Rims
+		SubMenuID = MenuID::Customize_Rims_First;
+		SubMenuIDMax = MenuID::Customize_Rims_Min + RimBrands.size();
 		break;
 
-	case 0x10C: // Attachments
-		SubMenuID = 0x10D;
-		SubMenuIDMax = 0x116;
+	case MenuID::Customize_Parts_Attachments: // Attachments
+		SubMenuID = MenuID::Customize_Parts_Attachment0;
+		SubMenuIDMax = MenuID::Customize_Parts_Attachment9;
 		break;
 
-	case 0x302: // Vinyls
-		SubMenuID = 0x402;
-		SubMenuIDMax = 0x401 + VinylGroups.size();
+	case MenuID::Customize_Visual_Vinyls: // Vinyls
+		SubMenuID = MenuID::Customize_Vinyls_First;
+		SubMenuIDMax = MenuID::Customize_Vinyls_Min + VinylGroups.size();
 		break;
 
-	case 0x305: // Decals
-		SubMenuID = 0x501;
-		SubMenuIDMax = 0x506;
+	case MenuID::Customize_Visual_Decals: // Decals
+		SubMenuID = MenuID::Customize_Decals_Windshield;
+		SubMenuIDMax = MenuID::Customize_Decals_RightQuarter;
 		break;
 	}
 
@@ -448,11 +466,11 @@ bool __fastcall CarCustomizeManager_IsCategoryNew(DWORD* _CarCustomizeManager, v
 	}
 	else
 	{
-		if (MenuID >= 0x702 && MenuID <= 0x7FF) // Rims
+		if (MenuID >= MenuID::Customize_Rims_First && MenuID <= MenuID::Customize_Rims_Last) // Rims
 		{
 			UnlockableID = 25;
 		}
-		else if (MenuID >= 0x402 && MenuID <= 0x4FF) // Vinyls
+		else if (MenuID >= MenuID::Customize_Vinyls_First && MenuID <= MenuID::Customize_Vinyls_Last) // Vinyls
 		{
 			UnlockableID = 35;
 		}
@@ -461,143 +479,83 @@ bool __fastcall CarCustomizeManager_IsCategoryNew(DWORD* _CarCustomizeManager, v
 			switch (MenuID)
 			{
 				// Body Parts
-			case 0x101: // Body kits
+			case MenuID::Customize_Parts_Bodykits: // Body kits
 				UnlockableID = 11;
 				break;
-			case 0x102: // Spoilers
+			case MenuID::Customize_Parts_Spoilers: // Spoilers
 				UnlockableID = 12;
 				break;
-			case 0x104: // Hoods
+			case MenuID::Customize_Parts_Hoods: // Hoods
 				UnlockableID = 14;
 				break;
-			case 0x105: // Roof Scoops
+			case MenuID::Customize_Parts_RoofScoops: // Roof Scoops
 				UnlockableID = 15;
 				break;
 				// unlimiter parts??
 
 			// Performance Parts
-			case 0x201: // Engine
+			case MenuID::Customize_Performance_Engine: // Engine
 				UnlockableID = 8;
 				break;
-			case 0x202: // Transmission
+			case MenuID::Customize_Performance_Transmission: // Transmission
 				UnlockableID = 7;
 				break;
-			case 0x203: // Chassis
+			case MenuID::Customize_Performance_Chassis: // Chassis
 				UnlockableID = 6;
 				break;
-			case 0x204: // Nitrous
+			case MenuID::Customize_Performance_Nitrous: // Nitrous
 				UnlockableID = 10;
 				break;
-			case 0x205: // Tires
+			case MenuID::Customize_Performance_Tires: // Tires
 				UnlockableID = 4;
 				break;
-			case 0x206: // Brakes
+			case MenuID::Customize_Performance_Brakes: // Brakes
 				UnlockableID = 5;
 				break;
-			case 0x207: // Induction
+			case MenuID::Customize_Performance_Induction: // Induction
 				UnlockableID = 9;
 				break;
 
 				// Visual Parts
-			case 0x301:
+			case MenuID::Customize_Visual_Paint:
 				UnlockableID = 23; // Paint
 				break;
-			case 0x303: // Rim Paint
+			case MenuID::Customize_Visual_RimPaint: // Rim Paint
 				UnlockableID = 24;
 				break;
-			case 0x304: // Window Tint
+			case MenuID::Customize_Visual_WindowTint: // Window Tint
 				UnlockableID = 18;
 				break;
-			case 0x306: // Numbers
+			case MenuID::Customize_Visual_Numbers: // Numbers
 				UnlockableID = 43;
 				break;
-			case 0x307: // Custom Gauges
+			case MenuID::Customize_Visual_CustomGauges: // Custom Gauges
 				UnlockableID = 17;
 				break;
 				// unlimiter parts??
 
-			// Vinyls
-			/*
-			case 0x402: // Flame
-				UnlockableID = 35;
-				break;
-			case 0x403: // Tribal
-				UnlockableID = 36;
-				break;
-			case 0x404: // Stripes
-				UnlockableID = 37;
-				break;
-			case 0x405: // Racing Flag
-				UnlockableID = 38;
-				break;
-			case 0x406: // National Flag
-				UnlockableID = 39;
-				break;
-			case 0x407: // Body
-				UnlockableID = 40;
-				break;
-			case 0x408: // Unique
-				UnlockableID = 41;
-				break;
-			case 0x409: // Contest Winners
-				UnlockableID = 42;
-				break;
-			*/
 			// Decals
-			case 0x501:
-			case 0x502:
+			case MenuID::Customize_Decals_Windshield:
+			case MenuID::Customize_Decals_RearWindow:
 				UnlockableID = 44;
 				break;
-			case 0x505:
-			case 0x506:
+			case MenuID::Customize_Decals_LeftQuarter:
+			case MenuID::Customize_Decals_RightQuarter:
 				UnlockableID = 48;
 				break;
-			case 0x503:
-			case 0x504:
-			case 0x601:
-			case 0x602:
-			case 0x603:
-			case 0x604:
-			case 0x605:
-			case 0x606:
-			case 0x607:
-			case 0x608:
+			case MenuID::Customize_Decals_LeftDoor:
+			case MenuID::Customize_Decals_RightDoor:
+			case MenuID::Customize_Decals_Slot1:
+			case MenuID::Customize_Decals_Slot2:
+			case MenuID::Customize_Decals_Slot3:
+			case MenuID::Customize_Decals_Slot4:
+			case MenuID::Customize_Decals_Slot5:
+			case MenuID::Customize_Decals_Slot6:
+			case MenuID::Customize_Decals_Slot7:
+			case MenuID::Customize_Decals_Slot8:
 				UnlockableID = 46;
 				break;
 
-				// Rims
-				/*
-				case 0x702: // 5ZIGEN
-					UnlockableID = 25;
-					break;
-				case 0x703: // ADR
-					UnlockableID = 26;
-					break;
-				case 0x704: // BBS
-					UnlockableID = 27;
-					break;
-				case 0x705: // Enkei
-					UnlockableID = 28;
-					break;
-				case 0x706: // König
-					UnlockableID = 29;
-					break;
-				case 0x707: // Löwenhart
-					UnlockableID = 30;
-					break;
-				case 0x708: // Racing Hart
-					UnlockableID = 31;
-					break;
-				case 0x709: // OZ
-					UnlockableID = 32;
-					break;
-				case 0x70A: // Volk
-					UnlockableID = 33;
-					break;
-				case 0x70B: // Ro-Ja
-					UnlockableID = 34;
-					break;
-				*/
 			default:
 				UnlockableID = 0;
 				break;
@@ -662,58 +620,58 @@ bool __fastcall CarCustomizeManager_IsPartLocked(DWORD* _CarCustomizeManager, vo
 		CarSlotID = TheSelectablePart[4];
 		switch (CarSlotID)
 		{
-		case 83: // Window Decals
-		case 84:
-		case 85:
-		case 86:
-		case 87:
-		case 88:
-		case 89:
-		case 90:
-		case 91:
-		case 92:
-		case 93:
-		case 94:
-		case 95:
-		case 96:
-		case 97:
-		case 98:
+		case CAR_SLOT_ID::DECAL_FRONT_WINDOW_TEX0: // Window Decals
+		case CAR_SLOT_ID::DECAL_FRONT_WINDOW_TEX1:
+		case CAR_SLOT_ID::DECAL_FRONT_WINDOW_TEX2:
+		case CAR_SLOT_ID::DECAL_FRONT_WINDOW_TEX3:
+		case CAR_SLOT_ID::DECAL_FRONT_WINDOW_TEX4:
+		case CAR_SLOT_ID::DECAL_FRONT_WINDOW_TEX5:
+		case CAR_SLOT_ID::DECAL_FRONT_WINDOW_TEX6:
+		case CAR_SLOT_ID::DECAL_FRONT_WINDOW_TEX7:
+		case CAR_SLOT_ID::DECAL_REAR_WINDOW_TEX0:
+		case CAR_SLOT_ID::DECAL_REAR_WINDOW_TEX1:
+		case CAR_SLOT_ID::DECAL_REAR_WINDOW_TEX2:
+		case CAR_SLOT_ID::DECAL_REAR_WINDOW_TEX3:
+		case CAR_SLOT_ID::DECAL_REAR_WINDOW_TEX4:
+		case CAR_SLOT_ID::DECAL_REAR_WINDOW_TEX5:
+		case CAR_SLOT_ID::DECAL_REAR_WINDOW_TEX6:
+		case CAR_SLOT_ID::DECAL_REAR_WINDOW_TEX7:
 			IsInBackroom = CustomizeIsInBackRoom();
 			UnlockFilter = CarCustomizeManager_GetUnlockFilter();
 			result = UnlockSystem_IsUnlockableUnlocked(UnlockFilter, 44, 1, 0, IsInBackroom) == 0;
 			break;
-		case 99: // Door Decals
-		case 100:
-		case 101:
-		case 102:
-		case 103:
-		case 104:
-		case 107:
-		case 108:
-		case 109:
-		case 110:
-		case 111:
-		case 112:
+		case CAR_SLOT_ID::DECAL_LEFT_DOOR_TEX0: // Door Decals
+		case CAR_SLOT_ID::DECAL_LEFT_DOOR_TEX1:
+		case CAR_SLOT_ID::DECAL_LEFT_DOOR_TEX2:
+		case CAR_SLOT_ID::DECAL_LEFT_DOOR_TEX3:
+		case CAR_SLOT_ID::DECAL_LEFT_DOOR_TEX4:
+		case CAR_SLOT_ID::DECAL_LEFT_DOOR_TEX5:
+		case CAR_SLOT_ID::DECAL_RIGHT_DOOR_TEX0:
+		case CAR_SLOT_ID::DECAL_RIGHT_DOOR_TEX1:
+		case CAR_SLOT_ID::DECAL_RIGHT_DOOR_TEX2:
+		case CAR_SLOT_ID::DECAL_RIGHT_DOOR_TEX3:
+		case CAR_SLOT_ID::DECAL_RIGHT_DOOR_TEX4:
+		case CAR_SLOT_ID::DECAL_RIGHT_DOOR_TEX5:
 			IsInBackroom = CustomizeIsInBackRoom();
 			UnlockFilter = CarCustomizeManager_GetUnlockFilter();
 			result = UnlockSystem_IsUnlockableUnlocked(UnlockFilter, 46, 2, 0, IsInBackroom) == 0;
 			break;
-		case 115: // Quarter decals
-		case 116:
-		case 117:
-		case 118:
-		case 119:
-		case 120:
-		case 121:
-		case 122:
-		case 123:
-		case 124:
-		case 125:
-		case 126:
-		case 127:
-		case 128:
-		case 129:
-		case 130:
+		case CAR_SLOT_ID::DECAL_LEFT_QUARTER_TEX0: // Quarter decals
+		case CAR_SLOT_ID::DECAL_LEFT_QUARTER_TEX1:
+		case CAR_SLOT_ID::DECAL_LEFT_QUARTER_TEX2:
+		case CAR_SLOT_ID::DECAL_LEFT_QUARTER_TEX3:
+		case CAR_SLOT_ID::DECAL_LEFT_QUARTER_TEX4:
+		case CAR_SLOT_ID::DECAL_LEFT_QUARTER_TEX5:
+		case CAR_SLOT_ID::DECAL_LEFT_QUARTER_TEX6:
+		case CAR_SLOT_ID::DECAL_LEFT_QUARTER_TEX7:
+		case CAR_SLOT_ID::DECAL_RIGHT_QUARTER_TEX0:
+		case CAR_SLOT_ID::DECAL_RIGHT_QUARTER_TEX1:
+		case CAR_SLOT_ID::DECAL_RIGHT_QUARTER_TEX2:
+		case CAR_SLOT_ID::DECAL_RIGHT_QUARTER_TEX3:
+		case CAR_SLOT_ID::DECAL_RIGHT_QUARTER_TEX4:
+		case CAR_SLOT_ID::DECAL_RIGHT_QUARTER_TEX5:
+		case CAR_SLOT_ID::DECAL_RIGHT_QUARTER_TEX6:
+		case CAR_SLOT_ID::DECAL_RIGHT_QUARTER_TEX7:
 			IsInBackroom = CustomizeIsInBackRoom();
 			UnlockFilter = CarCustomizeManager_GetUnlockFilter();
 			result = UnlockSystem_IsUnlockableUnlocked(UnlockFilter, 48, 3, 0, IsInBackroom) == 0;
@@ -739,7 +697,7 @@ bool __fastcall CarCustomizeManager_IsRimCategoryLocked(DWORD* _CarCustomizeMana
 
 	if (*(bool*)_UnlockAllThings) return 0;
 
-	int CurrCategoryID = MenuID - 0x702;
+	int CurrCategoryID = MenuID - MenuID::Customize_Rims_First; 
 
 	int RimBrandsCount = RimBrands.size();
 	if (RimBrandsCount <= CurrCategoryID) return 1;
@@ -748,7 +706,7 @@ bool __fastcall CarCustomizeManager_IsRimCategoryLocked(DWORD* _CarCustomizeMana
 
 	PartList[0] = (DWORD)PartList;
 	PartList[1] = (DWORD)PartList;
-	CarCustomizeManager_GetCarPartList(_CarCustomizeManager, 66, PartList, RimBrandHash);
+	CarCustomizeManager_GetCarPartList(_CarCustomizeManager, CAR_SLOT_ID::FRONT_WHEEL, PartList, RimBrandHash);
 
 	if (PartList[0]) TheSelectablePart = (DWORD*)(PartList[0] - 4);
 
@@ -782,7 +740,7 @@ bool __fastcall CarCustomizeManager_IsVinylCategoryLocked(DWORD* _CarCustomizeMa
 
 	if (*(bool*)_UnlockAllThings) return 0;
 
-	int CurrCategoryID = MenuID - 0x402;
+	int CurrCategoryID = MenuID - MenuID::Customize_Vinyls_First;
 
 	int VinylGroupsCount = VinylGroups.size();
 	if (VinylGroupsCount <= CurrCategoryID) return 1;
@@ -791,7 +749,7 @@ bool __fastcall CarCustomizeManager_IsVinylCategoryLocked(DWORD* _CarCustomizeMa
 
 	PartList[0] = (DWORD)PartList;
 	PartList[1] = (DWORD)PartList;
-	CarCustomizeManager_GetCarPartList(_CarCustomizeManager, 77, PartList, VinylGroupIndex);
+	CarCustomizeManager_GetCarPartList(_CarCustomizeManager, CAR_SLOT_ID::VINYL_LAYER0, PartList, VinylGroupIndex);
 
 	if (PartList[0]) TheSelectablePart = (DWORD*)(PartList[0] - 4);
 
@@ -829,24 +787,24 @@ bool __fastcall CarCustomizeManager_IsCategoryLocked(DWORD* _CarCustomizeManager
 	// submenus
 	switch (MenuID)
 	{
-	case 0x103: // Rims
-		SubMenuID = 0x702;
-		SubMenuIDMax = 0x701 + RimBrands.size();
+	case MenuID::Customize_Parts_Rims: // Rims
+		SubMenuID = MenuID::Customize_Rims_First;
+		SubMenuIDMax = MenuID::Customize_Rims_Min + RimBrands.size();
 		break;
 
-	case 0x10C: // Attachments
-		SubMenuID = 0x10D;
-		SubMenuIDMax = 0x116;
+	case MenuID::Customize_Parts_Attachments: // Attachments
+		SubMenuID = MenuID::Customize_Parts_Attachment0;
+		SubMenuIDMax = MenuID::Customize_Parts_Attachment9;
 		break;
 
-	case 0x302: // Vinyls
-		SubMenuID = 0x402;
-		SubMenuIDMax = 0x401 + VinylGroups.size();
+	case MenuID::Customize_Visual_Vinyls: // Vinyls
+		SubMenuID = MenuID::Customize_Vinyls_First;
+		SubMenuIDMax = MenuID::Customize_Vinyls_Min + VinylGroups.size();
 		break;
 
-	case 0x305: // Decals
-		SubMenuID = 0x501;
-		SubMenuIDMax = 0x506;
+	case MenuID::Customize_Visual_Decals: // Decals
+		SubMenuID = MenuID::Customize_Decals_Windshield;
+		SubMenuIDMax = MenuID::Customize_Decals_RightQuarter;
 		break;
 	}
 
@@ -860,11 +818,11 @@ bool __fastcall CarCustomizeManager_IsCategoryLocked(DWORD* _CarCustomizeManager
 	}
 	else
 	{
-		if (MenuID >= 0x702 && MenuID <= 0x7FF) // Rims
+		if (MenuID >= MenuID::Customize_Rims_First && MenuID <= MenuID::Customize_Rims_Last) // Rims
 		{
 			return CarCustomizeManager_IsRimCategoryLocked(_CarCustomizeManager, EDX_Unused, MenuID, Backroom);
 		}
-		else if (MenuID >= 0x402 && MenuID <= 0x4FF) // Vinyls
+		else if (MenuID >= MenuID::Customize_Vinyls_First && MenuID <= MenuID::Customize_Vinyls_Last) // Vinyls
 		{
 			return CarCustomizeManager_IsVinylCategoryLocked(_CarCustomizeManager, EDX_Unused, MenuID, Backroom);
 		}
@@ -873,153 +831,93 @@ bool __fastcall CarCustomizeManager_IsCategoryLocked(DWORD* _CarCustomizeManager
 			switch (MenuID)
 			{
 				// Body Parts
-			case 0x101: // Body kits
+			case MenuID::Customize_Parts_Bodykits: // Body kits
 				UnlockableID = 11;
 				break;
-			case 0x102: // Spoilers
+			case MenuID::Customize_Parts_Spoilers: // Spoilers
 				UnlockableID = 12;
 				break;
-			case 0x104: // Hoods
+			case MenuID::Customize_Parts_Hoods: // Hoods
 				UnlockableID = 14;
 				break;
-			case 0x105: // Roof Scoops
+			case MenuID::Customize_Parts_RoofScoops: // Roof Scoops
 				UnlockableID = 15;
 				break;
 				// unlimiter parts??
 
 			// Performance Parts
-			case 0x201: // Engine
+			case MenuID::Customize_Performance_Engine: // Engine
 				if (Backroom && !Physics_Upgrades_CanInstallJunkman(_CarCustomizeManager + 2, 4)) return 1;
 				UnlockableID = 8;
 				break;
-			case 0x202: // Transmission
+			case MenuID::Customize_Performance_Transmission: // Transmission
 				if (Backroom && !Physics_Upgrades_CanInstallJunkman(_CarCustomizeManager + 2, 3)) return 1;
 				UnlockableID = 7;
 				break;
-			case 0x203: // Chassis
+			case MenuID::Customize_Performance_Chassis: // Chassis
 				if (Backroom && !Physics_Upgrades_CanInstallJunkman(_CarCustomizeManager + 2, 2)) return 1;
 				UnlockableID = 6;
 				break;
-			case 0x204: // Nitrous
+			case MenuID::Customize_Performance_Nitrous: // Nitrous
 				if (Backroom && !Physics_Upgrades_CanInstallJunkman(_CarCustomizeManager + 2, 6)) return 1;
 				UnlockableID = 10;
 				break;
-			case 0x205: // Tires
+			case MenuID::Customize_Performance_Tires: // Tires
 				if (Backroom && !Physics_Upgrades_CanInstallJunkman(_CarCustomizeManager + 2, 0)) return 1;
 				UnlockableID = 4;
 				break;
-			case 0x206: // Brakes
+			case MenuID::Customize_Performance_Brakes: // Brakes
 				if (Backroom && !Physics_Upgrades_CanInstallJunkman(_CarCustomizeManager + 2, 1)) return 1;
 				UnlockableID = 5;
 				break;
-			case 0x207: // Induction
+			case MenuID::Customize_Performance_Induction: // Induction
 				if (Backroom && !Physics_Upgrades_CanInstallJunkman(_CarCustomizeManager + 2, 5)) return 1;
 				UnlockableID = 9;
 				break;
 
 				// Visual Parts
-			case 0x301:
+			case MenuID::Customize_Visual_Paint:
 				UnlockableID = 23; // Paint
 				break;
-			case 0x303: // Rim Paint
+			case MenuID::Customize_Visual_RimPaint: // Rim Paint
 				UnlockableID = 24;
 				break;
-			case 0x304: // Window Tint
+			case MenuID::Customize_Visual_WindowTint: // Window Tint
 				UnlockableID = 18;
 				break;
-			case 0x306: // Numbers
+			case MenuID::Customize_Visual_Numbers: // Numbers
 				UnlockableID = 43;
 				break;
-			case 0x307: // Custom Gauges
+			case MenuID::Customize_Visual_CustomGauges: // Custom Gauges
 				UnlockableID = 17;
 				break;
 				// unlimiter parts??
 
-			// Vinyls
-			/*
-			case 0x402: // Flame
-				UnlockableID = 35;
-				break;
-			case 0x403: // Tribal
-				UnlockableID = 36;
-				break;
-			case 0x404: // Stripes
-				UnlockableID = 37;
-				break;
-			case 0x405: // Racing Flag
-				UnlockableID = 38;
-				break;
-			case 0x406: // National Flag
-				UnlockableID = 39;
-				break;
-			case 0x407: // Body
-				UnlockableID = 40;
-				break;
-			case 0x408: // Unique
-				UnlockableID = 41;
-				break;
-			case 0x409: // Contest Winners
-				UnlockableID = 42;
-				break;
-			*/
 			// Decals
-			case 0x501:
-			case 0x502:
+			case MenuID::Customize_Decals_Windshield:
+			case MenuID::Customize_Decals_RearWindow:
 				v3 = 1;
 				UnlockableID = 44;
 				break;
-			case 0x505:
-			case 0x506:
+			case MenuID::Customize_Decals_LeftQuarter:
+			case MenuID::Customize_Decals_RightQuarter:
 				v3 = 3;
 				UnlockableID = 48;
 				break;
-			case 0x503:
-			case 0x504:
-			case 0x601:
-			case 0x602:
-			case 0x603:
-			case 0x604:
-			case 0x605:
-			case 0x606:
-			case 0x607:
-			case 0x608:
+			case MenuID::Customize_Decals_LeftDoor:
+			case MenuID::Customize_Decals_RightDoor:
+			case MenuID::Customize_Decals_Slot1:
+			case MenuID::Customize_Decals_Slot2:
+			case MenuID::Customize_Decals_Slot3:
+			case MenuID::Customize_Decals_Slot4:
+			case MenuID::Customize_Decals_Slot5:
+			case MenuID::Customize_Decals_Slot6:
+			case MenuID::Customize_Decals_Slot7:
+			case MenuID::Customize_Decals_Slot8:
 				v3 = 2;
 				UnlockableID = 46;
 				break;
 
-				// Rims
-				/*
-				case 0x702: // 5ZIGEN
-					UnlockableID = 25;
-					break;
-				case 0x703: // ADR
-					UnlockableID = 26;
-					break;
-				case 0x704: // BBS
-					UnlockableID = 27;
-					break;
-				case 0x705: // Enkei
-					UnlockableID = 28;
-					break;
-				case 0x706: // König
-					UnlockableID = 29;
-					break;
-				case 0x707: // Löwenhart
-					UnlockableID = 30;
-					break;
-				case 0x708: // Racing Hart
-					UnlockableID = 31;
-					break;
-				case 0x709: // OZ
-					UnlockableID = 32;
-					break;
-				case 0x70A: // Volk
-					UnlockableID = 33;
-					break;
-				case 0x70B: // Ro-Ja
-					UnlockableID = 34;
-					break;
-				*/
 			default:
 				UnlockableID = 0;
 				break;
@@ -1036,4 +934,127 @@ bool __fastcall CarCustomizeManager_IsCategoryLocked(DWORD* _CarCustomizeManager
 	}
 
 	return result;
+}
+
+DWORD __fastcall CarCustomizeManager_GetUnlockHash_CarPart(DWORD* _CarCustomizeManager, DWORD* CarPart, int MenuID, int UpgradeLevel)
+{
+	bool UAT = *(bool*)_UnlockAllThings;
+	DWORD UnlockHash = 0x9BB9CCC3; // ERROR_DEFAULT_STRING
+	int BinToBeat;
+	char UnlockStringBuf[100];
+	const char* UnlockString;
+
+	if (UAT) return UnlockHash;
+
+	// Check for a custom string hash
+	UnlockHash = CarPart_GetAppliedAttributeUParam(CarPart, bStringHash((char*)"UNLOCK_HASH"), -1);
+	if (UnlockHash != -1)
+	{
+		if (DoesStringExist(UnlockHash)) return UnlockHash;
+	}
+	// Or get the unlock string according to the unlock condition type
+	// Get and check if the condition is met
+	int UnlockConditionType = CarPart_GetAppliedAttributeIParam(CarPart, bStringHash((char*)"UNLOCK_TYPE"), -1);
+
+	switch (UnlockConditionType)
+	{
+	case 0: // Initially unlocked
+		return bStringHash((char*)"CUSTOMIZATION_PART_UNLOCK_MSG_06");
+	case 1: // Beat Blacklist member
+		BinToBeat = CarPart_GetAppliedAttributeIParam(CarPart, bStringHash((char*)"UNLOCK_AT"), 17);
+		if (BinToBeat < 2 || BinToBeat > 17) BinToBeat = 17;
+		if (BinToBeat == 17) return bStringHash((char*)"CUSTOMIZATION_PART_UNLOCK_MSG_06");
+		sprintf(UnlockStringBuf, "CUSTOMIZATION_PART_UNLOCK_MSG_BL_%02d", BinToBeat);
+		return bStringHash(UnlockStringBuf);
+	case 2: // Complete CS Event #68 (special flag)
+		return bStringHash((char*)"CUSTOMIZATION_PART_UNLOCK_MSG_01");
+	case 3: // Enter "castrol" cheat code (special flag)
+		return bStringHash((char*)"CUSTOMIZATION_PART_UNLOCK_MSG_07");
+	case 4: // Complete CS 100% (special flag)
+		return bStringHash((char*)"CUSTOMIZATION_PART_UNLOCK_MSG_02");
+	case 5: // Complete Career mode at least once  (special flag)
+		return bStringHash((char*)"CUSTOMIZATION_PART_UNLOCK_MSG_03");
+	case 6: // Complete Game 100% (same as 5??)
+		return bStringHash((char*)"CUSTOMIZATION_PART_UNLOCK_MSG_04");
+	case -1: // None (Use in game function instead)
+	default:
+		break;
+	}
+
+	//return CarCustomizeManager_GetUnlockHash(_CarCustomizeManager, MenuID, UpgradeLevel);
+	if (MenuID >= MenuID::Customize_Rims_Min && MenuID <= MenuID::Customize_Rims_Last) UnlockString = "PARTS_RIMS";
+	else if (MenuID >= MenuID::Customize_Decals_Slot1 && MenuID <= MenuID::Customize_Decals_Slot8) UnlockString = "VISUAL_DECALS";
+	else if (MenuID >= MenuID::Customize_Decals_Windshield && MenuID <= MenuID::Customize_Decals_RightQuarter) UnlockString = "VISUAL_DECALS";
+	else if (MenuID >= MenuID::Customize_Vinyls_Min && MenuID <= MenuID::Customize_Vinyls_Last) UnlockString = "VISUAL_VINYLS";
+	else
+	{
+		switch (MenuID)
+		{
+			// Parts
+		case MenuID::Customize_Parts_Bodykits:
+			UnlockString = "PARTS_BODYKITS";
+			break;
+		case MenuID::Customize_Parts_Spoilers:
+			UnlockString = "PARTS_SPOILERS";
+			break;
+		case MenuID::Customize_Parts_Hoods:
+			UnlockString = "PARTS_HOODS";
+			break;
+		case MenuID::Customize_Parts_RoofScoops:
+			UnlockString = "PARTS_ROOFSCOOPS";
+			break;
+
+			// Performance
+		case MenuID::Customize_Performance_Engine:
+			UnlockString = "PERF_ENGINE";
+			break;
+		case MenuID::Customize_Performance_Transmission:
+			UnlockString = "PERF_TRANSMISSION";
+			break;
+		case MenuID::Customize_Performance_Chassis:
+			UnlockString = "PERF_SUSPENSION";
+			break;
+		case MenuID::Customize_Performance_Nitrous:
+			UnlockString = "PERF_NITROUS";
+			break;
+		case MenuID::Customize_Performance_Tires:
+			UnlockString = "PERF_TIRES";
+			break;
+		case MenuID::Customize_Performance_Brakes:
+			UnlockString = "PERF_BRAKES";
+			break;
+		case MenuID::Customize_Performance_Induction:
+			UnlockString = CarCustomizeManager_IsTurbo(_CarCustomizeManager)
+				? "PERF_TURBO"
+				: "PERF_SUPERCHARGER";
+			break;
+
+			// Visual
+		case MenuID::Customize_Visual_Paint:
+		case MenuID::Customize_Visual_RimPaint:
+			UnlockString = "VISUAL_PAINT"; // Rim paints use the same Unlock ID as body paints
+			break;
+		case MenuID::Customize_Visual_WindowTint:
+			UnlockString = "VISUAL_WINDOWTINT";
+			break;
+		case MenuID::Customize_Visual_Numbers:
+			UnlockString = "VISUAL_NUMBERS";
+			break;
+		case MenuID::Customize_Visual_CustomGauges:
+			UnlockString = "VISUAL_HUDS";
+			break;
+
+		default:
+			return 0x9BB9CCC3;
+		}
+	}
+
+	if (!UpgradeLevel) return 0x9BB9CCC3;
+
+	snprintf(UnlockStringBuf, 100, "CUSTOMIZATION_%s_%d", UnlockString, UpgradeLevel);
+	UnlockHash = bStringHash(UnlockStringBuf);
+
+	if (DoesStringExist(UnlockHash)) return UnlockHash;
+
+	return 0x9BB9CCC3;
 }

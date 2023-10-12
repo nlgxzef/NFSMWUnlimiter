@@ -11,7 +11,6 @@ void __fastcall CustomizeSpoiler_BuildPartOptionListFromFilter(DWORD* _Customize
     int v8; // eax
     DWORD* TheSelectablePart; // esi
     char IsInBackroom; // al
-    DWORD* TheCarPart; // ebx
     DWORD PartIcon; // ebp
     char PartName; // bl
     bool IsLocked; // al
@@ -32,7 +31,7 @@ void __fastcall CustomizeSpoiler_BuildPartOptionListFromFilter(DWORD* _Customize
     PartList[0] = (DWORD)PartList;
     PartList[1] = (DWORD)PartList;
     v23 = 0;
-    CarCustomizeManager_GetCarPartList((DWORD*)_gCarCustomizeManager, 44, PartList, 0);
+    CarCustomizeManager_GetCarPartList((DWORD*)_gCarCustomizeManager, CAR_SLOT_ID::SPOILER, PartList, 0);
     v4 = (DWORD*)PartList[0];
     for (i = 1; (DWORD*)PartList[0] != PartList; v4 = (DWORD*)PartList[0])
     {
@@ -45,15 +44,14 @@ void __fastcall CustomizeSpoiler_BuildPartOptionListFromFilter(DWORD* _Customize
         TheSelectablePart = v6 - 1;
         if ((*(BYTE*)(v8 + 5) & 0x1F) == _CustomizeSpoiler[111] || (*(BYTE*)(v8 + 5) & 0x1F) == 4)
         {
-            UnlockHash = CarCustomizeManager_GetUnlockHash((DWORD*)_gCarCustomizeManager, _CustomizeSpoiler[82], TheSelectablePart[5]);
+            UnlockHash = CarCustomizeManager_GetUnlockHash_CarPart((DWORD*)_gCarCustomizeManager, (DWORD*)TheSelectablePart[3], _CustomizeSpoiler[82], TheSelectablePart[5]);
             IsInBackroom = CustomizeIsInBackRoom();
-            TheCarPart = (DWORD*)TheSelectablePart[3];
             PartIcon = IsInBackroom != 0 ? CarConfigs[CarTypeID].Icons.BackroomPartsSpoilers : CarConfigs[CarTypeID].Icons.PartsSpoilers;
-            if (CarPart_GetAppliedAttributeIParam(TheCarPart, bStringHash((char*)"CARBONFIBRE"), 0))
+            if (CarPart_GetAppliedAttributeIParam((DWORD*)TheSelectablePart[3], bStringHash((char*)"CARBONFIBRE"), 0))
                 PartIcon = IsInBackroom != 0 ? CarConfigs[CarTypeID].Icons.BackroomPartsSpoilersCF : CarConfigs[CarTypeID].Icons.PartsSpoilersCF;
             PartName = *(BYTE*)(TheSelectablePart[3] + 5) >> 5;
             IsLocked = CarCustomizeManager_IsPartLocked((DWORD*)_gCarCustomizeManager, EDX_Unused, TheSelectablePart, 0);
-            PartIcon = CarPart_GetAppliedAttributeIParam(TheCarPart, bStringHash((char*)"TEXTUREHASH"), PartIcon);
+            PartIcon = CarPart_GetAppliedAttributeIParam((DWORD*)TheSelectablePart[3], bStringHash((char*)"TEXTUREHASH"), PartIcon);
             CustomizationScreen_AddPartOption(_CustomizeSpoiler, TheSelectablePart, PartIcon, PartName, 0, UnlockHash, IsLocked);
             v16 = _CustomizeSpoiler[111];
             if (_CustomizeSpoiler[v16 + 112] == 1)
@@ -115,7 +113,7 @@ void __fastcall CustomizeSpoiler_Setup(DWORD* _CustomizeSpoiler, void* EDX_Unuse
     FEngSetButtonTexture(ArrowL, 0x5BC); // L1
     ArrowR = FEngFindImage(FEPackage, 0x2D145BE3u);
     FEngSetButtonTexture(ArrowR, 0x682); // R1
-    TheActivePart = (DWORD*)CarCustomizeManager_GetActivePartFromSlot((DWORD*)_gCarCustomizeManager, 44); // SPOILER
+    TheActivePart = (DWORD*)CarCustomizeManager_GetActivePartFromSlot((DWORD*)_gCarCustomizeManager, CAR_SLOT_ID::SPOILER); // SPOILER
     if (*(int*)_Showcase_FromFilter == -1)
     {
         if (TheActivePart && (*((BYTE*)TheActivePart + 5) & 0x1F) != 4)

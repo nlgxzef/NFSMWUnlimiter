@@ -13,156 +13,156 @@ int __fastcall FEShoppingCartItem_GetCarPartCatHash(DWORD* _this, int EDX_Unused
 
     switch (CarSlotID)
     {
-    case 0:
+    case CAR_SLOT_ID::BASE:
         result = CarConfigs[CarTypeID].Names.PartsRoof;
         break;
-    case 23:
+    case CAR_SLOT_ID::BODY:
         result = CarConfigs[CarTypeID].Names.PartsBodyKits;
         break;
-    case 24:
+    case CAR_SLOT_ID::FRONT_BRAKE:
         result = CarConfigs[CarTypeID].Names.PartsBrakes;
         break;
-    case 28:
+    case CAR_SLOT_ID::INTERIOR:
         result = CarConfigs[CarTypeID].Names.PartsInterior;
         break;
-    case 29:
+    case CAR_SLOT_ID::LEFT_BRAKELIGHT:
         result = CarConfigs[CarTypeID].Names.PartsTaillights;
         break;
-    case 31:
+    case CAR_SLOT_ID::LEFT_HEADLIGHT:
         result = CarConfigs[CarTypeID].Names.PartsHeadlights;
         break;
-    case 33:
+    case CAR_SLOT_ID::LEFT_SIDE_MIRROR:
         result = CarConfigs[CarTypeID].Names.PartsMirrors;
         break;
-    case 43:
+    case CAR_SLOT_ID::DRIVER:
         result = CarConfigs[CarTypeID].Names.VisualDriver;
         break;
-    case 44:
+    case CAR_SLOT_ID::SPOILER:
         result = CarConfigs[CarTypeID].Names.PartsSpoilers;
         break;
-    case 52:
+    case CAR_SLOT_ID::ATTACHMENT0:
         result = CarConfigs[CarTypeID].Names.PartsAttachment0;
         break;
-    case 53:
+    case CAR_SLOT_ID::ATTACHMENT1:
         result = CarConfigs[CarTypeID].Names.PartsAttachment1;
         break;
-    case 54:
+    case CAR_SLOT_ID::ATTACHMENT2:
         result = CarConfigs[CarTypeID].Names.PartsAttachment2;
         break;
-    case 55:
+    case CAR_SLOT_ID::ATTACHMENT3:
         result = CarConfigs[CarTypeID].Names.PartsAttachment3;
         break;
-    case 56:
+    case CAR_SLOT_ID::ATTACHMENT4:
         result = CarConfigs[CarTypeID].Names.PartsAttachment4;
         break;
-    case 57:
+    case CAR_SLOT_ID::ATTACHMENT5:
         result = CarConfigs[CarTypeID].Names.PartsAttachment5;
         break;
-    case 58:
+    case CAR_SLOT_ID::ATTACHMENT6:
         result = CarConfigs[CarTypeID].Names.PartsAttachment6;
         break;
-    case 59:
+    case CAR_SLOT_ID::ATTACHMENT7:
         result = CarConfigs[CarTypeID].Names.PartsAttachment7;
         break;
-    case 60:
+    case CAR_SLOT_ID::ATTACHMENT8:
         result = CarConfigs[CarTypeID].Names.PartsAttachment8;
         break;
-    case 61:
+    case CAR_SLOT_ID::ATTACHMENT9:
         result = CarConfigs[CarTypeID].Names.PartsAttachment9;
         break;
-    case 62:
+    case CAR_SLOT_ID::ROOF:
         result = CarConfigs[CarTypeID].Names.PartsRoofScoops;
         break;
-    case 63:
+    case CAR_SLOT_ID::HOOD:
         result = CarConfigs[CarTypeID].Names.PartsHoods;
         break;
-    case 64: // HEADLIGHT
+    case CAR_SLOT_ID::HEADLIGHT: // HEADLIGHT
         result = CarConfigs[CarTypeID].Names.VisualTires;
         break;
-    case 65: // BRAKELIGHT
+    case CAR_SLOT_ID::BRAKELIGHT: // BRAKELIGHT
         result = CarConfigs[CarTypeID].Names.VisualNeon;
         break;
-    case 66:
+    case CAR_SLOT_ID::FRONT_WHEEL:
         result = CarConfigs[CarTypeID].Names.PartsRims;
         break;
-    case 67:
+    case CAR_SLOT_ID::REAR_WHEEL:
         result = CarConfigs[CarTypeID].Names.PartsRims;
         break;
-    case 69:
+    case CAR_SLOT_ID::LICENSE_PLATE:
         result = CarConfigs[CarTypeID].Names.VisualLicensePlate;
         break;
-    case 76:
+    case CAR_SLOT_ID::BASE_PAINT:
         result = CarConfigs[CarTypeID].Names.VisualPaint;
         break;
-    case 77:
+    case CAR_SLOT_ID::VINYL_LAYER0:
         result = CarConfigs[CarTypeID].Names.VisualVinyls;
         break;
-    case 78:
+    case CAR_SLOT_ID::PAINT_RIM:
         result = CarConfigs[CarTypeID].Names.VisualRimPaint;
         break;
-    case 83:
-    case 84:
-    case 85:
-    case 86:
-    case 87:
-    case 88:
-    case 89:
-    case 90:
+    case CAR_SLOT_ID::DECAL_FRONT_WINDOW_TEX0:
+    case CAR_SLOT_ID::DECAL_FRONT_WINDOW_TEX1:
+    case CAR_SLOT_ID::DECAL_FRONT_WINDOW_TEX2:
+    case CAR_SLOT_ID::DECAL_FRONT_WINDOW_TEX3:
+    case CAR_SLOT_ID::DECAL_FRONT_WINDOW_TEX4:
+    case CAR_SLOT_ID::DECAL_FRONT_WINDOW_TEX5:
+    case CAR_SLOT_ID::DECAL_FRONT_WINDOW_TEX6:
+    case CAR_SLOT_ID::DECAL_FRONT_WINDOW_TEX7:
         result = CarConfigs[CarTypeID].Names.VisualDecalsWindshield;
         break;
-    case 91:
-    case 92:
-    case 93:
-    case 94:
-    case 95:
-    case 96:
-    case 97:
-    case 98:
+    case CAR_SLOT_ID::DECAL_REAR_WINDOW_TEX0:
+    case CAR_SLOT_ID::DECAL_REAR_WINDOW_TEX1:
+    case CAR_SLOT_ID::DECAL_REAR_WINDOW_TEX2:
+    case CAR_SLOT_ID::DECAL_REAR_WINDOW_TEX3:
+    case CAR_SLOT_ID::DECAL_REAR_WINDOW_TEX4:
+    case CAR_SLOT_ID::DECAL_REAR_WINDOW_TEX5:
+    case CAR_SLOT_ID::DECAL_REAR_WINDOW_TEX6:
+    case CAR_SLOT_ID::DECAL_REAR_WINDOW_TEX7:
         result = CarConfigs[CarTypeID].Names.VisualDecalsRearWindow;
         break;
-    case 99:
-    case 100:
-    case 101:
-    case 102:
-    case 103:
-    case 104:
+    case CAR_SLOT_ID::DECAL_LEFT_DOOR_TEX0:
+    case CAR_SLOT_ID::DECAL_LEFT_DOOR_TEX1:
+    case CAR_SLOT_ID::DECAL_LEFT_DOOR_TEX2:
+    case CAR_SLOT_ID::DECAL_LEFT_DOOR_TEX3:
+    case CAR_SLOT_ID::DECAL_LEFT_DOOR_TEX4:
+    case CAR_SLOT_ID::DECAL_LEFT_DOOR_TEX5:
         result = CarConfigs[CarTypeID].Names.VisualDecalsLeftDoor;
         break;
-    case 107:
-    case 108:
-    case 109:
-    case 110:
-    case 111:
-    case 112:
+    case CAR_SLOT_ID::DECAL_RIGHT_DOOR_TEX0:
+    case CAR_SLOT_ID::DECAL_RIGHT_DOOR_TEX1:
+    case CAR_SLOT_ID::DECAL_RIGHT_DOOR_TEX2:
+    case CAR_SLOT_ID::DECAL_RIGHT_DOOR_TEX3:
+    case CAR_SLOT_ID::DECAL_RIGHT_DOOR_TEX4:
+    case CAR_SLOT_ID::DECAL_RIGHT_DOOR_TEX5:
         result = CarConfigs[CarTypeID].Names.VisualDecalsRightDoor;
         break;
-    case 113: // DECAL_RIGHT_DOOR_TEX6
+    case CAR_SLOT_ID::DECAL_RIGHT_DOOR_TEX6: // DECAL_RIGHT_DOOR_TEX6
         result = CarConfigs[CarTypeID].Names.VisualNumbers;
         break;
-    case 115:
-    case 116:
-    case 117:
-    case 118:
-    case 119:
-    case 120:
-    case 121:
-    case 122:
+    case CAR_SLOT_ID::DECAL_LEFT_QUARTER_TEX0:
+    case CAR_SLOT_ID::DECAL_LEFT_QUARTER_TEX1:
+    case CAR_SLOT_ID::DECAL_LEFT_QUARTER_TEX2:
+    case CAR_SLOT_ID::DECAL_LEFT_QUARTER_TEX3:
+    case CAR_SLOT_ID::DECAL_LEFT_QUARTER_TEX4:
+    case CAR_SLOT_ID::DECAL_LEFT_QUARTER_TEX5:
+    case CAR_SLOT_ID::DECAL_LEFT_QUARTER_TEX6:
+    case CAR_SLOT_ID::DECAL_LEFT_QUARTER_TEX7:
         result = CarConfigs[CarTypeID].Names.VisualDecalsLeftQuarter;
         break;
-    case 123:
-    case 124:
-    case 125:
-    case 126:
-    case 127:
-    case 128:
-    case 129:
-    case 130:
+    case CAR_SLOT_ID::DECAL_RIGHT_QUARTER_TEX0:
+    case CAR_SLOT_ID::DECAL_RIGHT_QUARTER_TEX1:
+    case CAR_SLOT_ID::DECAL_RIGHT_QUARTER_TEX2:
+    case CAR_SLOT_ID::DECAL_RIGHT_QUARTER_TEX3:
+    case CAR_SLOT_ID::DECAL_RIGHT_QUARTER_TEX4:
+    case CAR_SLOT_ID::DECAL_RIGHT_QUARTER_TEX5:
+    case CAR_SLOT_ID::DECAL_RIGHT_QUARTER_TEX6:
+    case CAR_SLOT_ID::DECAL_RIGHT_QUARTER_TEX7:
         result = CarConfigs[CarTypeID].Names.VisualDecalsRightQuarter;
         break;
-    case 131:
+    case CAR_SLOT_ID::WINDOW_TINT:
         result = CarConfigs[CarTypeID].Names.VisualWindowTint;
         break;
-    case 132:
+    case CAR_SLOT_ID::CUSTOM_HUD:
         result = CarConfigs[CarTypeID].Names.VisualCustomGauges;
         break;
     default:
@@ -471,7 +471,7 @@ unsigned int FEShoppingCartItem_GetPerfPkgLevelHash(int PerfPkgType, int PerfPkg
     return result;
 }
 
-void __fastcall FEShoppingCartItem_DrawPartName(DWORD* FEShoppingCartItem)
+void __fastcall FEShoppingCartItem_DrawPartName(DWORD* FEShoppingCartItem, void* EDX_Unused)
 {
     int SelectablePart; // esi
     int PerfPkgType; // ebx
@@ -512,9 +512,9 @@ void __fastcall FEShoppingCartItem_DrawPartName(DWORD* FEShoppingCartItem)
     {
         switch (*(DWORD*)(SelectablePart + 16))
         {
-        case 44:
-        case 62:
-        case 63:
+        case CAR_SLOT_ID::SPOILER:
+        case CAR_SLOT_ID::ROOF:
+        case CAR_SLOT_ID::HOOD:
             ThePartInCart = *(DWORD**)(SelectablePart + 12);
             if (!CarPart_HasAppliedAttribute(ThePartInCart, bStringHash((char*)"CARBONFIBRE")))
                 goto LABEL_68;
@@ -536,17 +536,17 @@ void __fastcall FEShoppingCartItem_DrawPartName(DWORD* FEShoppingCartItem)
             PartName = GetLocalizedString(PartNameHash);
             PartMaterialName = GetLocalizedString(0x5415B874);// CARBON
             goto LABEL_64;
-        case 66: // FRONT_WHEEL
-        case 67: // REAR_WHEEL
+        case CAR_SLOT_ID::FRONT_WHEEL:
+        case CAR_SLOT_ID::REAR_WHEEL:
             ThePartInCart = *(DWORD**)(SelectablePart + 12);
-            if (ThePartInCart == CarCustomizeManager_GetStockCarPart((DWORD*)_gCarCustomizeManager, 66))
+            if (ThePartInCart == CarCustomizeManager_GetRealStockCarPart((DWORD*)_gCarCustomizeManager, EDX_Unused, CAR_SLOT_ID::FRONT_WHEEL))
                 goto LABEL_66;
             PartNameHash = CarPart_GetAppliedAttributeUParam(ThePartInCart, bStringHash((char*)"LANGUAGEHASH"), 0);
             if (PartNameHash) PartName = GetLocalizedString(PartNameHash);
             else PartName = CarPart_GetName(*(DWORD**)(SelectablePart + 12));
 
             CarSlotID = *(DWORD*)(SelectablePart + 16);
-            SlotNameHash = CarSlotID == 67 ? bStringHash((char*)"CUSTOMIZE_REAR_WHEEL") : bStringHash((char*)"CUSTOMIZE_FRONT_WHEEL");
+            SlotNameHash = CarSlotID == CAR_SLOT_ID::REAR_WHEEL ? bStringHash((char*)"CUSTOMIZE_REAR_WHEEL") : bStringHash((char*)"CUSTOMIZE_FRONT_WHEEL");
             SlotName = GetLocalizedString(SlotNameHash);
 
             bSNPrintf(PartNameBuf, 64, "%s", PartName);
@@ -579,29 +579,19 @@ void __fastcall FEShoppingCartItem_DrawPartName(DWORD* FEShoppingCartItem)
                 }
             }
             return;
-        case 76:                                  // BASE_PAINT
-            PaintTypeNameHash = 0x452B5481;         // CP_FILTER_METALLIC
+        case CAR_SLOT_ID::BASE_PAINT:
+            PaintTypeNameHash = 0xB6763CDE;         // CP_FILTER_GLOSS
             PaintBrandNameHash = CarPart_GetAppliedAttributeUParam(*(DWORD**)(SelectablePart + 12), 0xEBB03E66, 0);// BRAND_NAME
-            if (PaintBrandNameHash > 0x3437A52)
+            
+            for (int b = 0; b < PaintGroups.size(); b++)
             {
-                if (PaintBrandNameHash == 0x3797533)
-                    PaintTypeNameHash = 0xB715070A;
-            }
-            else
-            {
-                switch (PaintBrandNameHash)
+                if (PaintGroups[b].BrandNameHash == PaintBrandNameHash)
                 {
-                case 0x3437A52:
-                    PaintTypeNameHash = 0x452B5481;
-                    break;
-                case 0xDA27:
-                    PaintTypeNameHash = 0xB3100A3E;
-                    break;
-                case 0x2DAAB07:
-                    PaintTypeNameHash = 0xB6763CDE;
+                    PaintTypeNameHash = PaintGroups[b].StringHash;
                     break;
                 }
             }
+
             CurrLanguage = GetCurrentLanguage();
             ThePartInCart = *(DWORD**)(SelectablePart + 12);
             CarSlotID = *(DWORD*)(SelectablePart + 16);
@@ -625,7 +615,7 @@ void __fastcall FEShoppingCartItem_DrawPartName(DWORD* FEShoppingCartItem)
                 FEPrintf_obj(CartItemName, "%s: %s %s", PartCategoryName, PaintTypeName, SpeechColourName);
             }
             return;
-        case 77:                                  // VINYL_LAYER0
+        case CAR_SLOT_ID::VINYL_LAYER0:
             ThePartInCart = *(DWORD**)(SelectablePart + 12);
             if (ThePartInCart)
                 goto LABEL_69;
@@ -637,7 +627,7 @@ void __fastcall FEShoppingCartItem_DrawPartName(DWORD* FEShoppingCartItem)
             if (CurrLanguage != 1)
                 goto LABEL_67;
             goto LABEL_33;
-        case 78:                                  // PAINT_RIM
+        case CAR_SLOT_ID::PAINT_RIM:                                  // PAINT_RIM
             CurrLanguage = GetCurrentLanguage();
             ThePartInCart = *(DWORD**)(SelectablePart + 12);
             CartItemName = *((DWORD**)FEShoppingCartItem + 11);
@@ -663,50 +653,50 @@ void __fastcall FEShoppingCartItem_DrawPartName(DWORD* FEShoppingCartItem)
                 FEPrintf_obj(CartItemName, "%s: %s %s", PartCategoryName, PartMaterialName, PartName);
             }
             return;
-        case 83:                                  // DECALS (83-130)
-        case 84:
-        case 85:
-        case 86:
-        case 87:
-        case 88:
-        case 89:
-        case 90:
-        case 91:
-        case 92:
-        case 93:
-        case 94:
-        case 95:
-        case 96:
-        case 97:
-        case 98:
-        case 99:
-        case 100:
-        case 101:
-        case 102:
-        case 103:
-        case 104:
-        case 107:
-        case 108:
-        case 109:
-        case 110:
-        case 111:
-        case 112:
-        case 115:
-        case 116:
-        case 117:
-        case 118:
-        case 119:
-        case 120:
-        case 121:
-        case 122:
-        case 123:
-        case 124:
-        case 125:
-        case 126:
-        case 127:
-        case 128:
-        case 129:
-        case 130:
+        case CAR_SLOT_ID::DECAL_FRONT_WINDOW_TEX0:                                  // DECALS (83-130)
+        case CAR_SLOT_ID::DECAL_FRONT_WINDOW_TEX1:
+        case CAR_SLOT_ID::DECAL_FRONT_WINDOW_TEX2:
+        case CAR_SLOT_ID::DECAL_FRONT_WINDOW_TEX3:
+        case CAR_SLOT_ID::DECAL_FRONT_WINDOW_TEX4:
+        case CAR_SLOT_ID::DECAL_FRONT_WINDOW_TEX5:
+        case CAR_SLOT_ID::DECAL_FRONT_WINDOW_TEX6:
+        case CAR_SLOT_ID::DECAL_FRONT_WINDOW_TEX7:
+        case CAR_SLOT_ID::DECAL_REAR_WINDOW_TEX0:
+        case CAR_SLOT_ID::DECAL_REAR_WINDOW_TEX1:
+        case CAR_SLOT_ID::DECAL_REAR_WINDOW_TEX2:
+        case CAR_SLOT_ID::DECAL_REAR_WINDOW_TEX3:
+        case CAR_SLOT_ID::DECAL_REAR_WINDOW_TEX4:
+        case CAR_SLOT_ID::DECAL_REAR_WINDOW_TEX5:
+        case CAR_SLOT_ID::DECAL_REAR_WINDOW_TEX6:
+        case CAR_SLOT_ID::DECAL_REAR_WINDOW_TEX7:
+        case CAR_SLOT_ID::DECAL_LEFT_DOOR_TEX0:
+        case CAR_SLOT_ID::DECAL_LEFT_DOOR_TEX1:
+        case CAR_SLOT_ID::DECAL_LEFT_DOOR_TEX2:
+        case CAR_SLOT_ID::DECAL_LEFT_DOOR_TEX3:
+        case CAR_SLOT_ID::DECAL_LEFT_DOOR_TEX4:
+        case CAR_SLOT_ID::DECAL_LEFT_DOOR_TEX5:
+        case CAR_SLOT_ID::DECAL_RIGHT_DOOR_TEX0:
+        case CAR_SLOT_ID::DECAL_RIGHT_DOOR_TEX1:
+        case CAR_SLOT_ID::DECAL_RIGHT_DOOR_TEX2:
+        case CAR_SLOT_ID::DECAL_RIGHT_DOOR_TEX3:
+        case CAR_SLOT_ID::DECAL_RIGHT_DOOR_TEX4:
+        case CAR_SLOT_ID::DECAL_RIGHT_DOOR_TEX5:
+        case CAR_SLOT_ID::DECAL_LEFT_QUARTER_TEX0:
+        case CAR_SLOT_ID::DECAL_LEFT_QUARTER_TEX1:
+        case CAR_SLOT_ID::DECAL_LEFT_QUARTER_TEX2:
+        case CAR_SLOT_ID::DECAL_LEFT_QUARTER_TEX3:
+        case CAR_SLOT_ID::DECAL_LEFT_QUARTER_TEX4:
+        case CAR_SLOT_ID::DECAL_LEFT_QUARTER_TEX5:
+        case CAR_SLOT_ID::DECAL_LEFT_QUARTER_TEX6:
+        case CAR_SLOT_ID::DECAL_LEFT_QUARTER_TEX7:
+        case CAR_SLOT_ID::DECAL_RIGHT_QUARTER_TEX0:
+        case CAR_SLOT_ID::DECAL_RIGHT_QUARTER_TEX1:
+        case CAR_SLOT_ID::DECAL_RIGHT_QUARTER_TEX2:
+        case CAR_SLOT_ID::DECAL_RIGHT_QUARTER_TEX3:
+        case CAR_SLOT_ID::DECAL_RIGHT_QUARTER_TEX4:
+        case CAR_SLOT_ID::DECAL_RIGHT_QUARTER_TEX5:
+        case CAR_SLOT_ID::DECAL_RIGHT_QUARTER_TEX6:
+        case CAR_SLOT_ID::DECAL_RIGHT_QUARTER_TEX7:
             ThePartInCart = *(DWORD**)(SelectablePart + 12);
             if (ThePartInCart)
             {
@@ -715,64 +705,64 @@ void __fastcall FEShoppingCartItem_DrawPartName(DWORD* FEShoppingCartItem)
                 CarPart_GetAppliedAttributeUParam(ThePartInCart, bStringHash((char*)"NAME"), 0);
                 switch (*(DWORD*)(SelectablePart + 16))
                 {
-                case 83:
-                case 91:
-                case 99:
-                case 107:
-                case 115:
-                case 123:
+                case CAR_SLOT_ID::DECAL_FRONT_WINDOW_TEX0:
+                case CAR_SLOT_ID::DECAL_REAR_WINDOW_TEX0:
+                case CAR_SLOT_ID::DECAL_LEFT_DOOR_TEX0:
+                case CAR_SLOT_ID::DECAL_RIGHT_DOOR_TEX0:
+                case CAR_SLOT_ID::DECAL_LEFT_QUARTER_TEX0:
+                case CAR_SLOT_ID::DECAL_RIGHT_QUARTER_TEX0:
                     SlotNameHash = bStringHash((char*)"CO_DECAL_SLOT_1");
                     goto LABEL_45;
-                case 84:
-                case 92:
-                case 100:
-                case 108:
-                case 116:
-                case 124:
+                case CAR_SLOT_ID::DECAL_FRONT_WINDOW_TEX1:
+                case CAR_SLOT_ID::DECAL_REAR_WINDOW_TEX1:
+                case CAR_SLOT_ID::DECAL_LEFT_DOOR_TEX1:
+                case CAR_SLOT_ID::DECAL_RIGHT_DOOR_TEX1:
+                case CAR_SLOT_ID::DECAL_LEFT_QUARTER_TEX1:
+                case CAR_SLOT_ID::DECAL_RIGHT_QUARTER_TEX1:
                     SlotNameHash = bStringHash((char*)"CO_DECAL_SLOT_2");
                     goto LABEL_45;
-                case 85:
-                case 93:
-                case 101:
-                case 109:
-                case 117:
-                case 125:
+                case CAR_SLOT_ID::DECAL_FRONT_WINDOW_TEX2:
+                case CAR_SLOT_ID::DECAL_REAR_WINDOW_TEX2:
+                case CAR_SLOT_ID::DECAL_LEFT_DOOR_TEX2:
+                case CAR_SLOT_ID::DECAL_RIGHT_DOOR_TEX2:
+                case CAR_SLOT_ID::DECAL_LEFT_QUARTER_TEX2:
+                case CAR_SLOT_ID::DECAL_RIGHT_QUARTER_TEX2:
                     SlotNameHash = bStringHash((char*)"CO_DECAL_SLOT_3");
                     goto LABEL_45;
-                case 86:
-                case 94:
-                case 102:
-                case 110:
-                case 118:
-                case 126:
+                case CAR_SLOT_ID::DECAL_FRONT_WINDOW_TEX3:
+                case CAR_SLOT_ID::DECAL_REAR_WINDOW_TEX3:
+                case CAR_SLOT_ID::DECAL_LEFT_DOOR_TEX3:
+                case CAR_SLOT_ID::DECAL_RIGHT_DOOR_TEX3:
+                case CAR_SLOT_ID::DECAL_LEFT_QUARTER_TEX3:
+                case CAR_SLOT_ID::DECAL_RIGHT_QUARTER_TEX3:
                     SlotNameHash = bStringHash((char*)"CO_DECAL_SLOT_4");
                     goto LABEL_45;
-                case 87:
-                case 95:
-                case 103:
-                case 111:
-                case 119:
-                case 127:
+                case CAR_SLOT_ID::DECAL_FRONT_WINDOW_TEX4:
+                case CAR_SLOT_ID::DECAL_REAR_WINDOW_TEX4:
+                case CAR_SLOT_ID::DECAL_LEFT_DOOR_TEX4:
+                case CAR_SLOT_ID::DECAL_RIGHT_DOOR_TEX4:
+                case CAR_SLOT_ID::DECAL_LEFT_QUARTER_TEX4:
+                case CAR_SLOT_ID::DECAL_RIGHT_QUARTER_TEX4:
                     SlotNameHash = bStringHash((char*)"CO_DECAL_SLOT_5");
                     goto LABEL_45;
-                case 88:
-                case 96:
-                case 104:
-                case 112:
-                case 120:
-                case 128:
+                case CAR_SLOT_ID::DECAL_FRONT_WINDOW_TEX5:
+                case CAR_SLOT_ID::DECAL_REAR_WINDOW_TEX5:
+                case CAR_SLOT_ID::DECAL_LEFT_DOOR_TEX5:
+                case CAR_SLOT_ID::DECAL_RIGHT_DOOR_TEX5:
+                case CAR_SLOT_ID::DECAL_LEFT_QUARTER_TEX5:
+                case CAR_SLOT_ID::DECAL_RIGHT_QUARTER_TEX5:
                     SlotNameHash = bStringHash((char*)"CO_DECAL_SLOT_6");
                     goto LABEL_45;
-                case 89:
-                case 97:
-                case 121:
-                case 129:
+                case CAR_SLOT_ID::DECAL_FRONT_WINDOW_TEX6:
+                case CAR_SLOT_ID::DECAL_REAR_WINDOW_TEX6:
+                case CAR_SLOT_ID::DECAL_LEFT_QUARTER_TEX6:
+                case CAR_SLOT_ID::DECAL_RIGHT_QUARTER_TEX6:
                     SlotNameHash = bStringHash((char*)"CO_DECAL_SLOT_7");
                     goto LABEL_45;
-                case 90:
-                case 98:
-                case 122:
-                case 130:
+                case CAR_SLOT_ID::DECAL_FRONT_WINDOW_TEX7:
+                case CAR_SLOT_ID::DECAL_REAR_WINDOW_TEX7:
+                case CAR_SLOT_ID::DECAL_LEFT_QUARTER_TEX7:
+                case CAR_SLOT_ID::DECAL_RIGHT_QUARTER_TEX7:
                     SlotNameHash = bStringHash((char*)"CO_DECAL_SLOT_8");
                     //goto LABEL_45;
                 LABEL_45:
@@ -846,7 +836,7 @@ void __fastcall FEShoppingCartItem_DrawPartName(DWORD* FEShoppingCartItem)
                 }
             }
             return;
-        case 113:
+        case CAR_SLOT_ID::DECAL_RIGHT_DOOR_TEX6:
             RightDoorNumberLeft = CarCustomizeManager_IsPartTypeInCart_ID((DWORD*)_gCarCustomizeManager, 113);
             RightDoorNumberRight = CarCustomizeManager_IsPartTypeInCart_ID((DWORD*)_gCarCustomizeManager, 114);
             if (!RightDoorNumberLeft || !RightDoorNumberRight)

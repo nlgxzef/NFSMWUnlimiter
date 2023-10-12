@@ -4,92 +4,31 @@
 #include "CarPart.h"
 #include "InGameFunctions.h"
 
-void __fastcall TireState_DoSkids_Hook(DWORD* _TireState, DWORD* _CarRenderConn, float intensity, float* delta_pos, float* tireWorldMatrix, int Unk, float SkidWidth)
+#include "bMatrix.h"
+
+void __fastcall TireState_DoSkids_Hook(DWORD* _TireState, DWORD* _CarRenderConn, float intensity, float* delta_pos, float* tireWorldMatrix, float* carMatrix, float skidWidth)
 {
-	float* TireOffsets;
-	int KitNumber = 0;
-	float TireOffsetY = 0.0f;
-	float BodyTireWidth = SkidWidth;
-	float _SkidWidth = SkidWidth;
-	float BodyTireOffset = 0.0f;
-	BYTE OffsetInMM;
-	bool IsRear;
+	Attrib_Gen_ecar_LayoutStruct* eCarAttributes = (Attrib_Gen_ecar_LayoutStruct*)_CarRenderConn[7]; // Attrib_Gen_ecar mAttributes
+	DWORD* CarRenderInfo = (DWORD*)_CarRenderConn[17]; // CarRenderConn->mRenderInfo
+	float TireSkidWidth = skidWidth;
 
-	if (_CarRenderConn)
+	int WheelID;
+
+	for (WheelID = 0; WheelID < 4; WheelID++)
 	{
-		WORD* eCarAttributes = (WORD*)_CarRenderConn[7]; // Attrib_Gen_ecar mAttributes
-		DWORD* TheRideInfo = (DWORD*)_CarRenderConn[16]; // CarRenderConn->mRideInfo
-
-		if (eCarAttributes && TheRideInfo)
-		{
-			for (int i = 0; i < 4; i++) // Fix Y offset for the current wheel
-			{
-				IsRear = i >> 1;
-
-				// Get TireOffset Y from VLT
-				if (i >= Attrib_Private_GetLength(eCarAttributes))
-					TireOffsets = (float*)Attrib_DefaultDataArea();
-				else TireOffsets = (float*)&eCarAttributes[i*8 + 8];
-
-				TireOffsetY = TireOffsets[1]; // Y
-
-				// Get Kit Number and attributes
-				DWORD* BodyKitCarPart = RideInfo_GetPart(TheRideInfo, 23); // BODY_KIT
-				if (BodyKitCarPart)
-				{
-					KitNumber = CarPart_GetAppliedAttributeIParam(BodyKitCarPart, bStringHash((char*)"KITNUMBER"), 0);
-					// Read offset attributes from body kit
-					BodyTireOffset = CarPart_GetAppliedAttributeFParam(BodyKitCarPart, 0, IsRear ? bStringHash((char*)"REAR_TIRE_OFFSET") : bStringHash((char*)"FRONT_TIRE_OFFSET"), 0.0f);
-					BodyTireWidth = CarPart_GetAppliedAttributeFParam(BodyKitCarPart, 0, IsRear ? bStringHash((char*)"REAR_TIRE_WIDTH") : bStringHash((char*)"FRONT_TIRE_WIDTH"), SkidWidth);
-				}
-
-				// Get KitWheelOffsetFront/Rear
-				if (IsRear)
-				{
-					OffsetInMM = *(int*)_TweakKitWheelOffsetRear;
-					if (!OffsetInMM)
-					{
-						if (KitNumber < Attrib_Private_GetLength(eCarAttributes + 128))
-							OffsetInMM = *(BYTE*)((BYTE*)eCarAttributes + KitNumber + 264);
-						else OffsetInMM = *(BYTE*)Attrib_DefaultDataArea();
-					}
-				}
-				else
-				{
-					OffsetInMM = *(int*)_TweakKitWheelOffsetFront;
-					if (!OffsetInMM)
-					{
-						if (KitNumber < Attrib_Private_GetLength(eCarAttributes + 135))
-							OffsetInMM = *(BYTE*)((BYTE*)eCarAttributes + KitNumber + 278);
-						else OffsetInMM = *(BYTE*)Attrib_DefaultDataArea();
-					}
-				}
-
-				float KitWheelOffset = (float)OffsetInMM * 0.001f; // Convert mm -> meters
-
-				// Calculate new offset
-				if (TireOffsetY <= 0.0f) // Multiply offsets with -1 if negative
-				{
-					KitWheelOffset *= -1;
-					BodyTireOffset *= -1;
-				}
-
-				TireOffsetY += KitWheelOffset; // Add offset from VLT
-				TireOffsetY += BodyTireOffset; // Add offset from body kit attribute
-
-
-				// Write new offsets into CarRenderConn
-				*(float*)(_CarRenderConn + 37 + i * 4) = TireOffsetY;
-
-
-				// Modify skid width if the function pushed correct tire state
-				DWORD* CRCTireState = (DWORD*)_CarRenderConn[29 + i]; // CarRenderConn->mTireState[i]
-				if (CRCTireState == _TireState) _SkidWidth = BodyTireWidth;
-			}
-		}
+		if ((DWORD*)_CarRenderConn[29 + WheelID] == _TireState) break;
+	}
+	
+	if (CarRenderInfo && WheelID < 4)
+	{
+		TireSkidWidth = CarRenderInfo_GetTireWidth(CarRenderInfo, 0, WheelID)/* * CarRenderInfo_GetTireRadiusScale(CarRenderInfo, 0, WheelID)*/; // Get tire width and multiply with radius scale
 	}
 
-	// Finally do the skids
-	TireState_DoSkids_Game(_TireState, intensity, delta_pos, tireWorldMatrix, Unk, _SkidWidth);
+	bMatrix4 skidMatrix = tireWorldMatrix;
+	float camberAdjust = 0.03;
+	float skidOffset = TireSkidWidth / 2 - camberAdjust;
+	skidMatrix.v3.y += skidMatrix.v3.y < 0 ? skidOffset : -skidOffset;
+
+	TireState_DoSkids_Game(_TireState, intensity, delta_pos, skidMatrix, carMatrix, TireSkidWidth);
 }
 

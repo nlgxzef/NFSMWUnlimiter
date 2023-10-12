@@ -7,10 +7,11 @@ bool __cdecl QuickRaceUnlocker_IsCarUnlocked(int eUnlockFilters, unsigned int Ha
 {
     char UAT; // bl
     DWORD* FEPlayerCarDB; // edx MAPDST
-    int CarID; // eax
+    int CarTypeID; // eax
     DWORD* carRecord; // esi
     DWORD* UserProfile; // edi
     BYTE CurrentBin; // dl
+    bool InitiallyUnlocked;
     char IsUnlocked; // bl
     bool IsStockCareerOrMyCars; // al
     unsigned int PresetHash; // esi
@@ -40,27 +41,43 @@ bool __cdecl QuickRaceUnlocker_IsCarUnlocked(int eUnlockFilters, unsigned int Ha
 
     if (!IsNA && IsStockCareerOrMyCars)
     {
-        switch (FECarRecord_GetType(carRecord))
+        CarTypeID = FECarRecord_GetType(carRecord);
+
+        switch (CarConfigs[CarTypeID].Main.InitiallyUnlocked)
         {
-        case 5:                                   // RX8
-        case 6:                                   // IMPREZAWRX
-        case 8:                                   // MUSTANGGT
-        case 23:                                  // SL500
-        case 24:                                  // 997S
-        case 47:                                  // IS300
-        case 62:                                  // GTI
-        case 67:                                  // GALLARDO
-        case 68:                                  // COBALTSS
-        case 74:                                  // PUNTO
-            IsUnlocked = 1;
+        case 0:
+            InitiallyUnlocked = 0;
             break;
+        case 1:
+            InitiallyUnlocked = 1;
+            break;
+        case -1:
         default:
+            switch (CarTypeID)
+            {
+            case 5:                                   // RX8
+            case 6:                                   // IMPREZAWRX
+            case 8:                                   // MUSTANGGT
+            case 23:                                  // SL500
+            case 24:                                  // 997S
+            case 47:                                  // IS300
+            case 62:                                  // GTI
+            case 67:                                  // GALLARDO
+            case 68:                                  // COBALTSS
+            case 74:                                  // PUNTO
+                InitiallyUnlocked = 1;
+                break;
+            default:
+                InitiallyUnlocked = 0;
+                break;
+            }
             break;
         }
+        
     _ReturnIfUnlocked:
         v17 = -1;
         Attrib_Instance_dtInstance(Attrib);
-        return IsUnlocked;
+        return IsUnlocked || InitiallyUnlocked;
     }
     if ((carRecord[3] & 0xF0000) == 0 || (carRecord[3] & 8) == 0) // If N/A or not a bonus car
         goto _ReturnIfUnlocked;

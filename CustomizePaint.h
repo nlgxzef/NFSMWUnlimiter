@@ -19,7 +19,7 @@ DWORD __fastcall CustomizePaint_CalcNameHash(DWORD* _CustomizePaint, void* EDX_U
 
 	switch (MenuID)
 	{
-	case 0x301:
+	case MenuID::Customize_Visual_Paint:
 		if (!PaintScrollerIndex)
 		{
 			result = CarConfigs[CarTypeID].Names.VisualPaintCustom;
@@ -29,12 +29,12 @@ DWORD __fastcall CustomizePaint_CalcNameHash(DWORD* _CustomizePaint, void* EDX_U
 		else result = PaintGroups[PaintScrollerIndex].StringHash;
 		break;
 
-	case 0x303:
+	case MenuID::Customize_Visual_RimPaint:
 		result = 0xB3100A3E; // CP_FILTER_RIM
 		break;
 
 	default: // Vinyls
-		ActiveVinyl = (DWORD*)CarCustomizeManager_GetActivePartFromSlot((DWORD*)_gCarCustomizeManager, 77); // VINYL_LAYER0
+		ActiveVinyl = (DWORD*)CarCustomizeManager_GetActivePartFromSlot((DWORD*)_gCarCustomizeManager, CAR_SLOT_ID::VINYL_LAYER0); // VINYL_LAYER0
 
 		switch (PaintScrollerIndex)
 		{
@@ -145,12 +145,12 @@ void __fastcall CustomizePaint_RefreshHeader(DWORD* CustomizePaint, void* EDX_Un
         
 		switch (MenuCategoryID)
 		{
-		case 0x301: // Body Paint
+		case MenuID::Customize_Visual_Paint: // Body Paint
 			SelectedPaintCarPart = *(DWORD**)((*(int(__thiscall**)(DWORD*))(*CustomizePaint + 20))(CustomizePaint) + 12);
 			SelectedPaintSelectablePart = (DWORD*)(*(int(__thiscall**)(DWORD*))(*CustomizePaint + 20))(CustomizePaint); // GetSelectedPart
 			CarCustomizeManager_PreviewPart((DWORD*)_gCarCustomizeManager, *((DWORD*)SelectedPaintSelectablePart + 4), SelectedPaintCarPart);
 			break;
-		case 0x303: // Rim Paint
+		case MenuID::Customize_Visual_RimPaint: // Rim Paint
 			SelectedPaintCarPart = *(DWORD**)((*(int(__thiscall**)(DWORD*))(*CustomizePaint + 20))(CustomizePaint) + 12);
 			SelectedPaintSelectablePart = (DWORD*)(*(int(__thiscall**)(DWORD*))(*CustomizePaint + 20))(CustomizePaint); // GetSelectedPart
 			CarCustomizeManager_PreviewPart((DWORD*)_gCarCustomizeManager, *((DWORD*)SelectedPaintSelectablePart + 4), SelectedPaintCarPart);
@@ -242,12 +242,12 @@ DWORD __fastcall CustomizePaint_CalcBrandHash(DWORD* _CustomizePaint, void* EDX_
 
 	switch (MenuID)
 	{
-	case 0x301:
+	case MenuID::Customize_Visual_Paint:
 		if (PaintScrollerIndex >= PaintGroups.size()) result = CarPart_GetAppliedAttributeUParam(ActivePaint, 0xEBB03E66, 0); // BRAND_NAME
 		else result = PaintGroups[PaintScrollerIndex].BrandNameHash;
 		break;
 
-	case 0x303:
+	case MenuID::Customize_Visual_RimPaint:
 		result = 0xDA27; // RIM
 		break;
 
@@ -305,9 +305,9 @@ void __fastcall CustomizePaint_BuildSwatchList(DWORD* _CustomizePaint, void* EDX
 	unsigned __int8 g; // [esp+34h] [ebp+4h]
 
 	ArrayScroller_ClearData(_CustomizePaint + 136);
-	if (CarSlotID < 79 || CarSlotID > 82)
+	if (CarSlotID < CAR_SLOT_ID::VINYL_COLOUR0_0 || CarSlotID > CAR_SLOT_ID::VINYL_COLOUR0_3)
 		goto LABEL_11;
-	VinylColorLayer = CarSlotID - 79;
+	VinylColorLayer = CarSlotID - CAR_SLOT_ID::VINYL_COLOUR0_0;
 	ShowcasePaintPart = Showcase_FromColor[VinylColorLayer];
 	if (!ShowcasePaintPart)
 		goto LABEL_11;
@@ -338,10 +338,7 @@ void __fastcall CustomizePaint_BuildSwatchList(DWORD* _CustomizePaint, void* EDX
 				NextPaintSelectablePart = PartList[0] - 1;
 			else
 				NextPaintSelectablePart = 0;
-			Unlockhash = CarCustomizeManager_GetUnlockHash(
-				(DWORD*)_gCarCustomizeManager,
-				_CustomizePaint[82],
-				*(BYTE*)(NextPaintSelectablePart[3] + 5) >> 5);
+			Unlockhash = CarCustomizeManager_GetUnlockHash_CarPart((DWORD*)_gCarCustomizeManager, (DWORD*)NextPaintSelectablePart[3], _CustomizePaint[82], *(BYTE*)(NextPaintSelectablePart[3] + 5) >> 5);
 			PaintDatum = (DWORD*)j_malloc(0x20u);
 			v38 = 1;
 			if (PaintDatum)
@@ -431,14 +428,14 @@ void __fastcall CustomizePaint_ScrollFilters(DWORD* _CustomizePaint, void* EDX_U
 	void* FECarRecord = *(void**)_FECarRecord;
 	int CarTypeID = FECarRecord_GetType(FECarRecord);
 
-	if (_CustomizePaint[82] == 0x301) // Body Paint
+	if (_CustomizePaint[82] == MenuID::Customize_Visual_Paint) // Body Paint
 	{
 		Min = CarConfigs[CarTypeID].Visual.PaintCustom ? 0 : 1;
 		Max = PaintGroups.size() - 1;
 	}
 	else
 	{
-		if (_CustomizePaint[82] == 0x303) return; // Rim Paint (has only one category)
+		if (_CustomizePaint[82] == MenuID::Customize_Visual_RimPaint) return; // Rim Paint (has only one category)
 
 		// Vinyl Paint
 		Min = 0;
@@ -481,12 +478,12 @@ void __fastcall CustomizePaint_ScrollFilters(DWORD* _CustomizePaint, void* EDX_U
 		else
 			CustomizePaintDatumOffset = 0;
 		SelectedPaints[_CustomizePaint[111]] = bList_TraversebList(_CustomizePaint + 140, CustomizePaintDatumOffset) - 1;
-		PaintLocation = _CustomizePaint[82] - 0x301;
+		PaintLocation = _CustomizePaint[82] - MenuID::Customize_Visual_Paint;
 		_CustomizePaint[111] = PaintScrollerIndex;
 		if (!PaintLocation || PaintLocation == 2) // Body or Rim Paint
 		{
 			//CarSlotID = *(DWORD*)((*(int(__thiscall**)(DWORD*))(*_CustomizePaint + 20))(_CustomizePaint) + 16); // GetSelectedPart
-			CustomizePaint_BuildSwatchList(_CustomizePaint, EDX_Unused, PaintLocation + 76);
+			CustomizePaint_BuildSwatchList(_CustomizePaint, EDX_Unused, PaintLocation + CAR_SLOT_ID::BASE_PAINT);
 		}
 		else                                        // Vinyl paint
 		{
@@ -553,7 +550,8 @@ void __fastcall CustomizePaint_NotificationMessage(DWORD* _CustomizePaint, void*
 
 	case 0x406415E3: // PAD_ACCEPT
 		if (bList_TraversebList(_CustomizePaint + 140, 0) <= 0) return;
-		if (MenuID == 0x301 || MenuID == 0x303) CustomizationScreen_NotificationMessage(_CustomizePaint, MessageHash, FEObject, param1, param2);
+		if (MenuID == MenuID::Customize_Visual_Paint || MenuID == MenuID::Customize_Visual_RimPaint) 
+			CustomizationScreen_NotificationMessage(_CustomizePaint, MessageHash, FEObject, param1, param2);
 		else // Vinyl paint
 		{
 			CurrentPaintSelectablePart = (DWORD*)SelectedPaintParts[_CustomizePaint[111]];
@@ -570,14 +568,14 @@ void __fastcall CustomizePaint_NotificationMessage(DWORD* _CustomizePaint, void*
 				NewSelectablePart = 0;
 			}
 			SelectedPaintParts[_CustomizePaint[111]] = NewSelectablePart;
-			if ((DWORD)CarCustomizeManager_GetActivePartFromSlot((DWORD*)_gCarCustomizeManager, 77) == *(DWORD*)(dword_9BA080 + 12))
+			if ((DWORD)CarCustomizeManager_GetActivePartFromSlot((DWORD*)_gCarCustomizeManager, CAR_SLOT_ID::VINYL_LAYER0) == *(DWORD*)(dword_9BA080 + 12))
 			{
 				CurrVinylLayer = 0;
 				if ((int)_CustomizePaint[184] <= 0)
 					return;
 				for (i = (DWORD*)SelectedPaintParts; ; ++i)
 				{
-					ActivePart = CarCustomizeManager_GetActivePartFromSlot((DWORD*)_gCarCustomizeManager, CurrVinylLayer + 79);
+					ActivePart = CarCustomizeManager_GetActivePartFromSlot((DWORD*)_gCarCustomizeManager, CurrVinylLayer + CAR_SLOT_ID::VINYL_COLOUR0_0);
 					if (*i)
 					{
 						if (ActivePart != *(DWORD**)(*i + 12))
@@ -630,7 +628,7 @@ void __fastcall CustomizePaint_NotificationMessage(DWORD* _CustomizePaint, void*
 		break;
 
 	case 0x911AB364: // PAD_BACK
-		if (MenuID == 0x301 || MenuID == 0x303) // Body or rim paint
+		if (MenuID == MenuID::Customize_Visual_Paint || MenuID == MenuID::Customize_Visual_RimPaint) // Body or rim paint
 		{
 			cFEng_QueuePackageSwitch(*(DWORD**)cFEng_mInstance, *(char**)g_pCustomizeSubPkg, _CustomizePaint[83] | (MenuID << 16), 0, 0);
 		}
@@ -672,14 +670,14 @@ void __fastcall CustomizePaint_SetupVinylColor(DWORD* _CustomizePaint, void* EDX
 	int num; // [esp+14h] [ebp-30h]
 	DWORD ASelectablePart[11]; // [esp+18h] [ebp-2Ch] BYREF
 
-	CarSlotID = 79;
+	CarSlotID = CAR_SLOT_ID::VINYL_COLOUR0_0;
 
 	DWORD* FEDatabase = *(DWORD**)_FEDatabase;
 	void* FECarRecord = *(void**)_FECarRecord;
 
 	if (*(int*)_Showcase_FromFilter != -1)
 	{
-		CarSlotID = 79 + *(int*)_Showcase_FromFilter;
+		CarSlotID = CAR_SLOT_ID::VINYL_COLOUR0_0 + *(int*)_Showcase_FromFilter;
 
 		*(int*)_Showcase_FromFilter = -1;
 	}
@@ -699,7 +697,7 @@ void __fastcall CustomizePaint_SetupVinylColor(DWORD* _CustomizePaint, void* EDX
 		FEngSetInvisible(ArrowR);
 	}
 	ShowcaseFromColorRef = (DWORD*)Showcase_FromColor;
-	CarSlotID = 79;
+	CarSlotID = CAR_SLOT_ID::VINYL_COLOUR0_0;
 	SelectedPartRef = (DWORD*)SelectedPaintParts;
 	num = 4;
 	do
@@ -819,28 +817,28 @@ void __fastcall CustomizePaint_Setup(DWORD * _CustomizePaint, void* EDX_Unused)
 	if (*(int*)_Showcase_FromFilter != -1)
 		_CustomizePaint[111] = *(int*)_Showcase_FromFilter;
 
-	if (MenuID > 0x303) // Vinyls
+	if (MenuID > MenuID::Customize_Visual_RimPaint) // Vinyls
 	{
-		if (MenuID >= 0x402 && MenuID <= 0x4FF)
+		if (MenuID >= MenuID::Customize_Vinyls_First && MenuID <= MenuID::Customize_Vinyls_Last)
 		{
 			_CustomizePaint[87] = CarConfigs[CarTypeID].Names.VisualVinylsColor;         // CO_VINYL_COLOR
 			CustomizePaint_SetupVinylColor(_CustomizePaint, EDX_Unused);
 		}
 	}
-	else if (MenuID == 0x303) // Rim Paint
+	else if (MenuID == MenuID::Customize_Visual_RimPaint) // Rim Paint
 	{
 		_CustomizePaint[87] = CarConfigs[CarTypeID].Names.VisualRimPaint;           // CO_RIM_PAINT
 		ArrowL = FEngFindObject(FEPackageName, 0x2C3CC2D3);
 		FEngSetInvisible(ArrowL);
 		ArrowR = FEngFindObject(FEPackageName, 0x53639A10);
 		FEngSetInvisible(ArrowR);
-		CustomizePaint_BuildSwatchList(_CustomizePaint, EDX_Unused, 78);
+		CustomizePaint_BuildSwatchList(_CustomizePaint, EDX_Unused, CAR_SLOT_ID::PAINT_RIM);
 	}
-	else if (MenuID == 0x301) // Body Paint
+	else if (MenuID == MenuID::Customize_Visual_Paint) // Body Paint
 	{
 		cFEng_QueuePackageMessage(*(DWORD**)cFEng_mInstance, 0x1A7240F3, FEPackageName, 0);
 		_CustomizePaint[87] = CarConfigs[CarTypeID].Names.VisualPaint;            // CO_PAINT
-		CustomizePaint_BuildSwatchList(_CustomizePaint, EDX_Unused, 76);
+		CustomizePaint_BuildSwatchList(_CustomizePaint, EDX_Unused, CAR_SLOT_ID::BASE_PAINT);
 	}
 	*(int*)_Showcase_FromFilter = -1;
 	*((BYTE*)_CustomizePaint + 283) = 1;

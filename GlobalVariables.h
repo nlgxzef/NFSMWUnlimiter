@@ -68,6 +68,27 @@
 #define _UsePrecompositeVinyls 0x9B09FC
 #define _StreamingTexturePackLoader 0x91A098
 #define _StreamingSolidPackLoader 0x91A060
+#define _WheelPivotTranslationAmount 0x903314
+#define _WheelStandardWidth 0x903318
+#define _WheelStandardRadius 0x90331C
+#define _gFastMem 0x925B30
+#define _ForceHeadlightsOn 0x9B092C
+#define _ForceBrakelightsOn 0x9B0930
+#define _ForceReverselightsOn 0x9B0934
+#define flt_8B2EE8 0x8B2EE8
+#define _UTL_Collections_Singleton_INIS_mInstance 0x9885C8
+#define _cpr 0x903528
+#define _cpb 0x90352C
+#define _cpw 0x903530
+#define _copWhitemul 0x903540
+#define _gTWEAKER_NISLightPosX 0x9B097C
+#define _gTWEAKER_NISLightPosY 0x9B0980
+#define _gTWEAKER_NISLightPosZ 0x9B0984
+#define _gTWEAKER_NISLightEnabled 0x9B0978
+#define _gTWEAKER_NISLightIntensity 0x903548
+#define _ShaperLightsCharacters 0x8F2F10
+#define _ShaperLightsCharactersBackup 0x8F2FB0
+#define _Lightslot 0x90354C
 
 bool BETACompatibility = 0;
 bool HPCCompatibility = 0;
@@ -245,13 +266,27 @@ char* DefaultCopDestroyedStrings[]
 // _General.ini & CARNAME.ini
 typedef struct
 {
+	int InitiallyUnlocked;
 	bool ForceLODA;
 	int EngineType;
+	bool ScaleBrakesWithRims;
+	bool ListAttachmentsUnderParts;
+} MainSection;
+typedef struct
+{
+	bool HeadlightOff;
+	bool DamageLights;
+	bool CentreBrake;
+	bool Reverse;
+	bool BrakelightOnfInGame;
+	bool TireInnerMask;
+} TextureSection;
+typedef struct
+{
 	bool Parts;
 	bool Performance;
 	bool Visual;
-} MainSection;
-
+} CategorySection;
 typedef struct
 {
 	bool BodyKits;
@@ -986,6 +1021,8 @@ typedef struct
 {
 	DWORD* CarTypeInfo;
 	MainSection Main;
+	TextureSection Textures;
+	CategorySection Category;
 	PartsSection Parts;
 	PerformanceSection Performance;
 	VisualSection Visual;
@@ -1078,3 +1115,9 @@ DWORD* SelectedPaintParts[MaximumPaintBrandCount]; // CustomizePaint[181]
 float CarSelectTireSteerAngle_Backup;
 
 std::filesystem::path CurrentWorkingDirectory;
+
+DWORD ColorHashes[3][4] = {
+	{0x0000D99A, 0x02DDC8F0, 0x00136707, 0x026E1AC5}, // RED, GREEN, BLUE, ALPHA
+	{0x001C0D0C, 0x5E96E722, 0x02804819, 0x50317397}, // RED2, GREEN2, BLUE2, ALPHA2
+	{0x368A1A6A, 0x00BA7DC0, 0x07C4C1D7, 0x004ACF95} // DISPRED, DISPGREEN, DISPBLUE, DISPALPHA
+};

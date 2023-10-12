@@ -1,7 +1,9 @@
 #pragma once
 
+#include "stdafx.h"
 #include "stdio.h"
-#include <windows.h>
+
+#include "InGameTypes.h"
 
 unsigned int(__thiscall* CustomizeCategoryScreen_AddCustomOption)(void* TheThis, const char* Package, unsigned int TextureHash, unsigned int LanguageHash, unsigned int BrandID) = (unsigned int(__thiscall*)(void*, const char*, unsigned int, unsigned int, unsigned int))0x7BB560;
 unsigned int(__thiscall* IconScrollerMenu_AddOption)(void* TheThis, DWORD* IconOption) = (unsigned int(__thiscall*)(void*, DWORD*))0x573960;
@@ -12,6 +14,7 @@ int(*GetCurrentLanguage)() = (int(*)())0x56BB20;
 bool(*CustomizeSetInParts)(bool IsInParts) = (bool(*)(bool))0x575B50;
 bool(*CustomizeSetInPerformance)(bool IsInPerformance) = (bool(*)(bool))0x575B30;
 void* (*j_malloc)(size_t) = (void* (*)(size_t))0x652AD0;
+void* (__thiscall* FastMem_Alloc)(DWORD* FastMem, size_t bytes, const char* kind) = (void* (__thiscall*)(DWORD*, size_t, const char*))0x5D29D0;
 unsigned int(__thiscall* IconOption_Create)(void* MenuItemPtr, DWORD IconTextureHash, DWORD NameStringHash, DWORD unknown) = (unsigned int(__thiscall*)(void*, DWORD, DWORD, DWORD))0x586FA0;
 unsigned int(*bStringHash)(char* StringToHash) = (unsigned int(*)(char*))0x460BF0;
 unsigned int(*bStringHash2)(char* StringToHash, unsigned int HashToStart) = (unsigned int(*)(char*, unsigned int))0x460C20;
@@ -32,7 +35,7 @@ int(__thiscall* CustomizeSub_GetRimBrandIndex_Game)(void* CustomizeSub, DWORD Wh
 int(__thiscall* CustomizeSub_RefreshHeader)(void* CustomizeSub) = (int(__thiscall*)(void*))0x7B1070;
 unsigned int(__thiscall* CarPartDatabase_NewGetCarPart)(DWORD* CarPartDB, int CarTypeID, int CarSlotID, int CarPartNameHash, int PreviousPart, int UpgradeLevel) = (unsigned int(__thiscall*)(DWORD*, int, int, int, int, int))0x747C40;
 unsigned int(__thiscall* CarPartDatabase_NewGetNumCarParts)(DWORD* CarPartDB, int CarTypeID, int CarSlotID, int CarPartNameHash, int UpgradeLevel) = (unsigned int(__thiscall*)(DWORD*, int, int, int, int))0x751670;
-int(__thiscall* CarPartDatabase_GetCarType)(DWORD* CarPartDB, unsigned int CarTypeNameHash) = (int(__thiscall*)(DWORD*, unsigned int))0x7398D0;
+int(__thiscall* CarPartDatabase_GetCarType_Game)(DWORD* CarPartDB, unsigned int CarTypeNameHash) = (int(__thiscall*)(DWORD*, unsigned int))0x7398D0;
 WORD(__thiscall* CarPartDatabase_GetPartIndex)(DWORD* CarPartDB, DWORD* CarPart) = (WORD(__thiscall*)(DWORD*, DWORD*))0x747BB0;
 void(__thiscall* RideInfo_Init)(DWORD* RideInfo, int CarType, int CarRenderUsage, int unk1, int unk2) = (void(__thiscall*)(DWORD*, int, int, int, int))0x739A70;
 bool(__thiscall* RideInfo_UpdatePartsEnabled)(DWORD* RideInfo) = (bool(__thiscall*)(DWORD*))0x7517D0;
@@ -141,10 +144,10 @@ bool(* UnlockSystem_IsBackroomAvailable)(int eUnlockFilters, int UnlockableID, i
 bool(* UnlockSystem_IsUnlockableNew)(int eUnlockFilters, int UnlockableID, int UpgradeLevel) = (bool(*)(int, int, int))0x576800;
 bool(* UnlockSystem_IsPerfPackageUnlocked)(int eUnlockFilters, int PerfPkgType, int UpgradeLevel, int Unk, bool IsInBackroom) = (bool(*)(int, int, int, int, bool))0x58A960;
 bool(* UnlockSystem_IsUnlockableUnlocked)(int eUnlockFilters, int UnlockableID, int UpgradeLevel, int Unk, bool IsInBackroom) = (bool(*)(int, int, int, int, bool))0x576700;
-bool(* UnlockSystem_IsCarPartUnlocked)(int eUnlockFilters, int CarSlotID, DWORD* _CarPart, int Unk, bool IsInBackroom) = (bool(*)(int, int, DWORD*, int, bool))0x58A8D0;
+bool(* UnlockSystem_IsCarPartUnlocked_Game)(int eUnlockFilters, int CarSlotID, DWORD* _CarPart, int Unk, bool IsInBackroom) = (bool(*)(int, int, DWORD*, int, bool))0x58A8D0;
 void(__thiscall* UIQRCarSelect_SetupForPlayer)(DWORD* UIQRCarSelect, int Unk) = (void(__thiscall*)(DWORD*, int))0x7B4E20;
 bool(*CompareCompositeParams)(DWORD* SkinCompositeParams1, DWORD* SkinCompositeParams2) = (bool(*)(DWORD*, DWORD*))0x73AB90;
-int(__thiscall* Attrib_Private_GetLength)(WORD* Attrib_Private) = (int(__thiscall*)(WORD*))0x452940;
+int(__thiscall* Attrib_Private_GetLength)(Attrib_Private* Attrib_Private) = (int(__thiscall*)(Attrib_Private*))0x452940;
 void*(* Attrib_DefaultDataArea)() = (void*(*)())0x6269B0;
 DWORD*(__thiscall* RideInfo_GetPart)(DWORD* RideInfo, int CarSlotID) = (DWORD*(__thiscall*)(DWORD*, int))0x739C70;
 bool(*UnlockSystem_IsBonusCarCEOnly_Game)(unsigned int PresetNameHash) = (bool(*)(unsigned int))0x576AD0;
@@ -170,7 +173,7 @@ double(__thiscall *CarRenderInfo_DrawAmbientShadow_Game)(DWORD* _CarRenderInfo, 
 void(__thiscall *CarRenderInfo_RenderTextureHeadlights)(DWORD* _CarRenderInfo, DWORD* View, float* l_w, unsigned int Accurate) = (void(__thiscall*)(DWORD*, DWORD*, float*, unsigned int))0x738180;
 DWORD* (* GetTextureInfo)(DWORD TextureHash, int return_default_texture_if_not_found, int include_unloaded_textures) = (DWORD* (*)(DWORD, int, int))0x503400;
 bool(*IsPaused)() = (bool(*)())0x468390;
-void(__thiscall* CarRenderInfo_RenderFlaresOnCar)(DWORD* CarRenderInfo, DWORD* view, float* position, float* body_matrix, int force_light_state, int reflection, int renderFlareFlags) = (void(__thiscall*)(DWORD*, DWORD*, float*, float*, int, int, int))0x742950;
+void(__thiscall* CarRenderInfo_RenderFlaresOnCar_Game)(DWORD* CarRenderInfo, DWORD* view, float* position, float* body_matrix, int force_light_state, int reflection, int renderFlareFlags) = (void(__thiscall*)(DWORD*, DWORD*, float*, float*, int, int, int))0x742950;
 void(*eRenderLightFlare)(DWORD* view, DWORD* light_flare, float* local_world, float intensity_scale, int a5, int a6, float a7, DWORD ColourOverRide, float sizescale) = (void(*)(DWORD*, DWORD*, float*, float, int, int, float, DWORD, float))0x505380;
 void(__thiscall* CustomizationScreen_NotificationMessage)(DWORD* _CustomizationScreen, DWORD MessageHash, DWORD* FEObject, DWORD param1, DWORD param2) = (void(__thiscall*)(DWORD*, DWORD, DWORD*, DWORD, DWORD))0x7B7080;
 void(__thiscall* SelectablePart_copy)(DWORD* SelectablePart, DWORD* CopyFrom) = (void(__thiscall*)(DWORD*, DWORD*))0x7A9E60;
@@ -179,9 +182,9 @@ DWORD(*GetVinylLayerHash_Game)(DWORD* RideInfo, int VinylLayer) = (DWORD(*)(DWOR
 DWORD(*GetVinylLayerMaskHash_Game)(DWORD* RideInfo, int VinylLayer) = (DWORD(*)(DWORD*, int))0x749460;
 DWORD(*GetSpinnerTextureHash)(DWORD* RideInfo) = (DWORD(*)(DWORD*))0x749310;
 DWORD(*GetSpinnerTextureMaskHash)(DWORD* RideInfo) = (DWORD(*)(DWORD*))0x749350;
-DWORD*(__thiscall *eModel_GetPositionMarker)(DWORD* eModel, DWORD MarkerHash) = (DWORD*(__thiscall*)(DWORD*, DWORD))0x5016D0;
+ePositionMarker*(__thiscall *eModel_GetPositionMarker)(DWORD* eModel, DWORD MarkerHash) = (ePositionMarker*(__thiscall*)(DWORD*, DWORD))0x5016D0;
 void(__thiscall* eModel_ReplaceLightMaterial_Game)(DWORD* eModel, int NameHash, int LightMaterial) = (void(__thiscall*)(DWORD*, int, int))0x501640;
-void(__thiscall* TireState_DoSkids_Game)(DWORD* _TireState, float intensity, float* delta_pos, float* tireWorldMatrix, int Unk, float SkidWidth) = (void(__thiscall*)(DWORD *, float, float*, float*, int, float))0x745580;
+void(__thiscall* TireState_DoSkids_Game)(DWORD* _TireState, float intensity, float* delta_pos, float* tireWorldMatrix, float* CarMatrix, float SkidWidth) = (void(__thiscall*)(DWORD *, float, float*, float*, float*, float))0x745580;
 void(__thiscall* CarRenderConn_UpdateTires_Game)(DWORD* _CarRenderConn, float dT, float carspeed, DWORD* data) = (void(__thiscall*)(DWORD*, float, float, DWORD*))0x746750;
 void(__thiscall* TwoStageSlider_Init)(DWORD* TwoStageSlider, const char* pkg_name, const char* name, float min, float max, float inc, float cur, float preview, float preview_offset) = (void(__thiscall*)(DWORD*, const char*, const char*, float, float, float, float, float, float))0x56CE30;
 int(*bReleasePrintf)(const char* format, ...) = (int(*)(const char*, ...))0x464780;
@@ -241,3 +244,26 @@ DWORD*(__thiscall* eStreamPackLoader_GetStreamingEntry)(DWORD* eStreamPackLoader
 void(__thiscall* sub_7B3F30)(DWORD* bList) = (void(__thiscall*)(DWORD*))0x7B3F30;
 void(__thiscall* Showcase_ctor)(DWORD* Showcase, DWORD* ScreenConstructorData) = (void(__thiscall*)(DWORD*, DWORD*))0x7A4680;
 void(__thiscall* Showcase_dtor)(DWORD* Showcase) = (void(__thiscall*)(DWORD*))0x7A4890;
+void(*elCloneLightContext_Game)(DWORD* light_context, bMatrix4* local_world, bMatrix4* world_view, bVector4* camera_world_position, DWORD* view, DWORD* old_context) = (void(*)(DWORD*, bMatrix4*, bMatrix4*, bVector4*, DWORD*, DWORD*))0x502580;
+float*(__thiscall* Attrib_Gen_ecar_ExtraRearTireOffset)(DWORD* Attrib_Instance) = (float*(__thiscall*)(DWORD*))0x7329F0;
+void(*eRotateX)(bMatrix4* dest, bMatrix4* a, WORD angle) = (void(*)(bMatrix4*, bMatrix4*, WORD))0x6BDBB0;
+void(*eRotateY)(bMatrix4* dest, bMatrix4* a, WORD angle) = (void(*)(bMatrix4*, bMatrix4*, WORD))0x6BDC60;
+void(*eRotateZ)(bMatrix4* dest, bMatrix4* a, WORD angle) = (void(*)(bMatrix4*, bMatrix4*, WORD))0x6BDD20;
+void(*eMulMatrix)(bMatrix4* dest, bMatrix4* a, bMatrix4* mul) = (void(*)(bMatrix4*, bMatrix4*, bMatrix4*))0x6BD900;
+void(*bCopy)(bMatrix4* dest, bMatrix4* a) = (void(*)(bMatrix4*, bMatrix4*))0x444FE0;
+WORD(*bDegToShort)(float Deg) = (WORD(*)(float))0x444EB0;
+void(__thiscall* CarRenderConn_OnLoaded_Game)(DWORD* _CarRenderConn, DWORD* CarRenderInfo) = (void(__thiscall*)(DWORD*, DWORD*))0x750B20;
+void(__thiscall* eViewPlatInterface_Render)(DWORD* view, DWORD* model, bMatrix4* local_world, DWORD* light_context, unsigned int flags, unsigned int unk) = (void(__thiscall*)(DWORD*, DWORD*, bMatrix4*, DWORD*, unsigned int, unsigned int))0x6DA9B0;
+ePositionMarker* (__thiscall* eSolid_GetPositionMarker)(DWORD* solid, ePositionMarker* marker) = (ePositionMarker * (__thiscall*)(DWORD*, ePositionMarker*))0x501680;
+DWORD* (*FindPartWithLevel)(int CarType, int CarSlotID, int UpgradeLevel) = (DWORD * (*)(int, int, int))0x747EC0;
+int (__thiscall* CarRenderInfo_SetPlayerDamage_Game)(DWORD* CarRenderInfo, DWORD* DamageInfo) = (int (__thiscall*)(DWORD*, DWORD*))0x742680;
+float(*Sim_GetTime)() = (float(*)())0x6E8DE0;
+bMatrix4* (*eFrameMallocMatrix)(int num_matrices) = (bMatrix4 * (*)(int))0x405ED0;
+int (__thiscall* eView_GetPixelSize)(DWORD* view, bVector3* position, float radius) = (int(__thiscall*)(DWORD*, bVector3*, float))0x4FCAC0;
+int (*eGetCurrentViewMode)() = (int(*)())0x6BF530;
+int(__thiscall* eView_GetVisibleState)(DWORD* view, bVector3* aabb_min, bVector3* aabb_max, bMatrix4* local_world) = (int(__thiscall*)(DWORD*, bVector3*, bVector3*, bMatrix4*))0x4FCA70;
+float(*coplightflicker)(float time, int offset) = (float(*)(float, int))0x738300;
+float(*coplightflicker2)(float time, int whichColor, int flareCount) = (float(*)(float, int, int))0x738340;
+float(*bSin)(float angle) = (float(*)(float))0x45DBD0;
+void(*AddQuickDynamicLight)(DWORD* ShaperRigP, unsigned int slot, float r, float g, float b, float intensity, bVector3* position) = (void(*)(DWORD*, unsigned int, float, float, float, float, bVector3*))0x4FC990;
+void(*RestoreShaperRig)(DWORD* ShaperRigP, unsigned int slot, DWORD* ShaperRigBP) = (void(*)(DWORD*, unsigned int, DWORD*))0x4FC940;

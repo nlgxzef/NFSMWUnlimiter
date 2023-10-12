@@ -119,6 +119,43 @@ void __declspec(naked) CarCountCodeCave_HeliRenderConn_Construct()
 	}
 }
 
+// 0x7B3877
+void __declspec(naked) CarCountCodeCave_DebugCarCustomizeScreen_BuildOptionsLists()
+{
+	_asm
+	{
+		cmp ebp, CarArraySize
+		mov dword ptr ds: [esp + 0x10], ebp
+		jl loc_7B3814
+
+		push 0x7B3883
+		retn
+
+		loc_7B3814:
+			push 0x7B3814
+			retn
+	}
+}
+
+int __fastcall CarPartDatabase_GetCarType(DWORD* CarPartDatabase, void* EDX_Unused, int CarTypeNameHash)
+{
+	int result = ReplacementCar;
+	int CarTypeInfo;
+
+	for (int i = 0; i < CarCount; i++)
+	{
+		CarTypeInfo = ((*(DWORD*)CarTypeInfoArray) + i * SingleCarTypeInfoBlockSize);
+
+		if (bStringHash((char*)(CarTypeInfo + 16)) == CarTypeNameHash)
+		{
+			result = i;
+			break;
+		}
+	}
+
+	return result;
+}
+
 // 0x756AA7
 void __declspec(naked) DoUnlimiterStuffCodeCave()
 {
@@ -137,16 +174,12 @@ void __declspec(naked) DoUnlimiterStuffCodeCave()
 	CarCount = CarArraySize / SingleCarTypeInfoBlockSize;
 
 	// Do required stuff
-	injector::WriteMemory<int>(0x739900, CarCount * SingleCarTypeInfoBlockSize, true); // CarPartDatabase::GetCarType
-	injector::WriteMemory<int>(0x7B3879, CarCount * SingleCarTypeInfoBlockSize, true); // DebugCarCustomizeScreen::BuildOptionsLists
-
-	// Fix quantizers
-	injector::WriteMemory<int>(0x9B1334, CarCount, true); // QuantCarType
-	injector::WriteMemory<int>(0x9B1338, CarCount + 1, true);
+	//injector::WriteMemory<int>(0x739900, CarCount * SingleCarTypeInfoBlockSize, true); // CarPartDatabase::GetCarType
+	//injector::WriteMemory<int>(0x7B3879, CarArraySize, true); // DebugCarCustomizeScreen::BuildOptionsLists
 
 	// Replacement model if model not found in array
 	if (ReplacementCar > CarCount) ReplacementCar = 1;
-	injector::WriteMemory<int>(0x739909, ReplacementCar, true);
+	//injector::WriteMemory<int>(0x739909, ReplacementCar, true); // CarPartDatabase::GetCarType
 
 	// load configs into UnlimiterData structs
 	LoadCarConfigs();
@@ -182,6 +215,10 @@ void __declspec(naked) DoUnlimiterStuffCodeCave2()
 		mov edx, dword ptr ds : [_CarPartPartsTable]
 		pushad
 	}
+
+	// Fix quantizers
+	injector::WriteMemory<int>(0x9B1334, CarCount, true); // QuantCarType
+	injector::WriteMemory<int>(0x9B1338, CarCount + 1, true);
 
 	CarPartCount = CarPartPartsTableSize / SingleCarPartSize;
 

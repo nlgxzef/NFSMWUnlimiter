@@ -1,6 +1,9 @@
 #pragma once
 #include "stdio.h"
+#include "InGameTypes.h"
 #include "InGameFunctions.h"
+
+void __fastcall CarRenderInfo_RenderFlaresOnCar(DWORD* CarRenderInfo, void* EDX_Unused, DWORD* view, bVector3* position, bMatrix4* body_matrix, int force_light_state, int reflection, int renderFlareFlags);
 
 static injector::hook_back<void(*)(DWORD*, int, int)> hb_RenderFEFlares;
 
@@ -10,7 +13,7 @@ void RenderFEFlares(DWORD* view, int reflection, int renderFlareFlags)
 	DWORD* i; // ebp
 	DWORD* _CarRenderInfo; // ecx
 
-	if (RenderFECarFlares != -1) // global var
+	//if (RenderFECarFlares != -1) // global var
 	{
 		if (*(int*)_DrawCars)
 		{
@@ -25,7 +28,21 @@ void RenderFEFlares(DWORD* view, int reflection, int renderFlareFlags)
 					{
 						_CarRenderInfo = (DWORD*)TheFrontEndRenderingCar[198]; // 0x318
 						if (_CarRenderInfo)
-							CarRenderInfo_RenderFlaresOnCar(_CarRenderInfo, view, (float*)TheFrontEndRenderingCar + 200, (float*)TheFrontEndRenderingCar + 204, RenderFECarFlares, reflection, renderFlareFlags);
+						{
+							if (RenderFECarFlares != -1) CarRenderInfo_RenderFlaresOnCar(_CarRenderInfo, 0, view, (bVector3*)(TheFrontEndRenderingCar + 200), (bMatrix4*)(TheFrontEndRenderingCar + 204), RenderFECarFlares, reflection, renderFlareFlags);
+							switch (RenderFECarFlares)
+							{
+								case 1: // Headlights
+									_CarRenderInfo[1416] |= 3847; // OnLights
+									break;
+								case 2: // Taillights
+									_CarRenderInfo[1416] |= 248; // OnLights
+									break;
+								default:
+									_CarRenderInfo[1416] = 0; // OnLights
+									break;
+							}
+						}
 					}
 				}
 			}
@@ -37,18 +54,27 @@ void RenderFEFlares(DWORD* view, int reflection, int renderFlareFlags)
 
 DWORD GetWheelTextureHash(DWORD* _RideInfo, int index)
 {
-	DWORD* RimPart = RideInfo_GetPart(_RideInfo, index == 0 ? 66 : 67); // ? FRONT_WHEEL : REAR_WHEEL
+	DWORD* RimPart = RideInfo_GetPart(_RideInfo, index == 0 ? CAR_SLOT_ID::FRONT_WHEEL : CAR_SLOT_ID::REAR_WHEEL);
 	if (!RimPart) return 0;
 
-	return bStringHash2((char*)"_WHEEL", CarPart_GetTextureNameHash(RimPart));
+	DWORD TextureHash = CarPart_GetTextureNameHash(RimPart);
+	if (TextureHash) return bStringHash2((char*)"_WHEEL", TextureHash);
+
+	return CarConfigs[_RideInfo[0]].Textures.TireInnerMask
+		? bStringHash2((char*)"_TIRE", CarPart_GetCarTypeNameHash(RimPart))
+		: 0;
 }
 
 DWORD GetWheelTextureMaskHash(DWORD* _RideInfo, int index)
 {
-	DWORD* RimPart = RideInfo_GetPart(_RideInfo, index == 0 ? 66 : 67); // ? FRONT_WHEEL : REAR_WHEEL
+	DWORD* RimPart = RideInfo_GetPart(_RideInfo, index == 0 ? CAR_SLOT_ID::FRONT_WHEEL : CAR_SLOT_ID::REAR_WHEEL);
 	if (!RimPart) return 0;
 
-	return bStringHash2((char*)"_WHEEL_INNER_MASK", CarPart_GetTextureNameHash(RimPart));
+	DWORD TextureHash = CarPart_GetTextureNameHash(RimPart);
+	if (TextureHash) return bStringHash2((char*)"_WHEEL_INNER_MASK", TextureHash);
+	return CarConfigs[_RideInfo[0]].Textures.TireInnerMask
+		? bStringHash2((char*)"_TIRE_INNER_MASK", CarPart_GetCarTypeNameHash(RimPart))
+		: 0;
 }
 
 void CompositeRim(DWORD* _RideInfo)
@@ -63,7 +89,7 @@ void CompositeRim(DWORD* _RideInfo)
 		CompositeWheelHash = _RideInfo[16+i]; // DUMMY_WHEELx, DUMMY_SPINNERx
 		WheelTexHash = GetWheelTextureHash(_RideInfo, i);
 		WheelInnerMaskTexHash = GetWheelTextureMaskHash(_RideInfo, i);
-		CompositeWheel(_RideInfo, CompositeWheelHash, WheelTexHash, WheelInnerMaskTexHash, 78);
+		CompositeWheel(_RideInfo, CompositeWheelHash, WheelTexHash, WheelInnerMaskTexHash, CAR_SLOT_ID::PAINT_RIM);
 	}
 }
 
@@ -78,7 +104,7 @@ int GetTempCarSkinTextures(DWORD* textures_to_load, int num_textures, int max_te
 	DWORD SpinnerTextureMaskHash; // r3
 
 	// VINYL_LAYER0
-	VinylPart = RideInfo_GetPart(ride, 77);
+	VinylPart = RideInfo_GetPart(ride, CAR_SLOT_ID::VINYL_LAYER0);
 	if (VinylPart)
 	{
 		VinylLayerHash = GetVinylLayerHash_Game(ride, 0);
@@ -104,7 +130,7 @@ int GetTempCarSkinTextures(DWORD* textures_to_load, int num_textures, int max_te
 		num_textures += UsedCarTextureAddToTable(textures_to_load, num_textures, max_textures, WheelTextureHash);
 		num_textures += UsedCarTextureAddToTable(textures_to_load, num_textures, max_textures, WheelTextureMaskHash);
 
-		textures_to_load[180 - 87] = WheelTextureHash; // REAR WHEEL PAINT??
+		//textures_to_load[180 - 87] = WheelTextureHash; // REAR WHEEL PAINT??
 	}
 
 	// SPINNER
@@ -122,14 +148,14 @@ int GetTempCarSkinTextures(DWORD* textures_to_load, int num_textures, int max_te
 
 DWORD FindScreenInfo(char const* ScreenName, int MenuID)
 {
-	if (MenuID >= 0x701 && MenuID <= 0x7FF) // Rims (front)
+	if (MenuID >= MenuID::Customize_Rims_Min && MenuID <= MenuID::Customize_Rims_Last) // Rims (front)
 	{
 		return FindScreenInfo_Game("Rims.fng", -1);
 	}
-	else if (MenuID >= 0x402 && MenuID <= 0x4FF) // Vinyls
+	else if (MenuID >= MenuID::Customize_Vinyls_First && MenuID <= MenuID::Customize_Vinyls_Last) // Vinyls
 	{
-		if (MenuID - 0x402 >= VinylGroups.size()) MenuID = 0x403;
-		else MenuID = VinylGroups[MenuID - 0x402].UseAltCamera ? 0x403 : 0x402;
+		if (MenuID - MenuID::Customize_Vinyls_First >= VinylGroups.size()) MenuID = MenuID::Customize_Vinyls_AltCam;
+		else MenuID = VinylGroups[MenuID - MenuID::Customize_Vinyls_First].UseAltCamera ? MenuID::Customize_Vinyls_AltCam : MenuID::Customize_Vinyls_DefaultCam;
 	}
 
 	return FindScreenInfo_Game(ScreenName, MenuID);
@@ -146,12 +172,12 @@ DWORD FindScreenCameraInfo(DWORD ScreenInfo)
 
 	// Get CarType Info
 	void* FECarRecord = *(void**)_FECarRecord;
-	if ((MenuID <= 0x101 && MenuID >= 0x8FF) || !FECarRecord) return result;
+	if ((MenuID <= MenuID::Customize_First && MenuID >= MenuID::Customize_Last) || !FECarRecord) return result;
 
 	int CarTypeID = FECarRecord_GetType(FECarRecord);
 
 	DWORD CustomAngle = 0;
-	if (MenuID >= 0x701 && MenuID <= 0x7FF) // Rims
+	if (MenuID >= MenuID::Customize_Rims_Min && MenuID <= MenuID::Customize_Rims_Last) // Rims
 	{
 		switch (RimsToCustomize)
 		{
@@ -166,179 +192,179 @@ DWORD FindScreenCameraInfo(DWORD ScreenInfo)
 			break;
 		}
 	}
-	else if (MenuID >= 0x401 && MenuID <= 0x4FF) // Vinyls
+	else if (MenuID >= MenuID::Customize_Vinyls_Min && MenuID <= MenuID::Customize_Vinyls_Last) // Vinyls
 	{
 		CustomAngle = CarConfigs[CarTypeID].Cameras.VisualVinylsGroup;
 	}
-	else if (MenuID >= 0x601 && MenuID <= 0x608) // Decal slots
+	else if (MenuID >= MenuID::Customize_Decals_Slot1 && MenuID <= MenuID::Customize_Decals_Slot8) // Decal slots
 	{
 		switch (*(int*)CustomizeDecals_CurrentDecalLocation) // 0x501 - 0x506
 		{
-		case 0x501:
+		case MenuID::Customize_Decals_Windshield:
 		default:
 			switch (MenuID)
 			{
-			case 0x601:
+			case MenuID::Customize_Decals_Slot1:
 			default:
 				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsWindshield1;                          // DECAL_FRONT_WINDOW_TEX0
 				break;
-			case 0x602:
+			case MenuID::Customize_Decals_Slot2:
 				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsWindshield2;
 				break;
-			case 0x603:
+			case MenuID::Customize_Decals_Slot3:
 				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsWindshield3;
 				break;
-			case 0x604:
+			case MenuID::Customize_Decals_Slot4:
 				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsWindshield4;
 				break;
-			case 0x605:
+			case MenuID::Customize_Decals_Slot5:
 				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsWindshield5;
 				break;
-			case 0x606:
+			case MenuID::Customize_Decals_Slot6:
 				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsWindshield6;
 				break;
-			case 0x607:
+			case MenuID::Customize_Decals_Slot7:
 				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsWindshield7;
 				break;
-			case 0x608:
+			case MenuID::Customize_Decals_Slot8:
 				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsWindshield8;
 				break;
 			}
 			break;
-		case 0x502:
+		case MenuID::Customize_Decals_RearWindow:
 			switch (MenuID)
 			{
-			case 0x601:
+			case MenuID::Customize_Decals_Slot1:
 			default:
 				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsRearWindow1;                          // DECAL_REAR_WINDOW_TEX0
 				break;
-			case 0x602:
+			case MenuID::Customize_Decals_Slot2:
 				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsRearWindow2;
 				break;
-			case 0x603:
+			case MenuID::Customize_Decals_Slot3:
 				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsRearWindow3;
 				break;
-			case 0x604:
+			case MenuID::Customize_Decals_Slot4:
 				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsRearWindow4;
 				break;
-			case 0x605:
+			case MenuID::Customize_Decals_Slot5:
 				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsRearWindow5;
 				break;
-			case 0x606:
+			case MenuID::Customize_Decals_Slot6:
 				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsRearWindow6;
 				break;
-			case 0x607:
+			case MenuID::Customize_Decals_Slot7:
 				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsRearWindow7;
 				break;
-			case 0x608:
+			case MenuID::Customize_Decals_Slot8:
 				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsRearWindow8;
 				break;
 			}
 			break;
-		case 0x503:
+		case MenuID::Customize_Decals_LeftDoor:
 			switch (MenuID)
 			{
-			case 0x601:
+			case MenuID::Customize_Decals_Slot1:
 			default:
 				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsLeftDoor1;                          // DECAL_LEFT_DOOR_TEX0
 				break;
-			case 0x602:
+			case MenuID::Customize_Decals_Slot2:
 				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsLeftDoor2;
 				break;
-			case 0x603:
+			case MenuID::Customize_Decals_Slot3:
 				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsLeftDoor3;
 				break;
-			case 0x604:
+			case MenuID::Customize_Decals_Slot4:
 				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsLeftDoor4;
 				break;
-			case 0x605:
+			case MenuID::Customize_Decals_Slot5:
 				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsLeftDoor5;
 				break;
-			case 0x606:
+			case MenuID::Customize_Decals_Slot6:
 				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsLeftDoor6;
 				break;
 			}
 			break;
-		case 0x504:
+		case MenuID::Customize_Decals_RightDoor:
 			switch (MenuID)
 			{
-			case 0x601:
+			case MenuID::Customize_Decals_Slot1:
 			default:
 				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsRightDoor1;                         // DECAL_RIGHT_DOOR_TEX0
 				break;
-			case 0x602:
+			case MenuID::Customize_Decals_Slot2:
 				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsRightDoor2;
 				break;
-			case 0x603:
+			case MenuID::Customize_Decals_Slot3:
 				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsRightDoor3;
 				break;
-			case 0x604:
+			case MenuID::Customize_Decals_Slot4:
 				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsRightDoor4;
 				break;
-			case 0x605:
+			case MenuID::Customize_Decals_Slot5:
 				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsRightDoor5;
 				break;
-			case 0x606:
+			case MenuID::Customize_Decals_Slot6:
 				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsRightDoor6;
 				break;
 			}
 			break;
-		case 0x505:
+		case MenuID::Customize_Decals_LeftQuarter:
 			switch (MenuID)
 			{
-			case 0x601:
+			case MenuID::Customize_Decals_Slot1:
 			default:
 				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsLeftQuarter1;                          // DECAL_LEFT_QUARTER_TEX0
 				break;
-			case 0x602:
+			case MenuID::Customize_Decals_Slot2:
 				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsLeftQuarter2;
 				break;
-			case 0x603:
+			case MenuID::Customize_Decals_Slot3:
 				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsLeftQuarter3;
 				break;
-			case 0x604:
+			case MenuID::Customize_Decals_Slot4:
 				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsLeftQuarter4;
 				break;
-			case 0x605:
+			case MenuID::Customize_Decals_Slot5:
 				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsLeftQuarter5;
 				break;
-			case 0x606:
+			case MenuID::Customize_Decals_Slot6:
 				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsLeftQuarter6;
 				break;
-			case 0x607:
+			case MenuID::Customize_Decals_Slot7:
 				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsLeftQuarter7;
 				break;
-			case 0x608:
+			case MenuID::Customize_Decals_Slot8:
 				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsLeftQuarter8;
 				break;
 			}
 			break;
-		case 0x506:
+		case MenuID::Customize_Decals_RightQuarter:
 			switch (MenuID)
 			{
-			case 0x601:
+			case MenuID::Customize_Decals_Slot1:
 			default:
 				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsRightQuarter1;                          // DECAL_RIGHT_QUARTER_TEX0
 				break;
-			case 0x602:
+			case MenuID::Customize_Decals_Slot2:
 				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsRightQuarter2;
 				break;
-			case 0x603:
+			case MenuID::Customize_Decals_Slot3:
 				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsRightQuarter3;
 				break;
-			case 0x604:
+			case MenuID::Customize_Decals_Slot4:
 				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsRightQuarter4;
 				break;
-			case 0x605:
+			case MenuID::Customize_Decals_Slot5:
 				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsRightQuarter5;
 				break;
-			case 0x606:
+			case MenuID::Customize_Decals_Slot6:
 				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsRightQuarter6;
 				break;
-			case 0x607:
+			case MenuID::Customize_Decals_Slot7:
 				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsRightQuarter7;
 				break;
-			case 0x608:
+			case MenuID::Customize_Decals_Slot8:
 				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsRightQuarter8;
 				break;
 			}
@@ -353,127 +379,127 @@ DWORD FindScreenCameraInfo(DWORD ScreenInfo)
 				CustomAngle = FindScreenCameraInfo_Game(ScreenInfo);
 			break;
 			// Parts sub menus
-			case 0x101:
+			case MenuID::Customize_Parts_Bodykits:
 				CustomAngle = CarConfigs[CarTypeID].Cameras.PartsBodyKits;
 				break;
-			case 0x102:
+			case MenuID::Customize_Parts_Spoilers:
 				CustomAngle = CarConfigs[CarTypeID].Cameras.PartsSpoilers;
 				break;
-			case 0x103:
+			case MenuID::Customize_Parts_Rims:
 				CustomAngle = CarConfigs[CarTypeID].Cameras.PartsRims;
 				break;
-			case 0x104:
+			case MenuID::Customize_Parts_Hoods:
 				CustomAngle = CarConfigs[CarTypeID].Cameras.PartsHoods;
 				break;
-			case 0x105:
+			case MenuID::Customize_Parts_RoofScoops:
 				CustomAngle = CarConfigs[CarTypeID].Cameras.PartsRoofScoops;
 				break;
-			case 0x106:
+			case MenuID::Customize_Parts_Interior:
 				CustomAngle = CarConfigs[CarTypeID].Cameras.PartsInterior;
 				break;
-			case 0x107:
+			case MenuID::Customize_Parts_Roof:
 				CustomAngle = CarConfigs[CarTypeID].Cameras.PartsRoof;
 				break; 
-			case 0x108:
+			case MenuID::Customize_Parts_Brakes:
 				CustomAngle = CarConfigs[CarTypeID].Cameras.PartsBrakes;
 				break; 
-			case 0x109:
+			case MenuID::Customize_Parts_Headlights:
 				CustomAngle = CarConfigs[CarTypeID].Cameras.PartsHeadlights;
 				break;
-			case 0x10A:
+			case MenuID::Customize_Parts_Taillights:
 				CustomAngle = CarConfigs[CarTypeID].Cameras.PartsTaillights;
 				break;
-			case 0x10B:
+			case MenuID::Customize_Parts_Mirrors:
 				CustomAngle = CarConfigs[CarTypeID].Cameras.PartsMirrors;
 				break;
-			case 0x10C:
+			case MenuID::Customize_Parts_Attachments:
 				CustomAngle = CarConfigs[CarTypeID].Cameras.PartsAttachments;
 				break;
-			case 0x10D:
+			case MenuID::Customize_Parts_Attachment0:
 				CustomAngle = CarConfigs[CarTypeID].Cameras.PartsAttachment0;
 				break;
-			case 0x10E:
+			case MenuID::Customize_Parts_Attachment1:
 				CustomAngle = CarConfigs[CarTypeID].Cameras.PartsAttachment1;
 				break;
-			case 0x10F:
+			case MenuID::Customize_Parts_Attachment2:
 				CustomAngle = CarConfigs[CarTypeID].Cameras.PartsAttachment2;
 				break;
-			case 0x110:
+			case MenuID::Customize_Parts_Attachment3:
 				CustomAngle = CarConfigs[CarTypeID].Cameras.PartsAttachment3;
 				break;
-			case 0x111:
+			case MenuID::Customize_Parts_Attachment4:
 				CustomAngle = CarConfigs[CarTypeID].Cameras.PartsAttachment4;
 				break;
-			case 0x112:
+			case MenuID::Customize_Parts_Attachment5:
 				CustomAngle = CarConfigs[CarTypeID].Cameras.PartsAttachment5;
 				break;
-			case 0x113:
+			case MenuID::Customize_Parts_Attachment6:
 				CustomAngle = CarConfigs[CarTypeID].Cameras.PartsAttachment6;
 				break;
-			case 0x114:
+			case MenuID::Customize_Parts_Attachment7:
 				CustomAngle = CarConfigs[CarTypeID].Cameras.PartsAttachment7;
 				break;
-			case 0x115:
+			case MenuID::Customize_Parts_Attachment8:
 				CustomAngle = CarConfigs[CarTypeID].Cameras.PartsAttachment8;
 				break;
-			case 0x116:
+			case MenuID::Customize_Parts_Attachment9:
 				CustomAngle = CarConfigs[CarTypeID].Cameras.PartsAttachment9;
 				break;
-			case 0x301:
+			case MenuID::Customize_Visual_Paint:
 				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualPaint;
 				break;
-			case 0x302:
+			case MenuID::Customize_Visual_Vinyls:
 				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualVinyls;
 				break;
-			case 0x303:
+			case MenuID::Customize_Visual_RimPaint:
 				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualRimPaint;
 				break;
-			case 0x304:
+			case MenuID::Customize_Visual_WindowTint:
 				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualWindowTint;
 				break;
-			case 0x305:
+			case MenuID::Customize_Visual_Decals:
 				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecals;
 				break;
-			case 0x306:
+			case MenuID::Customize_Visual_Numbers:
 				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualNumbers;
 				break;
-			case 0x307:
+			case MenuID::Customize_Visual_CustomGauges:
 				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualCustomGauges;
 				break;
-			case 0x308:
+			case MenuID::Customize_Visual_Driver:
 				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDriver;
 				break;
-			case 0x309:
+			case MenuID::Customize_Visual_LicensePlate:
 				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualLicensePlate;
 				break;
-			case 0x314:
+			case MenuID::Customize_Visual_Tires:
 				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualTires;
 				break;
-			case 0x315:
+			case MenuID::Customize_Visual_Neon:
 				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualNeon;
 				break;
-			case 0x501:
+			case MenuID::Customize_Decals_Windshield:
 				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsWindshield;
 				break;
-			case 0x502:
+			case MenuID::Customize_Decals_RearWindow:
 				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsRearWindow;
 				break;
-			case 0x503:
+			case MenuID::Customize_Decals_LeftDoor:
 				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsLeftDoor;
 				break;
-			case 0x504:
+			case MenuID::Customize_Decals_RightDoor:
 				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsRightDoor;
 				break;
-			case 0x505:
+			case MenuID::Customize_Decals_LeftQuarter:
 				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsLeftQuarter;
 				break;
-			case 0x506:
+			case MenuID::Customize_Decals_RightQuarter:
 				CustomAngle = CarConfigs[CarTypeID].Cameras.VisualDecalsRightQuarter;
 				break;
 		}
 	}
 
-	if (MenuID == 0x314)
+	if (MenuID == MenuID::Customize_Visual_Tires)
 	{
 		AnimateValue(*(float*)_CarSelectTireSteerAngle, -20.0f, 50.0f * (*(float*)_RealTimeElapsedFrame));
 	}
@@ -494,4 +520,20 @@ bool CarInfo_IsSkinned_Traffic(int CarTypeID)
 	}
 
 	return CarInfo_IsSkinned_Game(CarTypeID);
+}
+
+void elCloneLightContext(DWORD* light_context, bMatrix4* local_world, bMatrix4* world_view, bVector4* camera_world_position, DWORD* view, DWORD* old_context)
+{
+	D3DXVECTOR3 scale, translation;
+	D3DXQUATERNION rotation;
+
+	D3DXMatrixDecompose(&scale, &rotation, &translation, (D3DXMATRIX*)local_world);
+
+	D3DXMATRIX matrix;
+	D3DXMatrixRotationQuaternion(&matrix, &rotation);
+	matrix._41 = translation.x;
+	matrix._42 = translation.y;
+	matrix._43 = translation.z;
+
+	elCloneLightContext_Game(light_context, (bMatrix4*)&matrix, world_view, camera_world_position, view, old_context);
 }

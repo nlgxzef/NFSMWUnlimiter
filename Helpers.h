@@ -37,6 +37,11 @@ bool ShouldRandomizeInTraffic(int CarTypeID)
 		&& CarConfigs[CarTypeID].RandomParts.RandomizeInTraffic;
 }
 
+int GetDefaultNumDecals(int DecalLocation)
+{
+	return (DecalLocation == CAR_SLOT_ID::DECAL_LEFT_DOOR_RECT_MEDIUM || DecalLocation == CAR_SLOT_ID::DECAL_RIGHT_DOOR_RECT_MEDIUM) ? 6 : 1;
+}
+
 bool IsMenuEmpty_Parts(int CarTypeID)
 {
 	if (CarConfigs[CarTypeID].Parts.BodyKits != 0) return 0;
@@ -81,25 +86,13 @@ bool IsMenuEmpty_Performance(int CarTypeID)
 	return 1;
 }
 
-bool IsMenuEmpty_Decals(int CarTypeID)
-{
-	if (CarConfigs[CarTypeID].Visual.DecalsWindshield != 0) return 0;
-	if (CarConfigs[CarTypeID].Visual.DecalsRearWindow != 0) return 0;
-	if (CarConfigs[CarTypeID].Visual.DecalsLeftDoor != 0) return 0;
-	if (CarConfigs[CarTypeID].Visual.DecalsRightDoor != 0) return 0;
-	if (CarConfigs[CarTypeID].Visual.DecalsLeftQuarter != 0) return 0;
-	if (CarConfigs[CarTypeID].Visual.DecalsRightQuarter != 0) return 0;
-
-	return 1;
-}
-
 bool IsMenuEmpty_Visual(int CarTypeID)
 {
 	if (CarConfigs[CarTypeID].Visual.Paint != 0) return 0;
 	if (CarConfigs[CarTypeID].Visual.Vinyls != 0) return 0;
 	if (CarConfigs[CarTypeID].Visual.RimPaint != 0) return 0;
 	if (CarConfigs[CarTypeID].Visual.WindowTint != 0) return 0;
-	if (!IsMenuEmpty_Decals(CarTypeID)) return 0;
+	if (CarConfigs[CarTypeID].Visual.Decals) return 0;
 	if (CarConfigs[CarTypeID].Visual.Numbers != 0) return 0;
 	if (!BETACompatibility && (CarConfigs[CarTypeID].Visual.CustomGauges != 0)) return 0;
 	if (CarConfigs[CarTypeID].Visual.Driver != 0) return 0;
@@ -114,7 +107,7 @@ bool IsMenuEmpty_VisualBackroom(int CarTypeID)
 {
 	if (CarConfigs[CarTypeID].Visual.Paint != 0) return 0;
 	if (CarConfigs[CarTypeID].Visual.Vinyls != 0) return 0;
-	if (!IsMenuEmpty_Decals(CarTypeID)) return 0;
+	if (CarConfigs[CarTypeID].Visual.Decals) return 0;
 	if (!BETACompatibility && (CarConfigs[CarTypeID].Visual.CustomGauges != 0)) return 0;
 
 	return 1;
@@ -124,11 +117,11 @@ bool IsMenuEmpty_CustomizeMain(int CarTypeID)
 {
 	if (!HPCCompatibility)
 	{
-		if (CarConfigs[CarTypeID].Main.Parts != 0) return 0;
-		if (CarConfigs[CarTypeID].Main.Performance != 0) return 0;
+		if (CarConfigs[CarTypeID].Category.Parts != 0) return 0;
+		if (CarConfigs[CarTypeID].Category.Performance != 0) return 0;
 	}
 
-	if (CarConfigs[CarTypeID].Main.Visual != 0) return 0;
+	if (CarConfigs[CarTypeID].Category.Visual != 0) return 0;
 
 	return 1;
 }
@@ -354,4 +347,10 @@ void AnimateValue(float& value, float target, float stepSize)
 		if (value > target) value = target;
 		break;
 	}
+}
+
+inline float Signum(float value)
+{
+	return (value < 0.0f) ? -1.0f 
+		: (value == 0.0f) ? 0.0f : 1.0f;
 }

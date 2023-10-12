@@ -12,13 +12,13 @@ void __fastcall SetStockRimOption_React(DWORD* SetStockPartOption, void* EDX_Unu
         switch (RimsToCustomize)
         {
         case -1: // Rear
-            TheSelectablePart[4] = 67;
+            TheSelectablePart[4] = CAR_SLOT_ID::REAR_WHEEL;
             CarCustomizeManager_AddToCart((DWORD*)_gCarCustomizeManager, TheSelectablePart);
             break;
         case 0: // All
         default:
             CarCustomizeManager_AddToCart((DWORD*)_gCarCustomizeManager, TheSelectablePart);
-            TheSelectablePart[4] = 67;
+            TheSelectablePart[4] = CAR_SLOT_ID::REAR_WHEEL;
             CarCustomizeManager_AddToCart((DWORD*)_gCarCustomizeManager, TheSelectablePart);
             break;
         case 1: // Front

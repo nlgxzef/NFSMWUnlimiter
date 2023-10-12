@@ -1422,26 +1422,26 @@ void __fastcall CustomizePerformance_Setup(DWORD* _CustomizePerformance, void* E
 
     switch (_CustomizePerformance[82])
     {
-    case 0x201u:
+    case MenuID::Customize_Performance_Engine:
     default:
         PerformancePartType = 4;
         break;
-    case 0x202u:
+    case MenuID::Customize_Performance_Transmission:
         PerformancePartType = 3;
         break;
-    case 0x203u:
+    case MenuID::Customize_Performance_Chassis:
         PerformancePartType = 2;
         break;
-    case 0x204u:
+    case MenuID::Customize_Performance_Nitrous:
         PerformancePartType = 6;
         break;
-    case 0x205u:
+    case MenuID::Customize_Performance_Tires:
         PerformancePartType = 0;
         break;
-    case 0x206u:
+    case MenuID::Customize_Performance_Brakes:
         PerformancePartType = 1;
         break;
-    case 0x207u:
+    case MenuID::Customize_Performance_Induction:
         PerformancePartType = 5;
         break;
     }

@@ -163,45 +163,45 @@ void __fastcall CustomizeMain_BuildOptionsList(DWORD* CustomizeMain, void* EDX_U
 	{
 		if (!HPCCompatibility)
 		{
-			if (CarConfigs[CarTypeID].Main.Parts && !IsMenuEmpty_PartsBackroom(CarTypeID))
+			if (CarConfigs[CarTypeID].Category.Parts && !IsMenuEmpty_PartsBackroom(CarTypeID))
 			CustomizeCategoryScreen_AddCustomOption(CustomizeMain, *(char**)g_pCustomizeSubPkg,
 				CarConfigs[CarTypeID].Icons.BackroomParts,
 				CarConfigs[CarTypeID].Names.Parts,
-				0x801); // Body Backroom
+				MenuID::CustomizeCategory_Parts); // Body Backroom
 
-			if (CarConfigs[CarTypeID].Main.Performance && !IsMenuEmpty_Performance(CarTypeID))
+			if (CarConfigs[CarTypeID].Category.Performance && !IsMenuEmpty_Performance(CarTypeID))
 			CustomizeCategoryScreen_AddCustomOption(CustomizeMain, *(char**)g_pCustomizeSubPkg,
 				CarConfigs[CarTypeID].Icons.BackroomPerformance,
 				CarConfigs[CarTypeID].Names.Performance,
-				0x802); // Performance Backroom
+				MenuID::CustomizeCategory_Performance); // Performance Backroom
 		}
-		if (CarConfigs[CarTypeID].Main.Visual && !IsMenuEmpty_VisualBackroom(CarTypeID))
+		if (CarConfigs[CarTypeID].Category.Visual && !IsMenuEmpty_VisualBackroom(CarTypeID))
 		CustomizeCategoryScreen_AddCustomOption(CustomizeMain, *(char**)g_pCustomizeSubPkg,
 			CarConfigs[CarTypeID].Icons.BackroomVisual,
 			CarConfigs[CarTypeID].Names.Visual,
-			0x803); // Visuals Backroom
+			MenuID::CustomizeCategory_Visual); // Visuals Backroom
 	}
 	else
 	{
 		if (!HPCCompatibility)
 		{
-			if (CarConfigs[CarTypeID].Main.Parts && !IsMenuEmpty_Parts(CarTypeID))
+			if (CarConfigs[CarTypeID].Category.Parts && !IsMenuEmpty_Parts(CarTypeID))
 			CustomizeCategoryScreen_AddCustomOption(CustomizeMain, *(char**)g_pCustomizeSubPkg,
 				CarConfigs[CarTypeID].Icons.Parts,
 				CarConfigs[CarTypeID].Names.Parts,
-				0x801); // Body
+				MenuID::CustomizeCategory_Parts); // Body
 
-			if (CarConfigs[CarTypeID].Main.Performance && !IsMenuEmpty_Performance(CarTypeID))
+			if (CarConfigs[CarTypeID].Category.Performance && !IsMenuEmpty_Performance(CarTypeID))
 			CustomizeMain[106] = CustomizeCategoryScreen_AddCustomOption(CustomizeMain, *(char**)g_pCustomizeSubPkg,
 				CarConfigs[CarTypeID].Icons.Performance,
 				CarConfigs[CarTypeID].Names.Performance,
-				0x802); // Performance
+				MenuID::CustomizeCategory_Performance); // Performance
 		}
-		if (CarConfigs[CarTypeID].Main.Visual && !IsMenuEmpty_Visual(CarTypeID))
+		if (CarConfigs[CarTypeID].Category.Visual && !IsMenuEmpty_Visual(CarTypeID))
 		CustomizeCategoryScreen_AddCustomOption(CustomizeMain, *(char**)g_pCustomizeSubPkg,
 			CarConfigs[CarTypeID].Icons.Visual,
 			CarConfigs[CarTypeID].Names.Visual,
-			0x803); // Visuals
+			MenuID::CustomizeCategory_Visual); // Visuals
 	}
 }
 
@@ -254,6 +254,7 @@ void __fastcall CustomizeMain_NotificationMessage(DWORD* _CustomizeMain, void* E
 	DWORD* GarageMainScreen = FEngFindScreen("GarageMain.fng");
 	DWORD* FEDatabase = *(DWORD**)_FEDatabase;
 	bool TestCareerCustomization = *(bool*)g_bTestCareerCustomization;
+	bool IsInCareerMode = CarCustomizeManager_IsCareerMode_CheckTCC();
 	BYTE* MemoryCard_s_pThis = *(BYTE**)_MemoryCard_s_pThis;
 
 	if (!CustomizeIsInBackRoom() || Message != 0x911AB364) CustomizeCategoryScreen_NotificationMessage(_CustomizeMain, Message, FEObject, param1, param2);
@@ -268,7 +269,7 @@ void __fastcall CustomizeMain_NotificationMessage(DWORD* _CustomizeMain, void* E
 		else
 		{
 			cFEng_QueuePackageMessage(*(int**)cFEng_mInstance, 0x6D5D86A1, (const char*)_CustomizeMain[4], 0);
-			if (CarCustomizeManager_IsCareerMode_CheckTCC()) // Is Career Mode
+			if (IsInCareerMode) // Is Career Mode
 			{
 				if (GarageMainScreen) *(DWORD*)(GarageMainScreen + 34) = -1;
 				JoyPort = FEngMapJoyParamToJoyport(param1);
@@ -288,15 +289,16 @@ void __fastcall CustomizeMain_NotificationMessage(DWORD* _CustomizeMain, void* E
 		break;
 
 	case 0x34DC1BEC: // OK to MISSING_PARTS_MARKER dialog
-		NumMarkers = (MyCarsBackroom || TestCareerCustomization) ? 1 : FEMarkerManager_GetNumCustomizeMarkers((DWORD*)TheFEMarkerManager);
+		NumMarkers = IsInCareerMode ? FEMarkerManager_GetNumCustomizeMarkers((DWORD*)TheFEMarkerManager) : (MyCarsBackroom || TestCareerCustomization) ? 1 : 0;
 		if (NumMarkers > _CustomizeMain[107]) CustomizeMain_SwitchRooms(_CustomizeMain, EDX_Unused);
 		_CustomizeMain[107] = 0;
 		break;
 
 	case 0xC519BFC4: // PAD_BUTTON5
-		if (CarCustomizeManager_IsCareerMode_CheckTCC() || MyCarsBackroom)
+		if (IsInCareerMode || MyCarsBackroom)
 		{
-			NumMarkers = (MyCarsBackroom || TestCareerCustomization) ? 1 : FEMarkerManager_GetNumCustomizeMarkers((DWORD*)TheFEMarkerManager);
+			NumMarkers = IsInCareerMode ? FEMarkerManager_GetNumCustomizeMarkers((DWORD*)TheFEMarkerManager) : (MyCarsBackroom || TestCareerCustomization) ? 1 : 0;
+
 			if (!CustomizeIsInBackRoom() && NumMarkers)
 			{
 				_CustomizeMain[107] = 0;
@@ -324,10 +326,13 @@ void __fastcall CustomizeMain_RefreshHeader(DWORD* _CustomizeMain, void* EDX_Unu
 {
 	CustomizeCategoryScreen_RefreshHeader(_CustomizeMain);
 
-	DWORD* BackroomGroup = (DWORD*)FEngFindObject((const char*)_CustomizeMain[4], 0xDC6EE739); // BACKROOM_GROUP
-	int NumMarkers = (MyCarsBackroom || *(bool*)g_bTestCareerCustomization) ? 1 : FEMarkerManager_GetNumCustomizeMarkers((DWORD*)TheFEMarkerManager);
+	bool TestCareerCustomization = *(bool*)g_bTestCareerCustomization;
+	bool IsInCareerMode = CarCustomizeManager_IsCareerMode_CheckTCC();
 
-	if ((CarCustomizeManager_IsCareerMode_CheckTCC() || MyCarsBackroom) && !CustomizeIsInBackRoom() && NumMarkers) FEngSetVisible(BackroomGroup);
+	DWORD* BackroomGroup = (DWORD*)FEngFindObject((const char*)_CustomizeMain[4], 0xDC6EE739); // BACKROOM_GROUP
+	int NumMarkers = IsInCareerMode ? FEMarkerManager_GetNumCustomizeMarkers((DWORD*)TheFEMarkerManager) : (MyCarsBackroom || TestCareerCustomization) ? 1 : 0;
+
+	if (!CustomizeIsInBackRoom() && NumMarkers) FEngSetVisible(BackroomGroup);
 	else FEngSetInvisible(BackroomGroup);
 	
 	DWORD* v4 = (DWORD*)_CustomizeMain[14];

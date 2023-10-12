@@ -15,17 +15,21 @@ void __fastcall CustomizeParts_NotificationMessage(DWORD* _CustomizeParts, void*
 	DWORD* ASelectablePart; // eax MAPDST
 	int PackageSwitchArg; // eax
 
+	// Get CarType Info
+	void* FECarRecord = *(void**)_FECarRecord;
+	int CarTypeID = FECarRecord_GetType(FECarRecord);
+
 	if (MessageHash != 0x406415E3) // !PAD_ACCEPT
 		CustomizationScreen_NotificationMessage(_CustomizeParts, MessageHash, FEObject, param1, param2);
 
 	switch (MessageHash)
 	{
 	case 0x911AB364: // PAD_BACK
-		if (MenuID >= 0x10D && MenuID <= 0x116) // Attachments menu
+		if ((MenuID >= MenuID::Customize_Parts_Attachment0 && MenuID <= Customize_Parts_Attachment9) && !CarConfigs[CarTypeID].Main.ListAttachmentsUnderParts) // Attachments menu
 		{
 			cFEng_QueuePackageSwitch(*(DWORD**)cFEng_mInstance, *(char**)g_pCustomizeSubTopPkg, _CustomizeParts[83] | (MenuID << 16), 0, 0); // CustomizeGenericTop.fng
 		}
-		else if (MenuID == 0x307)
+		else if (MenuID == MenuID::Customize_Visual_CustomGauges)
 		{
 			if (*(bool*)_CustomizeParts_TexturePackLoaded)
 			{
@@ -34,7 +38,7 @@ void __fastcall CustomizeParts_NotificationMessage(DWORD* _CustomizeParts, void*
 				cFEng_QueuePackageSwitch(*(DWORD**)cFEng_mInstance, *(char**)g_pCustomizeSubPkg, PackageSwitchArg, 0, 0); // CustomizeCategory
 			}
 		}
-		else if (MenuID <= 0x401 || MenuID > 0x4FF)
+		else if (MenuID <= MenuID::Customize_Vinyls_Min || MenuID > MenuID::Customize_Vinyls_Last)
 		{
 			cFEng_QueuePackageSwitch(*(DWORD**)cFEng_mInstance, *(char**)g_pCustomizeSubPkg, _CustomizeParts[83] | (MenuID << 16), 0, 0); // CustomizeCategory
 		}
@@ -46,7 +50,7 @@ void __fastcall CustomizeParts_NotificationMessage(DWORD* _CustomizeParts, void*
 		break;
 
 	case 0xCF91AACD: // ??
-		if (MenuID == 0x307)
+		if (MenuID == MenuID::Customize_Visual_CustomGauges)
 		{
 			if (*(bool*)_CustomizeParts_TexturePackLoaded)
 			{
@@ -70,7 +74,7 @@ void __fastcall CustomizeParts_NotificationMessage(DWORD* _CustomizeParts, void*
 	case 0x406415E3: // PAD_ACCEPT
 		if (bList_TraversebList((DWORD*)(_CustomizeParts + 12), 0) != _CustomizeParts[59])
 		{
-			if (MenuID == 0x307) // Custom Gauges
+			if (MenuID == MenuID::Customize_Visual_CustomGauges) // Custom Gauges
 			{
 				if (!*(bool*)_CustomizeParts_TexturePackLoaded) return;
 				SelectedPart = (*(DWORD * (__thiscall**)(DWORD*))(*_CustomizeParts + 20))(_CustomizeParts);
@@ -94,7 +98,7 @@ void __fastcall CustomizeParts_NotificationMessage(DWORD* _CustomizeParts, void*
 			}
 			else
 			{
-				if (MenuID <= 0x401 || MenuID > 0x4FF)
+				if (MenuID <= MenuID::Customize_Vinyls_Min || MenuID > MenuID::Customize_Vinyls_Last)
 				{
 					CustomizationScreen_NotificationMessage(_CustomizeParts, 0x406415E3, FEObject, param1, param2);
 					return;
@@ -127,7 +131,7 @@ void __fastcall CustomizeParts_NotificationMessage(DWORD* _CustomizeParts, void*
 		break;
 
 	case 0x5073EF13: // PAD_LTRIGGER
-		if (MenuID == 0x109)
+		if (MenuID == MenuID::Customize_Parts_Headlights)
 		{
 			if (RenderFECarFlares == 1)
 			{
@@ -140,7 +144,7 @@ void __fastcall CustomizeParts_NotificationMessage(DWORD* _CustomizeParts, void*
 				FEngSetLanguageHash((const char*)_CustomizeParts[4], 0x889BACB6, 0x417B2604); // Text, COMMON_ON
 			}
 		}
-		else if (MenuID == 0x10A)
+		else if (MenuID == MenuID::Customize_Parts_Taillights)
 		{
 			switch (RenderFECarFlares)
 			{
@@ -162,7 +166,7 @@ void __fastcall CustomizeParts_NotificationMessage(DWORD* _CustomizeParts, void*
 		break;
 
 	case 0xD9FEEC59: // PAD_RTRIGGER
-		if (MenuID == 0x109)
+		if (MenuID == MenuID::Customize_Parts_Headlights)
 		{
 			if (RenderFECarFlares == 1)
 			{
@@ -175,7 +179,7 @@ void __fastcall CustomizeParts_NotificationMessage(DWORD* _CustomizeParts, void*
 				FEngSetLanguageHash((const char*)_CustomizeParts[4], 0x889BACB6, 0x417B2604); // Text, COMMON_ON
 			}
 		}
-		else if (MenuID == 0x10A)
+		else if (MenuID == MenuID::Customize_Parts_Taillights)
 		{
 			switch (RenderFECarFlares)
 			{
@@ -206,7 +210,7 @@ void __fastcall CustomizeParts_RefreshHeader(DWORD* _CustomizeParts, void* EDX_U
 	//if (MenuID == 0x109) RenderFECarFlares = 1; // Headlights
 	//else if (MenuID == 0x10A) RenderFECarFlares = 2; // Taillights
 	//else RenderFECarFlares = -1;
-	if (MenuID == 0x109 || MenuID == 0x10A)
+	if (MenuID == MenuID::Customize_Parts_Headlights || MenuID == MenuID::Customize_Parts_Taillights)
 	{
 		FEngSetVisible(FEngFindObject((const char*)_CustomizeParts[4], 0x53639A10)); // Switcher
 		FEngSetVisible(FEngFindObject((const char*)_CustomizeParts[4], 0x2C3CC2D3)); // bg
@@ -252,7 +256,7 @@ void __fastcall CustomizeParts_RefreshHeader(DWORD* _CustomizeParts, void* EDX_U
 			else FEngSetLanguageHash((const char*)_CustomizeParts[4], 0xB94139F4, 0x649F4A65); // CP_ADD_TO_CART
 		
 
-			if (_CustomizeParts[82] == 0x307) // Custom Gauges
+			if (_CustomizeParts[82] == MenuID::Customize_Visual_CustomGauges) // Custom Gauges
 			{
 				CustomizeParts_SetHUDTextures(_CustomizeParts);
 				CustomizeParts_SetHUDColors(_CustomizeParts);
@@ -281,7 +285,6 @@ void __fastcall CustomizeParts_Setup(DWORD* _CustomizeParts, void* EDX_Unused)
 	DWORD SelectablePartsList[3];
 	DWORD* TheActiveCarPart;
 	DWORD* TheSelectablePart;
-	DWORD* ACarPart;
 	DWORD UnlockHash;
 	DWORD PartName;
 	bool IsLocked;
@@ -299,10 +302,10 @@ void __fastcall CustomizeParts_Setup(DWORD* _CustomizeParts, void* EDX_Unused)
 	sprintf(CarTypeName, GetCarTypeName(CarTypeID));
 
 	// Vinyls
-	if (MenuID >= 0x402 && MenuID <= 0x4FF)
+	if (MenuID >= MenuID::Customize_Vinyls_First && MenuID <= MenuID::Customize_Vinyls_Last)
 	{
-		CarSlotID = 77;
-		int i = MenuID - 0x402;
+		CarSlotID = CAR_SLOT_ID::VINYL_LAYER0;
+		int i = MenuID - MenuID::Customize_Vinyls_First;
 
 		if (i == 0)
 		{
@@ -328,16 +331,16 @@ void __fastcall CustomizeParts_Setup(DWORD* _CustomizeParts, void* EDX_Unused)
 	{
 		switch (MenuID) // Other parts
 		{
-		case 0x101:
-			CarSlotID = 23; // BODY
+		case MenuID::Customize_Parts_Bodykits:
+			CarSlotID = CAR_SLOT_ID::BODY;
 			PartIconNormal = CustomizeIsInBackRoom() != 0
 				? CarConfigs[CarTypeID].Icons.BackroomPartsBodyKits
 				: CarConfigs[CarTypeID].Icons.PartsBodyKits;
 			_CustomizeParts[87] = CarConfigs[CarTypeID].Names.PartsBodyKits;
 			break;
 
-		case 0x104:
-			CarSlotID = 63; // HOOD
+		case MenuID::Customize_Parts_Hoods:
+			CarSlotID = CAR_SLOT_ID::HOOD;
 			PartIconNormal = CustomizeIsInBackRoom() != 0
 				? CarConfigs[CarTypeID].Icons.BackroomPartsHoods
 				: CarConfigs[CarTypeID].Icons.PartsHoods;
@@ -347,8 +350,8 @@ void __fastcall CustomizeParts_Setup(DWORD* _CustomizeParts, void* EDX_Unused)
 			_CustomizeParts[87] = CarConfigs[CarTypeID].Names.PartsHoods;
 			break;
 
-		case 0x105:
-			CarSlotID = 62; // ROOF
+		case MenuID::Customize_Parts_RoofScoops:
+			CarSlotID = CAR_SLOT_ID::ROOF;
 			PartIconNormal = CustomizeIsInBackRoom() != 0
 				? CarConfigs[CarTypeID].Icons.BackroomPartsRoofScoops
 				: CarConfigs[CarTypeID].Icons.PartsRoofScoops;
@@ -358,109 +361,109 @@ void __fastcall CustomizeParts_Setup(DWORD* _CustomizeParts, void* EDX_Unused)
 			_CustomizeParts[87] = CarConfigs[CarTypeID].Names.PartsRoofScoops;
 			break;
 
-		case 0x106:
-			CarSlotID = 28; // INTERIOR
+		case MenuID::Customize_Parts_Interior:
+			CarSlotID = CAR_SLOT_ID::INTERIOR;
 			PartIconNormal = CarConfigs[CarTypeID].Icons.PartsInterior;
 			_CustomizeParts[87] = CarConfigs[CarTypeID].Names.PartsInterior;
 			break;
 
-		case 0x107: // Roof
-			CarSlotID = 0; // BASE
+		case MenuID::Customize_Parts_Roof: // Roof
+			CarSlotID = CAR_SLOT_ID::BASE;
 			PartIconNormal = CarConfigs[CarTypeID].Icons.PartsRoof;
 			_CustomizeParts[87] = CarConfigs[CarTypeID].Names.PartsRoof;
 			break;
 
-		case 0x108: // Brake
-			CarSlotID = 24; // FRONT_BRAKE
+		case MenuID::Customize_Parts_Brakes: // Brake
+			CarSlotID = CAR_SLOT_ID::FRONT_BRAKE;
 			PartIconNormal = CarConfigs[CarTypeID].Icons.PartsBrakes;
 			_CustomizeParts[87] = CarConfigs[CarTypeID].Names.PartsBrakes;
 			break;
 
-		case 0x109: // Headlight
-			CarSlotID = 31; // LEFT_HEADLIGHT
+		case MenuID::Customize_Parts_Headlights: // Headlight
+			CarSlotID = CAR_SLOT_ID::LEFT_HEADLIGHT;
 			PartIconNormal = CarConfigs[CarTypeID].Icons.PartsHeadlights;
 			_CustomizeParts[87] = CarConfigs[CarTypeID].Names.PartsHeadlights;
 			break;
 
-		case 0x10A: // Brakelight
-			CarSlotID = 29; // LEFT_BRAKELIGHT
+		case MenuID::Customize_Parts_Taillights: // Brakelight
+			CarSlotID = CAR_SLOT_ID::LEFT_BRAKELIGHT;
 			PartIconNormal = CarConfigs[CarTypeID].Icons.PartsTaillights;
 			_CustomizeParts[87] = CarConfigs[CarTypeID].Names.PartsTaillights;
 			break;
 
-		case 0x10B: // Mirror
-			CarSlotID = 33; // LEFT_SIDE_MIRROR
+		case MenuID::Customize_Parts_Mirrors: // Mirror
+			CarSlotID = CAR_SLOT_ID::LEFT_SIDE_MIRROR;
 			PartIconNormal = CarConfigs[CarTypeID].Icons.PartsMirrors;
 			_CustomizeParts[87] = CarConfigs[CarTypeID].Names.PartsMirrors;
 			break;
 
-		case 0x10D: // Attachment 1
-			CarSlotID = 52; // ATTACHMENT0
+		case MenuID::Customize_Parts_Attachment0: // Attachment 1
+			CarSlotID = CAR_SLOT_ID::ATTACHMENT0;
 			PartIconNormal = CarConfigs[CarTypeID].Icons.PartsAttachment0;
 			_CustomizeParts[87] = CarConfigs[CarTypeID].Names.PartsAttachment0;
 			break;
 
-		case 0x10E: // Attachment 2
-			CarSlotID = 53; // ATTACHMENT1
+		case MenuID::Customize_Parts_Attachment1: // Attachment 2
+			CarSlotID = CAR_SLOT_ID::ATTACHMENT1;
 			PartIconNormal = CarConfigs[CarTypeID].Icons.PartsAttachment1;
 			_CustomizeParts[87] = CarConfigs[CarTypeID].Names.PartsAttachment1;
 			break;
 
-		case 0x10F: // Attachment 3
-			CarSlotID = 54; // ATTACHMENT2
+		case MenuID::Customize_Parts_Attachment2: // Attachment 3
+			CarSlotID = CAR_SLOT_ID::ATTACHMENT2;
 			PartIconNormal = CarConfigs[CarTypeID].Icons.PartsAttachment2;
 			_CustomizeParts[87] = CarConfigs[CarTypeID].Names.PartsAttachment2;
 			break;
 
-		case 0x110: // Attachment 4
-			CarSlotID = 55; // ATTACHMENT3
+		case MenuID::Customize_Parts_Attachment3: // Attachment 4
+			CarSlotID = CAR_SLOT_ID::ATTACHMENT3;
 			PartIconNormal = CarConfigs[CarTypeID].Icons.PartsAttachment3;
 			_CustomizeParts[87] = CarConfigs[CarTypeID].Names.PartsAttachment3;
 			break;
 
-		case 0x111: // Attachment 5
-			CarSlotID = 56; // ATTACHMENT4
+		case MenuID::Customize_Parts_Attachment4: // Attachment 5
+			CarSlotID = CAR_SLOT_ID::ATTACHMENT4;
 			PartIconNormal = CarConfigs[CarTypeID].Icons.PartsAttachment4;
 			_CustomizeParts[87] = CarConfigs[CarTypeID].Names.PartsAttachment4;
 			break;
 
-		case 0x112: // Attachment 6
-			CarSlotID = 57; // ATTACHMENT5
+		case MenuID::Customize_Parts_Attachment5: // Attachment 6
+			CarSlotID = CAR_SLOT_ID::ATTACHMENT5;
 			PartIconNormal = CarConfigs[CarTypeID].Icons.PartsAttachment5;
 			_CustomizeParts[87] = CarConfigs[CarTypeID].Names.PartsAttachment5;
 			break;
 
-		case 0x113: // Attachment 7
-			CarSlotID = 58; // ATTACHMENT6
+		case MenuID::Customize_Parts_Attachment6: // Attachment 7
+			CarSlotID = CAR_SLOT_ID::ATTACHMENT6;
 			PartIconNormal = CarConfigs[CarTypeID].Icons.PartsAttachment6;
 			_CustomizeParts[87] = CarConfigs[CarTypeID].Names.PartsAttachment6;
 			break;
 
-		case 0x114: // Attachment 8
-			CarSlotID = 59; // ATTACHMENT7
+		case MenuID::Customize_Parts_Attachment7: // Attachment 8
+			CarSlotID = CAR_SLOT_ID::ATTACHMENT7;
 			PartIconNormal = CarConfigs[CarTypeID].Icons.PartsAttachment7;
 			_CustomizeParts[87] = CarConfigs[CarTypeID].Names.PartsAttachment7;
 			break;
 
-		case 0x115: // Attachment 9
-			CarSlotID = 60; // ATTACHMENT8
+		case MenuID::Customize_Parts_Attachment8: // Attachment 9
+			CarSlotID = CAR_SLOT_ID::ATTACHMENT8;
 			PartIconNormal = CarConfigs[CarTypeID].Icons.PartsAttachment8;
 			_CustomizeParts[87] = CarConfigs[CarTypeID].Names.PartsAttachment8;
 			break;
 
-		case 0x116: // Attachment 10
-			CarSlotID = 61; // ATTACHMENT9
+		case MenuID::Customize_Parts_Attachment9: // Attachment 10
+			CarSlotID = CAR_SLOT_ID::ATTACHMENT9;
 			PartIconNormal = CarConfigs[CarTypeID].Icons.PartsAttachment9;
 			_CustomizeParts[87] = CarConfigs[CarTypeID].Names.PartsAttachment9;
 			break;
 
-		case 0x304: // Window Tint
-			CarSlotID = 131; // WINDOW_TINT
+		case MenuID::Customize_Visual_WindowTint: // Window Tint
+			CarSlotID = CAR_SLOT_ID::WINDOW_TINT;
 			PartIconNormal = CarConfigs[CarTypeID].Icons.VisualWindowTint;
 			_CustomizeParts[87] = CarConfigs[CarTypeID].Names.VisualWindowTint;
 			break;
 
-		case 0x307: // Custom Gauges
+		case MenuID::Customize_Visual_CustomGauges: // Custom Gauges
 
 			if (*(bool*)_CustomizeParts_TexturePackLoaded) // 0x9B9EB0
 			{
@@ -473,57 +476,63 @@ void __fastcall CustomizeParts_Setup(DWORD* _CustomizeParts, void* EDX_Unused)
 				CustomizeParts_LoadHudTextures(_CustomizeParts);
 			}
 
-			CarSlotID = 132; // CUSTOM_HUD
+			CarSlotID = CAR_SLOT_ID::CUSTOM_HUD;
 			PartIconNormal = CustomizeIsInBackRoom() != 0
 				? CarConfigs[CarTypeID].Icons.BackroomVisualCustomGauges
 				: CarConfigs[CarTypeID].Icons.VisualCustomGauges;
 			_CustomizeParts[87] = CarConfigs[CarTypeID].Names.VisualCustomGauges;
 			break;
 
-		case 0x308: // Drivers
-			CarSlotID = 43; // DRIVER
+		case MenuID::Customize_Visual_Driver: // Drivers
+			CarSlotID = CAR_SLOT_ID::DRIVER;
 			PartIconNormal = CarConfigs[CarTypeID].Icons.VisualDriver;
 			_CustomizeParts[87] = CarConfigs[CarTypeID].Names.VisualDriver;
 			break;
 
-		case 0x309: // License Plates
-			CarSlotID = 69; // LICENSE_PLATE
+		case MenuID::Customize_Visual_LicensePlate: // License Plates
+			CarSlotID = CAR_SLOT_ID::LICENSE_PLATE;
 			PartIconNormal = CarConfigs[CarTypeID].Icons.VisualLicensePlate;
 			_CustomizeParts[87] = CarConfigs[CarTypeID].Names.VisualLicensePlate;
 			break;
 
-		case 0x314: // Tires
-			CarSlotID = 64; // HEADLIGHT
+		case MenuID::Customize_Visual_Tires: // Tires
+			CarSlotID = CAR_SLOT_ID::HEADLIGHT;
 			PartIconNormal = CarConfigs[CarTypeID].Icons.VisualTires;
 			_CustomizeParts[87] = CarConfigs[CarTypeID].Names.VisualTires;
 			break;
 
-		case 0x315: // Neon
-			CarSlotID = 65; // BRAKELIGHT
+		case MenuID::Customize_Visual_Neon: // Neon
+			CarSlotID = CAR_SLOT_ID::BRAKELIGHT;
 			PartIconNormal = CarConfigs[CarTypeID].Icons.VisualNeon;
 			_CustomizeParts[87] = CarConfigs[CarTypeID].Names.VisualNeon;
 			break;
 
 		case 0x316: // Empty Slot
-			CarSlotID = 68; // SPINNER
+			CarSlotID = CAR_SLOT_ID::SPINNER;
 			PartIconNormal = bStringHash((char*)"VISUAL_PART_SPINNER");
 			_CustomizeParts[87] = bStringHash((char*)"CO_SPINNER");
 			break;
 
-		case 0x317: // Empty Slot
-			CarSlotID = 137; // WHEEL_MANUFACTURER
+		case 0x317: // Empty Slot (no model)
+			CarSlotID = CAR_SLOT_ID::CV;
+			PartIconNormal = bStringHash((char*)"VISUAL_PART_CV");
+			_CustomizeParts[87] = bStringHash((char*)"CO_CV");
+			break;
+
+		case 0x318: // Empty Slot (no model)
+			CarSlotID = CAR_SLOT_ID::WHEEL_MANUFACTURER;
 			PartIconNormal = bStringHash((char*)"VISUAL_PART_WHEEL_MANUFACTURER");
 			_CustomizeParts[87] = bStringHash((char*)"CO_WHEEL_MANUFACTURER");
 			break;
 
-		case 0x318: // Empty Slot
-			CarSlotID = 138; // MISC
+		case 0x319: // Empty Slot (no model)
+			CarSlotID = CAR_SLOT_ID::MISC;
 			PartIconNormal = bStringHash((char*)"VISUAL_PART_MISC");
 			_CustomizeParts[87] = bStringHash((char*)"CO_MISC");
 			break;
 		}
 
-		if (MenuID == 0x307 && dword_9BA080) TheActiveCarPart = (DWORD*)dword_9BA080[3];
+		if (MenuID == MenuID::Customize_Visual_CustomGauges && dword_9BA080) TheActiveCarPart = (DWORD*)dword_9BA080[3];
 		else TheActiveCarPart = CarCustomizeManager_GetActivePartFromSlot((DWORD*)_gCarCustomizeManager, CarSlotID);
 	}
 
@@ -533,7 +542,7 @@ AddToList:
 	SelectablePartsList[1] = (DWORD)SelectablePartsList; // Prev
 	//v31 = 0;
 
-	if (CarSlotID != 77) PartCategory = 0; // VINYL_LAYER0
+	if (CarSlotID != CAR_SLOT_ID::VINYL_LAYER0) PartCategory = 0; // VINYL_LAYER0
 
 	CarCustomizeManager_GetCarPartList((DWORD*)_gCarCustomizeManager, CarSlotID, SelectablePartsList, PartCategory); // Read parts into the list
 
@@ -555,12 +564,11 @@ AddToList:
 			v12 = v10[4];
 
 			TheSelectablePart = (DWORD*)(v10 - 1);
-			UnlockHash = CarCustomizeManager_GetUnlockHash((DWORD*)_gCarCustomizeManager, _CustomizeParts[82], v12);
+			UnlockHash = CarCustomizeManager_GetUnlockHash_CarPart((DWORD*)_gCarCustomizeManager, (DWORD*)TheSelectablePart[3], _CustomizeParts[82], v12);
 
-			if (CarSlotID != 77) break; // VINYL_LAYER0
+			if (CarSlotID != CAR_SLOT_ID::VINYL_LAYER0) break; // VINYL_LAYER0
 
-			ACarPart = (DWORD*)TheSelectablePart[3];
-			if ((*((BYTE*)ACarPart + 5) & 0x1F) == PartCategory) goto LABEL_46;
+			if ((*((BYTE*)TheSelectablePart[3] + 5) & 0x1F) == PartCategory) goto LABEL_46;
 
 			(**(void(__thiscall***)(DWORD*, int))TheSelectablePart)(TheSelectablePart, 1); // Refresh the part??
 
@@ -570,13 +578,11 @@ AddToList:
 				goto LABEL_51;
 		}
 
-		ACarPart = (DWORD*)TheSelectablePart[3];
-
 	LABEL_46:
 		// Choose Part Icon
-		PartIconCustom = CarPart_GetAppliedAttributeIParam(ACarPart, bStringHash((char*)"TEXTUREHASH"), 0);
+		PartIconCustom = CarPart_GetAppliedAttributeIParam((DWORD*)TheSelectablePart[3], bStringHash((char*)"TEXTUREHASH"), 0);
 		if (PartIconCustom) NewPartIcon = PartIconCustom;
-		else if (CarPart_GetAppliedAttributeIParam(ACarPart, bStringHash((char*)"CARBONFIBRE"), 0) && PartIconCF) NewPartIcon = PartIconCF;
+		else if (CarPart_GetAppliedAttributeIParam((DWORD*)TheSelectablePart[3], bStringHash((char*)"CARBONFIBRE"), 0) && PartIconCF) NewPartIcon = PartIconCF;
 		else NewPartIcon = PartIconNormal;
 	
 		PartName = *(BYTE*)(TheSelectablePart[3] + 5) >> 5;

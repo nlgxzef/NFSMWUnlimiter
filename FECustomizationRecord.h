@@ -1,13 +1,11 @@
 #include "stdio.h"
 #include "InGameFunctions.h"
 
-#define NumCarSlots 139
-
 void __fastcall FECustomizationRecord_BecomePresitter(WORD* _FECustomizationRecord, void* EDX_Unused, BYTE* PresetCar)
 {
 	int CarTypeNameHash = bStringHash((char*)PresetCar + 8);
 	DWORD PartHash;
-	int CarType = CarPartDatabase_GetCarType((DWORD*)_CarPartDB, CarTypeNameHash);
+	int CarType = CarPartDatabase_GetCarType_Game((DWORD*)_CarPartDB, CarTypeNameHash);
 
 	for (int p = 0; p < NumCarSlots; p++)
 	{

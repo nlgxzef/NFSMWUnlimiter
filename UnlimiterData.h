@@ -29,10 +29,27 @@ void LoadCarConfigs()
 
 	// Main
 	DefaultCarConfig.Main.ForceLODA = mINI_ReadInteger(GeneralINI, "Main", "ForceLODA", 0) != 0;
+	DefaultCarConfig.Main.InitiallyUnlocked = mINI_ReadInteger(GeneralINI, "Main", "InitiallyUnlocked", -1);
 	DefaultCarConfig.Main.EngineType = mINI_ReadInteger(GeneralINI, "Main", "EngineType", -1);
-	DefaultCarConfig.Main.Parts = mINI_ReadInteger(GeneralINI, "Main", "Parts", 1) != 0;
-	DefaultCarConfig.Main.Performance = mINI_ReadInteger(GeneralINI, "Main", "Performance", 1) != 0;
-	DefaultCarConfig.Main.Visual = mINI_ReadInteger(GeneralINI, "Main", "Visual", 1) != 0;
+	DefaultCarConfig.Main.ScaleBrakesWithRims = mINI_ReadInteger(GeneralINI, "Main", "ScaleBrakesWithRims", 1);
+	DefaultCarConfig.Main.ListAttachmentsUnderParts = mINI_ReadInteger(GeneralINI, "Main", "ListAttachmentsUnderParts", 1);
+
+	// Category (also check Main for backwards compatibility)
+	DefaultCarConfig.Category.Parts = mINI_ReadInteger(GeneralINI, "Main", "Parts", 1) != 0;
+	DefaultCarConfig.Category.Performance = mINI_ReadInteger(GeneralINI, "Main", "Performance", 1) != 0;
+	DefaultCarConfig.Category.Visual = mINI_ReadInteger(GeneralINI, "Main", "Visual", 1) != 0;
+
+	DefaultCarConfig.Category.Parts = mINI_ReadInteger(GeneralINI, "Category", "Parts", DefaultCarConfig.Category.Parts) != 0;
+	DefaultCarConfig.Category.Performance = mINI_ReadInteger(GeneralINI, "Category", "Performance", DefaultCarConfig.Category.Performance) != 0;
+	DefaultCarConfig.Category.Visual = mINI_ReadInteger(GeneralINI, "Category", "Visual", DefaultCarConfig.Category.Visual) != 0;
+
+	// Textures
+	DefaultCarConfig.Textures.HeadlightOff = mINI_ReadInteger(GeneralINI, "Textures", "HeadlightOff", 0) != 0;
+	DefaultCarConfig.Textures.DamageLights = mINI_ReadInteger(GeneralINI, "Textures", "DamageLights", 0) != 0;
+	DefaultCarConfig.Textures.CentreBrake = mINI_ReadInteger(GeneralINI, "Textures", "CentreBrake", 0) != 0;
+	DefaultCarConfig.Textures.Reverse = mINI_ReadInteger(GeneralINI, "Textures", "Reverse", 0) != 0;
+	DefaultCarConfig.Textures.BrakelightOnfInGame = mINI_ReadInteger(GeneralINI, "Textures", "BrakelightOnfInGame", 0) != 0;
+	DefaultCarConfig.Textures.TireInnerMask = mINI_ReadInteger(GeneralINI, "Textures", "TireInnerMask", 0) != 0;
 
 	// Parts
 	DefaultCarConfig.Parts.BodyKits = mINI_ReadInteger(GeneralINI, "Parts", "BodyKits", 1) != 0;
@@ -940,10 +957,27 @@ void LoadCarConfigs()
 		// Read config
 		// Main
 		ACarConfig.Main.ForceLODA = mINI_ReadInteger(CarINI, "Main", "ForceLODA", DefaultCarConfig.Main.ForceLODA) != 0;
+		ACarConfig.Main.InitiallyUnlocked = mINI_ReadInteger(CarINI, "Main", "InitiallyUnlocked", DefaultCarConfig.Main.InitiallyUnlocked);
 		ACarConfig.Main.EngineType = mINI_ReadInteger(CarINI, "Main", "EngineType", DefaultCarConfig.Main.EngineType);
-		ACarConfig.Main.Parts = mINI_ReadInteger(CarINI, "Main", "Parts", DefaultCarConfig.Main.Parts) != 0;
-		ACarConfig.Main.Performance = mINI_ReadInteger(CarINI, "Main", "Performance", DefaultCarConfig.Main.Performance) != 0;
-		ACarConfig.Main.Visual = mINI_ReadInteger(CarINI, "Main", "Visual", DefaultCarConfig.Main.Visual) != 0;
+		ACarConfig.Main.ScaleBrakesWithRims = mINI_ReadInteger(GeneralINI, "Main", "ScaleBrakesWithRims", DefaultCarConfig.Main.ScaleBrakesWithRims);
+		ACarConfig.Main.ListAttachmentsUnderParts = mINI_ReadInteger(GeneralINI, "Main", "ListAttachmentsUnderParts", DefaultCarConfig.Main.ListAttachmentsUnderParts);
+
+		// Category (also check Main for backwards compatibility)
+		ACarConfig.Category.Parts = mINI_ReadInteger(CarINI, "Main", "Parts", DefaultCarConfig.Category.Parts) != 0;
+		ACarConfig.Category.Performance = mINI_ReadInteger(CarINI, "Main", "Performance", DefaultCarConfig.Category.Performance) != 0;
+		ACarConfig.Category.Visual = mINI_ReadInteger(CarINI, "Main", "Visual", DefaultCarConfig.Category.Visual) != 0;
+
+		ACarConfig.Category.Parts = mINI_ReadInteger(CarINI, "Category", "Parts", ACarConfig.Category.Parts) != 0;
+		ACarConfig.Category.Performance = mINI_ReadInteger(CarINI, "Category", "Performance", ACarConfig.Category.Performance) != 0;
+		ACarConfig.Category.Visual = mINI_ReadInteger(CarINI, "Category", "Visual", ACarConfig.Category.Visual) != 0;
+
+		// Textures
+		ACarConfig.Textures.HeadlightOff = mINI_ReadInteger(CarINI, "Textures", "HeadlightOff", DefaultCarConfig.Textures.HeadlightOff) != 0;
+		ACarConfig.Textures.DamageLights = mINI_ReadInteger(CarINI, "Textures", "DamageLights", DefaultCarConfig.Textures.DamageLights) != 0;
+		ACarConfig.Textures.CentreBrake = mINI_ReadInteger(CarINI, "Textures", "CentreBrake", DefaultCarConfig.Textures.CentreBrake) != 0;
+		ACarConfig.Textures.Reverse = mINI_ReadInteger(CarINI, "Textures", "Reverse", DefaultCarConfig.Textures.Reverse) != 0;
+		ACarConfig.Textures.BrakelightOnfInGame = mINI_ReadInteger(CarINI, "Textures", "BrakelightOnfInGame", DefaultCarConfig.Textures.BrakelightOnfInGame) != 0;
+		ACarConfig.Textures.TireInnerMask = mINI_ReadInteger(CarINI, "Textures", "TireInnerMask", DefaultCarConfig.Textures.TireInnerMask) != 0;
 
 		// Parts
 		ACarConfig.Parts.BodyKits = mINI_ReadInteger(CarINI, "Parts", "BodyKits", DefaultCarConfig.Parts.BodyKits) != 0;
