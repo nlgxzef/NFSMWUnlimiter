@@ -1746,6 +1746,11 @@ void __fastcall CarRenderInfo_RenderFlaresOnCar(DWORD* CarRenderInfo, void* EDX_
 		if (IsCop(RideInfo[0]) && (CarRenderInfo[1416] & 0x1000) != 0)// UsageType = Cop && mOnLights = Cop Lights
 			++view[21];
 
+		// Check for US parking lights
+		bool USParkingLights = 0;
+		DWORD* HeadlightPart = RideInfo_GetPart(RideInfo, CAR_SLOT_ID::LEFT_HEADLIGHT);
+		if (HeadlightPart) USParkingLights = CarPart_GetAppliedAttributeIParam(HeadlightPart, bStringHash((char*)"US_PARKING_LIGHTS"), 0) != 0;
+
 		int PixelSize = eView_GetPixelSize(view, position, *(float*)(CarRenderInfo + 1514)); // this->mRadius
 
 		if (eGetCurrentViewMode() == 3) PixelSize = (int)(PixelSize * *(float*)flt_8B2EE8);
@@ -1753,9 +1758,9 @@ void __fastcall CarRenderInfo_RenderFlaresOnCar(DWORD* CarRenderInfo, void* EDX_
 		if (PixelSize >= view[9] && eView_GetVisibleState(view, (bVector3*)(CarRenderInfo + 36), (bVector3*)(CarRenderInfo + 40), LocalWorld)) // this->AABBMin, this->AABBMax
 		{
 			// define default intensity values
-			float IntsLeftHeadlight = 1.0f;
-			float IntsRightHeadlight = 1.0f;
-			float IntsCentreHeadlight = 1.0f;
+			float IntsLeftHeadlight = 0.0f;
+			float IntsRightHeadlight = 0.0f;
+			float IntsCentreHeadlight = 0.0f;
 
 			if (*(DWORD*)_UTL_Collections_Singleton_INIS_mInstance)
 			{
@@ -1944,7 +1949,7 @@ void __fastcall CarRenderInfo_RenderFlaresOnCar(DWORD* CarRenderInfo, void* EDX_
 						break;
 
 					case 0x2E68A46F: // FRONT_LEFT_SIGNAL
-						IntensityScale = signalintensity * IntsFrontLeftSignal;
+						IntensityScale = USParkingLights ? IntsLeftHeadlight : signalintensity * IntsFrontLeftSignal;
 						break;
 
 					case 0x6045CE90: // REAR_LEFT_SIGNAL
@@ -1952,7 +1957,7 @@ void __fastcall CarRenderInfo_RenderFlaresOnCar(DWORD* CarRenderInfo, void* EDX_
 						break;
 
 					case 0x513456E2: // FRONT_RIGHT_SIGNAL
-						IntensityScale = signalintensity * IntsFrontRightSignal;
+						IntensityScale = USParkingLights ? IntsRightHeadlight : signalintensity * IntsFrontRightSignal;
 						break;
 
 					case 0xBEB6C523: // REAR_RIGHT_SIGNAL
@@ -2132,6 +2137,26 @@ float __stdcall CarRenderInfo_GetExtraPitch(DWORD* _CarRenderInfo, float origina
 	}
 
 	return ExtraPitch;
+}
+
+// Reflection Offset
+float CarRenderInfo_GetReflectionOffset(DWORD* _CarRenderInfo, float original)
+{
+	float ReflectionOffset = original;
+
+	// Get value from custom attribute
+	DWORD* TheRideInfo = (DWORD*)_CarRenderInfo[33]; // CarRenderInfo->pRideInfo
+	if (TheRideInfo)
+	{
+		DWORD* BodyKitCarPart = RideInfo_GetPart(TheRideInfo, CAR_SLOT_ID::BODY); // BODY_KIT
+		if (BodyKitCarPart)
+		{
+			// Read height attribute from body kit
+			ReflectionOffset = CarPart_GetAppliedAttributeFParam(BodyKitCarPart, 0, bStringHash((char*)"REFLECTION_OFFSET"), original);
+		}
+	}
+
+	return ReflectionOffset;
 }
 
 // Extra Rear Tire Offset

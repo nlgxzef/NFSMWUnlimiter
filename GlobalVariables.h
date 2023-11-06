@@ -89,6 +89,8 @@
 #define _ShaperLightsCharacters 0x8F2F10
 #define _ShaperLightsCharactersBackup 0x8F2FB0
 #define _Lightslot 0x90354C
+#define _feposoff 0x9053C0
+#define _pi 0x9B27E0
 
 bool BETACompatibility = 0;
 bool HPCCompatibility = 0;

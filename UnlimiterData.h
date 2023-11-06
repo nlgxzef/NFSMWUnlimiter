@@ -959,8 +959,8 @@ void LoadCarConfigs()
 		ACarConfig.Main.ForceLODA = mINI_ReadInteger(CarINI, "Main", "ForceLODA", DefaultCarConfig.Main.ForceLODA) != 0;
 		ACarConfig.Main.InitiallyUnlocked = mINI_ReadInteger(CarINI, "Main", "InitiallyUnlocked", DefaultCarConfig.Main.InitiallyUnlocked);
 		ACarConfig.Main.EngineType = mINI_ReadInteger(CarINI, "Main", "EngineType", DefaultCarConfig.Main.EngineType);
-		ACarConfig.Main.ScaleBrakesWithRims = mINI_ReadInteger(GeneralINI, "Main", "ScaleBrakesWithRims", DefaultCarConfig.Main.ScaleBrakesWithRims);
-		ACarConfig.Main.ListAttachmentsUnderParts = mINI_ReadInteger(GeneralINI, "Main", "ListAttachmentsUnderParts", DefaultCarConfig.Main.ListAttachmentsUnderParts);
+		ACarConfig.Main.ScaleBrakesWithRims = mINI_ReadInteger(CarINI, "Main", "ScaleBrakesWithRims", DefaultCarConfig.Main.ScaleBrakesWithRims);
+		ACarConfig.Main.ListAttachmentsUnderParts = mINI_ReadInteger(CarINI, "Main", "ListAttachmentsUnderParts", DefaultCarConfig.Main.ListAttachmentsUnderParts);
 
 		// Category (also check Main for backwards compatibility)
 		ACarConfig.Category.Parts = mINI_ReadInteger(CarINI, "Main", "Parts", DefaultCarConfig.Category.Parts) != 0;

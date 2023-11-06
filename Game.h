@@ -2,54 +2,88 @@
 #include "stdio.h"
 #include "InGameTypes.h"
 #include "InGameFunctions.h"
+#include "FrontEndRenderingCar.h"
 
 void __fastcall CarRenderInfo_RenderFlaresOnCar(DWORD* CarRenderInfo, void* EDX_Unused, DWORD* view, bVector3* position, bMatrix4* body_matrix, int force_light_state, int reflection, int renderFlareFlags);
+float CarRenderInfo_GetReflectionOffset(DWORD* _CarRenderInfo, float original);
 
 static injector::hook_back<void(*)(DWORD*, int, int)> hb_RenderFEFlares;
 
 void RenderFEFlares(DWORD* view, int reflection, int renderFlareFlags)
 {
-	DWORD* TheFrontEndRenderingCar; // esi
-	DWORD* i; // ebp
-	DWORD* _CarRenderInfo; // ecx
+	FrontEndRenderingCar* FECar;
+	DWORD* _CarRenderInfo;
+	bMatrix4 CarMatrix;
+	bVector3 WorldPos;
+	float ReflectionOffset;
+	bVector3 feposoff = *(bVector3*)_feposoff;
+	float ExtraPitch = 0;
+	bMatrix4 RotationMatrix;
+	int RenderFECarFlares_tmp = RenderFECarFlares;
 
-	//if (RenderFECarFlares != -1) // global var
+	if (*(int*)_DrawCars)
 	{
-		if (*(int*)_DrawCars)
+		if (*(int*)_DrawLightFlares)
 		{
-			if (*(int*)_DrawLightFlares)
+			for (FECar = *(FrontEndRenderingCar**)_FrontEndRenderingCarList;
+				FECar != (FrontEndRenderingCar*)_FrontEndRenderingCarList;
+				FECar = FECar->Next)
 			{
-				TheFrontEndRenderingCar = *(DWORD**)_FrontEndRenderingCarList;
-				for (i = (DWORD*)_FrontEndRenderingCarList;
-					TheFrontEndRenderingCar != i;
-					TheFrontEndRenderingCar = (DWORD*)TheFrontEndRenderingCar[0])
+				_CarRenderInfo = FECar->RenderInfo;
+
+				if (_CarRenderInfo && FECar->Visible)
 				{
-					if (TheFrontEndRenderingCar[349])
+					if (ForceLightsOnInFE && (RenderFECarFlares_tmp == -1)) RenderFECarFlares_tmp = 1;
+
+					_CarRenderInfo[1416] = 0; // OnLights
+					if (RenderFECarFlares_tmp & 1) _CarRenderInfo[1416] |= 7; // Head
+					if (RenderFECarFlares_tmp & 2) _CarRenderInfo[1416] |= 56; // Brake
+					if (RenderFECarFlares_tmp & 4) _CarRenderInfo[1416] |= 192; // Reverse
+
+					if ((RenderFECarFlares_tmp != -1))
 					{
-						_CarRenderInfo = (DWORD*)TheFrontEndRenderingCar[198]; // 0x318
-						if (_CarRenderInfo)
+						bCopy(&CarMatrix, &FECar->BodyMatrix);
+						WorldPos.x = FECar->Position.x;
+						WorldPos.y = FECar->Position.y;
+						WorldPos.z = FECar->Position.z;
+
+						if (reflection)
 						{
-							if (RenderFECarFlares != -1) CarRenderInfo_RenderFlaresOnCar(_CarRenderInfo, 0, view, (bVector3*)(TheFrontEndRenderingCar + 200), (bMatrix4*)(TheFrontEndRenderingCar + 204), RenderFECarFlares, reflection, renderFlareFlags);
-							switch (RenderFECarFlares)
-							{
-								case 1: // Headlights
-									_CarRenderInfo[1416] |= 3847; // OnLights
-									break;
-								case 2: // Taillights
-									_CarRenderInfo[1416] |= 248; // OnLights
-									break;
-								default:
-									_CarRenderInfo[1416] = 0; // OnLights
-									break;
-							}
+							CarMatrix.v2.x = -CarMatrix.v2.x;
+							CarMatrix.v2.y = -CarMatrix.v2.y;
+							CarMatrix.v2.z = -CarMatrix.v2.z;
+
+							// Get Reflection offset from ecar
+							Attrib_Gen_ecar_LayoutStruct* eCarAttributes = (Attrib_Gen_ecar_LayoutStruct*)_CarRenderInfo[1517];
+							ReflectionOffset = CarRenderInfo_GetReflectionOffset(_CarRenderInfo, eCarAttributes->ReflectionOffset);
+
+							WorldPos.x += feposoff.x + CarMatrix.v2.x * ReflectionOffset;
+							WorldPos.y += feposoff.y + CarMatrix.v2.y * ReflectionOffset;
+							WorldPos.z += feposoff.z + CarMatrix.v2.z * ReflectionOffset;
 						}
+
+						// Apply extra pitch fixup
+						bCopy(&CarMatrix, &FECar->BodyMatrix);
+						RotationMatrix.v0.x = 1.0f;
+						RotationMatrix.v1.y = 1.0f;
+						RotationMatrix.v2.z = 1.0f;
+						RotationMatrix.v3.w = 1.0f;
+						ExtraPitch = FECar->ExtraPitch;
+						eRotateY(&RotationMatrix, &RotationMatrix, bDegToShort(ExtraPitch));
+						eMulMatrix(&CarMatrix, &RotationMatrix, &CarMatrix);
+						CarMatrix.v3.x += CarMatrix.v2.x;
+						CarMatrix.v3.y += CarMatrix.v2.y;
+						CarMatrix.v3.z += CarMatrix.v2.z;
+
+						// Render
+						CarRenderInfo_RenderFlaresOnCar(_CarRenderInfo, 0, view, &WorldPos, &CarMatrix, RenderFECarFlares_tmp, reflection, renderFlareFlags);
 					}
 				}
 			}
 		}
 	}
 
-	hb_RenderFEFlares.fun(view, reflection, renderFlareFlags);
+	//hb_RenderFEFlares.fun(view, reflection, renderFlareFlags);
 }
 
 DWORD GetWheelTextureHash(DWORD* _RideInfo, int index)
@@ -536,4 +570,79 @@ void elCloneLightContext(DWORD* light_context, bMatrix4* local_world, bMatrix4* 
 	matrix._43 = translation.z;
 
 	elCloneLightContext_Game(light_context, (bMatrix4*)&matrix, world_view, camera_world_position, view, old_context);
+}
+
+void RenderFrontEndCars(DWORD* view, int reflection)
+{
+	FrontEndRenderingCar* FECar;
+	DWORD* TheFEManager;
+	DWORD* _CarRenderInfo, *TheRideInfo, *BodyKitCarPart;
+	bMatrix4 CarMatrix;
+	int MinLOD;
+	bVector3 WorldPos;
+	float ReflectionOffset;
+	bVector3 feposoff = *(bVector3*)_feposoff;
+	int mirrored = 0;
+	float ExtraPitch = 0;
+	bMatrix4 RotationMatrix;
+
+	if (*(bool*)_DrawCars)
+	{
+		if (!reflection)
+		{
+			goto LABEL_4;
+		}
+
+		TheFEManager = FEManager_Get();
+		if (FEManager_GetGarageType(TheFEManager) != 5)
+		{
+		LABEL_4:
+
+			for (FECar = *(FrontEndRenderingCar**)_FrontEndRenderingCarList;
+				FECar != (FrontEndRenderingCar*)_FrontEndRenderingCarList;
+				FECar = FECar->Next)
+			{
+				_CarRenderInfo = FECar->RenderInfo;
+				if (_CarRenderInfo && FECar->Visible)
+				{
+					MinLOD = _CarRenderInfo[1418];
+					bCopy(&CarMatrix, &FECar->BodyMatrix);
+					WorldPos.x = FECar->Position.x;
+					WorldPos.y = FECar->Position.y;
+					WorldPos.z = FECar->Position.z;
+
+					if (reflection)
+					{
+						mirrored = 1;
+						
+						CarMatrix.v2.x = -CarMatrix.v2.x;
+						CarMatrix.v2.y = -CarMatrix.v2.y;
+						CarMatrix.v2.z = -CarMatrix.v2.z;
+
+						// Get Reflection offset from ecar
+						Attrib_Gen_ecar_LayoutStruct* eCarAttributes = (Attrib_Gen_ecar_LayoutStruct*)_CarRenderInfo[1517];
+						ReflectionOffset = CarRenderInfo_GetReflectionOffset(_CarRenderInfo, eCarAttributes->ReflectionOffset);
+
+						WorldPos.x += feposoff.x + CarMatrix.v2.x * ReflectionOffset;
+						WorldPos.y += feposoff.y + CarMatrix.v2.y * ReflectionOffset;
+						WorldPos.z += feposoff.z + CarMatrix.v2.z * ReflectionOffset;
+					}
+
+					// Extra Pitch
+					RotationMatrix.v0.x = 1.0f;
+					RotationMatrix.v1.y = 1.0f;
+					RotationMatrix.v2.z = 1.0f;
+					RotationMatrix.v3.w = 1.0f;
+					ExtraPitch = FECar->ExtraPitch;
+					eRotateY(&RotationMatrix, &RotationMatrix, bDegToShort(ExtraPitch));
+					eMulMatrix(&CarMatrix, &RotationMatrix, &CarMatrix);
+					CarMatrix.v3.x += CarMatrix.v2.x;
+					CarMatrix.v3.y += CarMatrix.v2.y;
+					CarMatrix.v3.z += CarMatrix.v2.z;
+
+					CarRenderInfo_Render(_CarRenderInfo, view, &WorldPos, &CarMatrix, FECar->TireMatrices, FECar->BrakeMatrices, FECar->TireMatrices, mirrored, 0, reflection, 1.0f, MinLOD, MinLOD);
+				}
+			}
+		}
+	}
 }

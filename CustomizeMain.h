@@ -253,7 +253,6 @@ void __fastcall CustomizeMain_NotificationMessage(DWORD* _CustomizeMain, void* E
 
 	DWORD* GarageMainScreen = FEngFindScreen("GarageMain.fng");
 	DWORD* FEDatabase = *(DWORD**)_FEDatabase;
-	bool TestCareerCustomization = *(bool*)g_bTestCareerCustomization;
 	bool IsInCareerMode = CarCustomizeManager_IsCareerMode_CheckTCC();
 	BYTE* MemoryCard_s_pThis = *(BYTE**)_MemoryCard_s_pThis;
 
@@ -289,34 +288,32 @@ void __fastcall CustomizeMain_NotificationMessage(DWORD* _CustomizeMain, void* E
 		break;
 
 	case 0x34DC1BEC: // OK to MISSING_PARTS_MARKER dialog
-		NumMarkers = IsInCareerMode ? FEMarkerManager_GetNumCustomizeMarkers((DWORD*)TheFEMarkerManager) : (MyCarsBackroom || TestCareerCustomization) ? 1 : 0;
-		if (NumMarkers > _CustomizeMain[107]) CustomizeMain_SwitchRooms(_CustomizeMain, EDX_Unused);
-		_CustomizeMain[107] = 0;
+		if (CarCustomizeManager_CanEnterBackroom())
+		{
+			NumMarkers = FEMarkerManager_GetNumCustomizeMarkers((DWORD*)TheFEMarkerManager);
+			if (NumMarkers > _CustomizeMain[107]) CustomizeMain_SwitchRooms(_CustomizeMain, EDX_Unused);
+			_CustomizeMain[107] = 0;
+		}
 		break;
 
 	case 0xC519BFC4: // PAD_BUTTON5
-		if (IsInCareerMode || MyCarsBackroom)
+		if (CarCustomizeManager_CanEnterBackroom())
 		{
-			NumMarkers = IsInCareerMode ? FEMarkerManager_GetNumCustomizeMarkers((DWORD*)TheFEMarkerManager) : (MyCarsBackroom || TestCareerCustomization) ? 1 : 0;
-
-			if (!CustomizeIsInBackRoom() && NumMarkers)
+			_CustomizeMain[107] = 0;
+			if (FEMarkerManager_IsMarkerAvailable((DWORD*)TheFEMarkerManager, 4, 0) && !CarCustomizeManager_CanInstallJunkman((DWORD*)_gCarCustomizeManager, 5))
 			{
-				_CustomizeMain[107] = 0;
-				if (FEMarkerManager_IsMarkerAvailable((DWORD*)TheFEMarkerManager, 4, 0) && !CarCustomizeManager_CanInstallJunkman((DWORD*)_gCarCustomizeManager, 5))
-				{
-					++_CustomizeMain[107];
-				}
-				if (FEMarkerManager_IsMarkerAvailable((DWORD*)TheFEMarkerManager, 3, 0) && !CarCustomizeManager_CanInstallJunkman((DWORD*)_gCarCustomizeManager, 6))
-				{
-					++_CustomizeMain[107];
-				}
-				if (_CustomizeMain[107] > 0)
-				{
-					DialogInterface_ShowOneButton((const char*)_CustomizeMain[4], "", 2, 0x417B2601, 0x34DC1BEC, 0x3B3E83); // COMMON_OK, 0x34DC1BEC (OK message??), MISSING_PARTS_MARKER
-					return;
-				}
-				CustomizeMain_SwitchRooms(_CustomizeMain, EDX_Unused);
+				++_CustomizeMain[107];
 			}
+			if (FEMarkerManager_IsMarkerAvailable((DWORD*)TheFEMarkerManager, 3, 0) && !CarCustomizeManager_CanInstallJunkman((DWORD*)_gCarCustomizeManager, 6))
+			{
+				++_CustomizeMain[107];
+			}
+			if (_CustomizeMain[107] > 0)
+			{
+				DialogInterface_ShowOneButton((const char*)_CustomizeMain[4], "", 2, 0x417B2601, 0x34DC1BEC, 0x3B3E83); // COMMON_OK, 0x34DC1BEC (OK message??), MISSING_PARTS_MARKER
+				return;
+			}
+			CustomizeMain_SwitchRooms(_CustomizeMain, EDX_Unused);
 		}
 		break;
 	}
@@ -326,13 +323,9 @@ void __fastcall CustomizeMain_RefreshHeader(DWORD* _CustomizeMain, void* EDX_Unu
 {
 	CustomizeCategoryScreen_RefreshHeader(_CustomizeMain);
 
-	bool TestCareerCustomization = *(bool*)g_bTestCareerCustomization;
-	bool IsInCareerMode = CarCustomizeManager_IsCareerMode_CheckTCC();
-
 	DWORD* BackroomGroup = (DWORD*)FEngFindObject((const char*)_CustomizeMain[4], 0xDC6EE739); // BACKROOM_GROUP
-	int NumMarkers = IsInCareerMode ? FEMarkerManager_GetNumCustomizeMarkers((DWORD*)TheFEMarkerManager) : (MyCarsBackroom || TestCareerCustomization) ? 1 : 0;
 
-	if (!CustomizeIsInBackRoom() && NumMarkers) FEngSetVisible(BackroomGroup);
+	if (CarCustomizeManager_CanEnterBackroom()) FEngSetVisible(BackroomGroup);
 	else FEngSetInvisible(BackroomGroup);
 	
 	DWORD* v4 = (DWORD*)_CustomizeMain[14];

@@ -202,6 +202,26 @@ bool CarCustomizeManager_IsCareerMode_CheckTCC()
     return result;
 }
 
+bool CarCustomizeManager_CanEnterBackroom()
+{
+	DWORD* FEDatabase = *(DWORD**)_FEDatabase;
+	int NumMarkers;
+
+	if (CustomizeIsInBackRoom()) return 0; // Already in backroom
+	if ((*((BYTE*)FEDatabase + 300) & 1)) // Career mode
+	{
+		// If in career mode, check number of markers
+		NumMarkers = FEMarkerManager_GetNumCustomizeMarkers((DWORD*)TheFEMarkerManager);
+		if (!NumMarkers) return 0;
+	}
+	else // My Cars
+	{
+		if (!MyCarsBackroom) return 0;
+	}
+
+	return 1;
+}
+
 void __fastcall CarCustomizeManager_UpdateHeatOnVehicle(DWORD* CarCustomizeManager, void* EDX_Unused, DWORD* TheSelectablePart, DWORD* FECareerRecord)
 {
     DWORD* FEDatabase = *(DWORD**)_FEDatabase;

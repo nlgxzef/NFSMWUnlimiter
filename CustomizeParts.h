@@ -135,10 +135,10 @@ void __fastcall CustomizeParts_NotificationMessage(DWORD* _CustomizeParts, void*
 		{
 			if (RenderFECarFlares == 1)
 			{
-				RenderFECarFlares = -1;
+				RenderFECarFlares = 0;
 				FEngSetLanguageHash((const char*)_CustomizeParts[4], 0x889BACB6, 0x70DFE5C2); // Text, COMMON_OFF
 			}
-			else if (RenderFECarFlares == -1)
+			else if (RenderFECarFlares == 0)
 			{
 				RenderFECarFlares = 1;
 				FEngSetLanguageHash((const char*)_CustomizeParts[4], 0x889BACB6, 0x417B2604); // Text, COMMON_ON
@@ -150,15 +150,15 @@ void __fastcall CustomizeParts_NotificationMessage(DWORD* _CustomizeParts, void*
 			{
 			default:
 			case -1:
-				RenderFECarFlares = 2;
+				RenderFECarFlares = 6;
 				FEngSetLanguageHash((const char*)_CustomizeParts[4], 0x889BACB6, 0x6AB80AFA); // Text, BUTTON_BRAKE_REVERSE
 				break;
-			case 0:
+			case 2:
 				RenderFECarFlares = -1;
 				FEngSetLanguageHash((const char*)_CustomizeParts[4], 0x889BACB6, 0x70DFE5C2); // Text, COMMON_OFF
 				break;
-			case 2:
-				RenderFECarFlares = 0;
+			case 6:
+				RenderFECarFlares = 2;
 				FEngSetLanguageHash((const char*)_CustomizeParts[4], 0x889BACB6, 0x417B2604); // Text, COMMON_ON
 				break;
 			}
@@ -170,10 +170,10 @@ void __fastcall CustomizeParts_NotificationMessage(DWORD* _CustomizeParts, void*
 		{
 			if (RenderFECarFlares == 1)
 			{
-				RenderFECarFlares = -1;
+				RenderFECarFlares = 0;
 				FEngSetLanguageHash((const char*)_CustomizeParts[4], 0x889BACB6, 0x70DFE5C2); // Text, COMMON_OFF
 			}
-			else if (RenderFECarFlares == -1)
+			else if (RenderFECarFlares == 0)
 			{
 				RenderFECarFlares = 1;
 				FEngSetLanguageHash((const char*)_CustomizeParts[4], 0x889BACB6, 0x417B2604); // Text, COMMON_ON
@@ -185,14 +185,14 @@ void __fastcall CustomizeParts_NotificationMessage(DWORD* _CustomizeParts, void*
 			{
 			default:
 			case -1:
-				RenderFECarFlares = 0;
+				RenderFECarFlares = 2;
 				FEngSetLanguageHash((const char*)_CustomizeParts[4], 0x889BACB6, 0x417B2604); // Text, COMMON_ON
 				break;
-			case 0:
-				RenderFECarFlares = 2;
+			case 2:
+				RenderFECarFlares = 6;
 				FEngSetLanguageHash((const char*)_CustomizeParts[4], 0x889BACB6, 0x6AB80AFA); // Text, BUTTON_BRAKE_REVERSE
 				break;
-			case 2:
+			case 6:
 				RenderFECarFlares = -1;
 				FEngSetLanguageHash((const char*)_CustomizeParts[4], 0x889BACB6, 0x70DFE5C2); // Text, COMMON_OFF
 				break;
@@ -207,9 +207,6 @@ void __fastcall CustomizeParts_RefreshHeader(DWORD* _CustomizeParts, void* EDX_U
 	DWORD* SelectedPart;
 	unsigned int MenuID = _CustomizeParts[82];
 
-	//if (MenuID == 0x109) RenderFECarFlares = 1; // Headlights
-	//else if (MenuID == 0x10A) RenderFECarFlares = 2; // Taillights
-	//else RenderFECarFlares = -1;
 	if (MenuID == MenuID::Customize_Parts_Headlights || MenuID == MenuID::Customize_Parts_Taillights)
 	{
 		FEngSetVisible(FEngFindObject((const char*)_CustomizeParts[4], 0x53639A10)); // Switcher
@@ -217,16 +214,15 @@ void __fastcall CustomizeParts_RefreshHeader(DWORD* _CustomizeParts, void* EDX_U
 
 		switch (RenderFECarFlares)
 		{
-		case 0:
-			FEngSetLanguageHash((const char*)_CustomizeParts[4], 0x889BACB6, 0x417B2604); // Text, COMMON_ON
-			break;
 		case 1:
+		case 2:
 			FEngSetLanguageHash((const char*)_CustomizeParts[4], 0x889BACB6, 0x417B2604); // Text, COMMON_ON
 			break;
-		case 2:
+		case 6:
 			FEngSetLanguageHash((const char*)_CustomizeParts[4], 0x889BACB6, 0x6AB80AFA); // Text, BUTTON_BRAKE_REVERSE
 			break;
 		case -1:
+		case 0:
 		default:
 			FEngSetLanguageHash((const char*)_CustomizeParts[4], 0x889BACB6, 0x70DFE5C2); // Text, COMMON_OFF
 			break;
@@ -383,12 +379,14 @@ void __fastcall CustomizeParts_Setup(DWORD* _CustomizeParts, void* EDX_Unused)
 			CarSlotID = CAR_SLOT_ID::LEFT_HEADLIGHT;
 			PartIconNormal = CarConfigs[CarTypeID].Icons.PartsHeadlights;
 			_CustomizeParts[87] = CarConfigs[CarTypeID].Names.PartsHeadlights;
+			RenderFECarFlares = ForceLightsOnInFE ? 1 : 0;
 			break;
 
 		case MenuID::Customize_Parts_Taillights: // Brakelight
 			CarSlotID = CAR_SLOT_ID::LEFT_BRAKELIGHT;
 			PartIconNormal = CarConfigs[CarTypeID].Icons.PartsTaillights;
 			_CustomizeParts[87] = CarConfigs[CarTypeID].Names.PartsTaillights;
+			RenderFECarFlares = ForceLightsOnInFE ? 2 : -1;
 			break;
 
 		case MenuID::Customize_Parts_Mirrors: // Mirror

@@ -1,3 +1,5 @@
+#pragma once
+
 #include "stdio.h"
 #include "InGameFunctions.h"
 
@@ -68,7 +70,7 @@ bool __fastcall FrontEndRenderingCar_LookupWheelPosition(FrontEndRenderingCar* _
 
     
     // Handle ExtraPitch
-    AttrPtr = (float*)Attrib_Instance_GetAttributePointer((DWORD*)(_CarRenderInfo + 1515), 0xE95257C2, index >> 1); // ExtraPitch
+    AttrPtr = (float*)Attrib_Instance_GetAttributePointer((DWORD*)(_CarRenderInfo + 1515), 0xE95257C2, 0); // ExtraPitch
     if (!AttrPtr)
         AttrPtr = (float*)Attrib_DefaultDataArea();
     ExtraPitch = *AttrPtr;
@@ -77,15 +79,16 @@ bool __fastcall FrontEndRenderingCar_LookupWheelPosition(FrontEndRenderingCar* _
         ExtraPitch = CarPart_GetAppliedAttributeFParam(BodyKitCarPart, 0, bStringHash((char*)"EXTRA_PITCH"), ExtraPitch);
 
     _car->ExtraPitch = ExtraPitch;
-
-    // Calculate ExtraPitch (better without??)
-    //ExtraPitch *= 0.017453; // deg to rad
-    //float ExtraPitchCalculated = tan(ExtraPitch) * (eCarAttributes->TireOffsets[0].x - eCarAttributes->TireOffsets[2].x);
-    //if (index >> 1) ExtraPitchCalculated = 0;
+    
+    // Calculate wheel pos with ExtraPitch
+    float pi = *(float*)_pi;
+    float ExtraPitchCalculated = tan(ExtraPitch * pi / 180.0f) * ((eCarAttributes->TireOffsets[0].x - eCarAttributes->TireOffsets[2].x) * 0.5f);
+    if (index > 1) ExtraPitchCalculated = -ExtraPitchCalculated;
 
     // Write ExtraPitch
-    //position->z += ExtraPitchCalculated;
-
+    position->w = 1.0;
+    position->z += ExtraPitchCalculated;
+    
     return 1;
 }
 
@@ -121,32 +124,4 @@ bool __fastcall FrontEndRenderingCar_LookupWheelRadius(FrontEndRenderingCar* _ca
     position->x = Radius;
 
     return 1;
-}
-
-void __fastcall FrontEndRenderingCar_ApplyExtraPitch(FrontEndRenderingCar* _car, bMatrix4* a)
-{
-    bMatrix4 RotationMatrix;
-    RotationMatrix.v0.x = 1.0f;
-    RotationMatrix.v1.y = 1.0f;
-    RotationMatrix.v2.z = 1.0f;
-    RotationMatrix.v3.w = 1.0f;
-
-    eRotateY(&RotationMatrix, &RotationMatrix, bDegToShort(_car->ExtraPitch));
-    
-    bCopy(a, &RotationMatrix);
-}
-
-// 0x7A99AD
-void __declspec(naked) ExtraPitchCave_GarageMainScreen_UpdateRenderingCarParameters()
-{
-    _asm
-    {
-        mov dword ptr ds: [esp + 0x7C], 0x3F800000
-        lea edx, dword ptr ds: [esp + 0x40]
-        mov ecx, dword ptr ds: [ebp + 0x8]
-        call FrontEndRenderingCar_ApplyExtraPitch
-
-        push 0x7A99B5
-        retn
-    }
 }

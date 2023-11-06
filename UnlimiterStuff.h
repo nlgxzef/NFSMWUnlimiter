@@ -5,7 +5,7 @@
 #include "includes\ini.h"
 
 int ManuID, CarArraySize, CarCount, CarPartCount, CarPartPartsTableSize, ReplacementCar, TrafficCarCount, RacerNamesCount, FrameDelay, CarSkinCount;
-bool ManuHook, ExtraCustomization, DisappearingWheelsFix, SecondaryLogoFix, ExpandMemoryPools, AddOnCopsDamageFix, ForceStockPartsOnAddOnOpponents, ChallengeSeriesOpponentNameFix, CopDestroyedStringHook, DisableTextureReplacement, MyCarsBackroom, EnableFNGFixes, RandomHook, RideHeightFix, BonusCarsHook, CarSkinFix, LightMaterialCrashFix, DisableNeon, DisableLightFlareColors, DisableKitWheelModifications, ExitWorkaround, Presitter, TestCareerCustomization, LimitAdjusterCompatibility, RandomizeTraffic, ForceSignalsOn;
+bool ManuHook, ExtraCustomization, DisappearingWheelsFix, SecondaryLogoFix, ExpandMemoryPools, AddOnCopsDamageFix, ForceStockPartsOnAddOnOpponents, ChallengeSeriesOpponentNameFix, CopDestroyedStringHook, DisableTextureReplacement, MyCarsBackroom, EnableFNGFixes, RandomHook, RideHeightFix, BonusCarsHook, CarSkinFix, LightMaterialCrashFix, DisableNeon, DisableLightFlareColors, DisableKitWheelModifications, ExitWorkaround, Presitter, TestCareerCustomization, LimitAdjusterCompatibility, RandomizeTraffic, ForceSignalsOn, ForceLightsOnInFE;
 
 #include "InGameFunctions.h"
 #include "GlobalVariables.h"
@@ -84,6 +84,7 @@ int Init()
 	ExpandMemoryPools = mINI_ReadInteger(Settings, "Misc", "ExpandMemoryPools", 0) != 0;
 	FrameDelay = mINI_ReadInteger(Settings, "Misc", "FrameDelay", -1);
 	ForceStockPartsOnAddOnOpponents = mINI_ReadInteger(Settings, "Misc", "ForceStockPartsOnAddOnOpponents", 0) != 0;
+	ForceLightsOnInFE = mINI_ReadInteger(Settings, "Misc", "ForceLightsOnInFE", 0) != 0;
 	CarSkinCount = mINI_ReadInteger(Settings, "Misc", "CarSkinCount", 20);
 
 	// Debug
@@ -369,10 +370,13 @@ int Init()
 
 			// Extra Pitch
 			injector::MakeJMP(0x74717A, ExtraPitchCave_CarRenderConn_UpdateRenderMatrix, true); // CarRenderConn::UpdateRenderMatrix
-			injector::MakeJMP(0x7A99AD, ExtraPitchCave_GarageMainScreen_UpdateRenderingCarParameters, true); //  GarageMainScreen::UpdateRenderingCarParameters
-
+			
 			// Extra Rear Tire Offset
 			injector::MakeJMP(0x74F2FF, ExtraRearTireOffsetCave_CarRenderInfo_Render, true); // CarRenderInfo::Render
+
+			// Reflection Offset & Extra Pitch pt.2
+			injector::MakeCALL(0x6DEF16, RenderFrontEndCars, true);
+			injector::MakeCALL(0x6DEF96, RenderFrontEndCars, true);
 
 			// Fix lighting
 			injector::MakeCALL(0x74F62E, elCloneLightContext, true); // CarRenderInfo::Render
@@ -491,6 +495,10 @@ int Init()
 		// Skip RefreshBonusCarsList function, use regular checks instead. (Fixes crashes)
 		injector::WriteMemory<BYTE>(0x7BF7E5, 0xEB, true); // UIQRCarSelect::RefreshCarList
 		injector::WriteMemory<BYTE>(0x7BF95B, 0x01, true); // UIQRCarSelect::RefreshCarList, skip sorting by unlocks if the category is Bonus
+		// LAN / Online
+		injector::WriteMemory<BYTE>(0x55657D, 0xEB, true); // UIOLGameRoomCarSelect::RefreshCarList
+		injector::WriteMemory<BYTE>(0x556677, 0x01, true); // UIOLGameRoomCarSelect::RefreshCarList, skip sorting by unlocks if the category is Bonus
+
 	}
 
 	if (ExitWorkaround)
@@ -534,7 +542,7 @@ int Init()
 	}
 
 	// Car Skin Fix (Requires CarSkinCount (20) x dummy skin and wheel textures in CARS\TEXTURES.BIN)
-	if ((CarSkinFix || RandomizeTraffic) && !LimitAdjusterCompatibility && !HPCCompatibility)
+	if ((CarSkinFix || RandomizeTraffic) && !LimitAdjusterCompatibility)
 	{
 		// VehicleRenderConn::Load
 		injector::MakeRangedNOP(0x75D291, 0x75D298, true); // Skip precomposite skins

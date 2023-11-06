@@ -233,6 +233,7 @@ bool(__thiscall* CarCustomizeManager_CanInstallJunkman)(DWORD* FEMarkerManager, 
 void(__thiscall* CustomizeMain_SetTitle)(DWORD* CustomizeMain, bool IsInBackroom) = (void(__thiscall*)(DWORD*, bool))0x7A66D0;
 DWORD*(*FEManager_Get)() = (DWORD*(*)())0x516E10;
 DWORD*(*GarageMainScreen_GetInstance)() = (DWORD*(*)())0x7A1FA0;
+int(__thiscall* FEManager_GetGarageType)(DWORD* FEManager) = (int(__thiscall*)(DWORD*))0x516E20;
 void(__thiscall* FEManager_SetGarageType)(DWORD* FEManager, int GarageType) = (void(__thiscall*)(DWORD*, int))0x516E30;
 void(__thiscall* CustomizeCategoryScreen_RefreshHeader)(DWORD* CustomizeCategoryScreen) = (void(__thiscall*)(DWORD*))0x7B0E00;
 bool(__thiscall* CarCustomizeManager_IsCategoryNew_Game)(DWORD* CustomizeCategoryScreen, unsigned int MenuID) = (bool(__thiscall*)(DWORD*, unsigned int))0x7A50E0;
@@ -265,5 +266,8 @@ int(__thiscall* eView_GetVisibleState)(DWORD* view, bVector3* aabb_min, bVector3
 float(*coplightflicker)(float time, int offset) = (float(*)(float, int))0x738300;
 float(*coplightflicker2)(float time, int whichColor, int flareCount) = (float(*)(float, int, int))0x738340;
 float(*bSin)(float angle) = (float(*)(float))0x45DBD0;
+float(*bSin_Us)(WORD angle_short) = (float(*)(WORD))0x45DBF0;
+float(*bCos_Us)(WORD angle_short) = (float(*)(WORD))0x45DB30;
 void(*AddQuickDynamicLight)(DWORD* ShaperRigP, unsigned int slot, float r, float g, float b, float intensity, bVector3* position) = (void(*)(DWORD*, unsigned int, float, float, float, float, bVector3*))0x4FC990;
 void(*RestoreShaperRig)(DWORD* ShaperRigP, unsigned int slot, DWORD* ShaperRigBP) = (void(*)(DWORD*, unsigned int, DWORD*))0x4FC940;
+void(__thiscall* CarRenderInfo_Render)(DWORD* CarRenderInfo, DWORD* view, bVector3* world_position, bMatrix4* car_matrix, bMatrix4* body_matrix, bMatrix4* tire_matrices, bMatrix4* brake_matrices, unsigned int reflection, int, int reflexion, float shadow_scale, int tireLOD, int carLOD) = (void(__thiscall*)(DWORD*, DWORD*, bVector3*, bMatrix4*, bMatrix4*, bMatrix4*, bMatrix4*, unsigned int, int, int, float, int, int))0x74E160;
