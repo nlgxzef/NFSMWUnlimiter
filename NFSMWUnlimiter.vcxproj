@@ -111,6 +111,7 @@ copy "$(TargetDir)*.pdb" "G:\Oyunlar\Need for Speed Most Wanted Dirty\scripts"  
     <ClInclude Include="CodeCaves.h" />
     <ClInclude Include="Color.h" />
     <ClInclude Include="CustomizeDecals.h" />
+    <ClInclude Include="CustomizeHUDColor.h" />
     <ClInclude Include="CustomizeMain.h" />
     <ClInclude Include="CustomizePaint.h" />
     <ClInclude Include="CustomizeParts.h" />

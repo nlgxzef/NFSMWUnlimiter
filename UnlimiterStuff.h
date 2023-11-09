@@ -17,6 +17,7 @@ bool ManuHook, ExtraCustomization, DisappearingWheelsFix, SecondaryLogoFix, Expa
 #include "CustomizeSpoiler.h"
 #include "CustomizePaint.h"
 #include "CustomizeDecals.h"
+#include "CustomizeHUDColor.h"
 #include "CustomizeShoppingCart.h"
 #include "FEShoppingCartItem.h"
 #include "CarRenderInfo.h"
@@ -258,6 +259,13 @@ int Init()
 		// Decals
 		injector::MakeJMP(0x7A7030, CustomizeDecals_GetSlotIDFromCategory, true); // 3 references
 		injector::WriteMemory<int>(0x7BCF14, 0x608, true); // CustomizationScreen::CustomizationScreen
+
+		// HUD Color
+		injector::WriteMemory(0x8B7ED0, &CustomizeHUDColor_RefreshHeader, true); // CustomizeHUDColor::vtable
+		injector::MakeCALL(0x7BD874, CustomizeHUDColor_ScrollColors, true); // CustomizeHUDColor::NotificationMessage
+		injector::MakeCALL(0x7BD8B9, CustomizeHUDColor_ScrollColors, true); // CustomizeHUDColor::NotificationMessage
+		injector::MakeCALL(0x7BD8F7, CustomizeHUDColor_BuildColorOptions_Hook, true); // CustomizeHUDColor::NotificationMessage
+		injector::MakeCALL(0x7BDABA, CustomizeHUDColor_BuildColorOptions_Hook, true); // CustomizeHUDColor::NotificationMessage
 
 		// Shopping Cart Text
 		injector::MakeCALL(0x7BB17B, FEShoppingCartItem_DrawPartName, true); // FEShoppingCartItem::Draw
