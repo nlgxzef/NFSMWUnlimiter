@@ -34,14 +34,17 @@ void RenderFEFlares(DWORD* view, int reflection, int renderFlareFlags)
 				if (_CarRenderInfo && FECar->Visible)
 				{
 					if (ForceLightsOnInFE && (RenderFECarFlares_tmp == -1)) RenderFECarFlares_tmp = 1;
-
 					_CarRenderInfo[1416] = 0; // OnLights
-					if (RenderFECarFlares_tmp & 1) _CarRenderInfo[1416] |= 7; // Head
-					if (RenderFECarFlares_tmp & 2) _CarRenderInfo[1416] |= 56; // Brake
-					if (RenderFECarFlares_tmp & 4) _CarRenderInfo[1416] |= 192; // Reverse
 
 					if ((RenderFECarFlares_tmp != -1))
 					{
+						if (LightTextureSwapInFE)
+						{
+							if (RenderFECarFlares_tmp & 1) _CarRenderInfo[1416] |= 7; // Head
+							if (RenderFECarFlares_tmp & 2) _CarRenderInfo[1416] |= 56; // Brake
+							if (RenderFECarFlares_tmp & 4) _CarRenderInfo[1416] |= 192; // Reverse
+						}
+						
 						bCopy(&CarMatrix, &FECar->BodyMatrix);
 						WorldPos.x = FECar->Position.x;
 						WorldPos.y = FECar->Position.y;
@@ -213,17 +216,24 @@ DWORD FindScreenCameraInfo(DWORD ScreenInfo)
 	DWORD CustomAngle = 0;
 	if (MenuID >= MenuID::Customize_Rims_Min && MenuID <= MenuID::Customize_Rims_Last) // Rims
 	{
-		switch (RimsToCustomize)
+		if (SeperateRims)
 		{
-		case -1:
-			CustomAngle = CarConfigs[CarTypeID].Cameras.PartsRimsBrandRear;
-			break;
-		case 0:
-			CustomAngle = CarConfigs[CarTypeID].Cameras.PartsRimsBrandAll;
-			break;
-		case 1:
+			switch (RimsToCustomize)
+			{
+			case -1:
+				CustomAngle = CarConfigs[CarTypeID].Cameras.PartsRimsBrandRear;
+				break;
+			case 0:
+				CustomAngle = CarConfigs[CarTypeID].Cameras.PartsRimsBrandAll;
+				break;
+			case 1:
+				CustomAngle = CarConfigs[CarTypeID].Cameras.PartsRimsBrand;
+				break;
+			}
+		}
+		else
+		{
 			CustomAngle = CarConfigs[CarTypeID].Cameras.PartsRimsBrand;
-			break;
 		}
 	}
 	else if (MenuID >= MenuID::Customize_Vinyls_Min && MenuID <= MenuID::Customize_Vinyls_Last) // Vinyls
@@ -565,9 +575,9 @@ void elCloneLightContext(DWORD* light_context, bMatrix4* local_world, bMatrix4* 
 
 	D3DXMATRIX matrix;
 	D3DXMatrixRotationQuaternion(&matrix, &rotation);
-	matrix._41 = translation.x;
-	matrix._42 = translation.y;
-	matrix._43 = translation.z;
+	matrix.m[3][0] = translation.x;
+	matrix.m[3][1] = translation.y;
+	matrix.m[3][2] = translation.z;
 
 	elCloneLightContext_Game(light_context, (bMatrix4*)&matrix, world_view, camera_world_position, view, old_context);
 }

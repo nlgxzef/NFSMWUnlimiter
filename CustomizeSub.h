@@ -1755,17 +1755,25 @@ void __fastcall CustomizeSub_NotificationMessage(DWORD* _CustomizeSub, void* EDX
                         switch (PartMenuID)
                         {
                         case MenuID::Customize_Parts_Rims: // Rims
-                            DialogInterface_ShowThreeButtons((char const*)_CustomizeSub[4], "", 3, 
-                                bStringHash((char*)"CUSTOMIZE_FRONT_WHEEL"), 
-                                bStringHash((char*)"CUSTOMIZE_REAR_WHEEL"), 
-                                bStringHash((char*)"CUSTOMIZE_ALL_WHEELS"), 
-                                bStringHash((char*)"CUSTOMIZE_FRONT_WHEEL"), 
-                                bStringHash((char*)"CUSTOMIZE_REAR_WHEEL"), 
-                                bStringHash((char*)"CUSTOMIZE_ALL_WHEELS"), 
-                                0xB4EDEB6D,
-                                2, 
-                                bStringHash((char*)"CUSTOMIZE_CHOOSE_FRONT_REAR_WHEEL"));
-                            return;
+                            if (SeperateRims)
+                            {
+                                DialogInterface_ShowThreeButtons((char const*)_CustomizeSub[4], "", 3,
+                                    bStringHash((char*)"CUSTOMIZE_FRONT_WHEEL"),
+                                    bStringHash((char*)"CUSTOMIZE_REAR_WHEEL"),
+                                    bStringHash((char*)"CUSTOMIZE_ALL_WHEELS"),
+                                    bStringHash((char*)"CUSTOMIZE_FRONT_WHEEL"),
+                                    bStringHash((char*)"CUSTOMIZE_REAR_WHEEL"),
+                                    bStringHash((char*)"CUSTOMIZE_ALL_WHEELS"),
+                                    0xB4EDEB6D,
+                                    2,
+                                    bStringHash((char*)"CUSTOMIZE_CHOOSE_FRONT_REAR_WHEEL"));
+                                return;
+                            }
+                            else
+                            {
+                                RimsToCustomize = 0;
+                                goto SwitchPackage;
+                            }
                             
                         default:
                             return;

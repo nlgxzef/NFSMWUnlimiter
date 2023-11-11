@@ -793,6 +793,36 @@ bool __fastcall CarCustomizeManager_IsVinylCategoryLocked(DWORD* _CarCustomizeMa
 	return result;
 }
 
+int CarCustomizeManager_GetNextSubMenuID(int SubMenuID, bool Backroom)
+{
+	int NewID = SubMenuID;
+
+	switch (SubMenuID)
+	{
+		// Parts Backroom w/ BETA Compatibility
+		case MenuID::Customize_Parts_RoofScoops:
+			if (BETACompatibility) NewID = MenuID::Customize_Visual_CustomGauges;
+			else goto DefaultNext;
+			break;
+
+		// Visual Backroom Parts
+		case MenuID::Customize_Visual_Vinyls:
+			if (Backroom) NewID = MenuID::Customize_Visual_Decals;
+			else goto DefaultNext;
+			break;
+		case MenuID::Customize_Visual_Decals:
+			if (Backroom) NewID = BETACompatibility ? MenuID::Customize_Visual_CustomGauges : MenuID::Customize_Visual_Driver;
+			else goto DefaultNext;
+			break;
+		default:
+		DefaultNext:
+			NewID = SubMenuID + 1;
+			break;
+	}
+
+	return NewID;
+}
+
 bool __fastcall CarCustomizeManager_IsCategoryLocked(DWORD* _CarCustomizeManager, void* EDX_Unused, int MenuID, bool Backroom)
 {
 	int UnlockableID = -1; // esi
@@ -807,6 +837,21 @@ bool __fastcall CarCustomizeManager_IsCategoryLocked(DWORD* _CarCustomizeManager
 	// submenus
 	switch (MenuID)
 	{
+	case MenuID::CustomizeCategory_Parts:
+		SubMenuID = HPCCompatibility ? -1 : MenuID::Customize_Parts_Bodykits;
+		SubMenuIDMax = HPCCompatibility ? -1 : (BETACompatibility ? MenuID::Customize_Visual_CustomGauges : MenuID::Customize_Parts_RoofScoops);
+		break;
+
+	case MenuID::CustomizeCategory_Performance:
+		SubMenuID = HPCCompatibility ? -1 : MenuID::Customize_Performance_Engine;
+		SubMenuIDMax = HPCCompatibility ? -1 : MenuID::Customize_Performance_Induction;
+		break;
+
+	case MenuID::CustomizeCategory_Visual:
+		SubMenuID = MenuID::Customize_Visual_Paint;
+		SubMenuIDMax = HPCCompatibility ? MenuID::Customize_Visual_Paint : MenuID::Customize_Visual_CustomGauges;
+		break;
+
 	case MenuID::Customize_Parts_Rims: // Rims
 		SubMenuID = MenuID::Customize_Rims_First;
 		SubMenuIDMax = MenuID::Customize_Rims_Min + RimBrands.size();
@@ -832,7 +877,8 @@ bool __fastcall CarCustomizeManager_IsCategoryLocked(DWORD* _CarCustomizeManager
 	{
 		while (CarCustomizeManager_IsCategoryLocked(_CarCustomizeManager, EDX_Unused, SubMenuID, Backroom))
 		{
-			if ((int)++SubMenuID > SubMenuIDMax) return 1;
+			SubMenuID = CarCustomizeManager_GetNextSubMenuID(SubMenuID, Backroom);
+			if (SubMenuID > SubMenuIDMax) return 1;
 		}
 		return 0;
 	}

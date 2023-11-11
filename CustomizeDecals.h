@@ -185,7 +185,8 @@ void __declspec(naked) GetUnlockHashCodeCave_CustomizeDecals_BuildDecalList()
 {
     _asm
     {
-        mov edx, dword ptr ds: [esp+0x20] // CarPart
+        mov edx, esi // SelectablePart
+        //mov edx, dword ptr ds : [edx + 0x0C] // SelectablePart->CarPart
         call CarCustomizeManager_GetUnlockHash_CarPart
 
         push 0x7B855B

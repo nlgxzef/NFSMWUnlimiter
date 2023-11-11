@@ -5,7 +5,7 @@
 #include "includes\ini.h"
 
 int ManuID, CarArraySize, CarCount, CarPartCount, CarPartPartsTableSize, ReplacementCar, TrafficCarCount, RacerNamesCount, FrameDelay, CarSkinCount;
-bool ManuHook, ExtraCustomization, DisappearingWheelsFix, SecondaryLogoFix, ExpandMemoryPools, AddOnCopsDamageFix, ForceStockPartsOnAddOnOpponents, ChallengeSeriesOpponentNameFix, CopDestroyedStringHook, DisableTextureReplacement, MyCarsBackroom, EnableFNGFixes, RandomHook, RideHeightFix, BonusCarsHook, CarSkinFix, LightMaterialCrashFix, DisableNeon, DisableLightFlareColors, DisableKitWheelModifications, ExitWorkaround, Presitter, TestCareerCustomization, LimitAdjusterCompatibility, RandomizeTraffic, ForceSignalsOn, ForceLightsOnInFE;
+bool ManuHook, ExtraCustomization, DisappearingWheelsFix, SecondaryLogoFix, ExpandMemoryPools, AddOnCopsDamageFix, ForceStockPartsOnAddOnOpponents, ChallengeSeriesOpponentNameFix, CopDestroyedStringHook, DisableTextureReplacement, MyCarsBackroom, EnableFNGFixes, RandomHook, RideHeightFix, BonusCarsHook, CarSkinFix, LightMaterialCrashFix, DisableNeon, DisableLightFlareColors, DisableKitWheelModifications, ExitWorkaround, Presitter, TestCareerCustomization, LimitAdjusterCompatibility, RandomizeTraffic, ForceSignalsOn, ForceLightsOnInFE, ScalingLightFix, LightTextureSwapInFE, SeperateRims;
 
 #include "InGameFunctions.h"
 #include "GlobalVariables.h"
@@ -70,6 +70,7 @@ int Init()
 	BonusCarsHook = mINI_ReadInteger(Settings, "Main", "EnableBonusCarsHook", 0) != 0;
 	Presitter = mINI_ReadInteger(Settings, "Main", "EnablePresitter", 1) != 0;
 	RandomizeTraffic = mINI_ReadInteger(Settings, "Main", "RandomizeTraffic", 1) != 0;
+	SeperateRims = mINI_ReadInteger(Settings, "Main", "SeperateRims", 1) != 0;
 
 	// Fixes
 	DisappearingWheelsFix = mINI_ReadInteger(Settings, "Fixes", "DisappearingWheelsFix", 1) != 0;
@@ -77,15 +78,17 @@ int Init()
 	AddOnCopsDamageFix = mINI_ReadInteger(Settings, "Fixes", "AddOnCopsDamageFix", 1) != 0;
 	ChallengeSeriesOpponentNameFix = mINI_ReadInteger(Settings, "Fixes", "ChallengeSeriesOpponentNameFix", 1) != 0;
 	LightMaterialCrashFix = mINI_ReadInteger(Settings, "Fixes", "LightMaterialCrashFix", 0) != 0;
-	RideHeightFix = mINI_ReadInteger(Settings, "Fixes", "RideHeightFix", 0) != 0;
+	RideHeightFix = mINI_ReadInteger(Settings, "Fixes", "RideHeightFix", 1) != 0;
 	EnableFNGFixes = mINI_ReadInteger(Settings, "Fixes", "FNGFix", 0) != 0;
-	CarSkinFix = mINI_ReadInteger(Settings, "Fixes", "CarSkinFix", 0) != 0;
+	CarSkinFix = mINI_ReadInteger(Settings, "Fixes", "CarSkinFix", 1) != 0;
+	ScalingLightFix = mINI_ReadInteger(Settings, "Fixes", "ScalingLightFix", 1) != 0;
 
 	// Misc
-	ExpandMemoryPools = mINI_ReadInteger(Settings, "Misc", "ExpandMemoryPools", 0) != 0;
+	ExpandMemoryPools = mINI_ReadInteger(Settings, "Misc", "ExpandMemoryPools", 1) != 0;
 	FrameDelay = mINI_ReadInteger(Settings, "Misc", "FrameDelay", -1);
 	ForceStockPartsOnAddOnOpponents = mINI_ReadInteger(Settings, "Misc", "ForceStockPartsOnAddOnOpponents", 0) != 0;
 	ForceLightsOnInFE = mINI_ReadInteger(Settings, "Misc", "ForceLightsOnInFE", 0) != 0;
+	LightTextureSwapInFE = mINI_ReadInteger(Settings, "Misc", "LightTextureSwapInFE", 1) != 0;
 	CarSkinCount = mINI_ReadInteger(Settings, "Misc", "CarSkinCount", 20);
 
 	// Debug
@@ -93,7 +96,7 @@ int Init()
 	DisableNeon = mINI_ReadInteger(Settings, "Debug", "DisableNeon", 0) != 0;
 	DisableLightFlareColors = mINI_ReadInteger(Settings, "Debug", "DisableLightFlareColors", 0) != 0;
 	DisableKitWheelModifications = mINI_ReadInteger(Settings, "Debug", "DisableKitWheelModifications", 0) != 0;
-	ExitWorkaround = mINI_ReadInteger(Settings, "Debug", "ExitWorkaround", 0) != 0;
+	ExitWorkaround = mINI_ReadInteger(Settings, "Debug", "ExitWorkaround", 1) != 0;
 	TestCareerCustomization = mINI_ReadInteger(Settings, "Debug", "TestCareerCustomization", 0) != 0;
 	ForceSignalsOn = mINI_ReadInteger(Settings, "Debug", "ForceSignalsOn", 0) != 0;
 
@@ -178,6 +181,7 @@ int Init()
 		injector::MakeCALL(0x7B9FE4, FindScreenCameraInfo, true); // GarageMainScreen::HandleTick
 		injector::MakeJMP(0x7A2380, CamUserRotateCodeCave_GarageMainScreen_HandleJoyEvents, true); // Disable cam rotation via keyboard, GarageMainScreen::HandleJoyEvents
 		injector::WriteMemory<BYTE>(0x7BA070, 0x4B, true); // Check angle's (ebx+5a) cam_user_rotate instead of screen's (eax+5a), GarageMainScreen::HandleTick
+		injector::MakeJMP(0x476FFA, 0x4770AA, true); // Disable rotation before user's input
 
 		// Showcase mode check
 		injector::MakeCALL(0x570D56, Showcase_ctor_Hook, true); // CreateShowcase
@@ -387,10 +391,13 @@ int Init()
 			injector::MakeCALL(0x6DEF96, RenderFrontEndCars, true);
 
 			// Fix lighting
-			injector::MakeCALL(0x74F62E, elCloneLightContext, true); // CarRenderInfo::Render
-			injector::MakeCALL(0x74F7D6, elCloneLightContext, true); // CarRenderInfo::Render
-			injector::MakeCALL(0x74F968, elCloneLightContext, true); // CarRenderInfo::Render
-			injector::MakeCALL(0x74FBC4, elCloneLightContext, true); // CarRenderInfo::Render
+			if (ScalingLightFix)
+			{
+				injector::MakeCALL(0x74F62E, elCloneLightContext, true); // CarRenderInfo::Render
+				injector::MakeCALL(0x74F7D6, elCloneLightContext, true); // CarRenderInfo::Render
+				injector::MakeCALL(0x74F968, elCloneLightContext, true); // CarRenderInfo::Render
+				injector::MakeCALL(0x74FBC4, elCloneLightContext, true); // CarRenderInfo::Render
+			}
 
 			// Scale brakes with rims
 			injector::MakeJMP(0x74FFD1, ScaleBrakesCave_FrontLeft_eViewPlatInterface_Render, true); // CarRenderInfo::Render

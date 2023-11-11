@@ -9,8 +9,11 @@ bool Result;
 
 float __fastcall CarPart_GetAppliedAttributeFParam(DWORD* _CarPart, void* EDX_Unused, DWORD namehash, float default_value)
 {
-    float* Attribute = (float*)CarPart_GetAttribute(_CarPart, namehash, 0);
-    if (Attribute) return Attribute[1];
+    if (_CarPart)
+    {
+        float* Attribute = (float*)CarPart_GetAttribute(_CarPart, namehash, 0);
+        if (Attribute) return Attribute[1];
+    }
     return default_value;
 }
 

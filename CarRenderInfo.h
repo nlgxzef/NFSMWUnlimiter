@@ -1085,7 +1085,7 @@ DWORD GetShadowCutTextureHash(DWORD* _RideInfo)
 void SetShadowSize(DWORD* _RideInfo, bool IsNeon)
 {
 	//DWORD* BodyKitCarPart = RideInfo_GetPart(_RideInfo, CAR_SLOT_ID::BODY); // BODY_KIT
-
+	
 	if (IsNeon)
 	{
 		ShadowSunMultiplier = 0.0f;
@@ -2304,11 +2304,11 @@ void CarRenderInfo_AdjustBrakeScale(DWORD* CarRenderInfo, D3DXMATRIX* local_worl
 					D3DXMatrixRotationQuaternion(&rotationMatrix, &rotation);
 
 					D3DXMatrixMultiply(&result, &result, &rotationMatrix);
-
-					result._41 = translation.x;
-					result._42 = translation.y;
-					result._43 = translation.z;
-
+					
+					result.m[3][0] = translation.x;
+					result.m[3][1] = translation.y;
+					result.m[3][2] = translation.z;
+					
 					*local_world = result;
 				}
 			}

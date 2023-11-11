@@ -112,7 +112,7 @@ char DecalMenuDefaultString[64];
 
 int RenderFECarFlares = -1;
 
-int RimsToCustomize = 1; // -1 = Rear, 0 = All, 1 = Front
+int RimsToCustomize = 0; // -1 = Rear, 0 = All, 1 = Front
 
 bool InShowcase = 0;
 
