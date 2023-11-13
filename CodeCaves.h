@@ -286,3 +286,20 @@ void __declspec(naked) CustomFrameDelayCodeCave()
 		retn
 	}
 }
+
+//0x476FFA
+void __declspec(naked) DisableAutoCenterCodeCave_SelectCarCameraMover_SetZoomSpeed()
+{
+	_asm
+	{
+		je loc_4770AA
+		cmp eax,2
+		je loc_4770AA
+		push 0x477000
+		retn
+
+		loc_4770AA:
+			push 0x4770AA
+			retn
+	}
+}

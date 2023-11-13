@@ -5,27 +5,38 @@
 #include "GlobalVariables.h"
 
 static injector::hook_back<HRESULT(WINAPI*)(HWND, int, HANDLE, DWORD, LPSTR)> hb_SHGetFolderPathA;
+static injector::hook_back<unsigned int(*)(char const*)> hb_rmdir;
 
-void Presitter_Delete(char const* ProfileName)
+int Presitter_Delete(char const* Path)
 {
-	// Presitter: Delete preset data
-	char SaveProfilePath[MAX_PATH];
+	char PresetFolderPath[MAX_PATH];
 	char PresetPath[MAX_PATH];
-	char CarTypeName[CarNameLength];
-	char PresetName[PresetNameLength];
-	int zero = 0;
 
-	hb_SHGetFolderPathA.fun(0, 0x8005, 0, 0, SaveProfilePath); // Get save profile folder
-	strcat(SaveProfilePath, "\\NFS Most Wanted");
-	strcat(SaveProfilePath, "\\");
-	strcat(SaveProfilePath, ProfileName);
-	strcat(SaveProfilePath, "\\Presets");
+	// Get preset folder
+	sprintf(PresetFolderPath, "%s\\Presets", Path);
+
+	// Get rid of SkipSave and SkipLoad first
+	sprintf(PresetPath, "%s\\SkipSave", Path);
+	FILE* SkipFile = fopen(PresetPath, "rb");
+	if (SkipFile)
+	{
+		fclose(SkipFile); // Close the file
+		remove(PresetPath); // Delete the file we just opened
+	}
+
+	sprintf(PresetPath, "%s\\SkipLoad", Path);
+	SkipFile = fopen(PresetPath, "rb");
+	if (SkipFile)
+	{
+		fclose(SkipFile); // Close the file
+		remove(PresetPath); // Delete the file we just opened
+	}
 
 	// Empty the directory
 	for (int i = 0; i < NumFECustomizationRecords; i++)
 	{
 		// Create file handle
-		sprintf(PresetPath, "%s\\%02d.bin", SaveProfilePath, i);
+		sprintf(PresetPath, "%s\\%02d.bin", PresetFolderPath, i);
 		FILE* PresetFile = fopen(PresetPath, "rb");
 
 		if (PresetFile)
@@ -36,7 +47,13 @@ void Presitter_Delete(char const* ProfileName)
 	}
 
 	// Delete the directory
-	RemoveDirectoryA(SaveProfilePath);
+	hb_rmdir.fun(PresetFolderPath);
+
+#ifdef _DEBUG
+	bReleasePrintf("Presitter: Deleted preset data.\n");
+#endif
+
+	return hb_rmdir.fun(Path);
 }
 
 void Presitter_Save(char const* ProfileName)

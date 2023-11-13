@@ -5,7 +5,7 @@
 #include "includes\ini.h"
 
 int ManuID, CarArraySize, CarCount, CarPartCount, CarPartPartsTableSize, ReplacementCar, TrafficCarCount, RacerNamesCount, FrameDelay, CarSkinCount;
-bool ManuHook, ExtraCustomization, DisappearingWheelsFix, SecondaryLogoFix, ExpandMemoryPools, AddOnCopsDamageFix, ForceStockPartsOnAddOnOpponents, ChallengeSeriesOpponentNameFix, CopDestroyedStringHook, DisableTextureReplacement, MyCarsBackroom, EnableFNGFixes, RandomHook, RideHeightFix, BonusCarsHook, CarSkinFix, LightMaterialCrashFix, DisableNeon, DisableLightFlareColors, DisableKitWheelModifications, ExitWorkaround, Presitter, TestCareerCustomization, LimitAdjusterCompatibility, RandomizeTraffic, ForceSignalsOn, ForceLightsOnInFE, ScalingLightFix, LightTextureSwapInFE, SeperateRims;
+bool ManuHook, ExtraCustomization, DisappearingWheelsFix, SecondaryLogoFix, ExpandMemoryPools, AddOnCopsDamageFix, ForceStockPartsOnAddOnOpponents, ChallengeSeriesOpponentNameFix, CopDestroyedStringHook, DisableTextureReplacement, MyCarsBackroom, EnableFNGFixes, RandomHook, RideHeightFix, BonusCarsHook, CarSkinFix, LightMaterialCrashFix, DisableNeon, DisableLightFlareColors, DisableKitWheelModifications, ExitWorkaround, Presitter, TestCareerCustomization, LimitAdjusterCompatibility, RandomizeTraffic, ForceSignalsOn, ForceLightsOnInFE, ScalingLightFix, LightTextureSwapInFE, SeperateRims, DisableCameraAutoCenter;
 
 #include "InGameFunctions.h"
 #include "GlobalVariables.h"
@@ -44,7 +44,6 @@ bool ManuHook, ExtraCustomization, DisappearingWheelsFix, SecondaryLogoFix, Expa
 #include "Presitter.h"
 #include "UserProfile.h"
 #include "MemcardCallbacks.h"
-#include "RealmcIface_MemcardInterfaceImpl.h"
 #include "Game.h"
 #include "Helpers.h"
 #include "UnlimiterData.h"
@@ -90,6 +89,7 @@ int Init()
 	ForceLightsOnInFE = mINI_ReadInteger(Settings, "Misc", "ForceLightsOnInFE", 0) != 0;
 	LightTextureSwapInFE = mINI_ReadInteger(Settings, "Misc", "LightTextureSwapInFE", 1) != 0;
 	CarSkinCount = mINI_ReadInteger(Settings, "Misc", "CarSkinCount", 20);
+	DisableCameraAutoCenter = mINI_ReadInteger(Settings, "Misc", "DisableCameraAutoCenter", 0) != 0;
 
 	// Debug
 	DisableTextureReplacement = mINI_ReadInteger(Settings, "Debug", "DisableTextureReplacement", 0) != 0;
@@ -181,7 +181,6 @@ int Init()
 		injector::MakeCALL(0x7B9FE4, FindScreenCameraInfo, true); // GarageMainScreen::HandleTick
 		injector::MakeJMP(0x7A2380, CamUserRotateCodeCave_GarageMainScreen_HandleJoyEvents, true); // Disable cam rotation via keyboard, GarageMainScreen::HandleJoyEvents
 		injector::WriteMemory<BYTE>(0x7BA070, 0x4B, true); // Check angle's (ebx+5a) cam_user_rotate instead of screen's (eax+5a), GarageMainScreen::HandleTick
-		injector::MakeJMP(0x476FFA, 0x4770AA, true); // Disable rotation before user's input
 
 		// Showcase mode check
 		injector::MakeCALL(0x570D56, Showcase_ctor_Hook, true); // CreateShowcase
@@ -544,8 +543,8 @@ int Init()
 		injector::MakeCALL(0x5ACE01, UserProfile_LoadFromBuffer, true); // cFrontendDatabase::LoadUserProfileFromBuffer
 		hb_UserProfile_LoadFromBuffer.fun = injector::MakeCALL(0x5ACE74, UserProfile_LoadFromBuffer, true).get(); // cFrontendDatabase::RestoreFromBackupDB
 
-		// Deleting (todo: make it delete after asking)
-		//hb_RealmcIface_MemcardInterfaceImpl_ProcessDelete.fun = injector::MakeCALL(0x7F5BB1, RealmcIface_MemcardInterfaceImpl_ProcessDelete, true).get(); // RealmcIface::MemcardInterfaceImpl::Update
+		// Deleting
+		hb_rmdir.fun = injector::MakeCALL(0x7F58EB, Presitter_Delete, true).get(); // RealmcIface::MemcardInterfaceImpl::ProcessDelete
 	}
 
 	// Random Traffic Colors
@@ -574,6 +573,11 @@ int Init()
 
 		injector::MakeCALL(0x75D2EE, RideInfo_SetCompositeNameHash, true); // VehicleRenderConn::Load
 		injector::MakeCALL(0x7A27CB, RideInfo_SetCompositeNameHash, true); // GarageCarLoader::LoadRideInfo
+	}
+
+	if (DisableCameraAutoCenter)
+	{
+		injector::MakeJMP(0x476FFA, DisableAutoCenterCodeCave_SelectCarCameraMover_SetZoomSpeed, true); // Disable rotation before user's input
 	}
 
 #ifdef _DEBUG
