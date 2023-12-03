@@ -82,6 +82,7 @@ void(__thiscall* CarCustomizeManager_RemoveFromCart)(DWORD* CarCustomizeManager,
 DWORD* (__thiscall* FEPlayerCarDB_GetCustomizationRecordByHandle)(DWORD* FEPlayerCarDB, BYTE FECarRecordID) = (DWORD * (__thiscall*)(DWORD*, BYTE))0x56F100;
 DWORD*(__thiscall* FECustomizationRecord_GetInstalledPart)(DWORD* FECustomizationRecord, int FECarType, int CarSlotID) = (DWORD * (__thiscall*)(DWORD*, int, int))0x56F250;
 void(__thiscall* FECustomizationRecord_BecomePreset)(DWORD* FECustomizationRecord, BYTE* PresetCar) = (void (__thiscall*)(DWORD*, BYTE*))0x56F340;
+void(__thiscall* FECustomizationRecord_WriteRecordIntoRide)(DWORD* FECustomizationRecord, DWORD* RideInfo) = (void (__thiscall*)(DWORD*, DWORD*))0x56F2B0;
 int(__thiscall* IconScrollerMenu_SetInitialOption)(DWORD* IconScrollerMenu, int Option) = (int(__thiscall*)(DWORD*, int))0x50E7F0;
 unsigned int(__thiscall* cFEng_QueuePackageMessage)(void* TheThis, unsigned int Message, const char* Package, unsigned int FEObject) = (unsigned int(__thiscall*)(void*, unsigned int, const char*, unsigned int))0x516C90;
 void(__thiscall* cFEng_QueuePackageSwitch)(DWORD* cFEng, char const* Package, DWORD Arg1, DWORD Arg2, bool bUnk) = (void(__thiscall*)(DWORD*, const char*, DWORD, DWORD, bool))0x525940;

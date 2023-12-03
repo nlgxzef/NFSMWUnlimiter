@@ -1535,7 +1535,10 @@ void __fastcall CustomizePerformance_Setup(DWORD* _CustomizePerformance, void* E
     }
 
     v25 = *((DWORD*)FEDatabase + 4);
-    if (((*(DWORD*)(v25 + 172) & 0x2000) != 0 || *(BYTE*)(v25 + 37084)) && Physics_Upgrades_CanInstallJunkman((DWORD*)_PhysicsUpgrades, PerformancePartType))
+    if ((((*(DWORD*)(v25 + 172) & 0x2000) != 0 && (*((BYTE*)FEDatabase + 300) & 1) == 0)
+        || *(BYTE*)(v25 + 37084))
+        && Physics_Upgrades_CanInstallJunkman((DWORD*)_PhysicsUpgrades, PerformancePartType)
+        && !CustomizeIsInBackRoom())
     {
         ASelectablePart = (DWORD*)j_malloc(0x2Cu);
         if (ASelectablePart)

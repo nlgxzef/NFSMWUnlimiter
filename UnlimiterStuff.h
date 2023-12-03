@@ -145,16 +145,19 @@ int Init()
 	}
 
 	// Show Backroom Parts on Customization
-	if (MyCarsBackroom && !ExtraCustomization)
+	if (MyCarsBackroom)
 	{
-		injector::MakeNOP(0x7BFF28, 6, true); // CustomizeMain::NotificationMessage - Switch to Backroom Menu
-		injector::MakeNOP(0x7BFD56, 2, true); // CustomizeMain::NotificationMessage - Fix backing out by checking for backroom instead of career mode
-		injector::WriteMemory(0x7BFD52, g_bCustomizeInBackRoom, true); // CustomizeMain::NotificationMessage - Fix backing out by checking for backroom instead of career mode
-		injector::MakeJMP(0x7B1226, MyCarsBackroomWidgetCodeCave, true); // CustomizeMain::RefreshHeader
-		injector::MakeJMP(0x7BFE2F, MyCarsBackroomEscCodeCave, true); // CustomizeMain::NotificationMessage
-		injector::MakeJMP(0x7BFCC2, MyCarsBackroomRoomChangeCodeCave, true); // CustomizeMain::SwitchRooms
-		injector::MakeJMP(0x7A60F0, MyCarsBackroomRoomChangeCodeCave2, true); // CustomizeShoppingCart::ExitShoppingCart
-		injector::MakeNOP(0x7B92C8, 6, true); // CustomizePerformance::Setup - Fix Junkman Parts
+		if (!ExtraCustomization)
+		{
+			injector::MakeNOP(0x7BFF28, 6, true); // CustomizeMain::NotificationMessage - Switch to Backroom Menu
+			injector::MakeNOP(0x7BFD56, 2, true); // CustomizeMain::NotificationMessage - Fix backing out by checking for backroom instead of career mode
+			injector::WriteMemory(0x7BFD52, g_bCustomizeInBackRoom, true); // CustomizeMain::NotificationMessage - Fix backing out by checking for backroom instead of career mode
+			injector::MakeJMP(0x7B1226, MyCarsBackroomWidgetCodeCave, true); // CustomizeMain::RefreshHeader
+			injector::MakeJMP(0x7BFE2F, MyCarsBackroomEscCodeCave, true); // CustomizeMain::NotificationMessage
+			injector::MakeJMP(0x7BFCC2, MyCarsBackroomRoomChangeCodeCave, true); // CustomizeMain::SwitchRooms
+			injector::MakeJMP(0x7A60F0, MyCarsBackroomRoomChangeCodeCave2, true); // CustomizeShoppingCart::ExitShoppingCart
+			injector::MakeRangedNOP(0x7B92B8, 0x7B92CE, true); // CustomizePerformance::Setup - Fix Junkman Parts
+		}
 	}
 	
 	// Extra Customization Stuff
@@ -578,6 +581,17 @@ int Init()
 	if (DisableCameraAutoCenter)
 	{
 		injector::MakeJMP(0x476FFA, DisableAutoCenterCodeCave_SelectCarCameraMover_SetZoomSpeed, true); // Disable rotation before user's input
+	}
+
+	// Assign unused marker data
+	injector::WriteMemory<DWORD>(0x906074, 0x11132EDC, true); // MARKER_NAME_PAINT
+	injector::WriteMemory<DWORD>(0x90607C, 0x812407DF, true); // MARKER_NAME_DESCRIPTION_PAINT
+	injector::WriteMemory<DWORD>(0x906058, 0x11132EDC, true); // MARKER_NAME_DECALS
+	injector::WriteMemory<DWORD>(0x906060, 0x812407DF, true); // MARKER_NAME_DESCRIPTION_DECALS
+	if (BETACompatibility) // Move gauges to parts
+	{
+		injector::WriteMemory<DWORD>(0x906094, 0x4F7990C7, true); // MARKER_CATEGORY_PARTS
+		injector::WriteMemory<DWORD>(0x90609C, 0x2D078425, true); // MARKER_CATEGORY_DESC_PARTS
 	}
 
 #ifdef _DEBUG
