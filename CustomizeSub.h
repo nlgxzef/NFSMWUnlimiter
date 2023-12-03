@@ -10,8 +10,13 @@
 int CustomizeSub_GetNumDecals(DWORD* CustomizationRecord, int CarTypeID, int DecalLocation)
 {
     int NumDecals = 0;
+    DWORD TheRideInfo[196];
 
-    DWORD* DecalPart = FECustomizationRecord_GetInstalledPart(CustomizationRecord, CarTypeID, DecalLocation);
+    RideInfo_Init(TheRideInfo, CarTypeID, 0, 0, 0);
+    FECustomizationRecord_WriteRecordIntoRide(CustomizationRecord, TheRideInfo);
+
+    DWORD* DecalPart = RideInfo_GetPart(TheRideInfo, DecalLocation);
+        //FECustomizationRecord_GetInstalledPart(CustomizationRecord, CarTypeID, DecalLocation);
     
     if (DecalPart) // look for the NUM_DECALS attribute
     {

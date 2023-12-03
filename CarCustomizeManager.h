@@ -811,7 +811,7 @@ int CarCustomizeManager_GetNextSubMenuID(int SubMenuID, bool Backroom)
 			else goto DefaultNext;
 			break;
 		case MenuID::Customize_Visual_Decals:
-			if (Backroom) NewID = BETACompatibility ? MenuID::Customize_Visual_CustomGauges : MenuID::Customize_Visual_Driver;
+			if (Backroom) NewID = BETACompatibility ? MenuID::Customize_Visual_Driver : MenuID::Customize_Visual_CustomGauges;
 			else goto DefaultNext;
 			break;
 		default:
@@ -830,7 +830,7 @@ bool __fastcall CarCustomizeManager_IsCategoryLocked(DWORD* _CarCustomizeManager
 	int SubMenuID = -1; // esi MAPDST
 	int SubMenuIDMax = -1; // esi MAPDST
 	char UnlockFilter; // al
-	int v3 = 0;
+	int UpgradeLevel = 0;
 
 	if (*(bool*)_UnlockAllThings) return 0;
 
@@ -962,16 +962,20 @@ bool __fastcall CarCustomizeManager_IsCategoryLocked(DWORD* _CarCustomizeManager
 			// Decals
 			case MenuID::Customize_Decals_Windshield:
 			case MenuID::Customize_Decals_RearWindow:
-				v3 = 1;
+				UpgradeLevel = 1;
 				UnlockableID = 44;
 				break;
 			case MenuID::Customize_Decals_LeftQuarter:
 			case MenuID::Customize_Decals_RightQuarter:
-				v3 = 3;
+				UpgradeLevel = 3;
 				UnlockableID = 48;
 				break;
 			case MenuID::Customize_Decals_LeftDoor:
 			case MenuID::Customize_Decals_RightDoor:
+				UpgradeLevel = 2;
+				UnlockableID = 46;
+				break;
+
 			case MenuID::Customize_Decals_Slot1:
 			case MenuID::Customize_Decals_Slot2:
 			case MenuID::Customize_Decals_Slot3:
@@ -980,8 +984,25 @@ bool __fastcall CarCustomizeManager_IsCategoryLocked(DWORD* _CarCustomizeManager
 			case MenuID::Customize_Decals_Slot6:
 			case MenuID::Customize_Decals_Slot7:
 			case MenuID::Customize_Decals_Slot8:
-				v3 = 2;
-				UnlockableID = 46;
+				switch (*(int*)CustomizeDecals_CurrentDecalLocation)
+				{
+				case MenuID::Customize_Decals_Windshield:
+				case MenuID::Customize_Decals_RearWindow:
+					UpgradeLevel = 1;
+					UnlockableID = 44;
+					break;
+				case MenuID::Customize_Decals_LeftQuarter:
+				case MenuID::Customize_Decals_RightQuarter:
+					UpgradeLevel = 3;
+					UnlockableID = 48;
+					break;
+				case MenuID::Customize_Decals_LeftDoor:
+				case MenuID::Customize_Decals_RightDoor:
+				default:
+					UpgradeLevel = 2;
+					UnlockableID = 46;
+					break;
+				}
 				break;
 
 			default:
@@ -994,8 +1015,8 @@ bool __fastcall CarCustomizeManager_IsCategoryLocked(DWORD* _CarCustomizeManager
 		{
 			UnlockFilter = CarCustomizeManager_GetUnlockFilter();
 			result = Backroom
-				? !UnlockSystem_IsBackroomAvailable(UnlockFilter, UnlockableID, v3)
-				: !UnlockSystem_IsUnlockableUnlocked(UnlockFilter, UnlockableID, v3, 0, 0);
+				? !UnlockSystem_IsBackroomAvailable(UnlockFilter, UnlockableID, UpgradeLevel)
+				: !UnlockSystem_IsUnlockableUnlocked(UnlockFilter, UnlockableID, UpgradeLevel, 0, 0);
 		}
 	}
 
@@ -1049,8 +1070,6 @@ DWORD __fastcall CarCustomizeManager_GetUnlockHash_CarPart(DWORD* _CarCustomizeM
 
 	//return CarCustomizeManager_GetUnlockHash(_CarCustomizeManager, MenuID, UpgradeLevel);
 	if (MenuID >= MenuID::Customize_Rims_Min && MenuID <= MenuID::Customize_Rims_Last) UnlockString = "PARTS_RIMS";
-	else if (MenuID >= MenuID::Customize_Decals_Slot1 && MenuID <= MenuID::Customize_Decals_Slot8) UnlockString = "VISUAL_DECALS";
-	else if (MenuID >= MenuID::Customize_Decals_Windshield && MenuID <= MenuID::Customize_Decals_RightQuarter) UnlockString = "VISUAL_DECALS";
 	else if (MenuID >= MenuID::Customize_Vinyls_Min && MenuID <= MenuID::Customize_Vinyls_Last) UnlockString = "VISUAL_VINYLS";
 	else
 	{
@@ -1108,6 +1127,52 @@ DWORD __fastcall CarCustomizeManager_GetUnlockHash_CarPart(DWORD* _CarCustomizeM
 			break;
 		case MenuID::Customize_Visual_CustomGauges:
 			UnlockString = "VISUAL_HUDS";
+			break;
+
+			// Decals
+		case MenuID::Customize_Decals_Windshield:
+		case MenuID::Customize_Decals_RearWindow:
+			UnlockString = "VISUAL_DECALS";
+			UpgradeLevel = 1;
+			break;
+		case MenuID::Customize_Decals_LeftQuarter:
+		case MenuID::Customize_Decals_RightQuarter:
+			UnlockString = "VISUAL_DECALS";
+			UpgradeLevel = 3;
+			break;
+		case MenuID::Customize_Decals_LeftDoor:
+		case MenuID::Customize_Decals_RightDoor:
+			UnlockString = "VISUAL_DECALS";
+			UpgradeLevel = 2;
+			break;
+
+		case MenuID::Customize_Decals_Slot1:
+		case MenuID::Customize_Decals_Slot2:
+		case MenuID::Customize_Decals_Slot3:
+		case MenuID::Customize_Decals_Slot4:
+		case MenuID::Customize_Decals_Slot5:
+		case MenuID::Customize_Decals_Slot6:
+		case MenuID::Customize_Decals_Slot7:
+		case MenuID::Customize_Decals_Slot8:
+			switch (*(int*)CustomizeDecals_CurrentDecalLocation)
+			{
+			case MenuID::Customize_Decals_Windshield:
+			case MenuID::Customize_Decals_RearWindow:
+				UnlockString = "VISUAL_DECALS";
+				UpgradeLevel = 1;
+				break;
+			case MenuID::Customize_Decals_LeftQuarter:
+			case MenuID::Customize_Decals_RightQuarter:
+				UnlockString = "VISUAL_DECALS";
+				UpgradeLevel = 3;
+				break;
+			case MenuID::Customize_Decals_LeftDoor:
+			case MenuID::Customize_Decals_RightDoor:
+			default:
+				UnlockString = "VISUAL_DECALS";
+				UpgradeLevel = 2;
+				break;
+			}
 			break;
 
 		default:
