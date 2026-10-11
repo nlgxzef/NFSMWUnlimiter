@@ -5,30 +5,37 @@
 #include "InGameFunctions.h"
 #include "GlobalVariables.h"
 
-inline bool DoesFileExist(char const* path)
+int Clamp(int value, int min, int max)
 {
-	struct stat buffer;
-	return (stat(path, &buffer) == 0);
+	if (value < min) value = min;
+	else if (value > max) value = max;
+
+	return value;
 }
 
 bool IsCop(int CarTypeID)
 {
-	return *(BYTE*)((*(DWORD*)CarTypeInfoArray) + CarTypeID * SingleCarTypeInfoBlockSize + 0x94) == 1;
+	return CarTypeInfoArray[CarTypeID].IsCop();
+}
+
+bool IsHeli(int CarTypeID)
+{
+	return CarTypeInfoArray[CarTypeID].IsHeli();
 }
 
 bool IsTraffic(int CarTypeID)
 {
-	return *(BYTE*)((*(DWORD*)CarTypeInfoArray) + CarTypeID * SingleCarTypeInfoBlockSize + 0x94) == 2;
+	return CarTypeInfoArray[CarTypeID].IsTraffic();
 }
 
 bool IsSkinnable(int CarTypeID)
 {
-	return *(BYTE*)((*(DWORD*)CarTypeInfoArray) + CarTypeID * SingleCarTypeInfoBlockSize + 0xC7) != 0;
+	return CarTypeInfoArray[CarTypeID].IsSkinnable();
 }
 
 void SetSkinnable(int CarTypeID)
 {
-	*(BYTE*)((*(DWORD*)CarTypeInfoArray) + CarTypeID * SingleCarTypeInfoBlockSize + 0xC7) = 1;
+	CarTypeInfoArray[CarTypeID].SetSkinnable(1);
 }
 
 bool ShouldRandomizeInTraffic(int CarTypeID)
@@ -39,7 +46,7 @@ bool ShouldRandomizeInTraffic(int CarTypeID)
 
 int GetDefaultNumDecals(int DecalLocation)
 {
-	return (DecalLocation == CAR_SLOT_ID::DECAL_LEFT_DOOR_RECT_MEDIUM || DecalLocation == CAR_SLOT_ID::DECAL_RIGHT_DOOR_RECT_MEDIUM) ? 6 : 1;
+	return (DecalLocation == CARSLOTID_DECAL_LEFT_DOOR || DecalLocation == CARSLOTID_DECAL_RIGHT_DOOR) ? 6 : 1;
 }
 
 bool IsMenuEmpty_Parts(int CarTypeID)
@@ -262,6 +269,15 @@ DWORD mINI_ReadVLTHashS(mINI::INIStructure& ini, std::string Section, std::strin
 	return result;
 }
 
+int GetMatchingDefaultRimBrand(DWORD BrandNameHash)
+{
+	for (int i = 0; i <= DefaultRimBrandCount; i++)
+	{
+		if (bStringHash(DefaultRimBrandNames[i]) == BrandNameHash) return i;
+	}
+	return 1; // 0 is custom
+}
+
 char* GetDefaultRimBrandName(int ID)
 {
 	if (ID > DefaultRimBrandCount) return (char*)"";
@@ -278,6 +294,15 @@ char* GetDefaultRimBrandString(int ID)
 {
 	if (ID > DefaultRimBrandCount) return (char*)"";
 	else return DefaultRimBrandStrings[ID];
+}
+
+int GetMatchingDefaultVinylGroupIndex(int id)
+{
+	for (int i = 0; i <= DefaultVinylGroupCount; i++)
+	{
+		if (DefaultVinylGroupIndexes[i] == id) return i;
+	}
+	return 1; // 0 is custom
 }
 
 int GetDefaultVinylGroupIndex(int ID)
@@ -304,6 +329,15 @@ bool GetDefaultVinylGroupAltCamera(int ID)
 	else return DefaultVinylGroupAltCameras[ID];
 }
 
+int GetMatchingDefaultPaintBrand(DWORD BrandNameHash)
+{
+	for (int i = 0; i <= DefaultPaintBrandCount; i++)
+	{
+		if (bStringHash(DefaultPaintBrandNames[i]) == BrandNameHash) return i;
+	}
+	return 1; // 0 is custom
+}
+
 char* GetDefaultPaintBrandName(int ID)
 {
 	if (ID > DefaultPaintBrandCount) return (char*)"";
@@ -314,6 +348,24 @@ char* GetDefaultPaintBrandString(int ID)
 {
 	if (ID > DefaultPaintBrandCount) return (char*)"";
 	else return DefaultPaintBrandStrings[ID];
+}
+
+int GetDefaultPaintBrandAvailableForBody(int ID)
+{
+	if (ID > DefaultPaintBrandCount) return 1;
+	else return DefaultPaintBrandAvailableForBody[ID];
+}
+
+int GetDefaultPaintBrandAvailableForRims(int ID)
+{
+	if (ID > DefaultPaintBrandCount) return 0;
+	else return DefaultPaintBrandAvailableForRims[ID];
+}
+
+int GetDefaultPaintBrandAvailableForVinyl(int ID)
+{
+	if (ID > DefaultPaintBrandCount) return 1;
+	else return DefaultPaintBrandAvailableForVinyl[ID];
 }
 
 char* GetDefaultCopDestroyedStringPVehicle(int ID)

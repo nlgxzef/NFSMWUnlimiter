@@ -5,7 +5,7 @@
 
 #include "bVector.h"
 
-typedef struct bMatrix4
+struct bMatrix4
 {
 	bVector4 v0;
 	bVector4 v1;
@@ -41,4 +41,4 @@ typedef struct bMatrix4
 		v3 = _v3;
 	}
 	bMatrix4() : bMatrix4(bVector4(), bVector4(), bVector4(), bVector4()) {}
-} bMatrix4;
+};

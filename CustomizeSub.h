@@ -20,7 +20,7 @@ int CustomizeSub_GetNumDecals(DWORD* CustomizationRecord, int CarTypeID, int Dec
     
     if (DecalPart) // look for the NUM_DECALS attribute
     {
-        NumDecals = CarPart_GetAppliedAttributeIParam(DecalPart, bStringHash((char*)"NUM_DECALS"), GetDefaultNumDecals(DecalLocation));
+        NumDecals = CarPart_GetAppliedAttributeIParam(DecalPart, CT_bStringHash("NUM_DECALS"), GetDefaultNumDecals(DecalLocation));
         if (NumDecals < 0 || NumDecals >= 8) NumDecals = 1;
     }
 
@@ -31,7 +31,7 @@ bool CustomizeSub_HasDecals(DWORD* CustomizationRecord, int CarTypeID)
 {
     bool result = false;
 
-    for (int i = CAR_SLOT_ID::__DECAL_MODEL_FIRST; i <= CAR_SLOT_ID::__DECAL_MODEL_LAST; i++)
+    for (int i = CARSLOTID_DECAL_MODEL_FIRST; i <= CARSLOTID_DECAL_MODEL_LAST; i++)
     {
         if (CustomizeSub_GetNumDecals(CustomizationRecord, CarTypeID, i))
         {
@@ -401,14 +401,14 @@ int __fastcall CustomizeSub_SetupRimBrands(DWORD* _CustomizeSub, void* EDX_Unuse
     _CustomizeSub[108] = CarConfigs[CarTypeID].Names.PartsRimsBrand;
     _CustomizeSub[83] = *(DWORD*)g_pCustomizeSubPkg;
 
-    StockPart = CarCustomizeManager_GetRealStockCarPart((DWORD*)_gCarCustomizeManager, EDX_Unused, RimsToCustomize == -1 ? CAR_SLOT_ID::REAR_WHEEL : CAR_SLOT_ID::FRONT_WHEEL);
+    StockPart = CarCustomizeManager_GetRealStockCarPart((DWORD*)_gCarCustomizeManager, EDX_Unused, RimsToCustomize == -1 ? CARSLOTID_REAR_WHEEL : CARSLOTID_FRONT_WHEEL);
 
     RimSelectablePart = (DWORD*)j_malloc(0x2C);
     if (RimSelectablePart)
     {
         RimSelectablePart[0] = SelectablePart_vtable;
         RimSelectablePart[3] = (DWORD)StockPart;
-        RimSelectablePart[4] = RimsToCustomize == -1 ? CAR_SLOT_ID::REAR_WHEEL : CAR_SLOT_ID::FRONT_WHEEL;
+        RimSelectablePart[4] = RimsToCustomize == -1 ? CARSLOTID_REAR_WHEEL : CARSLOTID_FRONT_WHEEL;
         RimSelectablePart[5] = 0;
         RimSelectablePart[6] = 7;
         *((BYTE*)RimSelectablePart + 0x1C) = 0;
@@ -475,7 +475,7 @@ int __fastcall CustomizeSub_SetupRimBrands(DWORD* _CustomizeSub, void* EDX_Unuse
 
     ARimPart[0] = SelectablePart_vtable;
     ARimPart[3] = 0;
-    ARimPart[4] = RimsToCustomize == -1 ? CAR_SLOT_ID::REAR_WHEEL : CAR_SLOT_ID::FRONT_WHEEL;
+    ARimPart[4] = RimsToCustomize == -1 ? CARSLOTID_REAR_WHEEL : CARSLOTID_FRONT_WHEEL;
     ARimPart[5] = 0;
     ARimPart[6] = 7;
     *((BYTE*)ARimPart + 0x1C) = 0;
@@ -492,7 +492,7 @@ int __fastcall CustomizeSub_SetupRimBrands(DWORD* _CustomizeSub, void* EDX_Unuse
     }
     CustomizationRecord = FEPlayerCarDB_GetCustomizationRecordByHandle((DWORD*)(*((DWORD*)FEDatabase + 4) + 0x414), *((BYTE*)FECarRecord + 16));
     CarType = FECarRecord_GetType(FECarRecord);
-    InstalledPart = FECustomizationRecord_GetInstalledPart(CustomizationRecord, CarType, RimsToCustomize == -1 ? CAR_SLOT_ID::REAR_WHEEL : CAR_SLOT_ID::FRONT_WHEEL);
+    InstalledPart = FECustomizationRecord_GetInstalledPart(CustomizationRecord, CarType, RimsToCustomize == -1 ? CARSLOTID_REAR_WHEEL : CARSLOTID_FRONT_WHEEL);
     if (InstalledPart)
     {
         RimBrandName = CarPart_GetAppliedAttributeUParam(InstalledPart, 0xEBB03E66, 0);
@@ -735,13 +735,28 @@ int __fastcall CustomizeSub_SetupVisual(DWORD* _CustomizeSub, void *EDX_Unused)
             MenuID::Customize_Visual_Paint);
         if (!HPCCompatibility)
         {
-            if (CarConfigs[CarTypeID].Visual.Vinyls)
-                CustomizeCategoryScreen_AddCustomOption(
-                    _CustomizeCategoryScreen,
-                    *(char**)g_pCustomizeSubTopPkg,
-                    CarConfigs[CarTypeID].Icons.BackroomVisualVinyls,
-                    CarConfigs[CarTypeID].Names.VisualVinyls,
-                    MenuID::Customize_Visual_Vinyls);
+            if (ChloeCompatibility)
+            {
+                for (int i = 0; i < 4; i++)
+                {
+                    CustomizeCategoryScreen_AddCustomOption(
+                        _CustomizeCategoryScreen,
+                        *(char**)g_pCustomizeSubTopPkg,
+                        CarConfigs[CarTypeID].Icons.BackroomVisualVinyls, 
+                        FEngHashString("VINYL_LAYER_%d", i),
+                        MenuID::Customize_Visual_Vinyls);
+                }
+            }
+            else
+            {
+                if (CarConfigs[CarTypeID].Visual.Vinyls)
+                    CustomizeCategoryScreen_AddCustomOption(
+                        _CustomizeCategoryScreen,
+                        *(char**)g_pCustomizeSubTopPkg,
+                        CarConfigs[CarTypeID].Icons.BackroomVisualVinyls,
+                        CarConfigs[CarTypeID].Names.VisualVinyls,
+                        MenuID::Customize_Visual_Vinyls);
+            }
             if (CarConfigs[CarTypeID].Visual.Decals && CustomizeSub_HasDecals(CustomizationRecord, CarTypeID))
                 CustomizeCategoryScreen_AddCustomOption(
                     _CustomizeCategoryScreen,
@@ -769,13 +784,29 @@ int __fastcall CustomizeSub_SetupVisual(DWORD* _CustomizeSub, void *EDX_Unused)
             MenuID::Customize_Visual_Paint);
         if (!HPCCompatibility)
         {
-            if (CarConfigs[CarTypeID].Visual.Vinyls)
-                CustomizeCategoryScreen_AddCustomOption(
-                    _CustomizeCategoryScreen,
-                    *(char**)g_pCustomizeSubTopPkg,
-                    CarConfigs[CarTypeID].Icons.VisualVinyls,
-                    CarConfigs[CarTypeID].Names.VisualVinyls,
-                    MenuID::Customize_Visual_Vinyls);
+            if (ChloeCompatibility)
+            {
+                for (int i = 0; i < 4; i++)
+                {
+                    CustomizeCategoryScreen_AddCustomOption(
+                        _CustomizeCategoryScreen,
+                        *(char**)g_pCustomizeSubTopPkg,
+                        CarConfigs[CarTypeID].Icons.VisualVinyls,
+                        FEngHashString("VINYL_LAYER_%d", i),
+                        MenuID::Customize_Visual_Vinyls);
+                }
+            }
+            else
+            {
+                if (CarConfigs[CarTypeID].Visual.Vinyls)
+                    CustomizeCategoryScreen_AddCustomOption(
+                        _CustomizeCategoryScreen,
+                        *(char**)g_pCustomizeSubTopPkg,
+                        CarConfigs[CarTypeID].Icons.VisualVinyls,
+                        CarConfigs[CarTypeID].Names.VisualVinyls,
+                        MenuID::Customize_Visual_Vinyls);
+            }
+            
             if (CarConfigs[CarTypeID].Visual.RimPaint)
                 CustomizeCategoryScreen_AddCustomOption(
                     _CustomizeCategoryScreen,
@@ -868,32 +899,32 @@ void __fastcall CustomizeSub_SetupDecalLocations(DWORD* CustomizeSub, void* EDX_
     CustomizeSub[108] = CarConfigs[CarTypeID].Names.VisualDecalsLocation;
     CustomizeSub[83] = *(DWORD*)g_pCustomizeSubPkg;
 
-    if (CarConfigs[CarTypeID].Visual.DecalsWindshield && CustomizeSub_GetNumDecals(CustomizationRecord, CarTypeID, CAR_SLOT_ID::DECAL_FRONT_WINDOW_WIDE_MEDIUM))
+    if (CarConfigs[CarTypeID].Visual.DecalsWindshield && CustomizeSub_GetNumDecals(CustomizationRecord, CarTypeID, CARSLOTID_DECAL_FRONT_WINDOW))
         CustomizeCategoryScreen_AddCustomOption(CustomizeSub, *(char**)g_pCustomizeSubTopPkg,
             CarConfigs[CarTypeID].Icons.VisualDecalsWindshield,
             CarConfigs[CarTypeID].Names.VisualDecalsWindshield,
             MenuID::Customize_Decals_Windshield);
-    if (CarConfigs[CarTypeID].Visual.DecalsRearWindow && CustomizeSub_GetNumDecals(CustomizationRecord, CarTypeID, CAR_SLOT_ID::DECAL_REAR_WINDOW_WIDE_MEDIUM))
+    if (CarConfigs[CarTypeID].Visual.DecalsRearWindow && CustomizeSub_GetNumDecals(CustomizationRecord, CarTypeID, CARSLOTID_DECAL_REAR_WINDOW))
         CustomizeCategoryScreen_AddCustomOption(CustomizeSub, *(char**)g_pCustomizeSubTopPkg,
             CarConfigs[CarTypeID].Icons.VisualDecalsRearWindow,
             CarConfigs[CarTypeID].Names.VisualDecalsRearWindow,
             MenuID::Customize_Decals_RearWindow);
-    if (CarConfigs[CarTypeID].Visual.DecalsLeftDoor && CustomizeSub_GetNumDecals(CustomizationRecord, CarTypeID, CAR_SLOT_ID::DECAL_LEFT_DOOR_RECT_MEDIUM))
+    if (CarConfigs[CarTypeID].Visual.DecalsLeftDoor && CustomizeSub_GetNumDecals(CustomizationRecord, CarTypeID, CARSLOTID_DECAL_LEFT_DOOR))
         CustomizeCategoryScreen_AddCustomOption(CustomizeSub, *(char**)g_pCustomizeSubTopPkg,
             CarConfigs[CarTypeID].Icons.VisualDecalsLeftDoor,
             CarConfigs[CarTypeID].Names.VisualDecalsLeftDoor,
             MenuID::Customize_Decals_LeftDoor);
-    if (CarConfigs[CarTypeID].Visual.DecalsRightDoor && CustomizeSub_GetNumDecals(CustomizationRecord, CarTypeID, CAR_SLOT_ID::DECAL_RIGHT_DOOR_RECT_MEDIUM))
+    if (CarConfigs[CarTypeID].Visual.DecalsRightDoor && CustomizeSub_GetNumDecals(CustomizationRecord, CarTypeID, CARSLOTID_DECAL_RIGHT_DOOR))
         CustomizeCategoryScreen_AddCustomOption(CustomizeSub, *(char**)g_pCustomizeSubTopPkg,
             CarConfigs[CarTypeID].Icons.VisualDecalsRightDoor,
             CarConfigs[CarTypeID].Names.VisualDecalsRightDoor,
             MenuID::Customize_Decals_RightDoor);
-    if (CarConfigs[CarTypeID].Visual.DecalsLeftQuarter && CustomizeSub_GetNumDecals(CustomizationRecord, CarTypeID, CAR_SLOT_ID::DECAL_LEFT_QUARTER_RECT_MEDIUM))
+    if (CarConfigs[CarTypeID].Visual.DecalsLeftQuarter && CustomizeSub_GetNumDecals(CustomizationRecord, CarTypeID, CARSLOTID_DECAL_LEFT_QUARTER))
         CustomizeCategoryScreen_AddCustomOption(CustomizeSub, *(char**)g_pCustomizeSubTopPkg,
             CarConfigs[CarTypeID].Icons.VisualDecalsLeftQuarter,
             CarConfigs[CarTypeID].Names.VisualDecalsLeftQuarter,
             MenuID::Customize_Decals_LeftQuarter);
-    if (CarConfigs[CarTypeID].Visual.DecalsRightQuarter && CustomizeSub_GetNumDecals(CustomizationRecord, CarTypeID, CAR_SLOT_ID::DECAL_RIGHT_QUARTER_RECT_MEDIUM))
+    if (CarConfigs[CarTypeID].Visual.DecalsRightQuarter && CustomizeSub_GetNumDecals(CustomizationRecord, CarTypeID, CARSLOTID_DECAL_RIGHT_QUARTER))
         CustomizeCategoryScreen_AddCustomOption(CustomizeSub, *(char**)g_pCustomizeSubTopPkg,
             CarConfigs[CarTypeID].Icons.VisualDecalsRightQuarter,
             CarConfigs[CarTypeID].Names.VisualDecalsRightQuarter,
@@ -949,7 +980,7 @@ void __fastcall CustomizeSub_SetupDecalPositions(DWORD* CustomizeSub, void* EDX_
     switch (CustomizeSub[84])
     {
     case MenuID::Customize_Decals_Windshield: // Windshield
-        NumDecals = CustomizeSub_GetNumDecals(CustomizationRecord, CarTypeID, CAR_SLOT_ID::DECAL_FRONT_WINDOW_WIDE_MEDIUM);
+        NumDecals = CustomizeSub_GetNumDecals(CustomizationRecord, CarTypeID, CARSLOTID_DECAL_FRONT_WINDOW);
 
         if (CurrDecal <= NumDecals)
         {
@@ -1025,7 +1056,7 @@ void __fastcall CustomizeSub_SetupDecalPositions(DWORD* CustomizeSub, void* EDX_
         }
         break;
     case MenuID::Customize_Decals_RearWindow: // Rear Window
-        NumDecals = CustomizeSub_GetNumDecals(CustomizationRecord, CarTypeID, CAR_SLOT_ID::DECAL_REAR_WINDOW_WIDE_MEDIUM);
+        NumDecals = CustomizeSub_GetNumDecals(CustomizationRecord, CarTypeID, CARSLOTID_DECAL_REAR_WINDOW);
 
         if (CurrDecal <= NumDecals)
         {
@@ -1101,7 +1132,7 @@ void __fastcall CustomizeSub_SetupDecalPositions(DWORD* CustomizeSub, void* EDX_
         }
         break;
     case MenuID::Customize_Decals_LeftDoor: // Left Door
-        NumDecals = CustomizeSub_GetNumDecals(CustomizationRecord, CarTypeID, CAR_SLOT_ID::DECAL_LEFT_DOOR_RECT_MEDIUM);
+        NumDecals = CustomizeSub_GetNumDecals(CustomizationRecord, CarTypeID, CARSLOTID_DECAL_LEFT_DOOR);
 
         if (CurrDecal <= NumDecals)
         {
@@ -1160,7 +1191,7 @@ void __fastcall CustomizeSub_SetupDecalPositions(DWORD* CustomizeSub, void* EDX_
 
         break;
     case MenuID::Customize_Decals_RightDoor: // Right Door
-        NumDecals = CustomizeSub_GetNumDecals(CustomizationRecord, CarTypeID, CAR_SLOT_ID::DECAL_RIGHT_DOOR_RECT_MEDIUM);
+        NumDecals = CustomizeSub_GetNumDecals(CustomizationRecord, CarTypeID, CARSLOTID_DECAL_RIGHT_DOOR);
 
         if (CurrDecal <= NumDecals)
         {
@@ -1219,7 +1250,7 @@ void __fastcall CustomizeSub_SetupDecalPositions(DWORD* CustomizeSub, void* EDX_
 
         break;
     case MenuID::Customize_Decals_LeftQuarter: // Left Quarter
-        NumDecals = CustomizeSub_GetNumDecals(CustomizationRecord, CarTypeID, CAR_SLOT_ID::DECAL_LEFT_QUARTER_RECT_MEDIUM);
+        NumDecals = CustomizeSub_GetNumDecals(CustomizationRecord, CarTypeID, CARSLOTID_DECAL_LEFT_QUARTER);
 
         if (CurrDecal <= NumDecals)
         {
@@ -1295,7 +1326,7 @@ void __fastcall CustomizeSub_SetupDecalPositions(DWORD* CustomizeSub, void* EDX_
         }
         break;
     case MenuID::Customize_Decals_RightQuarter: // Right Quarter
-        NumDecals = CustomizeSub_GetNumDecals(CustomizationRecord, CarTypeID, CAR_SLOT_ID::DECAL_RIGHT_QUARTER_RECT_MEDIUM);
+        NumDecals = CustomizeSub_GetNumDecals(CustomizationRecord, CarTypeID, CARSLOTID_DECAL_RIGHT_QUARTER);
 
         if (CurrDecal <= NumDecals)
         {
@@ -1444,7 +1475,7 @@ int __fastcall CustomizeSub_SetupVinylGroups(DWORD* _CustomizeSub, void* EDX_Unu
     {
         VinylSelectablePart[0] = SelectablePart_vtable;
         VinylSelectablePart[3] = 0;
-        VinylSelectablePart[4] = CAR_SLOT_ID::VINYL_LAYER0;
+        VinylSelectablePart[4] = CARSLOTID_VINYL_LAYER0;
         VinylSelectablePart[5] = 0;
         VinylSelectablePart[6] = 7;
         *((BYTE*)VinylSelectablePart + 0x1C) = 0;
@@ -1510,7 +1541,7 @@ int __fastcall CustomizeSub_SetupVinylGroups(DWORD* _CustomizeSub, void* EDX_Unu
 
     AVinylPart[0] = SelectablePart_vtable;
     AVinylPart[3] = 0;
-    AVinylPart[4] = CAR_SLOT_ID::VINYL_LAYER0; // VINYL_LAYER0
+    AVinylPart[4] = CARSLOTID_VINYL_LAYER0; // VINYL_LAYER0
     AVinylPart[5] = 0;
     AVinylPart[6] = 7;
     *((BYTE*)AVinylPart + 0x1C) = 0;
@@ -1534,7 +1565,7 @@ int __fastcall CustomizeSub_SetupVinylGroups(DWORD* _CustomizeSub, void* EDX_Unu
     }
     CustomizationRecord = FEPlayerCarDB_GetCustomizationRecordByHandle((DWORD*)(*((DWORD*)FEDatabase + 4) + 0x414), *((BYTE*)FECarRecord + 16));
     CarType = FECarRecord_GetType(FECarRecord);
-    InstalledPart = FECustomizationRecord_GetInstalledPart(CustomizationRecord, CarType, CAR_SLOT_ID::VINYL_LAYER0); // VINYL_LAYER0
+    InstalledPart = FECustomizationRecord_GetInstalledPart(CustomizationRecord, CarType, CARSLOTID_VINYL_LAYER0); // VINYL_LAYER0
     if (InstalledPart)
         _CustomizeSub[106] = CustomizeSub_GetVinylGroupIndex(*((BYTE*)InstalledPart + 5) & 0x1F) - HasNoCustomVinyls;
     else
@@ -1681,10 +1712,10 @@ void __fastcall CustomizeSub_NotificationMessage(DWORD* _CustomizeSub, void* EDX
 
         if (PartMenuID == MenuID::Customize_Vinyls_Min) // Stock vinyl
         {
-            CarSlotID = CAR_SLOT_ID::VINYL_LAYER0;
+            CarSlotID = CARSLOTID_VINYL_LAYER0;
             for (int i = 0; i < 4; ++i)
             {
-                TheSelectablePart = (DWORD*)CarCustomizeManager_IsPartTypeInCart_ID((DWORD*)_gCarCustomizeManager, i + CAR_SLOT_ID::VINYL_COLOUR0_0);
+                TheSelectablePart = (DWORD*)CarCustomizeManager_IsPartTypeInCart_ID((DWORD*)_gCarCustomizeManager, i + CARSLOTID_VINYL_COLOUR0_0);
                 if (TheSelectablePart)
                     CarCustomizeManager_RemoveFromCart((DWORD*)_gCarCustomizeManager, TheSelectablePart);
             }
@@ -1706,7 +1737,7 @@ void __fastcall CustomizeSub_NotificationMessage(DWORD* _CustomizeSub, void* EDX
                     {
                         if (sub_50E780(_CustomizeSub + 11) == 1) // IconPanel_GetIndex??
                         {
-                            TheSelectablePart = (DWORD*)CarCustomizeManager_IsPartTypeInCart_ID((DWORD*)_gCarCustomizeManager, CAR_SLOT_ID::VINYL_LAYER0);
+                            TheSelectablePart = (DWORD*)CarCustomizeManager_IsPartTypeInCart_ID((DWORD*)_gCarCustomizeManager, CARSLOTID_VINYL_LAYER0);
                             if (TheSelectablePart)
                             {
                                 TheCarPart = *(DWORD**)(TheSelectablePart[3] + 12);
@@ -1715,7 +1746,7 @@ void __fastcall CustomizeSub_NotificationMessage(DWORD* _CustomizeSub, void* EDX
                                 else
                                     _CustomizeSub[107] = 1;
                             }
-                            TheCarPart = (DWORD*)CarCustomizeManager_GetInstalledCarPart((DWORD*)_gCarCustomizeManager, CAR_SLOT_ID::VINYL_LAYER0);
+                            TheCarPart = (DWORD*)CarCustomizeManager_GetInstalledCarPart((DWORD*)_gCarCustomizeManager, CARSLOTID_VINYL_LAYER0);
                             if (TheCarPart)
                             {
                                 _CustomizeSub[106] = CustomizeSub_GetVinylGroupIndex(*((BYTE*)TheCarPart + 5) & 0x1F);
@@ -1760,18 +1791,18 @@ void __fastcall CustomizeSub_NotificationMessage(DWORD* _CustomizeSub, void* EDX
                         switch (PartMenuID)
                         {
                         case MenuID::Customize_Parts_Rims: // Rims
-                            if (SeperateRims)
+                            if (SeparateRims)
                             {
                                 DialogInterface_ShowThreeButtons((char const*)_CustomizeSub[4], "", 3,
-                                    bStringHash((char*)"CUSTOMIZE_FRONT_WHEEL"),
-                                    bStringHash((char*)"CUSTOMIZE_REAR_WHEEL"),
-                                    bStringHash((char*)"CUSTOMIZE_ALL_WHEELS"),
-                                    bStringHash((char*)"CUSTOMIZE_FRONT_WHEEL"),
-                                    bStringHash((char*)"CUSTOMIZE_REAR_WHEEL"),
-                                    bStringHash((char*)"CUSTOMIZE_ALL_WHEELS"),
+                                    CT_bStringHash("CUSTOMIZE_FRONT_WHEEL"),
+                                    CT_bStringHash("CUSTOMIZE_REAR_WHEEL"),
+                                    CT_bStringHash("CUSTOMIZE_ALL_WHEELS"),
+                                    CT_bStringHash("CUSTOMIZE_FRONT_WHEEL"),
+                                    CT_bStringHash("CUSTOMIZE_REAR_WHEEL"),
+                                    CT_bStringHash("CUSTOMIZE_ALL_WHEELS"),
                                     0xB4EDEB6D,
                                     2,
-                                    bStringHash((char*)"CUSTOMIZE_CHOOSE_FRONT_REAR_WHEEL"));
+                                    CT_bStringHash("CUSTOMIZE_CHOOSE_FRONT_REAR_WHEEL"));
                                 return;
                             }
                             else
@@ -1792,13 +1823,13 @@ void __fastcall CustomizeSub_NotificationMessage(DWORD* _CustomizeSub, void* EDX
                 {
                     goto LABEL_44;
                 }
-                TheSelectablePart = (DWORD*)CarCustomizeManager_IsPartTypeInCart_ID((DWORD*)_gCarCustomizeManager, RimsToCustomize < 0 ? CAR_SLOT_ID::REAR_WHEEL : CAR_SLOT_ID::FRONT_WHEEL);
+                TheSelectablePart = (DWORD*)CarCustomizeManager_IsPartTypeInCart_ID((DWORD*)_gCarCustomizeManager, RimsToCustomize < 0 ? CARSLOTID_REAR_WHEEL : CARSLOTID_FRONT_WHEEL);
                 if (TheSelectablePart)
                 {
                     RimBrand = CarPart_GetAppliedAttributeUParam(*(DWORD**)(TheSelectablePart[3] + 12), 0xEBB03E66, 0);
                     _CustomizeSub[107] = CustomizeSub_GetRimBrandIndex(_CustomizeSub, EDX_Unused, RimBrand);
                 }
-                TheCarPart = (DWORD*)CarCustomizeManager_GetInstalledCarPart((DWORD*)_gCarCustomizeManager, RimsToCustomize < 0 ? CAR_SLOT_ID::REAR_WHEEL : CAR_SLOT_ID::FRONT_WHEEL);
+                TheCarPart = (DWORD*)CarCustomizeManager_GetInstalledCarPart((DWORD*)_gCarCustomizeManager, RimsToCustomize < 0 ? CARSLOTID_REAR_WHEEL : CARSLOTID_FRONT_WHEEL);
                 if (TheCarPart)
                 {
                     RimBrand = CarPart_GetAppliedAttributeUParam(TheCarPart, 0xEBB03E66, 0);
@@ -1806,7 +1837,7 @@ void __fastcall CustomizeSub_NotificationMessage(DWORD* _CustomizeSub, void* EDX
                 }
                 goto LABEL_59;
             }
-            CarSlotID = RimsToCustomize < 0 ? CAR_SLOT_ID::REAR_WHEEL : CAR_SLOT_ID::FRONT_WHEEL;
+            CarSlotID = RimsToCustomize < 0 ? CARSLOTID_REAR_WHEEL : CARSLOTID_FRONT_WHEEL;
         }
         TheSelectablePart = (DWORD*)CarCustomizeManager_IsPartTypeInCart_ID((DWORD*)_gCarCustomizeManager, CarSlotID);
         if (TheSelectablePart)
@@ -1825,13 +1856,13 @@ void __fastcall CustomizeSub_NotificationMessage(DWORD* _CustomizeSub, void* EDX
                 OptionMenuID = TheOption[20];
                 if (OptionMenuID == MenuID::Customize_Parts_Rims)
                 {
-                    CarSlotID = RimsToCustomize < 0 ? CAR_SLOT_ID::REAR_WHEEL : CAR_SLOT_ID::FRONT_WHEEL;
+                    CarSlotID = RimsToCustomize < 0 ? CARSLOTID_REAR_WHEEL : CARSLOTID_FRONT_WHEEL;
                 }
                 else
                 {
                     if (OptionMenuID != MenuID::Customize_Visual_Vinyls)
                         return;
-                    CarSlotID = CAR_SLOT_ID::VINYL_LAYER0; // VINYL_LAYER0
+                    CarSlotID = CARSLOTID_VINYL_LAYER0; // VINYL_LAYER0
                 }
                 if (!CarCustomizeManager_IsPartTypeInCart_ID((DWORD*)_gCarCustomizeManager, CarSlotID))
                 {

@@ -140,13 +140,10 @@ void __declspec(naked) CarCountCodeCave_DebugCarCustomizeScreen_BuildOptionsList
 int __fastcall CarPartDatabase_GetCarType(DWORD* CarPartDatabase, void* EDX_Unused, int CarTypeNameHash)
 {
 	int result = ReplacementCar;
-	int CarTypeInfo;
 
 	for (int i = 0; i < CarCount; i++)
 	{
-		CarTypeInfo = ((*(DWORD*)CarTypeInfoArray) + i * SingleCarTypeInfoBlockSize);
-
-		if (bStringHash((char*)(CarTypeInfo + 16)) == CarTypeNameHash)
+		if (CarTypeInfoArray[i].CarTypeNameHash == CarTypeNameHash)
 		{
 			result = i;
 			break;
@@ -162,16 +159,17 @@ void __declspec(naked) DoUnlimiterStuffCodeCave()
 	// Get count
 	__asm
 	{
-		mov dword ptr ds : [CarTypeInfoArray] , esi
+		mov dword ptr ds : [_CarTypeInfoArray] , esi
 		sub esi, 0x0C
 		mov esi, [esi]
 		mov CarArraySize, esi
-		mov esi, dword ptr ds : [CarTypeInfoArray]
+		mov esi, dword ptr ds : [_CarTypeInfoArray]
 		pushad
 	}
 
 	CarArraySize -= 8;
 	CarCount = CarArraySize / SingleCarTypeInfoBlockSize;
+	CarTypeInfoArray = *(CarTypeInfo**)_CarTypeInfoArray;
 
 	// Do required stuff
 	//injector::WriteMemory<int>(0x739900, CarCount * SingleCarTypeInfoBlockSize, true); // CarPartDatabase::GetCarType

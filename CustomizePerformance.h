@@ -1229,7 +1229,7 @@ void __fastcall CustomizePerformance_RefreshHeader(DWORD* _CustomizePerformance,
     DWORD* Slider2 = _CustomizePerformance + 134;
     DWORD* Slider3 = _CustomizePerformance + 151;
 
-    DWORD PackageLevelHash = bStringHash((char*)"PN_LEVEL_0");
+    DWORD PackageLevelHash = CT_bStringHash("PN_LEVEL_0");
 
     DWORD* FECarRecord = *(DWORD**)_FECarRecord;
 

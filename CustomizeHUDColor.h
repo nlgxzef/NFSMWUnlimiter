@@ -167,19 +167,19 @@ void __fastcall CustomizeHUDColor_RefreshHeader(DWORD* _CustomizeHUDColor, void*
 
 	switch (CurrItemSelectablePart[4]) // CarSlotID
 	{
-		case CAR_SLOT_ID::HUD_BACKING_COLOUR:
+		case CARSLOTID_HUD_BACKING_COLOUR:
 			ObjToColor = FEngFindObject((char const*)_CustomizeHUDColor[4], 0x5D19F25); // TAC_FILL_00.tga
 			FEngSetColor_obj(ObjToColor, ItemColor);
 			break;
 
-		case CAR_SLOT_ID::HUD_NEEDLE_COLOUR:
+		case CARSLOTID_HUD_NEEDLE_COLOUR:
 			ObjToColor = FEngFindObject((char const*)_CustomizeHUDColor[4], 0xD312F0CB); // RPM_NEEDLE.tga
 			FEngSetColor_obj(ObjToColor, ItemColor);
 			ObjToColor = FEngFindObject((char const*)_CustomizeHUDColor[4], 0x8FE2A217); // TURBO_NEEDLE.tga
 			FEngSetColor_obj(ObjToColor, ItemColor);
 			break;
 
-		case CAR_SLOT_ID::HUD_CHARACTER_COLOUR:
+		case CARSLOTID_HUD_CHARACTER_COLOUR:
 			ObjToColor = FEngFindObject((char const*)_CustomizeHUDColor[4], 0xC0721EB9); // 7500_LINES_00.tga
 			FEngSetColor_obj(ObjToColor, ItemColor);
 			ObjToColor = FEngFindObject((char const*)_CustomizeHUDColor[4], 0xC62AD685); // TURBO_LINES

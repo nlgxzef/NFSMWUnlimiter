@@ -1,0 +1,24 @@
+#     Required
+#         PresetName = Defines the preset for the bonus car.
+#			 - If the name exists in _BonusCars.ini, the file will overwrite the bonus car with the same name.
+#            - Otherwise, it will get added as a new bonus car at the end of the list.
+#     Optional
+#         CarRecordID = [ONLY FOR EXPERTS] Defines a custom ID for the car record of the bonus car.
+#         Category = [ONLY FOR EXPERTS] Moves the bonus car in a custom category. May break stuff, not recommended.
+#         CEOnly = Defines whether a bonus car is available in Black Edition only.
+#         UnlockConditionType = Defines how a bonus car should unlock. Available values are:
+#            0 = Initially unlocked. (Default)
+#            1 = Beat a Blacklist member. Defaults to 15, Ho "Sonny" Seun, if no Blacklist option is set.
+#            2 = Complete Challenge Series event #68. (Special flag)
+#            3 = Easter Egg (Used for Castrol Syntec Ford GT)
+#            4 = Complete Challenge Series 100%. (Special flag)
+#            5 = Complete the career at least once. (Special flag)
+#            6 = Complete the game 100%. (Special flag, same as 5??)
+#            -1 = Revert to the hardcoded value in the vanilla function instead.
+#         Blacklist = Defines which blacklist member to beat, if the UnlockConditionType is set to 1.
+#         UnlockConditionString = Defines a custom string to tell the user about the unlock condition. Only works if the string exists with the given label.
+
+[BonusCar]
+PresetName = "BL15"
+UnlockConditionType = 1
+Blacklist = 15

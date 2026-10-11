@@ -5,7 +5,7 @@
 #include "includes\ini.h"
 
 int ManuID, CarArraySize, CarCount, CarPartCount, CarPartPartsTableSize, ReplacementCar, TrafficCarCount, RacerNamesCount, FrameDelay, CarSkinCount;
-bool ManuHook, ExtraCustomization, DisappearingWheelsFix, SecondaryLogoFix, ExpandMemoryPools, AddOnCopsDamageFix, ForceStockPartsOnAddOnOpponents, ChallengeSeriesOpponentNameFix, CopDestroyedStringHook, DisableTextureReplacement, MyCarsBackroom, EnableFNGFixes, RandomHook, RideHeightFix, BonusCarsHook, CarSkinFix, LightMaterialCrashFix, DisableNeon, DisableLightFlareColors, DisableKitWheelModifications, ExitWorkaround, Presitter, TestCareerCustomization, LimitAdjusterCompatibility, RandomizeTraffic, ForceSignalsOn, ForceLightsOnInFE, ScalingLightFix, LightTextureSwapInFE, SeperateRims, DisableCameraAutoCenter;
+bool ManuHook, DisappearingWheelsFix, SecondaryLogoFix, ExpandMemoryPools, AddOnCopsDamageFix, ForceStockPartsOnAddOnOpponents, ChallengeSeriesOpponentNameFix, CopDestroyedStringHook, DisableTextureReplacement, MyCarsBackroom, EnableFNGFixes, RandomHook, RideHeightFix, BonusCarsHook, CarSkinFix, LightMaterialCrashFix, DisableNeon, DisableLightFlareColors, DisableKitWheelModifications, ExitWorkaround, Presitter, TestCareerCustomization, LimitAdjusterCompatibility, RandomizeTraffic, ForceSignalsOn, ForceLightsOnInFE, ScalingLightFix, LightTextureSwapInFE, SeparateRims, DisableCameraAutoCenter, StockCarsHook, CopBrightLightsOrderFix, BartenderCompatibility, MempoolulatorCompatibility, ChloeCompatibility, CopSpoilerDamageFix;
 
 #include "InGameFunctions.h"
 #include "GlobalVariables.h"
@@ -26,6 +26,7 @@ bool ManuHook, ExtraCustomization, DisappearingWheelsFix, SecondaryLogoFix, Expa
 #include "GRacerInfo.h"
 #include "CarCustomizeManager.h"
 #include "CarPart.h"
+#include "CarPartDatabase.h"
 #include "SimConnection.h"
 #include "FEPackage.h"
 #include "FEPlayerCarDB.h"
@@ -44,6 +45,7 @@ bool ManuHook, ExtraCustomization, DisappearingWheelsFix, SecondaryLogoFix, Expa
 #include "Presitter.h"
 #include "UserProfile.h"
 #include "MemcardCallbacks.h"
+#include "HudResourceManager.h"
 #include "Game.h"
 #include "Helpers.h"
 #include "UnlimiterData.h"
@@ -62,14 +64,14 @@ int Init()
 	ReplacementCar = mINI_ReadInteger(Settings, "Main", "ReplacementModel", 1);
 	//TrafficCarCount = mINI_ReadInteger(Settings, "Main", "TrafficCarCount", 10);
 	ManuHook = mINI_ReadInteger(Settings, "Main", "EnableManufacturerHook", 1) != 0;
-	ExtraCustomization = mINI_ReadInteger(Settings, "Main", "EnableExtraCustomization", 1) != 0;
 	MyCarsBackroom = mINI_ReadInteger(Settings, "Main", "MyCarsBackroom", 1) != 0;
 	CopDestroyedStringHook = mINI_ReadInteger(Settings, "Main", "EnableCopDestroyedStringHook", 1) != 0;
 	RandomHook = mINI_ReadInteger(Settings, "Main", "EnableRandomPartsHook", 1) != 0;
 	BonusCarsHook = mINI_ReadInteger(Settings, "Main", "EnableBonusCarsHook", 0) != 0;
+	StockCarsHook = mINI_ReadInteger(Settings, "Main", "EnableStockCarsHook", 0) != 0;
 	Presitter = mINI_ReadInteger(Settings, "Main", "EnablePresitter", 1) != 0;
-	RandomizeTraffic = mINI_ReadInteger(Settings, "Main", "RandomizeTraffic", 1) != 0;
-	SeperateRims = mINI_ReadInteger(Settings, "Main", "SeperateRims", 1) != 0;
+	RandomizeTraffic = mINI_ReadInteger(Settings, "Main", "RandomizeTraffic", 0) != 0;
+	SeparateRims = mINI_ReadInteger(Settings, "Main", "SeparateRims", mINI_ReadInteger(Settings, "Main", "SeperateRims", 1)) != 0; // Backwards compatibility for typo in ini
 
 	// Fixes
 	DisappearingWheelsFix = mINI_ReadInteger(Settings, "Fixes", "DisappearingWheelsFix", 1) != 0;
@@ -80,7 +82,9 @@ int Init()
 	RideHeightFix = mINI_ReadInteger(Settings, "Fixes", "RideHeightFix", 1) != 0;
 	EnableFNGFixes = mINI_ReadInteger(Settings, "Fixes", "FNGFix", 0) != 0;
 	CarSkinFix = mINI_ReadInteger(Settings, "Fixes", "CarSkinFix", 1) != 0;
-	ScalingLightFix = mINI_ReadInteger(Settings, "Fixes", "ScalingLightFix", 1) != 0;
+	ScalingLightFix = mINI_ReadInteger(Settings, "Fixes", "ScalingLightFix", 0) != 0;
+	CopBrightLightsOrderFix = mINI_ReadInteger(Settings, "Fixes", "CopBrightLightsOrderFix", 1) != 0;
+	CopSpoilerDamageFix = mINI_ReadInteger(Settings, "Fixes", "CopSpoilerDamageFix", 1) != 0;
 
 	// Misc
 	ExpandMemoryPools = mINI_ReadInteger(Settings, "Misc", "ExpandMemoryPools", 1) != 0;
@@ -103,11 +107,15 @@ int Init()
 	// Check compatibility
 	BETACompatibility = GetModuleHandleA("NFSMWBeta.asi") ? 1 : 0;
 	HPCCompatibility = GetModuleHandleA("NFSMWHPC.asi") ? 1 : 0;
-	LimitAdjusterCompatibility = GetModuleHandleA("NFSMWLimitAdjuster.asi") ? 1 : 0;
+	MempoolulatorCompatibility = GetModuleHandleA("Mempoolulator.asi") ? 1 : 0;
+	LimitAdjusterCompatibility = (GetModuleHandleA("NFSMWLimitAdjuster.asi") || GetModuleHandleA("NFSMWOpenLimitAdjuster_gcp.asi")) ? 1 : 0;
+	BartenderCompatibility = GetModuleHandleA("NFSMWBartender.asi") ? 1 : 0;
+	ChloeCompatibility = (GetModuleHandleA("NFSMWChloeCollection_gcp.asi") || GetModuleHandleA("NFSMWMultiLayerVinyls_gcp.asi")) ? 1 : 0;
 
 	// Count Cars Automatically
-	injector::MakeJMP(0x756AA7, DoUnlimiterStuffCodeCave, true); // LoaderCarInfo
-	injector::MakeJMP(0x756BC7, DoUnlimiterStuffCodeCave2, true); // LoaderCarInfo
+	//injector::MakeJMP(0x756AA7, DoUnlimiterStuffCodeCave, true); // LoaderCarInfo
+	//injector::MakeJMP(0x756BC7, DoUnlimiterStuffCodeCave2, true); // LoaderCarInfo
+	injector::WriteMemory(0x8F7E08, &LoaderCarInfo_Hook, true); // LoaderTable
 
 	injector::MakeJMP(0x7398D0, CarPartDatabase_GetCarType, true); // 9 references
 
@@ -124,44 +132,15 @@ int Init()
 	// Fix crash if the model doesn't exist (Model will be invisible)
 	injector::MakeJMP(0x75C712, ReplacementCarCodeCave_CarLoader_Load, true);
 
-	// Traffic Pattern Unlimiter (disabled due to instability and fixed size arrays)
-	/*
-	if (TrafficCarCount > 10) TrafficCarCount = 10;
-	injector::WriteMemory<BYTE>(0x439B79, TrafficCarCount, true); // AITrafficManager::SpawnTraffic
-	injector::WriteMemory<BYTE>(0x410962, TrafficCarCount, true); // AITrafficManager::SetTrafficPattern
-	injector::WriteMemory<BYTE>(0x4265C2, TrafficCarCount, true); // AITrafficManager::FlushAllTraffic
-	injector::WriteMemory<BYTE>(0x426254, TrafficCarCount, true); // AITrafficManager::NextSpawn
-	injector::WriteMemory<int>(0x426256, TrafficCarCount, true); // AITrafficManager::NextSpawn
-	*/
-
 	// Manufacturer logo hook
 	if (ManuHook)
 	{
-		//injector::MakeJMP(0x5817C1, CarManuCodeCave, true);
-		//injector::MakeRangedNOP(0x581B69, 0x581B6E, true); // Prevent returning null
 		injector::MakeCALL(0x591337, FECarRecord_GetManufacturerName, true); // FECarRecord::GetManuLogoHash
 		injector::MakeCALL(0x59125E, FECarRecord_GetManufacturerName, true); // FECarRecord::GetLogoHash
 		injector::MakeCALL(0x59117F, FECarRecord_GetManufacturerName, true); // FECarRecord::GetNameHash
 	}
-
-	// Show Backroom Parts on Customization
-	if (MyCarsBackroom)
-	{
-		if (!ExtraCustomization)
-		{
-			injector::MakeNOP(0x7BFF28, 6, true); // CustomizeMain::NotificationMessage - Switch to Backroom Menu
-			injector::MakeNOP(0x7BFD56, 2, true); // CustomizeMain::NotificationMessage - Fix backing out by checking for backroom instead of career mode
-			injector::WriteMemory(0x7BFD52, g_bCustomizeInBackRoom, true); // CustomizeMain::NotificationMessage - Fix backing out by checking for backroom instead of career mode
-			injector::MakeJMP(0x7B1226, MyCarsBackroomWidgetCodeCave, true); // CustomizeMain::RefreshHeader
-			injector::MakeJMP(0x7BFE2F, MyCarsBackroomEscCodeCave, true); // CustomizeMain::NotificationMessage
-			injector::MakeJMP(0x7BFCC2, MyCarsBackroomRoomChangeCodeCave, true); // CustomizeMain::SwitchRooms
-			injector::MakeJMP(0x7A60F0, MyCarsBackroomRoomChangeCodeCave2, true); // CustomizeShoppingCart::ExitShoppingCart
-			injector::MakeRangedNOP(0x7B92B8, 0x7B92CE, true); // CustomizePerformance::Setup - Fix Junkman Parts
-		}
-	}
 	
 	// Extra Customization Stuff
-	if (ExtraCustomization || HPCCompatibility)
 	{
 		// Hook customize main
 		injector::MakeCALL(0x7BFCEC, CustomizeMain_BuildOptionsList, true); // CustomizeMain::SwitchRooms
@@ -238,6 +217,7 @@ int Init()
 		injector::MakeJMP(0x7B60E0, CarCustomizeManager_IsRimCategoryLocked, true); // 2 references
 		injector::MakeJMP(0x7B6250, CarCustomizeManager_IsVinylCategoryLocked, true); // 2 references
 		injector::MakeJMP(0x7BAD10, CarCustomizeManager_IsCategoryLocked, true); // 8 references
+		injector::MakeJMP(0x7AF4F0, CarCustomizeManager_GetCarPartList, true); // 10 references
 
 		// Remove locked & new status from new categories
 		// injector::MakeNOP(0x7A50F9, 6, true); // CarCustomizeManager::IsCategoryNew, Parts category
@@ -260,7 +240,10 @@ int Init()
 		injector::MakeCALL(0x7C0AF9, CustomizePaint_SetupVinylColor, true); // CustomizePaint::Setup
 		injector::WriteMemory(0x7AEB22, &Showcase_FromColor, true); // CarCustomizeManager::RelinquishControl
 		injector::WriteMemory(0x7C3784, &Showcase_FromColor, true); // CarCustomizeManager::TakeControl
-
+		injector::MakeCALL(0x7600EB, CarPart_GetLightMaterialNameHash, true); // CarRenderInfo::CarRenderInfo (Body Paint default light material)
+		injector::MakeCALL(0x760157, CarPart_GetLightMaterialNameHash, true); // CarRenderInfo::CarRenderInfo (Rim Paint default light material)
+		injector::MakeCALL(0x56F3CE, CarPartDatabase_NewGetCarPart_Hook, true); // FECustomizationRecord::BecomePreset (fix UnifyPaints)
+		injector::MakeCALL(0x759958, CarPartDatabase_NewGetCarPart_Hook, true); // RideInfo::FillWithPreset (fix UnifyPaints)
 
 		// Decals
 		injector::MakeJMP(0x7A7030, CustomizeDecals_GetSlotIDFromCategory, true); // 3 references
@@ -293,7 +276,7 @@ int Init()
 
 		// Fix rear rims
 		injector::MakeCALL(0x7498D0, CompositeRim, true); // CompositeSkin
-		injector::MakeCALL(0x751A85, GetTempCarSkinTextures, true); // GetUsedCarTextureInfo
+		hb_GetTempCarSkinTextures.fun = injector::MakeCALL(0x751A85, GetTempCarSkinTextures, true).get(); // GetUsedCarTextureInfo
 		injector::WriteMemory<DWORD>(0x7529CD, 0x154, true); // LoadedWheel::LoadedWheel, Seperate rear rims and fix them in game
 		injector::MakeJMP(0x74F40B, RearWheelLightMaterialCodeCave, true); // CarRenderInfo::Render
 
@@ -323,7 +306,7 @@ int Init()
 		if (!DisableNeon)
 		{
 			injector::MakeJMP(0x75FC83, CarShadowCave, true); // CarRenderInfo::CarRenderInfo
-			injector::MakeCALL(0x74E839, CarRenderInfo_DrawAmbientShadow_Hook, true); // CarRenderInfo::Render
+			hb_CarRenderInfo_DrawAmbientShadow.fun = injector::MakeCALL(0x74E839, CarRenderInfo_DrawAmbientShadow_Hook, true).get(); // CarRenderInfo::Render
 			injector::MakeJMP(0x744491, ShadowColorCave, true);
 
 			injector::WriteMemory<float*>(0x743F4E, &CarDistMax, true); // CarRenderInfo::DrawAmbientShadow
@@ -356,6 +339,13 @@ int Init()
 			// CarRenderInfo::RenderTextureHeadlights
 			injector::MakeRangedNOP(0x738241, 0x73826D, true);
 			injector::MakeJMP(0x738241, RenderTextureHeadlightsColorCave, true);
+
+			// UpdateLightFlareParameters - Fix bright cop light flares getting swapped
+			if (CopBrightLightsOrderFix)
+			{
+				injector::WriteMemory<DWORD>(0x5026B5, 0x299E454, true); // coplightbrightblue -> coplightbrightred
+				injector::WriteMemory<DWORD>(0x5026BD, 0x93007A08, true); // coplightbrightred -> coplightbrightblue
+			}
 		}
 
 		if (!DisableKitWheelModifications)
@@ -411,7 +401,7 @@ int Init()
 		
 	}
 
-	if (ExtraCustomization || MyCarsBackroom || TestCareerCustomization)
+	if (MyCarsBackroom || TestCareerCustomization)
 	{
 		injector::MakeJMP(0x7A65C0, CustomizeMain_SetScreenNames, true); // 2 references
 
@@ -420,7 +410,7 @@ int Init()
 	}
 	
 	// Check the ini file for destroyed cops messages
-	if (CopDestroyedStringHook)
+	if (CopDestroyedStringHook && !BartenderCompatibility)
 	{
 		injector::WriteMemory(0x8A2454, &PursuitBoard_SetNumCopsDestroyed, true);
 	}
@@ -439,11 +429,11 @@ int Init()
 	// 2nd logo fix
 	if (SecondaryLogoFix)
 	{
-		injector::MakeRangedNOP(0x591273, 0x591279, true);
+		if (!StockCarsHook) injector::MakeRangedNOP(0x591273, 0x591279, true);
 	}
 
 	// Expand Memory Pools (ty Berkay and Aero_)
-	if ((ExpandMemoryPools || CarSkinFix || RandomizeTraffic) && !LimitAdjusterCompatibility)
+	if ((ExpandMemoryPools || CarSkinFix || RandomizeTraffic) && !LimitAdjusterCompatibility && !MempoolulatorCompatibility)
 	{
 		injector::WriteMemory<short>(0x5F7396, 0x2C80, true); // GManager::PreloadTransientVaults (0x2C8000)
 		injector::WriteMemory<short>(0x5F73B2, 0x2C80, true);
@@ -471,6 +461,12 @@ int Init()
 	{
 		injector::MakeRangedNOP(0x7603EE, 0x760419, true); // CarRenderInfo::CarRenderInfo
 		injector::MakeJMP(0x7603EE, AddOnCopsDamageFixCodeCave, true);
+	}
+
+	// Add cop spoiler to damage behavior slot zone map (Top, Rear (Left & Right))
+	if (CopSpoilerDamageFix)
+	{
+		injector::WriteMemory(0x75F14C, &VehiclePartDamageBehaviour_mSlotZoneMapList, true); //VehiclePartDamageBehaviour::VehiclePartDamageBehaviour
 	}
 
 	// Always add both ride height values, not just when it's close enough (from chassis and ecar) (ty rx)
@@ -516,6 +512,54 @@ int Init()
 		injector::WriteMemory<BYTE>(0x55657D, 0xEB, true); // UIOLGameRoomCarSelect::RefreshCarList
 		injector::WriteMemory<BYTE>(0x556677, 0x01, true); // UIOLGameRoomCarSelect::RefreshCarList, skip sorting by unlocks if the category is Bonus
 
+	}
+
+	// Stock Cars Hook
+	if (StockCarsHook)
+	{
+		//injector::MakeCALL(0x7BFA09, UIQRCarSelect_RefreshCarList, true); // UIQRCarSelect::ScrollLists (already hooked)
+		injector::MakeCALL(0x7C1D3C, UIQRCarSelect_RefreshCarList, true); // UIQRCarSelect::NotificationMessage
+		injector::MakeCALL(0x7C1F96, UIQRCarSelect_RefreshCarList, true); // UIQRCarSelect::NotificationMessage
+		injector::MakeCALL(0x7C297D, UIQRCarSelect_RefreshCarList, true); // UIQRCarSelect::Setup
+
+		injector::MakeJMP(0x7ADA50, UIQRCarSelect_RefreshHeader, true); // UIQRCarSelect::RefreshHeader (9 refs)
+		
+		// test (dankjewel AI)
+		//injector::MakeCALL(0x7C1E70, sub_4061B0_Hook, true); // UIQRCarSelect::NotificationMessage
+		//injector::MakeCALL(0x7C2232, sub_4061B0_Hook, true); // UIQRCarSelect::NotificationMessage
+		//injector::MakeCALL(0x7C2714, sub_4061B0_Hook, true); // UIQRCarSelect::NotificationMessage
+		//injector::MakeCALL(0x7C2589, sub_4061B0_Hook, true); // UIQRCarSelect::NotificationMessage (my cars)
+		injector::MakeCALL(0x7C256E, sub_7A1990_Hook, true); // UIQRCarSelect::NotificationMessage (my cars)
+		injector::MakeCALL(0x7C2471, sub_7A1990_Hook, true); // UIQRCarSelect::NotificationMessage (showcase)
+		//
+		//injector::MakeJMP(0x4061B0, sub_4061B0_Hook, true); // wild
+
+		// New method to set stock cars
+		// the game uses FEPlayerCarDB::Default to set the stock cars, so we need to hook it to set our own list of stock cars.
+		injector::MakeCALL(0x5AB51B, FEPlayerCarDB_Default, true); // UserProfile::Default
+		injector::MakeCALL(0x5AB9F4, FEPlayerCarDB_Default, true); // cFrontendDatabase::DefaultProfile
+		// Get customization record from Unlimiter stable if necessary
+		injector::MakeJMP(0x5910E0, FEPlayerCarDB_BuildRideForPlayer_Unlimiter, true); // 22 refs
+
+		// New list and region (unused by default) scrollers
+		injector::MakeJMP(0x7BF970, UIQRCarSelect_ScrollLists, true); // UIQRCarSelect::ScrollLists (4 refs)
+		injector::MakeJMP(0x7BA760, UIQRCarSelect_ScrollRegions, true); // UIQRCarSelect::ScrollRegions (0 refs)
+
+		// Create new career and my cars + support cloning presets as new cars (to sell presets in car lot)
+		injector::MakeCALL(0x599D14, FEPlayerCarDB_CreateCar, true); // FEPlayerCarDB::CreateNewCustomCar
+		injector::MakeCALL(0x599D45, FEPlayerCarDB_CreateCar, true); // FEPlayerCarDB::CreateNewCareerCar
+		injector::MakeRangedNOP(0x7A73ED, 0x7A73F3, true); // CarDatum::NotificationMessage - Prevent skipping car with cust rec
+		injector::MakeRangedNOP(0x7C2573, 0x7C2579, true); // UIQRCarSelect::NotificationMessage - My cars
+
+		//debug
+		injector::MakeCALL(0x7C1DF9, FEPlayerCarDB_GetCarRecordByHandle_Unlimiter, true); // UIQRCarSelect::NotificationMessage
+		injector::MakeCALL(0x7C1B53, FEPlayerCarDB_GetCarRecordByHandle_Unlimiter, true); // UIQRCarSelect::NotificationMessage
+
+		// Crash workaround
+		//injector::MakeRangedNOP(0x7ADF97, 0x7ADF9A, true);
+		//injector::MakeRangedNOP(0x7ADF9D, 0x7ADF9F, true);
+		//injector::MakeJMP(0x7ADF9F, 0x7AE2E9, true); // UIQRCarSelect::RefreshHeader, prevent null pointer dereference
+		//injector::MakeCALL(0x7C2239, FEPlayerCarDB_BuildRideForPlayer_Unlimiter, true); // UIQRCarSelect::RefreshHeader
 	}
 
 	if (ExitWorkaround)

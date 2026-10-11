@@ -42,7 +42,7 @@ int __fastcall PursuitBoard_SetNumCopsDestroyed(DWORD* PursuitBoard, int EDX_Unu
 					if (HudPtr)
 					{
 						GenericMessageHandle = UTL_COM_Object__IList_Find((DWORD*)HudPtr[1], IGenericMessage_IHandle);
-						if (GenericMessageHandle) result = GenericMessage_RequestGenericMessage(GenericMessageHandle, (char const*)StringBuffer, 0, 0x8AB83EDB, bStringHash((char*)"COPS_TAKENOUT_ICON"), bStringHash((char*)"COPS"), 2);
+						if (GenericMessageHandle) result = GenericMessage_RequestGenericMessage(GenericMessageHandle, (char const*)StringBuffer, 0, 0x8AB83EDB, CT_bStringHash("COPS_TAKENOUT_ICON"), CT_bStringHash("COPS"), 2);
 					}
 				}
 			}

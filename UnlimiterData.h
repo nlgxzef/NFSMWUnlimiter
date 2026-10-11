@@ -25,7 +25,7 @@ void LoadCarConfigs()
 	char CarININame[MAX_PATH];
 
 	// Read default car config first
-	DefaultCarConfig.CarTypeInfo = (DWORD*)((*(DWORD*)CarTypeInfoArray) + ReplacementCar * SingleCarTypeInfoBlockSize);
+	DefaultCarConfig.pCarTypeInfo = &CarTypeInfoArray[ReplacementCar];
 
 	// Main
 	DefaultCarConfig.Main.ForceLODA = mINI_ReadInteger(GeneralINI, "Main", "ForceLODA", 0) != 0;
@@ -947,8 +947,8 @@ void LoadCarConfigs()
 	// Read other cars' configs
 	for (int i = 0; i < CarCount; i++)
 	{
-		ACarConfig.CarTypeInfo = (DWORD*)((*(DWORD*)CarTypeInfoArray) + i * SingleCarTypeInfoBlockSize);
-		sprintf(CarININame, "%s.ini", (char*)ACarConfig.CarTypeInfo);
+		ACarConfig.pCarTypeInfo = &CarTypeInfoArray[i];
+		sprintf(CarININame, "%s.ini", ACarConfig.pCarTypeInfo->CarTypeName);
 		auto CarINIPath = CurrentWorkingDirectory / "UnlimiterData" / CarININame;
 		mINI::INIFile CarINIFile(CarINIPath.string());
 		mINI::INIStructure CarINI;
@@ -1925,6 +1925,57 @@ void LoadBonusCars()
 		}
 	}
 
+	// Load from folder
+	auto ExtraINIPath = CurrentWorkingDirectory / "UnlimiterData" / "BonusCars";
+	if ((NumBonusCars != -2) && std::filesystem::exists(ExtraINIPath))
+	{
+		auto it = std::filesystem::directory_iterator(ExtraINIPath);
+
+		for (const auto& entry : it)
+		{
+			if (entry.is_regular_file() && entry.path().extension() == ".ini") // Check if .ini
+			{
+				auto itINIPath = entry.path();
+				mINI::INIFile itINIFile(itINIPath.string());
+				mINI::INIStructure itINI;
+				itINIFile.read(itINI);
+
+				sprintf(ABonusCar.PresetName, mINI_ReadString(itINI, "BonusCar", "PresetName", ""));
+				ABonusCar.CarRecordID = mINI_ReadInteger(itINI, "BonusCar", "CarRecordID", -1);
+				ABonusCar.Category = mINI_ReadInteger(itINI, "BonusCar", "Category", 0xF0008);
+				ABonusCar.CEOnly = mINI_ReadInteger(itINI, "BonusCar", "CEOnly", 0) != 0;
+				ABonusCar.UnlockConditionType = mINI_ReadInteger(itINI, "BonusCar", "UnlockConditionType", -1);
+				ABonusCar.Blacklist = mINI_ReadInteger(itINI, "BonusCar", "Blacklist", 15);
+				ABonusCar.UnlockConditionStringHash = mINI_ReadHash(itINI, "BonusCar", "UnlockConditionString");
+
+				// If we already have a grup with the same hash, overwrite it
+				bool found = 0;
+
+				for (int k = 0; k < BonusCars_temp.size(); k++)
+				{
+					if (!strcmp(BonusCars_temp[k].PresetName, ABonusCar.PresetName)) // overwrite
+					{
+						BonusCars_temp[k].CarRecordID = ABonusCar.CarRecordID;
+						BonusCars_temp[k].Category = ABonusCar.Category;
+						BonusCars_temp[k].CEOnly = ABonusCar.CEOnly;
+						BonusCars_temp[k].UnlockConditionType = ABonusCar.UnlockConditionType;
+						BonusCars_temp[k].Blacklist = ABonusCar.Blacklist;
+						BonusCars_temp[k].UnlockConditionStringHash = ABonusCar.UnlockConditionStringHash;
+
+						found = 1;
+						break;
+					}
+				}
+
+				if (!found && NumBonusCars < NumFECustomizationRecords - NumFECareerRecords - 1)
+				{
+					BonusCars_temp.push_back(ABonusCar); // Add to temp list
+					NumBonusCars++;
+				}
+			}
+		}
+	}
+
 	BonusCars = std::move(BonusCars_temp); // Replace global list with temp
 
 	if (NumBonusCars != -2)
@@ -1964,11 +2015,59 @@ void LoadRimBrands()
 		sprintf(RimBrandID, "Brand%d", i);
 
 		ARimBrand.BrandNameHash = mINI_ReadHashS(RimBrandsINI, RimBrandID, "BrandName", GetDefaultRimBrandName(i));
-		ARimBrand.StringHash = mINI_ReadHashS(RimBrandsINI, RimBrandID, "String", GetDefaultRimBrandString(i));
-		ARimBrand.TextureHash = mINI_ReadHashS(RimBrandsINI, RimBrandID, "Texture", GetDefaultRimBrandTexture(i));
-		ARimBrand.NoRimSize = mINI_ReadInteger(RimBrandsINI, RimBrandID, "NoRimSize", i ? 0 : 1) != 0;
+		int d = GetMatchingDefaultRimBrand(ARimBrand.BrandNameHash);
+		ARimBrand.StringHash = mINI_ReadHashS(RimBrandsINI, RimBrandID, "String", GetDefaultRimBrandString(d));
+		ARimBrand.TextureHash = mINI_ReadHashS(RimBrandsINI, RimBrandID, "Texture", GetDefaultRimBrandTexture(d));
+		ARimBrand.NoRimSize = mINI_ReadInteger(RimBrandsINI, RimBrandID, "NoRimSize", d ? 0 : 1) != 0;
 
 		RimBrands_temp.push_back(ARimBrand); // Add to temp list
+	}
+
+	// Load from folder
+	auto ExtraINIPath = CurrentWorkingDirectory / "UnlimiterData" / "RimBrands";
+	if (std::filesystem::exists(ExtraINIPath))
+	{
+		auto it = std::filesystem::directory_iterator(ExtraINIPath);
+
+		for (const auto& entry : it)
+		{
+			if (NumRimBrands >= MaximumRimBrandCount) break;
+
+			if (entry.is_regular_file() && entry.path().extension() == ".ini") // Check if .ini
+			{
+				auto itINIPath = entry.path();
+				mINI::INIFile itINIFile(itINIPath.string());
+				mINI::INIStructure itINI;
+				itINIFile.read(itINI);
+
+				ARimBrand.BrandNameHash = mINI_ReadInteger(itINI, "Brand", "BrandName");
+				ARimBrand.TextureHash = mINI_ReadHashS(itINI, "Brand", "Texture");
+				ARimBrand.StringHash = mINI_ReadHashS(itINI, "Brand", "String");
+				ARimBrand.NoRimSize = mINI_ReadInteger(itINI, "Brand", "NoRimSize", 0) != 0;
+
+				// If we already have a grup with the same hash, overwrite it
+				bool found = 0;
+
+				for (int k = 0; k < RimBrands_temp.size(); k++)
+				{
+					if (RimBrands_temp[k].BrandNameHash == ARimBrand.BrandNameHash) // overwrite
+					{
+						RimBrands_temp[k].StringHash = ARimBrand.StringHash;
+						RimBrands_temp[k].TextureHash = ARimBrand.TextureHash;
+						RimBrands_temp[k].NoRimSize = ARimBrand.NoRimSize;
+
+						found = 1;
+						break;
+					}
+				}
+
+				if (!found && NumRimBrands < MaximumRimBrandCount - 1)
+				{
+					RimBrands_temp.push_back(ARimBrand); // Add to temp list
+					NumRimBrands++;
+				}
+			}
+		}
 	}
 
 	RimBrands = std::move(RimBrands_temp); // Replace global list with temp
@@ -2000,11 +2099,59 @@ void LoadVinylGroups()
 		sprintf(VinylBrandID, "Group%d", i);
 
 		AVinylGroup.Index = mINI_ReadInteger(VinylGroupsINI, VinylBrandID, "Index", GetDefaultVinylGroupIndex(i));
-		AVinylGroup.TextureHash = mINI_ReadHashS(VinylGroupsINI, VinylBrandID, "Texture", GetDefaultVinylGroupTexture(i));
-		AVinylGroup.StringHash = mINI_ReadHashS(VinylGroupsINI, VinylBrandID, "String", GetDefaultVinylGroupString(i));
-		AVinylGroup.UseAltCamera = mINI_ReadInteger(VinylGroupsINI, VinylBrandID, "UseAltCamera", GetDefaultVinylGroupAltCamera(i)) != 0;
+		int d = GetMatchingDefaultVinylGroupIndex(AVinylGroup.Index);
+		AVinylGroup.TextureHash = mINI_ReadHashS(VinylGroupsINI, VinylBrandID, "Texture", GetDefaultVinylGroupTexture(d));
+		AVinylGroup.StringHash = mINI_ReadHashS(VinylGroupsINI, VinylBrandID, "String", GetDefaultVinylGroupString(d));
+		AVinylGroup.UseAltCamera = mINI_ReadInteger(VinylGroupsINI, VinylBrandID, "UseAltCamera", GetDefaultVinylGroupAltCamera(d)) != 0;
 
 		VinylGroups_temp.push_back(AVinylGroup); // Add to temp list
+	}
+
+	// Load from folder
+	auto ExtraINIPath = CurrentWorkingDirectory / "UnlimiterData" / "VinylGroups";
+	if (std::filesystem::exists(ExtraINIPath))
+	{
+		auto it = std::filesystem::directory_iterator(ExtraINIPath);
+
+		for (const auto& entry : it)
+		{
+			if (NumVinylGroups >= MaximumVinylGroupCount) break;
+
+			if (entry.is_regular_file() && entry.path().extension() == ".ini") // Check if .ini
+			{
+				auto itINIPath = entry.path();
+				mINI::INIFile itINIFile(itINIPath.string());
+				mINI::INIStructure itINI;
+				itINIFile.read(itINI);
+
+				AVinylGroup.Index = mINI_ReadInteger(itINI, "Group", "Index");
+				AVinylGroup.TextureHash = mINI_ReadHashS(itINI, "Group", "Texture");
+				AVinylGroup.StringHash = mINI_ReadHashS(itINI, "Group", "String");
+				AVinylGroup.UseAltCamera = mINI_ReadInteger(itINI, "Group", "UseAltCamera", 1) != 0;
+
+				// If we already have a grup with the same hash, overwrite it
+				bool found = 0;
+
+				for (int k = 0; k < VinylGroups_temp.size(); k++)
+				{
+					if (VinylGroups_temp[k].Index == AVinylGroup.Index) // overwrite
+					{
+						VinylGroups_temp[k].StringHash = AVinylGroup.StringHash;
+						VinylGroups_temp[k].TextureHash = AVinylGroup.TextureHash;
+						VinylGroups_temp[k].UseAltCamera = AVinylGroup.UseAltCamera;
+
+						found = 1;
+						break;
+					}
+				}
+
+				if (!found && NumVinylGroups < MaximumVinylGroupCount - 1)
+				{
+					VinylGroups_temp.push_back(AVinylGroup); // Add to temp list
+					NumVinylGroups++;
+				}
+			}
+		}
 	}
 
 	VinylGroups = std::move(VinylGroups_temp); // Replace global list with temp
@@ -2028,6 +2175,9 @@ void LoadPaintGroups()
 	mINI::INIStructure PaintGroupsINI;
 	PaintGroupsINIFile.read(PaintGroupsINI);
 
+	UnifyPaints = mINI_ReadInteger(PaintGroupsINI, "PaintGroups", "UnifyPaints", 0) != 0;
+	DefaultPaintLightMaterial = mINI_ReadHashS(PaintGroupsINI, "PaintGroups", "DefaultLightMaterial", "MAGGUNMETAL");
+
 	char PaintBrandID[15];
 
 	int NumPaintGroups = mINI_ReadInteger(PaintGroupsINI, "PaintGroups", "NumberOfPaintGroups", DefaultPaintBrandCount);
@@ -2038,11 +2188,64 @@ void LoadPaintGroups()
 		sprintf(PaintBrandID, "Group%d", i);
 
 		APaintGroup.BrandNameHash = mINI_ReadHashS(PaintGroupsINI, PaintBrandID, "BrandName", GetDefaultPaintBrandName(i));
-		APaintGroup.StringHash = mINI_ReadHashS(PaintGroupsINI, PaintBrandID, "String", GetDefaultPaintBrandString(i));
+		int d = GetMatchingDefaultPaintBrand(APaintGroup.BrandNameHash);
+		APaintGroup.StringHash = mINI_ReadHashS(PaintGroupsINI, PaintBrandID, "String", GetDefaultPaintBrandString(d));
+		APaintGroup.AvailableForBody = mINI_ReadInteger(PaintGroupsINI, PaintBrandID, "AvailableForBody", GetDefaultPaintBrandAvailableForBody(d)) != 0;
+		APaintGroup.AvailableForRims = mINI_ReadInteger(PaintGroupsINI, PaintBrandID, "AvailableForRims", GetDefaultPaintBrandAvailableForRims(d)) != 0;
+		APaintGroup.AvailableForVinyl = mINI_ReadInteger(PaintGroupsINI, PaintBrandID, "AvailableForVinyl", GetDefaultPaintBrandAvailableForVinyl(d)) != 0;
 
 		PaintGroups_temp.push_back(APaintGroup); // Add to temp list
 	}
 
+	// Load from folder
+	auto ExtraINIPath = CurrentWorkingDirectory / "UnlimiterData" / "PaintGroups";
+	if (std::filesystem::exists(ExtraINIPath))
+	{
+		auto it = std::filesystem::directory_iterator(ExtraINIPath);
+
+		for (const auto& entry : it)
+		{
+			if (NumPaintGroups >= MaximumPaintBrandCount) break;
+
+			if (entry.is_regular_file() && entry.path().extension() == ".ini") // Check if .ini
+			{
+				auto itINIPath = entry.path();
+				mINI::INIFile itINIFile(itINIPath.string());
+				mINI::INIStructure itINI;
+				itINIFile.read(itINI);
+
+				APaintGroup.BrandNameHash = mINI_ReadHashS(itINI, "Group", "BrandName");
+				APaintGroup.StringHash = mINI_ReadHashS(itINI, "Group", "String");
+				APaintGroup.AvailableForBody = mINI_ReadInteger(itINI, "Group", "AvailableForBody", 1) != 0;
+				APaintGroup.AvailableForRims = mINI_ReadInteger(itINI, "Group", "AvailableForRims", 0) != 0;
+				APaintGroup.AvailableForVinyl = mINI_ReadInteger(itINI, "Group", "AvailableForVinyl", 0) != 0;
+
+				// If we already have a grup with the same hash, overwrite it
+				bool found = 0;
+
+				for (int k = 0; k < PaintGroups_temp.size(); k++)
+				{
+					if (PaintGroups_temp[k].BrandNameHash == APaintGroup.BrandNameHash) // overwrite
+					{
+						PaintGroups_temp[k].StringHash = APaintGroup.StringHash;
+						PaintGroups_temp[k].AvailableForBody = APaintGroup.AvailableForBody;
+						PaintGroups_temp[k].AvailableForRims = APaintGroup.AvailableForRims;
+						PaintGroups_temp[k].AvailableForVinyl = APaintGroup.AvailableForVinyl;
+
+						found = 1;
+						break;
+					}
+				}
+
+				if (!found && NumPaintGroups < MaximumPaintBrandCount - 1)
+				{
+					PaintGroups_temp.push_back(APaintGroup); // Add to temp list
+					NumPaintGroups++;
+				}
+			}
+		}
+	}
+	
 	PaintGroups = std::move(PaintGroups_temp);
 }
 

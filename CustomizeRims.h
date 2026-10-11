@@ -41,12 +41,12 @@ void __fastcall CustomizeRims_RefreshHeader(DWORD* CustomizeRims, void* EDX_Unus
         switch (RimsToCustomize)
         {
         case -1:
-            CarCustomizeManager_PreviewPart((DWORD*)_gCarCustomizeManager, CAR_SLOT_ID::REAR_WHEEL, (DWORD*)(SelectedPart[3])); // Rear
+            CarCustomizeManager_PreviewPart((DWORD*)_gCarCustomizeManager, CARSLOTID_REAR_WHEEL, (DWORD*)(SelectedPart[3])); // Rear
             break;
         case 0:
         default:
             CarCustomizeManager_PreviewPart((DWORD*)_gCarCustomizeManager, SelectedPart[4], (DWORD*)(SelectedPart[3])); // All
-            CarCustomizeManager_PreviewPart((DWORD*)_gCarCustomizeManager, CAR_SLOT_ID::REAR_WHEEL, (DWORD*)(SelectedPart[3]));
+            CarCustomizeManager_PreviewPart((DWORD*)_gCarCustomizeManager, CARSLOTID_REAR_WHEEL, (DWORD*)(SelectedPart[3]));
             break;
         case 1:
             CarCustomizeManager_PreviewPart((DWORD*)_gCarCustomizeManager, SelectedPart[4], (DWORD*)(SelectedPart[3])); // Front
@@ -54,7 +54,7 @@ void __fastcall CustomizeRims_RefreshHeader(DWORD* CustomizeRims, void* EDX_Unus
         }
         FEPrintf((char const*)CustomizeRims[4], 0xE6782841, "%$d\"", CustomizeRims[111]); // inch
         
-        DWORD LanguageHash = CarPart_GetAppliedAttributeUParam((DWORD*)(SelectedPart[3]), bStringHash((char*)"LANGUAGEHASH"), 0);
+        DWORD LanguageHash = CarPart_GetAppliedAttributeUParam((DWORD*)(SelectedPart[3]), CT_bStringHash("LANGUAGEHASH"), 0);
         if (LanguageHash)
         {
             FEngSetLanguageHash((char const*)CustomizeRims[4], 0x5E7B09C9, LanguageHash);
@@ -72,21 +72,21 @@ void __fastcall CustomizeRims_RefreshHeader(DWORD* CustomizeRims, void* EDX_Unus
             if (!CustomizeIsInBackRoom())
             {
                 // Recalculate cost and trade in values
-                DWORD* InstalledFrontRim = CarCustomizeManager_GetInstalledCarPart((DWORD*)_gCarCustomizeManager, CAR_SLOT_ID::FRONT_WHEEL);
-                DWORD* InstalledRearRim = CarCustomizeManager_GetInstalledCarPart((DWORD*)_gCarCustomizeManager, CAR_SLOT_ID::REAR_WHEEL);
+                DWORD* InstalledFrontRim = CarCustomizeManager_GetInstalledCarPart((DWORD*)_gCarCustomizeManager, CARSLOTID_FRONT_WHEEL);
+                DWORD* InstalledRearRim = CarCustomizeManager_GetInstalledCarPart((DWORD*)_gCarCustomizeManager, CARSLOTID_REAR_WHEEL);
                 int UnlockFilter = CarCustomizeManager_GetUnlockFilter();
                 int TradeIn = 0;
                 //int CartTotal = CarCustomizeManager_GetCartTotal((DWORD*)_gCarCustomizeManager, 2);
-                int Cost = UnlockSystem_GetCarPartCost(UnlockFilter, CAR_SLOT_ID::FRONT_WHEEL, (DWORD*)(SelectedPart[3]), 0);
+                int Cost = UnlockSystem_GetCarPartCost(UnlockFilter, CARSLOTID_FRONT_WHEEL, (DWORD*)(SelectedPart[3]), 0);
 
                 if (InstalledFrontRim && RimsToCustomize != -1)
                 {
-                    TradeIn += UnlockSystem_GetCarPartCost(UnlockFilter, CAR_SLOT_ID::FRONT_WHEEL, InstalledFrontRim, 0);
+                    TradeIn += UnlockSystem_GetCarPartCost(UnlockFilter, CARSLOTID_FRONT_WHEEL, InstalledFrontRim, 0);
                 }
 
                 if (InstalledRearRim && RimsToCustomize != 1)
                 {
-                    TradeIn += UnlockSystem_GetCarPartCost(UnlockFilter, CAR_SLOT_ID::REAR_WHEEL, InstalledRearRim, 0);
+                    TradeIn += UnlockSystem_GetCarPartCost(UnlockFilter, CARSLOTID_REAR_WHEEL, InstalledRearRim, 0);
                 }
 
                 if (RimsToCustomize == 0) Cost *= 2;
@@ -157,13 +157,13 @@ void __fastcall CustomizeRims_NotificationMessage(DWORD* _CustomizeRims, void* E
         switch (RimsToCustomize)
         {
         case -1: // Rear
-            ASelectablePart[4] = CAR_SLOT_ID::REAR_WHEEL;
+            ASelectablePart[4] = CARSLOTID_REAR_WHEEL;
             CarCustomizeManager_AddToCart((DWORD*)_gCarCustomizeManager, ASelectablePart);
             break;
         case 0: // All
         default:
             CarCustomizeManager_AddToCart((DWORD*)_gCarCustomizeManager, ASelectablePart);
-            ASelectablePart[4] = CAR_SLOT_ID::REAR_WHEEL;
+            ASelectablePart[4] = CARSLOTID_REAR_WHEEL;
             CarCustomizeManager_AddToCart((DWORD*)_gCarCustomizeManager, ASelectablePart);
             break;
         case 1: // Front
@@ -204,11 +204,11 @@ void __fastcall CustomizeRims_BuildRimsList(DWORD* _CustomizeRims, void* EDX_Unu
     PartList[1] = (DWORD)PartList;
     v20 = 0;
     CategoryBrandHash = CustomizeRims_GetCategoryBrandHash(_CustomizeRims, (int)EDX_Unused);
-    CarCustomizeManager_GetCarPartList((DWORD*)_gCarCustomizeManager, CAR_SLOT_ID::FRONT_WHEEL, PartList, CategoryBrandHash); // 67 doesn't filter by brand
+    CarCustomizeManager_GetCarPartList_Game((DWORD*)_gCarCustomizeManager, CARSLOTID_FRONT_WHEEL, PartList, CategoryBrandHash); // 67 doesn't filter by brand
     int IndexActive = 0;
     DWORD* TheActivePart = 0;
     v4 = (DWORD*)PartList[0];
-    if (Index == -1) TheActivePart = (DWORD*)CarCustomizeManager_GetActivePartFromSlot((DWORD*)_gCarCustomizeManager, RimsToCustomize == -1 ? CAR_SLOT_ID::REAR_WHEEL : CAR_SLOT_ID::FRONT_WHEEL); // REAR/FRONT_WHEEL
+    if (Index == -1) TheActivePart = (DWORD*)CarCustomizeManager_GetActivePartFromSlot((DWORD*)_gCarCustomizeManager, RimsToCustomize == -1 ? CARSLOTID_REAR_WHEEL : CARSLOTID_FRONT_WHEEL); // REAR/FRONT_WHEEL
 
     for (i = 1; (DWORD*)PartList[0] != PartList; v4 = (DWORD*)PartList[0])
     {
@@ -220,10 +220,10 @@ void __fastcall CustomizeRims_BuildRimsList(DWORD* _CustomizeRims, void* EDX_Unu
         v9 = v7[2];
         TheSelectablePart = v7 - 1;
         if ((IsNoRimSize(_CustomizeRims[82]) || (_CustomizeRims[111] == CarPart_GetAppliedAttributeIParam((DWORD*)v9, 0xEB0101E2, 0))) // Inner Radius matches || IsNoRimSize 
-            && (!CarPart_GetAppliedAttributeIParam((DWORD*)v9, bStringHash((char*)"REAR"), 0))) // && Has no rear attribute applied
+            && (!CarPart_GetAppliedAttributeIParam((DWORD*)v9, CT_bStringHash("REAR"), 0))) // && Has no rear attribute applied
         {
             UnlockHash = CarCustomizeManager_GetUnlockHash_CarPart((DWORD*)_gCarCustomizeManager, (DWORD*)TheSelectablePart[3], _CustomizeRims[82], TheSelectablePart[5]);
-            PartIcon = CarPart_GetAppliedAttributeIParam((DWORD*)TheSelectablePart[3], bStringHash((char*)"TEXTUREHASH"), 0x294D2A3);
+            PartIcon = CarPart_GetAppliedAttributeIParam((DWORD*)TheSelectablePart[3], CT_bStringHash("TEXTUREHASH"), 0x294D2A3);
             PartName = *(BYTE*)(TheSelectablePart[3] + 5) >> 5;
             IsLocked = CarCustomizeManager_IsPartLocked((DWORD*)_gCarCustomizeManager, EDX_Unused, TheSelectablePart, 0);
             CustomizationScreen_AddPartOption(_CustomizeRims, TheSelectablePart, PartIcon, PartName, 0, UnlockHash, IsLocked);
@@ -307,7 +307,7 @@ void __fastcall CustomizeRims_Setup(DWORD* _CustomizeRims, void* EDX_Unused)
     _CustomizeRims[112] = MinInnerRadius;
     _CustomizeRims[113] = MaxInnerRadius;
 
-    TheActivePart = (DWORD*)CarCustomizeManager_GetActivePartFromSlot((DWORD*)_gCarCustomizeManager, RimsToCustomize == -1 ? CAR_SLOT_ID::REAR_WHEEL : CAR_SLOT_ID::FRONT_WHEEL); // REAR/FRONT_WHEEL
+    TheActivePart = (DWORD*)CarCustomizeManager_GetActivePartFromSlot((DWORD*)_gCarCustomizeManager, RimsToCustomize == -1 ? CARSLOTID_REAR_WHEEL : CARSLOTID_FRONT_WHEEL); // REAR/FRONT_WHEEL
     if (*(int*)_Showcase_FromFilter == -1)
     {
         if (TheActivePart)

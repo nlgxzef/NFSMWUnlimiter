@@ -7,8 +7,59 @@
 void __fastcall CarRenderInfo_RenderFlaresOnCar(DWORD* CarRenderInfo, void* EDX_Unused, DWORD* view, bVector3* position, bMatrix4* body_matrix, int force_light_state, int reflection, int renderFlareFlags);
 float CarRenderInfo_GetReflectionOffset(DWORD* _CarRenderInfo, float original);
 
-static injector::hook_back<void(*)(DWORD*, int, int)> hb_RenderFEFlares;
+int(*LoaderCarInfo_Game)(bChunk*) = (int(*)(bChunk*))0x756A90;
 
+int LoaderCarInfo_Hook(bChunk* chunk)
+{
+	int result = LoaderCarInfo_Game(chunk);
+
+	if (result)
+	{
+		switch (chunk->ID)
+		{
+		case BCHUNK_SPEED_CARTYPEINFO_TABLE: // Unlimiter stuff Part 1
+			CarArraySize = chunk->Size - 8;
+			CarCount = CarArraySize / SingleCarTypeInfoBlockSize;
+			CarTypeInfoArray = *(CarTypeInfo**)_CarTypeInfoArray;
+
+			// Replacement model if model not found in array
+			if (ReplacementCar > CarCount) ReplacementCar = 1;
+
+			// load configs into UnlimiterData structs
+			LoadCarConfigs();
+			LoadBonusCars();
+			LoadCopDestroyedStrings();
+			LoadFNGFixes();
+			LoadPaintGroups();
+			LoadRimBrands();
+			LoadVinylGroups();
+
+			// Backup tire angle to use later
+			CarSelectTireSteerAngle_Backup = *(float*)_CarSelectTireSteerAngle;
+
+			// Fix quantizers
+			injector::WriteMemory<int>(0x9B1334, CarCount, true); // QuantCarType
+			injector::WriteMemory<int>(0x9B1338, CarCount + 1, true);
+			break;
+
+		case BCHUNK_SPEED_CARPART_PACK_HEADER: // Unlimiter stuff Part 2
+			DBCarPart = (CarPartDatabase*)_CarPartDB;
+			int CarPartCount = DBCarPart->NumParts;
+
+			if (CarPartCount > 16000)
+			{
+				// Fix quantizers
+				injector::WriteMemory<int>(0x9B1478, CarPartCount, true); // QuantPartIndex
+				injector::WriteMemory<int>(0x9B147C, CarPartCount + 1, true);
+			}
+			break;
+		}
+	}
+	
+	return result;
+}
+
+static injector::hook_back<void(*)(DWORD*, int, int)> hb_RenderFEFlares;
 void RenderFEFlares(DWORD* view, int reflection, int renderFlareFlags)
 {
 	FrontEndRenderingCar* FECar;
@@ -27,7 +78,7 @@ void RenderFEFlares(DWORD* view, int reflection, int renderFlareFlags)
 		{
 			for (FECar = *(FrontEndRenderingCar**)_FrontEndRenderingCarList;
 				FECar != (FrontEndRenderingCar*)_FrontEndRenderingCarList;
-				FECar = FECar->Next)
+				FECar = FECar->GetNext())
 			{
 				_CarRenderInfo = FECar->RenderInfo;
 
@@ -91,7 +142,7 @@ void RenderFEFlares(DWORD* view, int reflection, int renderFlareFlags)
 
 DWORD GetWheelTextureHash(DWORD* _RideInfo, int index)
 {
-	DWORD* RimPart = RideInfo_GetPart(_RideInfo, index == 0 ? CAR_SLOT_ID::FRONT_WHEEL : CAR_SLOT_ID::REAR_WHEEL);
+	DWORD* RimPart = RideInfo_GetPart(_RideInfo, index == 0 ? CARSLOTID_FRONT_WHEEL : CARSLOTID_REAR_WHEEL);
 	if (!RimPart) return 0;
 
 	DWORD TextureHash = CarPart_GetTextureNameHash(RimPart);
@@ -104,7 +155,7 @@ DWORD GetWheelTextureHash(DWORD* _RideInfo, int index)
 
 DWORD GetWheelTextureMaskHash(DWORD* _RideInfo, int index)
 {
-	DWORD* RimPart = RideInfo_GetPart(_RideInfo, index == 0 ? CAR_SLOT_ID::FRONT_WHEEL : CAR_SLOT_ID::REAR_WHEEL);
+	DWORD* RimPart = RideInfo_GetPart(_RideInfo, index == 0 ? CARSLOTID_FRONT_WHEEL : CARSLOTID_REAR_WHEEL);
 	if (!RimPart) return 0;
 
 	DWORD TextureHash = CarPart_GetTextureNameHash(RimPart);
@@ -126,10 +177,11 @@ void CompositeRim(DWORD* _RideInfo)
 		CompositeWheelHash = _RideInfo[16+i]; // DUMMY_WHEELx, DUMMY_SPINNERx
 		WheelTexHash = GetWheelTextureHash(_RideInfo, i);
 		WheelInnerMaskTexHash = GetWheelTextureMaskHash(_RideInfo, i);
-		CompositeWheel(_RideInfo, CompositeWheelHash, WheelTexHash, WheelInnerMaskTexHash, CAR_SLOT_ID::PAINT_RIM);
+		CompositeWheel(_RideInfo, CompositeWheelHash, WheelTexHash, WheelInnerMaskTexHash, CARSLOTID_PAINT_RIM);
 	}
 }
 
+static injector::hook_back<int(*)(DWORD*, int, int, DWORD*)> hb_GetTempCarSkinTextures;
 int GetTempCarSkinTextures(DWORD* textures_to_load, int num_textures, int max_textures, DWORD* ride)
 {
 	DWORD* VinylPart; // r3
@@ -141,7 +193,7 @@ int GetTempCarSkinTextures(DWORD* textures_to_load, int num_textures, int max_te
 	DWORD SpinnerTextureMaskHash; // r3
 
 	// VINYL_LAYER0
-	VinylPart = RideInfo_GetPart(ride, CAR_SLOT_ID::VINYL_LAYER0);
+	VinylPart = RideInfo_GetPart(ride, CARSLOTID_VINYL_LAYER0);
 	if (VinylPart)
 	{
 		VinylLayerHash = GetVinylLayerHash_Game(ride, 0);
@@ -180,6 +232,9 @@ int GetTempCarSkinTextures(DWORD* textures_to_load, int num_textures, int max_te
 		num_textures += UsedCarTextureAddToTable(textures_to_load, num_textures, max_textures, SpinnerTextureMaskHash);
 	}*/
 
+	//
+	num_textures = hb_GetTempCarSkinTextures.fun(textures_to_load, num_textures, max_textures, ride);
+
 	return num_textures;
 }
 
@@ -216,7 +271,7 @@ DWORD FindScreenCameraInfo(DWORD ScreenInfo)
 	DWORD CustomAngle = 0;
 	if (MenuID >= MenuID::Customize_Rims_Min && MenuID <= MenuID::Customize_Rims_Last) // Rims
 	{
-		if (SeperateRims)
+		if (SeparateRims)
 		{
 			switch (RimsToCustomize)
 			{
@@ -610,7 +665,7 @@ void RenderFrontEndCars(DWORD* view, int reflection)
 
 			for (FECar = *(FrontEndRenderingCar**)_FrontEndRenderingCarList;
 				FECar != (FrontEndRenderingCar*)_FrontEndRenderingCarList;
-				FECar = FECar->Next)
+				FECar = FECar->GetNext())
 			{
 				_CarRenderInfo = FECar->RenderInfo;
 				if (_CarRenderInfo && FECar->Visible)

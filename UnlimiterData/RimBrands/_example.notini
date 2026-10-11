@@ -1,0 +1,13 @@
+#     Required
+#          BrandName = Defines the BRAND_NAME attribute value. If a rim car part has the attribute with the same value, it will appear under this brand.
+#			 - If the name exists in _RimBrands.ini, the file will overwrite the rim brand with the same name.
+#            - Otherwise, it will get added as a new rim brand at the end of the list.
+#          String = Defines which string will be used in the menu. Only accepts labels.
+#          Texture = Defines which icon will be used in the menu. Only accepts texture names.
+#     Optional
+#          NoRimSize = Removes size selection and lists all rims separately.
+
+[Brand]
+BrandName = "5ZIGEN"
+String = "CO_RIM_BRAND_5_ZIGEN"
+Texture = "VISUAL_RIMS_BRAND_5ZIGEN"

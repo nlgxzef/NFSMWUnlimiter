@@ -63,13 +63,13 @@ int __fastcall CarCustomizeManager_GetPartPrice(DWORD* _CarCustomizeManager, voi
 
             switch (CarSlotID)// Body and Visual Parts
             {
-			case CAR_SLOT_ID::VINYL_COLOUR0_0:
-            case CAR_SLOT_ID::VINYL_COLOUR0_1:
-            case CAR_SLOT_ID::VINYL_COLOUR0_2:
-            case CAR_SLOT_ID::VINYL_COLOUR0_3:
-			case CAR_SLOT_ID::HUD_BACKING_COLOUR:
-			case CAR_SLOT_ID::HUD_NEEDLE_COLOUR:
-			case CAR_SLOT_ID::HUD_CHARACTER_COLOUR:
+			case CARSLOTID_VINYL_COLOUR0_0:
+            case CARSLOTID_VINYL_COLOUR0_1:
+            case CARSLOTID_VINYL_COLOUR0_2:
+            case CARSLOTID_VINYL_COLOUR0_3:
+			case CARSLOTID_HUD_BACKING_COLOUR:
+			case CARSLOTID_HUD_NEEDLE_COLOUR:
+			case CARSLOTID_HUD_CHARACTER_COLOUR:
                 break;
             default:
                 UnlockFilter = CarCustomizeManager_GetUnlockFilter();
@@ -166,21 +166,21 @@ DWORD* __fastcall CarCustomizeManager_GetRealStockCarPart(DWORD* _CarCustomizeMa
 
 bool __fastcall CarCustomizeManager_IsFrontRimStock(DWORD* _CarCustomizeManager, void* EDX_Unused)
 {
-	DWORD* StockFrontWheel = CarCustomizeManager_GetRealStockCarPart((DWORD*)_gCarCustomizeManager, EDX_Unused, CAR_SLOT_ID::FRONT_WHEEL);
-	DWORD* InstalledFrontWheel = CarCustomizeManager_GetInstalledCarPart((DWORD*)_gCarCustomizeManager, CAR_SLOT_ID::FRONT_WHEEL);
+	DWORD* StockFrontWheel = CarCustomizeManager_GetRealStockCarPart((DWORD*)_gCarCustomizeManager, EDX_Unused, CARSLOTID_FRONT_WHEEL);
+	DWORD* InstalledFrontWheel = CarCustomizeManager_GetInstalledCarPart((DWORD*)_gCarCustomizeManager, CARSLOTID_FRONT_WHEEL);
 	return StockFrontWheel == InstalledFrontWheel;
 }
 
 bool __fastcall CarCustomizeManager_IsRearRimStock(DWORD* _CarCustomizeManager, void* EDX_Unused)
 {
-	DWORD* StockRearWheel = CarCustomizeManager_GetRealStockCarPart((DWORD*)_gCarCustomizeManager, EDX_Unused, CAR_SLOT_ID::REAR_WHEEL);
-	DWORD* InstalledRearWheel = CarCustomizeManager_GetInstalledCarPart((DWORD*)_gCarCustomizeManager, CAR_SLOT_ID::REAR_WHEEL);
+	DWORD* StockRearWheel = CarCustomizeManager_GetRealStockCarPart((DWORD*)_gCarCustomizeManager, EDX_Unused, CARSLOTID_REAR_WHEEL);
+	DWORD* InstalledRearWheel = CarCustomizeManager_GetInstalledCarPart((DWORD*)_gCarCustomizeManager, CARSLOTID_REAR_WHEEL);
 	return StockRearWheel == InstalledRearWheel;
 }
 
 bool __fastcall CarCustomizeManager_IsRearRimInstalled(DWORD* _CarCustomizeManager, void* EDX_Unused)
 {
-	DWORD* InstalledRearWheel = CarCustomizeManager_GetInstalledCarPart((DWORD*)_gCarCustomizeManager, CAR_SLOT_ID::REAR_WHEEL);
+	DWORD* InstalledRearWheel = CarCustomizeManager_GetInstalledCarPart((DWORD*)_gCarCustomizeManager, CARSLOTID_REAR_WHEEL);
 	return InstalledRearWheel;
 }
 
@@ -239,181 +239,181 @@ void __fastcall CarCustomizeManager_UpdateHeatOnVehicle(DWORD* CarCustomizeManag
 
         switch (TheSelectablePart[4]) // CarSlotID
         {
-		case CAR_SLOT_ID::BODY:
+		case CARSLOTID_BODY:
             CustomFECoolingValue = CarConfigs[CarType].FECooling.BodyKits;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             else FECareerRecord_AdjustHeatOnBodyKitApplied(FECareerRecord, HeatAdjustMultiplier);
             break;
-		case CAR_SLOT_ID::SPOILER:
+		case CARSLOTID_SPOILER:
             CustomFECoolingValue = CarConfigs[CarType].FECooling.Spoilers;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             else FECareerRecord_AdjustHeatOnSpoilerApplied(FECareerRecord, HeatAdjustMultiplier);
             break;
-		case CAR_SLOT_ID::ROOF:
+		case CARSLOTID_ROOF:
             CustomFECoolingValue = CarConfigs[CarType].FECooling.RoofScoops;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             else FECareerRecord_AdjustHeatOnRoofScoopApplied(FECareerRecord, HeatAdjustMultiplier);
             break;
-		case CAR_SLOT_ID::HOOD:
+		case CARSLOTID_HOOD:
             CustomFECoolingValue = CarConfigs[CarType].FECooling.Hoods;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             else FECareerRecord_AdjustHeatOnHoodApplied(FECareerRecord, HeatAdjustMultiplier);
             break;
-		case CAR_SLOT_ID::FRONT_WHEEL:
-		case CAR_SLOT_ID::REAR_WHEEL:
+		case CARSLOTID_FRONT_WHEEL:
+		case CARSLOTID_REAR_WHEEL:
             CustomFECoolingValue = CarConfigs[CarType].FECooling.Rims;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             else FECareerRecord_AdjustHeatOnRimApplied(FECareerRecord, HeatAdjustMultiplier);
             break;
-		case CAR_SLOT_ID::BASE_PAINT:
+		case CARSLOTID_BASE_PAINT:
             CustomFECoolingValue = CarConfigs[CarType].FECooling.Paint;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             else FECareerRecord_AdjustHeatOnPaintApplied(FECareerRecord, HeatAdjustMultiplier);
             break;
-		case CAR_SLOT_ID::VINYL_LAYER0:
+		case CARSLOTID_VINYL_LAYER0:
             CustomFECoolingValue = CarConfigs[CarType].FECooling.Vinyls;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             else FECareerRecord_AdjustHeatOnVinylApplied(FECareerRecord, HeatAdjustMultiplier);
             break;
-		case CAR_SLOT_ID::PAINT_RIM:
+		case CARSLOTID_PAINT_RIM:
             CustomFECoolingValue = CarConfigs[CarType].FECooling.RimPaint;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             else FECareerRecord_AdjustHeatOnRimPaintApplied(FECareerRecord, HeatAdjustMultiplier);
             break;
-        case CAR_SLOT_ID::DECAL_FRONT_WINDOW_TEX0:
-        case CAR_SLOT_ID::DECAL_FRONT_WINDOW_TEX1:
-        case CAR_SLOT_ID::DECAL_FRONT_WINDOW_TEX2:
-        case CAR_SLOT_ID::DECAL_FRONT_WINDOW_TEX3:
-        case CAR_SLOT_ID::DECAL_FRONT_WINDOW_TEX4:
-        case CAR_SLOT_ID::DECAL_FRONT_WINDOW_TEX5:
-        case CAR_SLOT_ID::DECAL_FRONT_WINDOW_TEX6:
-        case CAR_SLOT_ID::DECAL_FRONT_WINDOW_TEX7:
-        case CAR_SLOT_ID::DECAL_REAR_WINDOW_TEX0:
-        case CAR_SLOT_ID::DECAL_REAR_WINDOW_TEX1:
-        case CAR_SLOT_ID::DECAL_REAR_WINDOW_TEX2:
-        case CAR_SLOT_ID::DECAL_REAR_WINDOW_TEX3:
-        case CAR_SLOT_ID::DECAL_REAR_WINDOW_TEX4:
-        case CAR_SLOT_ID::DECAL_REAR_WINDOW_TEX5:
-        case CAR_SLOT_ID::DECAL_REAR_WINDOW_TEX6:
-        case CAR_SLOT_ID::DECAL_REAR_WINDOW_TEX7:
-        case CAR_SLOT_ID::DECAL_LEFT_DOOR_TEX0:
-        case CAR_SLOT_ID::DECAL_LEFT_DOOR_TEX1:
-        case CAR_SLOT_ID::DECAL_LEFT_DOOR_TEX2:
-        case CAR_SLOT_ID::DECAL_LEFT_DOOR_TEX3:
-        case CAR_SLOT_ID::DECAL_LEFT_DOOR_TEX4:
-        case CAR_SLOT_ID::DECAL_LEFT_DOOR_TEX5:
-        case CAR_SLOT_ID::DECAL_LEFT_DOOR_TEX6:
-        case CAR_SLOT_ID::DECAL_LEFT_DOOR_TEX7:
-        case CAR_SLOT_ID::DECAL_RIGHT_DOOR_TEX0:
-        case CAR_SLOT_ID::DECAL_RIGHT_DOOR_TEX1:
-        case CAR_SLOT_ID::DECAL_RIGHT_DOOR_TEX2:
-        case CAR_SLOT_ID::DECAL_RIGHT_DOOR_TEX3:
-        case CAR_SLOT_ID::DECAL_RIGHT_DOOR_TEX4:
-        case CAR_SLOT_ID::DECAL_RIGHT_DOOR_TEX5:
-        case CAR_SLOT_ID::DECAL_RIGHT_DOOR_TEX6:
-        case CAR_SLOT_ID::DECAL_RIGHT_DOOR_TEX7:
-        case CAR_SLOT_ID::DECAL_LEFT_QUARTER_TEX0:
-        case CAR_SLOT_ID::DECAL_LEFT_QUARTER_TEX1:
-        case CAR_SLOT_ID::DECAL_LEFT_QUARTER_TEX2:
-        case CAR_SLOT_ID::DECAL_LEFT_QUARTER_TEX3:
-        case CAR_SLOT_ID::DECAL_LEFT_QUARTER_TEX4:
-        case CAR_SLOT_ID::DECAL_LEFT_QUARTER_TEX5:
-        case CAR_SLOT_ID::DECAL_LEFT_QUARTER_TEX6:
-        case CAR_SLOT_ID::DECAL_LEFT_QUARTER_TEX7:
-        case CAR_SLOT_ID::DECAL_RIGHT_QUARTER_TEX0:
-        case CAR_SLOT_ID::DECAL_RIGHT_QUARTER_TEX1:
-        case CAR_SLOT_ID::DECAL_RIGHT_QUARTER_TEX2:
-        case CAR_SLOT_ID::DECAL_RIGHT_QUARTER_TEX3:
-        case CAR_SLOT_ID::DECAL_RIGHT_QUARTER_TEX4:
-        case CAR_SLOT_ID::DECAL_RIGHT_QUARTER_TEX5:
-        case CAR_SLOT_ID::DECAL_RIGHT_QUARTER_TEX6:
-        case CAR_SLOT_ID::DECAL_RIGHT_QUARTER_TEX7:
+        case CARSLOTID_DECAL_FRONT_WINDOW_TEX0:
+        case CARSLOTID_DECAL_FRONT_WINDOW_TEX1:
+        case CARSLOTID_DECAL_FRONT_WINDOW_TEX2:
+        case CARSLOTID_DECAL_FRONT_WINDOW_TEX3:
+        case CARSLOTID_DECAL_FRONT_WINDOW_TEX4:
+        case CARSLOTID_DECAL_FRONT_WINDOW_TEX5:
+        case CARSLOTID_DECAL_FRONT_WINDOW_TEX6:
+        case CARSLOTID_DECAL_FRONT_WINDOW_TEX7:
+        case CARSLOTID_DECAL_REAR_WINDOW_TEX0:
+        case CARSLOTID_DECAL_REAR_WINDOW_TEX1:
+        case CARSLOTID_DECAL_REAR_WINDOW_TEX2:
+        case CARSLOTID_DECAL_REAR_WINDOW_TEX3:
+        case CARSLOTID_DECAL_REAR_WINDOW_TEX4:
+        case CARSLOTID_DECAL_REAR_WINDOW_TEX5:
+        case CARSLOTID_DECAL_REAR_WINDOW_TEX6:
+        case CARSLOTID_DECAL_REAR_WINDOW_TEX7:
+        case CARSLOTID_DECAL_LEFT_DOOR_TEX0:
+        case CARSLOTID_DECAL_LEFT_DOOR_TEX1:
+        case CARSLOTID_DECAL_LEFT_DOOR_TEX2:
+        case CARSLOTID_DECAL_LEFT_DOOR_TEX3:
+        case CARSLOTID_DECAL_LEFT_DOOR_TEX4:
+        case CARSLOTID_DECAL_LEFT_DOOR_TEX5:
+        case CARSLOTID_DECAL_LEFT_DOOR_TEX6:
+        case CARSLOTID_DECAL_LEFT_DOOR_TEX7:
+        case CARSLOTID_DECAL_RIGHT_DOOR_TEX0:
+        case CARSLOTID_DECAL_RIGHT_DOOR_TEX1:
+        case CARSLOTID_DECAL_RIGHT_DOOR_TEX2:
+        case CARSLOTID_DECAL_RIGHT_DOOR_TEX3:
+        case CARSLOTID_DECAL_RIGHT_DOOR_TEX4:
+        case CARSLOTID_DECAL_RIGHT_DOOR_TEX5:
+        case CARSLOTID_DECAL_RIGHT_DOOR_TEX6:
+        case CARSLOTID_DECAL_RIGHT_DOOR_TEX7:
+        case CARSLOTID_DECAL_LEFT_QUARTER_TEX0:
+        case CARSLOTID_DECAL_LEFT_QUARTER_TEX1:
+        case CARSLOTID_DECAL_LEFT_QUARTER_TEX2:
+        case CARSLOTID_DECAL_LEFT_QUARTER_TEX3:
+        case CARSLOTID_DECAL_LEFT_QUARTER_TEX4:
+        case CARSLOTID_DECAL_LEFT_QUARTER_TEX5:
+        case CARSLOTID_DECAL_LEFT_QUARTER_TEX6:
+        case CARSLOTID_DECAL_LEFT_QUARTER_TEX7:
+        case CARSLOTID_DECAL_RIGHT_QUARTER_TEX0:
+        case CARSLOTID_DECAL_RIGHT_QUARTER_TEX1:
+        case CARSLOTID_DECAL_RIGHT_QUARTER_TEX2:
+        case CARSLOTID_DECAL_RIGHT_QUARTER_TEX3:
+        case CARSLOTID_DECAL_RIGHT_QUARTER_TEX4:
+        case CARSLOTID_DECAL_RIGHT_QUARTER_TEX5:
+        case CARSLOTID_DECAL_RIGHT_QUARTER_TEX6:
+        case CARSLOTID_DECAL_RIGHT_QUARTER_TEX7:
             CustomFECoolingValue = CarConfigs[CarType].FECooling.Decals;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             else FECareerRecord_AdjustHeatOnDecalApplied(FECareerRecord, HeatAdjustMultiplier);
             break;
-		case CAR_SLOT_ID::WINDOW_TINT:
+		case CARSLOTID_WINDOW_TINT:
             CustomFECoolingValue = CarConfigs[CarType].FECooling.WindowTint;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             else FECareerRecord_AdjustHeatOnWindowTintApplied(FECareerRecord, HeatAdjustMultiplier);
             break;
-		case CAR_SLOT_ID::INTERIOR:
+		case CARSLOTID_INTERIOR:
             CustomFECoolingValue = CarConfigs[CarType].FECooling.Interior;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             break;
-		case CAR_SLOT_ID::BASE:
+		case CARSLOTID_BASE:
             CustomFECoolingValue = CarConfigs[CarType].FECooling.Roof;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             break;
-		case CAR_SLOT_ID::FRONT_BRAKE:
+		case CARSLOTID_FRONT_BRAKE:
             CustomFECoolingValue = CarConfigs[CarType].FECooling.Brakes;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             break;
-		case CAR_SLOT_ID::LEFT_HEADLIGHT:
+		case CARSLOTID_LEFT_HEADLIGHT:
             CustomFECoolingValue = CarConfigs[CarType].FECooling.Headlights;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             break;
-		case CAR_SLOT_ID::LEFT_BRAKELIGHT:
+		case CARSLOTID_LEFT_BRAKELIGHT:
             CustomFECoolingValue = CarConfigs[CarType].FECooling.Taillights;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             break;
-		case CAR_SLOT_ID::LEFT_SIDE_MIRROR:
+		case CARSLOTID_LEFT_SIDE_MIRROR:
             CustomFECoolingValue = CarConfigs[CarType].FECooling.Mirrors;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             break;
-		case CAR_SLOT_ID::ATTACHMENT0:
+		case CARSLOTID_ATTACHMENT0:
             CustomFECoolingValue = CarConfigs[CarType].FECooling.Attachment0;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             break;
-		case CAR_SLOT_ID::ATTACHMENT1:
+		case CARSLOTID_ATTACHMENT1:
             CustomFECoolingValue = CarConfigs[CarType].FECooling.Attachment1;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             break;
-		case CAR_SLOT_ID::ATTACHMENT2:
+		case CARSLOTID_ATTACHMENT2:
             CustomFECoolingValue = CarConfigs[CarType].FECooling.Attachment2;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             break;
-		case CAR_SLOT_ID::ATTACHMENT3:
+		case CARSLOTID_ATTACHMENT3:
             CustomFECoolingValue = CarConfigs[CarType].FECooling.Attachment3;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             break;
-		case CAR_SLOT_ID::ATTACHMENT4:
+		case CARSLOTID_ATTACHMENT4:
             CustomFECoolingValue = CarConfigs[CarType].FECooling.Attachment4;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             break;
-		case CAR_SLOT_ID::ATTACHMENT5:
+		case CARSLOTID_ATTACHMENT5:
             CustomFECoolingValue = CarConfigs[CarType].FECooling.Attachment5;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             break;
-		case CAR_SLOT_ID::ATTACHMENT6:
+		case CARSLOTID_ATTACHMENT6:
             CustomFECoolingValue = CarConfigs[CarType].FECooling.Attachment6;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             break;
-		case CAR_SLOT_ID::ATTACHMENT7:
+		case CARSLOTID_ATTACHMENT7:
             CustomFECoolingValue = CarConfigs[CarType].FECooling.Attachment7;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             break;
-		case CAR_SLOT_ID::ATTACHMENT8:
+		case CARSLOTID_ATTACHMENT8:
             CustomFECoolingValue = CarConfigs[CarType].FECooling.Attachment8;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             break;
-		case CAR_SLOT_ID::ATTACHMENT9:
+		case CARSLOTID_ATTACHMENT9:
             CustomFECoolingValue = CarConfigs[CarType].FECooling.Attachment9;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             break;
-		case CAR_SLOT_ID::DRIVER:
+		case CARSLOTID_DRIVER:
             CustomFECoolingValue = CarConfigs[CarType].FECooling.Driver;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             break;
-		case CAR_SLOT_ID::LICENSE_PLATE:
+		case CARSLOTID_LICENSE_PLATE:
             CustomFECoolingValue = CarConfigs[CarType].FECooling.LicensePlate;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             break;
-		case CAR_SLOT_ID::HEADLIGHT:
+		case CARSLOTID_HEADLIGHT:
             CustomFECoolingValue = CarConfigs[CarType].FECooling.Tires;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             break;
-		case CAR_SLOT_ID::BRAKELIGHT:
+		case CARSLOTID_BRAKELIGHT:
             CustomFECoolingValue = CarConfigs[CarType].FECooling.Neon;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             break;
@@ -640,58 +640,58 @@ bool __fastcall CarCustomizeManager_IsPartLocked(DWORD* _CarCustomizeManager, vo
 		CarSlotID = TheSelectablePart[4];
 		switch (CarSlotID)
 		{
-		case CAR_SLOT_ID::DECAL_FRONT_WINDOW_TEX0: // Window Decals
-		case CAR_SLOT_ID::DECAL_FRONT_WINDOW_TEX1:
-		case CAR_SLOT_ID::DECAL_FRONT_WINDOW_TEX2:
-		case CAR_SLOT_ID::DECAL_FRONT_WINDOW_TEX3:
-		case CAR_SLOT_ID::DECAL_FRONT_WINDOW_TEX4:
-		case CAR_SLOT_ID::DECAL_FRONT_WINDOW_TEX5:
-		case CAR_SLOT_ID::DECAL_FRONT_WINDOW_TEX6:
-		case CAR_SLOT_ID::DECAL_FRONT_WINDOW_TEX7:
-		case CAR_SLOT_ID::DECAL_REAR_WINDOW_TEX0:
-		case CAR_SLOT_ID::DECAL_REAR_WINDOW_TEX1:
-		case CAR_SLOT_ID::DECAL_REAR_WINDOW_TEX2:
-		case CAR_SLOT_ID::DECAL_REAR_WINDOW_TEX3:
-		case CAR_SLOT_ID::DECAL_REAR_WINDOW_TEX4:
-		case CAR_SLOT_ID::DECAL_REAR_WINDOW_TEX5:
-		case CAR_SLOT_ID::DECAL_REAR_WINDOW_TEX6:
-		case CAR_SLOT_ID::DECAL_REAR_WINDOW_TEX7:
+		case CARSLOTID_DECAL_FRONT_WINDOW_TEX0: // Window Decals
+		case CARSLOTID_DECAL_FRONT_WINDOW_TEX1:
+		case CARSLOTID_DECAL_FRONT_WINDOW_TEX2:
+		case CARSLOTID_DECAL_FRONT_WINDOW_TEX3:
+		case CARSLOTID_DECAL_FRONT_WINDOW_TEX4:
+		case CARSLOTID_DECAL_FRONT_WINDOW_TEX5:
+		case CARSLOTID_DECAL_FRONT_WINDOW_TEX6:
+		case CARSLOTID_DECAL_FRONT_WINDOW_TEX7:
+		case CARSLOTID_DECAL_REAR_WINDOW_TEX0:
+		case CARSLOTID_DECAL_REAR_WINDOW_TEX1:
+		case CARSLOTID_DECAL_REAR_WINDOW_TEX2:
+		case CARSLOTID_DECAL_REAR_WINDOW_TEX3:
+		case CARSLOTID_DECAL_REAR_WINDOW_TEX4:
+		case CARSLOTID_DECAL_REAR_WINDOW_TEX5:
+		case CARSLOTID_DECAL_REAR_WINDOW_TEX6:
+		case CARSLOTID_DECAL_REAR_WINDOW_TEX7:
 			IsInBackroom = CustomizeIsInBackRoom();
 			UnlockFilter = CarCustomizeManager_GetUnlockFilter();
 			result = UnlockSystem_IsUnlockableUnlocked(UnlockFilter, 44, 1, 0, IsInBackroom) == 0;
 			break;
-		case CAR_SLOT_ID::DECAL_LEFT_DOOR_TEX0: // Door Decals
-		case CAR_SLOT_ID::DECAL_LEFT_DOOR_TEX1:
-		case CAR_SLOT_ID::DECAL_LEFT_DOOR_TEX2:
-		case CAR_SLOT_ID::DECAL_LEFT_DOOR_TEX3:
-		case CAR_SLOT_ID::DECAL_LEFT_DOOR_TEX4:
-		case CAR_SLOT_ID::DECAL_LEFT_DOOR_TEX5:
-		case CAR_SLOT_ID::DECAL_RIGHT_DOOR_TEX0:
-		case CAR_SLOT_ID::DECAL_RIGHT_DOOR_TEX1:
-		case CAR_SLOT_ID::DECAL_RIGHT_DOOR_TEX2:
-		case CAR_SLOT_ID::DECAL_RIGHT_DOOR_TEX3:
-		case CAR_SLOT_ID::DECAL_RIGHT_DOOR_TEX4:
-		case CAR_SLOT_ID::DECAL_RIGHT_DOOR_TEX5:
+		case CARSLOTID_DECAL_LEFT_DOOR_TEX0: // Door Decals
+		case CARSLOTID_DECAL_LEFT_DOOR_TEX1:
+		case CARSLOTID_DECAL_LEFT_DOOR_TEX2:
+		case CARSLOTID_DECAL_LEFT_DOOR_TEX3:
+		case CARSLOTID_DECAL_LEFT_DOOR_TEX4:
+		case CARSLOTID_DECAL_LEFT_DOOR_TEX5:
+		case CARSLOTID_DECAL_RIGHT_DOOR_TEX0:
+		case CARSLOTID_DECAL_RIGHT_DOOR_TEX1:
+		case CARSLOTID_DECAL_RIGHT_DOOR_TEX2:
+		case CARSLOTID_DECAL_RIGHT_DOOR_TEX3:
+		case CARSLOTID_DECAL_RIGHT_DOOR_TEX4:
+		case CARSLOTID_DECAL_RIGHT_DOOR_TEX5:
 			IsInBackroom = CustomizeIsInBackRoom();
 			UnlockFilter = CarCustomizeManager_GetUnlockFilter();
 			result = UnlockSystem_IsUnlockableUnlocked(UnlockFilter, 46, 2, 0, IsInBackroom) == 0;
 			break;
-		case CAR_SLOT_ID::DECAL_LEFT_QUARTER_TEX0: // Quarter decals
-		case CAR_SLOT_ID::DECAL_LEFT_QUARTER_TEX1:
-		case CAR_SLOT_ID::DECAL_LEFT_QUARTER_TEX2:
-		case CAR_SLOT_ID::DECAL_LEFT_QUARTER_TEX3:
-		case CAR_SLOT_ID::DECAL_LEFT_QUARTER_TEX4:
-		case CAR_SLOT_ID::DECAL_LEFT_QUARTER_TEX5:
-		case CAR_SLOT_ID::DECAL_LEFT_QUARTER_TEX6:
-		case CAR_SLOT_ID::DECAL_LEFT_QUARTER_TEX7:
-		case CAR_SLOT_ID::DECAL_RIGHT_QUARTER_TEX0:
-		case CAR_SLOT_ID::DECAL_RIGHT_QUARTER_TEX1:
-		case CAR_SLOT_ID::DECAL_RIGHT_QUARTER_TEX2:
-		case CAR_SLOT_ID::DECAL_RIGHT_QUARTER_TEX3:
-		case CAR_SLOT_ID::DECAL_RIGHT_QUARTER_TEX4:
-		case CAR_SLOT_ID::DECAL_RIGHT_QUARTER_TEX5:
-		case CAR_SLOT_ID::DECAL_RIGHT_QUARTER_TEX6:
-		case CAR_SLOT_ID::DECAL_RIGHT_QUARTER_TEX7:
+		case CARSLOTID_DECAL_LEFT_QUARTER_TEX0: // Quarter decals
+		case CARSLOTID_DECAL_LEFT_QUARTER_TEX1:
+		case CARSLOTID_DECAL_LEFT_QUARTER_TEX2:
+		case CARSLOTID_DECAL_LEFT_QUARTER_TEX3:
+		case CARSLOTID_DECAL_LEFT_QUARTER_TEX4:
+		case CARSLOTID_DECAL_LEFT_QUARTER_TEX5:
+		case CARSLOTID_DECAL_LEFT_QUARTER_TEX6:
+		case CARSLOTID_DECAL_LEFT_QUARTER_TEX7:
+		case CARSLOTID_DECAL_RIGHT_QUARTER_TEX0:
+		case CARSLOTID_DECAL_RIGHT_QUARTER_TEX1:
+		case CARSLOTID_DECAL_RIGHT_QUARTER_TEX2:
+		case CARSLOTID_DECAL_RIGHT_QUARTER_TEX3:
+		case CARSLOTID_DECAL_RIGHT_QUARTER_TEX4:
+		case CARSLOTID_DECAL_RIGHT_QUARTER_TEX5:
+		case CARSLOTID_DECAL_RIGHT_QUARTER_TEX6:
+		case CARSLOTID_DECAL_RIGHT_QUARTER_TEX7:
 			IsInBackroom = CustomizeIsInBackRoom();
 			UnlockFilter = CarCustomizeManager_GetUnlockFilter();
 			result = UnlockSystem_IsUnlockableUnlocked(UnlockFilter, 48, 3, 0, IsInBackroom) == 0;
@@ -726,7 +726,7 @@ bool __fastcall CarCustomizeManager_IsRimCategoryLocked(DWORD* _CarCustomizeMana
 
 	PartList[0] = (DWORD)PartList;
 	PartList[1] = (DWORD)PartList;
-	CarCustomizeManager_GetCarPartList(_CarCustomizeManager, CAR_SLOT_ID::FRONT_WHEEL, PartList, RimBrandHash);
+	CarCustomizeManager_GetCarPartList_Game(_CarCustomizeManager, CARSLOTID_FRONT_WHEEL, PartList, RimBrandHash);
 
 	if (PartList[0]) TheSelectablePart = (DWORD*)(PartList[0] - 4);
 
@@ -769,7 +769,7 @@ bool __fastcall CarCustomizeManager_IsVinylCategoryLocked(DWORD* _CarCustomizeMa
 
 	PartList[0] = (DWORD)PartList;
 	PartList[1] = (DWORD)PartList;
-	CarCustomizeManager_GetCarPartList(_CarCustomizeManager, CAR_SLOT_ID::VINYL_LAYER0, PartList, VinylGroupIndex);
+	CarCustomizeManager_GetCarPartList_Game(_CarCustomizeManager, CARSLOTID_VINYL_LAYER0, PartList, VinylGroupIndex);
 
 	if (PartList[0]) TheSelectablePart = (DWORD*)(PartList[0] - 4);
 
@@ -1031,38 +1031,38 @@ DWORD __fastcall CarCustomizeManager_GetUnlockHash_CarPart(DWORD* _CarCustomizeM
 	char UnlockStringBuf[100];
 	const char* UnlockString;
 
-	if (UAT) return UnlockHash;
+	if (UAT || !CarPart) return UnlockHash;
 
 	// Check for a custom string hash
-	UnlockHash = CarPart_GetAppliedAttributeUParam(CarPart, bStringHash((char*)"UNLOCK_HASH"), -1);
+	UnlockHash = CarPart_GetAppliedAttributeUParam(CarPart, CT_bStringHash("UNLOCK_HASH"), -1);
 	if (UnlockHash != -1)
 	{
 		if (DoesStringExist(UnlockHash)) return UnlockHash;
 	}
 	// Or get the unlock string according to the unlock condition type
 	// Get and check if the condition is met
-	int UnlockConditionType = CarPart_GetAppliedAttributeIParam(CarPart, bStringHash((char*)"UNLOCK_TYPE"), -1);
+	int UnlockConditionType = CarPart_GetAppliedAttributeIParam(CarPart, CT_bStringHash("UNLOCK_TYPE"), -1);
 
 	switch (UnlockConditionType)
 	{
 	case 0: // Initially unlocked
-		return bStringHash((char*)"CUSTOMIZATION_PART_UNLOCK_MSG_06");
+		return CT_bStringHash("CUSTOMIZATION_PART_UNLOCK_MSG_06");
 	case 1: // Beat Blacklist member
-		BinToBeat = CarPart_GetAppliedAttributeIParam(CarPart, bStringHash((char*)"UNLOCK_AT"), 17);
+		BinToBeat = CarPart_GetAppliedAttributeIParam(CarPart, CT_bStringHash("UNLOCK_AT"), 17);
 		if (BinToBeat < 2 || BinToBeat > 17) BinToBeat = 17;
-		if (BinToBeat == 17) return bStringHash((char*)"CUSTOMIZATION_PART_UNLOCK_MSG_06");
+		if (BinToBeat == 17) return CT_bStringHash("CUSTOMIZATION_PART_UNLOCK_MSG_06");
 		sprintf(UnlockStringBuf, "CUSTOMIZATION_PART_UNLOCK_MSG_BL_%02d", BinToBeat);
 		return bStringHash(UnlockStringBuf);
 	case 2: // Complete CS Event #68 (special flag)
-		return bStringHash((char*)"CUSTOMIZATION_PART_UNLOCK_MSG_01");
+		return CT_bStringHash("CUSTOMIZATION_PART_UNLOCK_MSG_01");
 	case 3: // Enter "castrol" cheat code (special flag)
-		return bStringHash((char*)"CUSTOMIZATION_PART_UNLOCK_MSG_07");
+		return CT_bStringHash("CUSTOMIZATION_PART_UNLOCK_MSG_07");
 	case 4: // Complete CS 100% (special flag)
-		return bStringHash((char*)"CUSTOMIZATION_PART_UNLOCK_MSG_02");
+		return CT_bStringHash("CUSTOMIZATION_PART_UNLOCK_MSG_02");
 	case 5: // Complete Career mode at least once  (special flag)
-		return bStringHash((char*)"CUSTOMIZATION_PART_UNLOCK_MSG_03");
+		return CT_bStringHash("CUSTOMIZATION_PART_UNLOCK_MSG_03");
 	case 6: // Complete Game 100% (same as 5??)
-		return bStringHash((char*)"CUSTOMIZATION_PART_UNLOCK_MSG_04");
+		return CT_bStringHash("CUSTOMIZATION_PART_UNLOCK_MSG_04");
 	case -1: // None (Use in game function instead)
 	default:
 		break;
@@ -1188,4 +1188,154 @@ DWORD __fastcall CarCustomizeManager_GetUnlockHash_CarPart(DWORD* _CarCustomizeM
 	if (DoesStringExist(UnlockHash)) return UnlockHash;
 
 	return 0x9BB9CCC3;
+}
+
+int __fastcall CarPart_GetModelNameHash(DWORD* CarPart, int edx_unused, int a5, int LOD); // shut up compiler
+
+void __fastcall CarCustomizeManager_GetCarPartList(DWORD *CarCustomizeManager, void *EDX_Unused, int car_slot, DWORD* the_list,	unsigned int param)
+{
+	DWORD* FEDatabase = *(DWORD**)_FEDatabase;
+	
+	int car_type = -1;
+	if (*(void**)_FECarRecord) car_type = FECarRecord_GetType(*(void**)_FECarRecord);
+
+	DWORD* part = (DWORD*)CarPartDatabase_NewGetCarPart((DWORD*)_CarPartDB, car_type, car_slot, 0, 0, -1);
+	int UnlockableID = MapCarPartToUnlockable(car_slot);
+	int UpgradeLevel = 0;
+
+	DWORD* off_905E9C = *(DWORD**)0x905E9C;
+
+	bool has_solid = 0;
+	bool has_texture_entry = 0;
+
+	DWORD* TheSelectablePart = 0;
+	int PartFlags = 0;
+	int part_slot = 0;
+	DWORD* CustRec;
+	int CarType = -1;
+	DWORD* InstalledPart;
+	bool IsPartInstalled;
+	DWORD* PartListPrev;
+
+	DWORD VinylLayerHash;
+	bool IsCEOnly = 0;
+	DWORD ModelNameHash;
+	DWORD BrandName;
+
+	while (((DWORD)part & off_905E9C[3]) != 0)
+	{
+		switch (car_slot)
+		{
+		case CARSLOTID_BODY:
+			ModelNameHash = CarPart_GetModelNameHash(part, (int)EDX_Unused, 0, 1); // Check if LOD B model exists
+			if (ModelNameHash && eStreamPackLoader_GetStreamingEntry((DWORD*)_StreamingSolidPackLoader, ModelNameHash))
+				has_solid = 1;
+			else
+				has_solid = 0;
+
+			if (has_solid)
+			{
+			SetUpgradeLevel:
+				switch (UnlockableID)
+				{
+				case 44:
+					UpgradeLevel = 1;
+					break;
+				case 46:
+					UpgradeLevel = 2;
+					break;
+				case 48:
+					UpgradeLevel = 3;
+					break;
+				}
+				if (CustomizeIsInBackRoom() && !UnlockSystem_IsUnlockableUnlocked(2, UnlockableID, UpgradeLevel, 0, 1))
+					goto SkipThisPart;
+				
+				TheSelectablePart = (DWORD*)j_malloc(0x2C);
+				if (!TheSelectablePart) goto SkipThisPart;
+
+				TheSelectablePart[5] = UpgradeLevel;
+			CreatePartEntry:
+				TheSelectablePart[0] = SelectablePart_vtable;
+				TheSelectablePart[3] = (DWORD)part;
+				TheSelectablePart[4] = car_slot;
+				TheSelectablePart[6] = 7;
+				((BYTE*)TheSelectablePart)[28] = 0;
+				TheSelectablePart[8] = 1;
+				TheSelectablePart[9] = 0;
+				((BYTE*)TheSelectablePart)[40] = 0;
+			}
+
+			else
+			{
+				if (CustomizeIsInBackRoom())
+				{
+					if (!UnlockSystem_IsCarPartUnlocked(2, car_slot, part, 0, 1))
+						goto SkipThisPart;
+				}
+				else if ((*(DWORD*)(FEDatabase[4] + 0xAC / 4) & 0x4000) == 0
+					&& (((BYTE*)part)[5] & 0xE0) == 0xE0) goto SkipThisPart;
+
+				TheSelectablePart = (DWORD*)j_malloc(0x2C);
+				if (!TheSelectablePart) goto SkipThisPart;
+
+				TheSelectablePart[5] = ((BYTE*)part)[5] >> 5;
+				goto CreatePartEntry;
+			}
+
+			PartFlags = 1;
+
+			if (CarCustomizeManager_IsPartLocked(CarCustomizeManager, EDX_Unused, TheSelectablePart, 0)) PartFlags = 2;
+			else if (CarCustomizeManager_IsPartNew(CarCustomizeManager, EDX_Unused, TheSelectablePart, 0)) PartFlags = 3;
+			
+			// Skipped section about performance parts as they are handled elsewhere
+			
+			part_slot = TheSelectablePart[4];
+			CustRec = FEPlayerCarDB_GetCustomizationRecordByHandle((DWORD*)(FEDatabase[4] + 0x414 / 4), *(BYTE*)(*((DWORD*)CarCustomizeManager + 1) + 16));
+			CarType = FECarRecord_GetType((DWORD*)CarCustomizeManager[1]);
+			InstalledPart = FECustomizationRecord_GetInstalledPart(CustRec, CarType, part_slot);
+
+			IsPartInstalled = (DWORD)InstalledPart == TheSelectablePart[3];
+
+			if (IsPartInstalled) PartFlags |= 0x10;
+			else if (CarCustomizeManager_IsPartInCart(CarCustomizeManager, TheSelectablePart)) PartFlags |= 0x20;
+
+			TheSelectablePart[8] = PartFlags;
+			TheSelectablePart[9] = CarCustomizeManager_GetPartPrice(CarCustomizeManager, EDX_Unused, TheSelectablePart);
+
+			PartListPrev = (DWORD*)the_list[1];
+			PartListPrev[0] = (DWORD)(TheSelectablePart + 1);
+			the_list[1] = (DWORD)(TheSelectablePart + 1);
+			TheSelectablePart[2] = (DWORD)PartListPrev;
+			TheSelectablePart[1] = (DWORD)the_list;
+
+		SkipThisPart:
+			part = (DWORD*)CarPartDatabase_NewGetCarPart((DWORD*)_CarPartDB, car_type, car_slot, 0, (DWORD)part, -1);
+
+			break;
+
+		case CARSLOTID_FRONT_WHEEL:
+		//case CARSLOTID_REAR_WHEEL:
+			if (!param || CarPart_GetAppliedAttributeUParam(part, CT_bStringHash("BRAND_NAME"), 0) == param)
+				goto SetUpgradeLevel;
+			
+			goto SkipThisPart;
+			break;
+
+		case CARSLOTID_VINYL_LAYER0:
+			VinylLayerHash = GetVinylLayerHash_CarPart(part, car_type, 1);
+			has_texture_entry = eStreamPackLoader_GetStreamingEntry((DWORD*)_StreamingTexturePackLoader,VinylLayerHash) != 0;
+
+			BrandName = CarPart_GetAppliedAttributeUParam(part, CT_bStringHash("BRAND_NAME"), 0);
+			IsCEOnly = BrandName == CT_bStringHash("CEO");
+			if (has_texture_entry && (((BYTE*)part)[5] & 0x1F) == param && (!IsCEOnly || *(bool*)_IsCollectorsEdition))
+				goto SetUpgradeLevel;
+
+			goto SkipThisPart;
+			break;
+
+		default:
+			goto SetUpgradeLevel;
+		}
+	}
 }

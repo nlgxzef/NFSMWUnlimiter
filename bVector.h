@@ -4,7 +4,7 @@
 #include "stdio.h"
 
 // bVector2
-typedef struct bVector2
+struct bVector2
 {
 
 	float x;
@@ -33,10 +33,10 @@ typedef struct bVector2
 		y = _y;
 	}
 	bVector2() : bVector2(0.0f, 0.0f) {}
-} bVector2;
+};
 
 // bVector3
-typedef struct bVector3
+struct bVector3
 {
 	float x;
 	float y;
@@ -68,10 +68,10 @@ typedef struct bVector3
 		z = _z;
 	}
 	bVector3() : bVector3(0.0f, 0.0f, 0.0f) {}
-} bVector3;
+};
 
 // bVector4
-typedef struct bVector4
+struct bVector4
 {
 	float x;
 	float y;
@@ -106,6 +106,6 @@ typedef struct bVector4
 		w = _w;
 	}
 	bVector4() : bVector4(0.0f, 0.0f, 0.0f, 0.0f) {}
-} bVector4;
+};
 
 typedef bVector4 bQuaternion;

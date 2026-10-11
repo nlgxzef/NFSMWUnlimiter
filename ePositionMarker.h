@@ -5,7 +5,7 @@
 
 #include "bMatrix.h"
 
-typedef struct ePositionMarker
+struct ePositionMarker
 {
 	/* 0x0000 */ DWORD NameHash;
 	/* 0x0004 */ int iParam0;
@@ -14,4 +14,4 @@ typedef struct ePositionMarker
 	/* 0x0010 */ bMatrix4 Matrix;
 
 	inline operator void* () noexcept { return reinterpret_cast<void*>(this); }
-} ePositionMarker;
+};

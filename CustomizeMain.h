@@ -151,11 +151,11 @@ void __fastcall CustomizeMain_BuildOptionsList(DWORD* CustomizeMain, void* EDX_U
 	if (IsMenuEmpty_CustomizeMain(CarTypeID)) // Throw an error and add a dummy option if the menu is empty
 	{
 		CustomizeCategoryScreen_AddCustomOption(CustomizeMain, (char const*)CustomizeMain[4],
-			bStringHash((char*)"BROWSER_NOT_APPLICABLE"),
-			bStringHash((char*)"NOT_APPLICABLE"),
+			CT_bStringHash("BROWSER_NOT_APPLICABLE"),
+			CT_bStringHash("NOT_APPLICABLE"),
 			0);
 
-		DialogInterface_ShowOk((char const*)CustomizeMain[4], "", 1, bStringHash((char*)"CUSTOMIZE_NO_OPTIONS"));
+		DialogInterface_ShowOk((char const*)CustomizeMain[4], "", 1, CT_bStringHash("CUSTOMIZE_NO_OPTIONS"));
 	}
 		
 

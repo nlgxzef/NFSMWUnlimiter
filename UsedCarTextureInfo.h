@@ -8,7 +8,7 @@
 
 #pragma pack(push, 1)
 
-typedef struct
+struct UsedCarTextureInfo
 {
 	/* 0x0000 */ DWORD TexturesToLoadPerm[MaxPermTex]; // 87
 	/* 0x015c */ DWORD TexturesToLoadTemp[MaxTempTex]; // 87
@@ -42,7 +42,7 @@ typedef struct
 	/* 0x0364 */ DWORD ReplaceBrakelightGlassHash[3];
 	/* 0x0370 */ DWORD ReplaceReverselightHash[3];
 	/* 0x037c */ DWORD ShadowHash;
-} UsedCarTextureInfo;
+};
 
 #pragma pack(pop)
 

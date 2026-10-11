@@ -1,0 +1,13 @@
+#     Required
+#          Index = Defines internal numeric ID of the vinyl group. Only accepts integers 0 through 31.
+#			   - If the index exists in _VinylGroups.ini, the file will overwrite the vinyl group with the same index.
+#              - Otherwise, it will get added as a new vinyl group at the end of the list.
+#          String = Defines which string will be used in the menu. Only accepts labels.
+#          Texture = Defines which icon will be used in the menu. Only accepts texture names.
+#     Optional
+#          UseAltCamera = Uses alternative camera angle (angle_customize_vinyl_2) instead of the default one (angle_customizeparts_vinyl) which is set higher for full body vinyls.
+
+[Group]
+Index = 0
+String = "CO_VINYL_FLAME"
+Texture = "VINYL_GROUP_FLAMES"

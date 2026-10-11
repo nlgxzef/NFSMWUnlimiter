@@ -5,10 +5,8 @@
 
 #include "Color.h"
 
-typedef struct eLightFlare
+struct eLightFlare : bTNode<eLightFlare>
 {
-	/* 0x0000 */ eLightFlare* Next;
-	/* 0x0004 */ eLightFlare* Prev;
 	/* 0x0008 */ DWORD NameHash;
 	/* 0x000c */ Color ColourTint;
 	/* 0x0010 */ float PositionX;
@@ -23,4 +21,4 @@ typedef struct eLightFlare
 	/* 0x002e */ short ScenerySectionNumber;
 
 	inline operator void* () noexcept { return reinterpret_cast<void*>(this); }
-} eLightFlare; /* size: 0x0030 */
+}; /* size: 0x0030 */

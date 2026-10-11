@@ -5,12 +5,12 @@
 
 #pragma pack(push, 1)
 
-typedef struct
+struct ReplacementTextureEntry
 {
 	/* 0x0000 */ DWORD hOldNameHash;
 	/* 0x0004 */ DWORD hNewNameHash;
 	/* 0x0008 */ DWORD* pTextureInfo;
-} ReplacementTextureEntry;
+};
 
 #pragma pack(pop)
 

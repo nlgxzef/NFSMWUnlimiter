@@ -1,11 +1,12 @@
 #pragma once
 
-#define CarTypeInfoArray 0x9B09D8
+#define _CarTypeInfoArray 0x9B09D8
 #define SingleCarTypeInfoBlockSize 0xD0
 #define SingleCarPartSize 0xE
 
 #define NumFECarRecords 200
 #define NumFECustomizationRecords 75
+#define NumFECareerRecords 25
 #define NumCarSlots 139
 #define CarNameLength 32
 #define PresetNameLength 32
@@ -52,6 +53,8 @@
 #define _CustomizePaintDatum_vtable 0x8B7580
 #define _IsCollectorsEdition 0x8F8718
 #define _UnlockAllThings 0x926124
+#define _ShowAllCarsInFE 0x926127
+#define _ShowAllPresetsInFE 0x926129
 #define _TweakKitWheelOffsetFront 0x9B0960
 #define _TweakKitWheelOffsetRear 0x9B0964
 #define _Showcase_FromArgs 0x9B9E80
@@ -91,6 +94,8 @@
 #define _Lightslot 0x90354C
 #define _feposoff 0x9053C0
 #define _pi 0x9B27E0
+#define CheatCanAddImpoundBox 0x9B9E79
+#define CheatReleaseFromImpoundMarker 0x9B9E7A
 
 bool BETACompatibility = 0;
 bool HPCCompatibility = 0;
@@ -118,6 +123,7 @@ bool InShowcase = 0;
 
 // Default values for Rim Brands if _RimBrands.ini is N/A
 #define DefaultRimBrandCount 10
+#define MaximumRimBrandCount 64
 
 char* DefaultRimBrandNames[]
 {
@@ -166,6 +172,7 @@ char* DefaultRimBrandTextures[]
 
 // Default values for Vinyl Groups if _VinylGroups.ini is N/A
 #define DefaultVinylGroupCount 9
+#define MaximumVinylGroupCount 32
 
 int DefaultVinylGroupIndexes[]
 {
@@ -205,8 +212,8 @@ bool DefaultVinylGroupAltCameras[]
 	1, 0, 1, 1, 0, 1, 1, 1, 1, 1
 };
 
-// Default values for Vinyl Groups if _PaintGroups.ini is N/A
-#define DefaultPaintBrandCount 5
+// Default values for Paint Groups if _PaintGroups.ini is N/A
+#define DefaultPaintBrandCount 7
 #define MaximumPaintBrandCount 64
 
 char* DefaultPaintBrandNames[]
@@ -216,7 +223,9 @@ char* DefaultPaintBrandNames[]
 	(char*)"METAL",
 	(char*)"PEARL",
 	(char*)"TRAFFIC",
-	(char*)"COP"
+	(char*)"COP",
+	(char*)"RIM",
+	(char*)"VINYL"
 };
 
 char* DefaultPaintBrandStrings[]
@@ -226,7 +235,29 @@ char* DefaultPaintBrandStrings[]
 	(char*)"CP_FILTER_METALLIC",
 	(char*)"CP_FILTER_PEARL",
 	(char*)"CP_FILTER_TRAFFIC",
-	(char*)"CP_FILTER_COP"
+	(char*)"CP_FILTER_COP",
+	(char*)"CP_FILTER_RIM",
+	(char*)"CP_FILTER_VINYL"
+};
+
+bool UnifyPaints = 1;
+DWORD DefaultPaintLightMaterial;
+
+bool DefaultPaintBrandAvailableForBody[]
+{ 1, 1, 1, 1, 1, 1, 0, 0 };
+
+bool DefaultPaintBrandAvailableForRims[]
+{ 0, 0, 0, 0, 0, 0, 1, 0 };
+
+bool DefaultPaintBrandAvailableForVinyl[]
+{ 0, 0, 0, 0, 0, 0, 0, 1 };
+
+int PaintCarSlotIDsToLookFor[]
+{
+	CARSLOTID_BASE_PAINT,
+	CARSLOTID_PAINT_RIM,
+	CARSLOTID_VINYL_COLOUR0_0,
+	CARSLOTID_HUD_BACKING_COLOUR
 };
 
 // Default values for Vinyl Groups if _CopDestroyedStrings.ini is N/A
@@ -266,15 +297,16 @@ char* DefaultCopDestroyedStrings[]
 
 
 // _General.ini & CARNAME.ini
-typedef struct
+struct MainSection
 {
 	int InitiallyUnlocked;
 	bool ForceLODA;
 	int EngineType;
 	bool ScaleBrakesWithRims;
 	bool ListAttachmentsUnderParts;
-} MainSection;
-typedef struct
+};
+
+struct TextureSection
 {
 	bool HeadlightOff;
 	bool DamageLights;
@@ -282,14 +314,16 @@ typedef struct
 	bool Reverse;
 	bool BrakelightOnfInGame;
 	bool TireInnerMask;
-} TextureSection;
-typedef struct
+};
+
+struct CategorySection
 {
 	bool Parts;
 	bool Performance;
 	bool Visual;
-} CategorySection;
-typedef struct
+};
+
+struct PartsSection
 {
 	bool BodyKits;
 	bool Spoilers;
@@ -304,8 +338,9 @@ typedef struct
 	bool Taillights;
 	bool Mirrors;
 	int Attachments;
-} PartsSection;
-typedef struct
+};
+
+struct PerformanceSection
 {
 	bool Engine;
 	bool Transmission;
@@ -314,8 +349,9 @@ typedef struct
 	bool Tires;
 	bool Brakes;
 	bool Induction;
-} PerformanceSection;
-typedef struct
+};
+
+struct VisualSection
 {
 	bool Paint;
 	bool PaintCustom;
@@ -336,8 +372,9 @@ typedef struct
 	bool LicensePlate;
 	bool Tires;
 	bool Neon;
-} VisualSection;
-typedef struct
+};
+
+struct IconsSection
 {
 	DWORD Parts;
 	DWORD PartsBodyKits;
@@ -617,8 +654,9 @@ typedef struct
 	DWORD PerformanceSuperchargerLevel3Item2;
 	DWORD PerformanceSuperchargerLevel3Item3;
 	DWORD PerformanceSuperchargerJunkmanItem;
-} IconsSection;
-typedef struct
+};
+
+struct NamesSection
 {
 	DWORD Parts;
 	DWORD PartsBodyKits;
@@ -881,8 +919,9 @@ typedef struct
 	DWORD PerformanceSuperchargerLevel3Item2;
 	DWORD PerformanceSuperchargerLevel3Item3;
 	DWORD PerformanceSuperchargerJunkmanItem;
-} NamesSection;
-typedef struct
+};
+
+struct CamerasSection
 {
 	DWORD PartsBodyKits;
 	DWORD PartsSpoilers;
@@ -971,21 +1010,23 @@ typedef struct
 	DWORD VisualLicensePlate;
 	DWORD VisualTires;
 	DWORD VisualNeon;
-} CamerasSection;
+};
 
-typedef struct
+struct StockPartsSection
 {
 	bool CustomStockParts;
 	DWORD Parts[NumCarSlots];
-} StockPartsSection;
-typedef struct
+};
+
+struct RandomPartsSection
 {
 	int ForceCustomizationLevel;
 	bool CustomRandomParts;
 	bool RandomizeInTraffic;
 	bool Parts[NumCarSlots];
-} RandomPartsSection;
-typedef struct
+};
+
+struct FECoolingSection
 {
 	float BodyKits;
 	float Spoilers;
@@ -1017,11 +1058,11 @@ typedef struct
 	float LicensePlate;
 	float Tires;
 	float Neon;
-} FECoolingSection;
+};
 
-typedef struct
+struct CarConfig
 {
-	DWORD* CarTypeInfo;
+	CarTypeInfo* pCarTypeInfo;
 	MainSection Main;
 	TextureSection Textures;
 	CategorySection Category;
@@ -1034,38 +1075,55 @@ typedef struct
 	StockPartsSection StockParts;
 	RandomPartsSection RandomParts;
 	FECoolingSection FECooling;
-} CarConfig;
+};
 
 CarConfig DefaultCarConfig;
-std::vector<CarConfig> CarConfigs;
+struct CarConfigList : std::vector<CarConfig>
+{
+	template <class T>
+	CarConfig& operator[](T CarTypeID)
+	{
+		size_t Index = (size_t)CarTypeID; // a negative id becomes a huge one
+
+		return Index < size() ? std::vector<CarConfig>::operator[](Index) : DefaultCarConfig;
+	}
+
+	CarConfigList& operator=(std::vector<CarConfig>&& Other)
+	{
+		std::vector<CarConfig>::operator=(std::move(Other));
+		return *this;
+	}
+};
+
+CarConfigList CarConfigs;
 
 // _FNGFixes.ini
-typedef struct
+struct Child
 {
 	char Prefix[64];
-} Child;
+};
 
-typedef struct
+struct FNGFix
 {
 	char FNGName[64];
 	char ObjectPrefix[64];
 	int NumberOfObjects;
 	std::vector<Child> Children;
-} FNGFix;
+};
 
 std::vector<FNGFix> FNGFixes;
 
 // _CopDestroyedStrings.ini
-typedef struct
+struct CopDestroyedString
 {
 	DWORD PVehicle;
 	DWORD StringHash;
-} CopDestroyedString;
+};
 
 std::vector<CopDestroyedString> CopDestroyedStrings;
 
 // _BonusCars.ini
-typedef struct
+struct BonusCar
 {
 	char PresetName[32];
 	DWORD CarRecordID;
@@ -1074,41 +1132,46 @@ typedef struct
 	int UnlockConditionType;
 	int Blacklist;
 	DWORD UnlockConditionStringHash;
-} BonusCar;
+};
 
 BonusCar DefaultBonusCar;
 std::vector<BonusCar> BonusCars;
 
 // _RimBrands.ini
-typedef struct
+struct RimBrand
 {
 	DWORD BrandNameHash;
 	DWORD StringHash;
 	DWORD TextureHash;
 	bool NoRimSize;
-} RimBrand;
+};
 
 std::vector<RimBrand> RimBrands;
 
 // _VinylGroups.ini
-typedef struct
+struct VinylGroup
 {
 	int Index;
 	DWORD StringHash;
 	DWORD TextureHash;
 	bool UseAltCamera;
-} VinylGroup;
+};
 
 std::vector<VinylGroup> VinylGroups;
 
 // _PaintGroups.ini
-typedef struct
+struct PaintGroup
 {
 	DWORD BrandNameHash;
 	DWORD StringHash;
-} PaintGroup;
+	bool AvailableForBody;
+	bool AvailableForRims;
+	bool AvailableForVinyl;
+};
 
 std::vector<PaintGroup> PaintGroups;
+
+int AvailablePaintGroups[MaximumPaintBrandCount];
 
 DWORD *Showcase_FromColor[MaximumPaintBrandCount]; // 0x9B9E3C (only has 3 spaces)
 DWORD SelectedPaints[MaximumPaintBrandCount]; // CustomizePaint[112]

@@ -4,10 +4,8 @@
 #include "InGameFunctions.h"
 
 #pragma pack(push, 1)
-typedef struct FrontEndRenderingCar
+struct FrontEndRenderingCar : bTNode<FrontEndRenderingCar>
 {
-    /* 0x0000 */ FrontEndRenderingCar* Next;
-    /* 0x0004 */ FrontEndRenderingCar* Prev;
     /* 0x0008 */ DWORD mRideInfo[0xC4];
     /* 0x0318 */ DWORD* RenderInfo;
     /* 0x031C */ int ViewID;
@@ -23,7 +21,7 @@ typedef struct FrontEndRenderingCar
     /* 0x0584 */ int CopLightsOn;
     /* 0x0588 */ float ExtraPitch;
     /* 0x058C */ BYTE padding[4];
-} FrontEndRenderingCar; /* size: 0x0590 */
+}; /* size: 0x0590 */
 #pragma pack(pop)
 
 bool __fastcall FrontEndRenderingCar_LookupWheelPosition(FrontEndRenderingCar* _car, void* EDX_Unused, unsigned int index, bVector4 *position)
@@ -50,18 +48,18 @@ bool __fastcall FrontEndRenderingCar_LookupWheelPosition(FrontEndRenderingCar* _
     // Handle FECompressions
     AttrPtr = (float*)Attrib_Instance_GetAttributePointer((DWORD*)(_CarRenderInfo + 1515), 0x8D5BEB72, index >> 1); // FECompressions
     if (!AttrPtr)
-        AttrPtr = (float*)Attrib_DefaultDataArea();
+        AttrPtr = (float*)Attrib_DefaultDataArea(4);
     FECompression = *AttrPtr;
 
     // Get value from custom attribute
     TheRideInfo = (DWORD*)_CarRenderInfo[33]; // CarRenderInfo->pRideInfo
     if (TheRideInfo)
     {
-        BodyKitCarPart = RideInfo_GetPart(TheRideInfo, CAR_SLOT_ID::BODY); // BODY_KIT
+        BodyKitCarPart = RideInfo_GetPart(TheRideInfo, CARSLOTID_BODY); // BODY_KIT
         if (BodyKitCarPart)
         {
             // Read offset attributes from body kit
-            FECompression = CarPart_GetAppliedAttributeFParam(BodyKitCarPart, 0, index >> 1 ? bStringHash((char*)"REAR_FECOMPRESSION") : bStringHash((char*)"FRONT_FECOMPRESSION"), FECompression);
+            FECompression = CarPart_GetAppliedAttributeFParam(BodyKitCarPart, 0, index >> 1 ? CT_bStringHash("REAR_FECOMPRESSION") : CT_bStringHash("FRONT_FECOMPRESSION"), FECompression);
         }
     }
     // Write FECompression
@@ -72,11 +70,11 @@ bool __fastcall FrontEndRenderingCar_LookupWheelPosition(FrontEndRenderingCar* _
     // Handle ExtraPitch
     AttrPtr = (float*)Attrib_Instance_GetAttributePointer((DWORD*)(_CarRenderInfo + 1515), 0xE95257C2, 0); // ExtraPitch
     if (!AttrPtr)
-        AttrPtr = (float*)Attrib_DefaultDataArea();
+        AttrPtr = (float*)Attrib_DefaultDataArea(4);
     ExtraPitch = *AttrPtr;
 
     if (TheRideInfo && BodyKitCarPart)
-        ExtraPitch = CarPart_GetAppliedAttributeFParam(BodyKitCarPart, 0, bStringHash((char*)"EXTRA_PITCH"), ExtraPitch);
+        ExtraPitch = CarPart_GetAppliedAttributeFParam(BodyKitCarPart, 0, CT_bStringHash("EXTRA_PITCH"), ExtraPitch);
 
     _car->ExtraPitch = ExtraPitch;
     
@@ -112,11 +110,11 @@ bool __fastcall FrontEndRenderingCar_LookupWheelRadius(FrontEndRenderingCar* _ca
     TheRideInfo = (DWORD*)_CarRenderInfo[33]; // CarRenderInfo->pRideInfo
     if (TheRideInfo)
     {
-        BodyKitCarPart = RideInfo_GetPart(TheRideInfo, CAR_SLOT_ID::BODY); // BODY_KIT
+        BodyKitCarPart = RideInfo_GetPart(TheRideInfo, CARSLOTID_BODY); // BODY_KIT
         if (BodyKitCarPart)
         {
             // Read offset attributes from body kit
-            Radius = CarPart_GetAppliedAttributeFParam(BodyKitCarPart, 0, index >> 1 ? bStringHash((char*)"REAR_TIRE_RADIUS") : bStringHash((char*)"FRONT_TIRE_RADIUS"), Radius);
+            Radius = CarPart_GetAppliedAttributeFParam(BodyKitCarPart, 0, index >> 1 ? CT_bStringHash("REAR_TIRE_RADIUS") : CT_bStringHash("FRONT_TIRE_RADIUS"), Radius);
         }
     }
 

@@ -1,0 +1,16 @@
+#     Required
+#          BrandName = Defines the BRAND_NAME attribute value. If a paint car part has the attribute with the same value, it will appear under this group.
+#			 - If the name exists in _PaintGroups.ini, the file will overwrite the paint group with the same brand name.
+#            - Otherwise, it will get added as a new paint group at the end of the list.
+#          String = Defines which string will be used in the menu. Only accepts labels.
+#     Optional
+#          AvailableForBody = Makes group available for Body, Spoiler, Roof Scoop and Mirror Paint. Ignored when UnifyPaints option is enabled.
+#          AvailableForRims = Makes group available for Rim and Spinner Paint. Ignored when UnifyPaints option is enabled.
+#          AvailableForVinyl = Makes group available for Vinyl Paint. Ignored when UnifyPaints option is enabled.
+
+[Group]
+BrandName = "GLOSS"
+String = "CP_FILTER_GLOSS"
+AvailableForBody = 1
+AvailableForRims = 0
+AvailableForVinyl = 0

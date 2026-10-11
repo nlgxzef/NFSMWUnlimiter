@@ -3,7 +3,7 @@
 #include "stdafx.h"
 #include "stdio.h"
 
-typedef struct Color
+struct Color
 {
 	union
 	{
@@ -39,4 +39,4 @@ typedef struct Color
 		rgba = _rgba;
 	}
 	Color() : Color(0) {}
-} Color;
+};

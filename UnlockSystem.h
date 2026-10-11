@@ -36,13 +36,15 @@ int UnlockSystem_GetCarPartCost(int UnlockFilter, int CarSlotID, DWORD* CarPart,
 	int Unlockable = MapCarPartToUnlockable(CarSlotID);
 	float Cost = 0.0f;
 
+	if (!CarPart) return 0;
+
 	if (Unlockable)
 	{
 		float* FEPartInfo = (float*)LookupFEPartInfo(Unlockable, ((BYTE*)CarPart)[5] >> 5);
 		if (FEPartInfo) Cost = FEPartInfo[2];
 	}
 	
-	return CarPart_GetAppliedAttributeIParam(CarPart, bStringHash((char*)"COST"), (int)Cost);
+	return CarPart_GetAppliedAttributeIParam(CarPart, CT_bStringHash("COST"), (int)Cost);
 }
 
 bool UnlockSystem_IsCarPartUnlocked(int eUnlockFilters, int CarSlotID, DWORD* CarPart, int UpgradeLevel, bool IsInBackroom)
@@ -59,14 +61,14 @@ bool UnlockSystem_IsCarPartUnlocked(int eUnlockFilters, int CarSlotID, DWORD* Ca
 	if (!IsInBackroom) // If not in backroom
 	{
         // Get and check if the condition is met
-        int UnlockConditionType = CarPart_GetAppliedAttributeIParam(CarPart, bStringHash((char*)"UNLOCK_TYPE"), -1);
+        int UnlockConditionType = CarPart_GetAppliedAttributeIParam(CarPart, CT_bStringHash("UNLOCK_TYPE"), -1);
 
 		switch (UnlockConditionType)
 		{
 		case 0: // Initially unlocked
 			return 1;
 		case 1: // Beat Blacklist member
-			BinToBeat = CarPart_GetAppliedAttributeIParam(CarPart, bStringHash((char*)"UNLOCK_AT"), 17);
+			BinToBeat = CarPart_GetAppliedAttributeIParam(CarPart, CT_bStringHash("UNLOCK_AT"), 17);
 			if (BinToBeat < 2 || BinToBeat > 17) BinToBeat = 17;
 			if (CurrentBin < BinToBeat) return 1;
 			return 0;

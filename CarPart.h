@@ -4,6 +4,22 @@
 #include "stdio.h"
 #include "InGameFunctions.h"
 
+#pragma pack(push, 1)
+
+struct CarPart
+{
+    DWORD PartNameHash;
+    BYTE PartID;
+    BYTE GroupNumber_UpgradeLevel;
+    BYTE BaseModelNameHashSelector;
+    BYTE CarTypeNameHashIndex;
+    WORD NameOffset;
+    WORD AttributeTableOffset;
+    WORD ModelNameHashTableOffset;
+};
+
+#pragma pack(pop)
+
 unsigned int PreviousCarTypeNameHash;
 bool Result;
 
@@ -61,4 +77,11 @@ int __fastcall CarPart_GetModelNameHash(DWORD* CarPart, int edx_unused, int a5, 
     
     BrandName = CarPart_GetBrandName(CarPart);
     return CarPartModelTable_GetModelNameHash(_CarPartModelTable, BrandName, a5, LevelOfDetail); // Branded parts
+}
+
+DWORD __fastcall CarPart_GetLightMaterialNameHash(DWORD* CarPart, int edx_unused)
+{
+    if (!CarPart) return 0;
+
+	return CarPart_GetAppliedAttributeUParam(CarPart, CT_bStringHash("LIGHT_MATERIAL_NAME"), DefaultPaintLightMaterial);
 }
