@@ -1021,7 +1021,10 @@ struct StockPartsSection
 struct RandomPartsSection
 {
 	int ForceCustomizationLevel;
-	bool CustomRandomParts;
+	int CustomRandomParts;
+	int RandomRearRimProbability;
+	int NumbersProbability;
+	bool MatchSideDecals;
 	bool RandomizeInTraffic;
 	bool Parts[NumCarSlots];
 };
@@ -1144,6 +1147,7 @@ struct RimBrand
 	DWORD StringHash;
 	DWORD TextureHash;
 	bool NoRimSize;
+	char BrandName[32];
 };
 
 std::vector<RimBrand> RimBrands;

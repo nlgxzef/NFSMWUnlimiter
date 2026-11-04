@@ -3,23 +3,35 @@
 #include "InGameTypes.h"
 #include "InGameFunctions.h"
 #include "FrontEndRenderingCar.h"
+#include "CwoeeModLoader.h"
 
 void __fastcall CarRenderInfo_RenderFlaresOnCar(DWORD* CarRenderInfo, void* EDX_Unused, DWORD* view, bVector3* position, bMatrix4* body_matrix, int force_light_state, int reflection, int renderFlareFlags);
 float CarRenderInfo_GetReflectionOffset(DWORD* _CarRenderInfo, float original);
 
-int(*LoaderCarInfo_Game)(bChunk*) = (int(*)(bChunk*))0x756A90;
+typedef int (*LoaderCarInfo_t)(bChunk*);
+LoaderCarInfo_t LoaderCarInfo_Game = (LoaderCarInfo_t)0x756A90;
+static injector::hook_back<LoaderCarInfo_t> hb_LoaderCarInfo;
 
 int LoaderCarInfo_Hook(bChunk* chunk)
 {
-	int result = LoaderCarInfo_Game(chunk);
+	int result = hb_LoaderCarInfo.fun(chunk);
 
 	if (result)
 	{
 		switch (chunk->ID)
 		{
 		case BCHUNK_SPEED_CARTYPEINFO_TABLE: // Unlimiter stuff Part 1
-			CarArraySize = chunk->Size - 8;
-			CarCount = CarArraySize / SingleCarTypeInfoBlockSize;
+			CarCount = CwoeeModLoader::GetNumCarTypeInfos(); // Chloe Mod Loader compatibility
+			if (CarCount != 0)
+			{
+				CarArraySize = CarCount * SingleCarTypeInfoBlockSize;
+			}
+			else
+			{
+				CarArraySize = chunk->GetAlignedSize(0x10);
+				CarCount = CarArraySize / SingleCarTypeInfoBlockSize;
+			}
+
 			CarTypeInfoArray = *(CarTypeInfo**)_CarTypeInfoArray;
 
 			// Replacement model if model not found in array

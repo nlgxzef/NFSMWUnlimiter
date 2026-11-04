@@ -23,8 +23,66 @@ enum bChunkType : unsigned int
 
 struct bChunk
 {
-	unsigned int ID;
-	int Size;
+    bChunk() {}
+
+    bChunk(unsigned int id, int size) {
+        this->ID = id;
+        this->Size = size;
+    }
+
+    unsigned int GetID() {
+        return this->ID;
+    }
+
+    int GetSize() {
+        return this->Size;
+    }
+
+    int IsNestedChunk() {
+        return this->GetID() & NESTED_BCHUNK;
+    }
+
+    int IsDataChunk() {
+        return static_cast<int>(IsNestedChunk() == 0);
+    }
+
+    int CountChildren() {
+        /* anonymous block */ {
+            int ret;
+            /* anonymous block */ { struct bChunk* c; }
+        }
+    }
+
+    char* GetData() {
+        return reinterpret_cast<char*>(&this[1]);
+    }
+
+    char* GetAlignedData(int alignment_size) {
+        return reinterpret_cast<char*>(reinterpret_cast<uintptr_t>(this->GetData() + alignment_size - 1) & ~(alignment_size - 1));
+    }
+
+    int GetAlignedSize(int alignment_size) {
+        return this->Size - (this->GetAlignedData(alignment_size) - this->GetData());
+    }
+
+    void VerifyAlignment(int alignment_size) {
+        unsigned int* pdata;
+    }
+
+    bChunk* GetFirstChunk() {
+        return &this[1];
+    }
+
+    bChunk* GetLastChunk() {
+        return (bChunk*)((char*)this + this->Size) + 1;
+    }
+
+    bChunk* GetNext() {
+        return this->GetLastChunk();
+    }
+
+    unsigned int ID; // offset 0x0, size 0x4
+    int Size;        // offset 0x4, size 0x4
 };
 
 struct bChunkLoader

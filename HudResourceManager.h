@@ -107,70 +107,70 @@ void HudResourceManager_ChooseLoadableTextures(ePlayerHudType hudType, int* text
 		}
 
 		VehicleKey = stable->GetCarRecordByHandle(CurrentCar)->VehicleKey;
-
-		Attrib_Gen_pvehicle_pvehicle((DWORD*)&pveh, VehicleKey, 0, 0);
-		Attrib_Collection *AttributePointer = (Attrib_Collection*)Attrib_Instance_GetAttributePointer((DWORD*)&pveh, 0xF1F5FBC7, 0);
-		if (!AttributePointer) AttributePointer = (Attrib_Collection*)Attrib_DefaultDataArea(0xC);
-
-		Attrib_Instance_ctInstance(&engine, AttributePointer, 0, 0);
-		if (!engine.mLayoutPtr) engine.mLayoutPtr = Attrib_DefaultDataArea(0x60);
-
-		Attrib_Gen_engine_LayoutStruct* eng = (Attrib_Gen_engine_LayoutStruct*)engine.mLayoutPtr;
-
-		float max = eng->MAX_RPM;
-		float red = eng->RED_LINE;
-
-		float tex = FEngHud_ChooseMaxRpmTextureNumber(eng->MAX_RPM);
-
-		if (hudType == PHT_DRAG)
-			sprintf(buf, "DRAG_RPM_%d_LINES", (int)tex);
-		else
-		{
-			sprintf(buf, "%d_LINES_%2.2d", (int)tex, *(int*)_HudResourceManager_mCustIndex);
-		}
-
-		*textureHash = bStringHash(buf);
-
-		const bool drag = (hudType == PHT_DRAG);
-
-		if (max < 7000.0f)
-		{
-			*redlineRotation = evalTable(
-				tblMaxBelow7000,
-				sizeof(tblMaxBelow7000) / sizeof(RedlineEntry),
-				red,
-				drag
-			);
-		}
-		else if (max < 8000.0f)
-		{
-			*redlineRotation = evalTable(
-				tblMax7000to8000,
-				sizeof(tblMax7000to8000) / sizeof(RedlineEntry),
-				red,
-				drag
-			);
-		}
-		else if (max < 9000.0f)
-		{
-			*redlineRotation = evalTable(
-				tblMax8000to9000,
-				sizeof(tblMax8000to9000) / sizeof(RedlineEntry),
-				red,
-				drag
-			);
-		}
-		else
-		{
-			*redlineRotation = evalTable(
-				tblMaxAbove9000,
-				sizeof(tblMaxAbove9000) / sizeof(RedlineEntry),
-				red,
-				drag
-			);
-		}
-
-		Attrib_Instance_dtInstance((DWORD*)&engine);
-		Attrib_Instance_dtInstance((DWORD*)&pveh);
 	}
+
+	Attrib_Gen_pvehicle_pvehicle((DWORD*)&pveh, VehicleKey, 0, 0);
+	Attrib_Collection *AttributePointer = (Attrib_Collection*)Attrib_Instance_GetAttributePointer((DWORD*)&pveh, 0xF1F5FBC7, 0);
+	if (!AttributePointer) AttributePointer = (Attrib_Collection*)Attrib_DefaultDataArea(0xC);
+
+	Attrib_Instance_ctInstance(&engine, AttributePointer, 0, 0);
+	if (!engine.mLayoutPtr) engine.mLayoutPtr = Attrib_DefaultDataArea(0x60);
+
+	Attrib_Gen_engine_LayoutStruct* eng = (Attrib_Gen_engine_LayoutStruct*)engine.mLayoutPtr;
+
+	float max = eng->MAX_RPM;
+	float red = eng->RED_LINE;
+
+	float tex = FEngHud_ChooseMaxRpmTextureNumber(eng->MAX_RPM);
+
+	if (hudType == PHT_DRAG)
+		sprintf(buf, "DRAG_RPM_%d_LINES", (int)tex);
+	else
+	{
+		sprintf(buf, "%d_LINES_%2.2d", (int)tex, *(int*)_HudResourceManager_mCustIndex);
+	}
+
+	*textureHash = bStringHash(buf);
+
+	const bool drag = (hudType == PHT_DRAG);
+
+	if (max < 7000.0f)
+	{
+		*redlineRotation = evalTable(
+			tblMaxBelow7000,
+			sizeof(tblMaxBelow7000) / sizeof(RedlineEntry),
+			red,
+			drag
+		);
+	}
+	else if (max < 8000.0f)
+	{
+		*redlineRotation = evalTable(
+			tblMax7000to8000,
+			sizeof(tblMax7000to8000) / sizeof(RedlineEntry),
+			red,
+			drag
+		);
+	}
+	else if (max < 9000.0f)
+	{
+		*redlineRotation = evalTable(
+			tblMax8000to9000,
+			sizeof(tblMax8000to9000) / sizeof(RedlineEntry),
+			red,
+			drag
+		);
+	}
+	else
+	{
+		*redlineRotation = evalTable(
+			tblMaxAbove9000,
+			sizeof(tblMaxAbove9000) / sizeof(RedlineEntry),
+			red,
+			drag
+		);
+	}
+
+	Attrib_Instance_dtInstance((DWORD*)&engine);
+	Attrib_Instance_dtInstance((DWORD*)&pveh);
 }

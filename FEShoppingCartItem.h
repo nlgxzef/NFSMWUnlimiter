@@ -76,10 +76,10 @@ int __fastcall FEShoppingCartItem_GetCarPartCatHash(DWORD* _this, int EDX_Unused
     case CARSLOTID_HOOD:
         result = CarConfigs[CarTypeID].Names.PartsHoods;
         break;
-    case CARSLOTID_HEADLIGHT: // HEADLIGHT
+    case CARSLOTID_UL_TIRE_TEXTURE: // HEADLIGHT
         result = CarConfigs[CarTypeID].Names.VisualTires;
         break;
-    case CARSLOTID_BRAKELIGHT: // BRAKELIGHT
+    case CARSLOTID_UL_NEON: // BRAKELIGHT
         result = CarConfigs[CarTypeID].Names.VisualNeon;
         break;
     case CARSLOTID_FRONT_WHEEL:

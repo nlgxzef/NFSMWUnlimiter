@@ -270,6 +270,8 @@ void __fastcall CustomizeParts_RefreshHeader(DWORD* _CustomizeParts, void* EDX_U
 			else FEPrintf((char const*)_CustomizeParts[4], 0x5E7B09C9, "%s", CarPart_GetName((DWORD*)(SelectedPart[3])));
 		}
 	}
+
+	RefreshDetailsPane((char const*)_CustomizeParts[4], _CustomizeParts + 12, SelectedPart);
 }
 
 void __fastcall CustomizeParts_Setup(DWORD* _CustomizeParts, void* EDX_Unused)
@@ -494,13 +496,13 @@ void __fastcall CustomizeParts_Setup(DWORD* _CustomizeParts, void* EDX_Unused)
 			break;
 
 		case MenuID::Customize_Visual_Tires: // Tires
-			CarSlotID = CARSLOTID_HEADLIGHT;
+			CarSlotID = CARSLOTID_UL_TIRE_TEXTURE;
 			PartIconNormal = CarConfigs[CarTypeID].Icons.VisualTires;
 			_CustomizeParts[87] = CarConfigs[CarTypeID].Names.VisualTires;
 			break;
 
 		case MenuID::Customize_Visual_Neon: // Neon
-			CarSlotID = CARSLOTID_BRAKELIGHT;
+			CarSlotID = CARSLOTID_UL_NEON;
 			PartIconNormal = CarConfigs[CarTypeID].Icons.VisualNeon;
 			_CustomizeParts[87] = CarConfigs[CarTypeID].Names.VisualNeon;
 			break;

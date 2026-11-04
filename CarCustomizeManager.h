@@ -409,11 +409,11 @@ void __fastcall CarCustomizeManager_UpdateHeatOnVehicle(DWORD* CarCustomizeManag
             CustomFECoolingValue = CarConfigs[CarType].FECooling.LicensePlate;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             break;
-		case CARSLOTID_HEADLIGHT:
+		case CARSLOTID_UL_TIRE_TEXTURE:
             CustomFECoolingValue = CarConfigs[CarType].FECooling.Tires;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             break;
-		case CARSLOTID_BRAKELIGHT:
+		case CARSLOTID_UL_NEON:
             CustomFECoolingValue = CarConfigs[CarType].FECooling.Neon;
             if (CustomFECoolingValue != 0.0f) FECareerRecord[3] = FECareerRecord[3] * CustomFECoolingValue * HeatAdjustMultiplier;
             break;

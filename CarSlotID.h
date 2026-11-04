@@ -174,4 +174,55 @@ enum CAR_SLOT_ID : int
 	CARSLOTID_DECAL_LEFT_DOOR_RNUMBER = 0x6A,
 	CARSLOTID_DECAL_RIGHT_DOOR_LNUMBER = 0x71,
 	CARSLOTID_DECAL_RIGHT_DOOR_RNUMBER = 0x72,
+	// Unlimiter
+	CARSLOTID_UL_TIRE_TEXTURE = CARSLOTID_HEADLIGHT,
+	CARSLOTID_UL_NEON = CARSLOTID_BRAKELIGHT,
 };
+
+struct CarSlotIDName
+{
+	CAR_SLOT_ID CarSlotID;
+	char const* Name;
+};
+
+CarSlotIDName* CarSlotIDNames = (CarSlotIDName*)0x9044D8;
+int* CarPartSlotMap = (int*)0x9036A0;
+
+char const* GetCarSlotIDName(int CarSlotID)
+{
+	if (CarSlotID < 0 || CarSlotID >= CARSLOTID_NUM)
+		return "NONE";
+	return CarSlotIDNames[CarSlotID].Name;
+}
+
+int GetCarSlotIDFromName(char const* Name)
+{
+	for (int i = 0; i < CARSLOTID_NUM; ++i)
+	{
+		if (strcmp(CarSlotIDNames[i].Name, Name) == 0)
+			return CarSlotIDNames[i].CarSlotID;
+	}
+	return CARSLOTID_INVALID;
+}
+
+int GetCarPartFromSlot(int CarSlotID)
+{
+	if (CarSlotID < 0 || CarSlotID >= CARSLOTID_NUM)
+		return -1;
+	return CarPartSlotMap[CarSlotID];
+}
+
+int GetCarSlotIDFromPart(int CarPartID)
+{
+	for (int i = 0; i < CARSLOTID_NUM; ++i)
+	{
+		if (CarPartSlotMap[i] == CarPartID)
+			return i;
+	}
+	return CARSLOTID_INVALID;
+}
+
+void MapPartToSlot(int part, int slot)
+{
+	CarPartSlotMap[slot] = part;
+}

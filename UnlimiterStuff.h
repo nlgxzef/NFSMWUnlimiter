@@ -11,6 +11,7 @@ bool ManuHook, DisappearingWheelsFix, SecondaryLogoFix, ExpandMemoryPools, AddOn
 #include "GlobalVariables.h"
 #include "CustomizeMain.h"
 #include "CustomizeSub.h"
+#include "DetailsPane.h"
 #include "CustomizeParts.h"
 #include "CustomizePerformance.h"
 #include "CustomizeRims.h"
@@ -115,6 +116,7 @@ int Init()
 	// Count Cars Automatically
 	//injector::MakeJMP(0x756AA7, DoUnlimiterStuffCodeCave, true); // LoaderCarInfo
 	//injector::MakeJMP(0x756BC7, DoUnlimiterStuffCodeCave2, true); // LoaderCarInfo
+	hb_LoaderCarInfo.fun = *(LoaderCarInfo_t*)0x8F7E08;
 	injector::WriteMemory(0x8F7E08, &LoaderCarInfo_Hook, true); // LoaderTable
 
 	injector::MakeJMP(0x7398D0, CarPartDatabase_GetCarType, true); // 9 references

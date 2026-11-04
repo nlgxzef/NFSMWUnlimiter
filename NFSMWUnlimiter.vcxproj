@@ -125,6 +125,8 @@ copy "$(TargetDir)*.pdb" "G:\Oyunlar\Need for Speed Most Wanted Dirty\scripts"  
     <ClInclude Include="CustomizeShoppingCart.h" />
     <ClInclude Include="CustomizeSpoiler.h" />
     <ClInclude Include="CustomizeSub.h" />
+    <ClInclude Include="CwoeeModLoader.h" />
+    <ClInclude Include="DetailsPane.h" />
     <ClInclude Include="eCustomizePartState.h" />
     <ClInclude Include="eFEGameModes.h" />
     <ClInclude Include="eLightFlare.h" />

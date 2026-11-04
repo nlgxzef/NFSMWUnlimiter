@@ -463,12 +463,12 @@ void __fastcall RideInfo_SetStockParts(DWORD* TheRideInfo, void* EDX_Unused)
 				goto ApplyPart;
 				break;
 				/*
-			case 64: // HEADLIGHT (Tires)
+			case CARSLOTID_UL_TIRE_TEXTURE: // HEADLIGHT (Tires)
 				PartNameHash = bStringHash("TIRE_STYLE01");
 				goto ApplyPart;
 				break;*/
 
-			case CARSLOTID_BRAKELIGHT: //Neon
+			case CARSLOTID_UL_NEON: //Neon
 				PartNameHash = CT_bStringHash("NEON_NONE");
 				goto ApplyPart;
 				break;
@@ -524,7 +524,7 @@ void __fastcall RideInfo_SetStockParts(DWORD* TheRideInfo, void* EDX_Unused)
 
 void __fastcall RideInfo_SetRandomParts(DWORD* RideInfo, void* EDX_Unused)
 {
-	int CustomizationLevel, RearRimsHeadsOrTails, NumbersHeadsOrTails;
+	int CustomizationLevel;
 	int CarTypeID = RideInfo[0];
 
 	// Set all parts as stock first
@@ -538,13 +538,196 @@ void __fastcall RideInfo_SetRandomParts(DWORD* RideInfo, void* EDX_Unused)
 	}
 
 	// Flip coins
-	RearRimsHeadsOrTails = bRandom(2);
-	NumbersHeadsOrTails = bRandom(2);
+	int RandomRearRimProbability = bRandom(100);
+	int NumbersProbability = bRandom(100);
 
 	// Get num attachments
 	int NumAttachments = CarConfigs[CarTypeID].Parts.Attachments;
 
 	int CustomRandomParts = CarConfigs[CarTypeID].RandomParts.CustomRandomParts;
+	bool DoVanillaRandomization = false;
+	switch (CustomRandomParts)
+	{
+	case 1: // Skip vanilla randomization
+		break;
+	default:
+		DoVanillaRandomization = true;
+		break;
+	}
+
+	if (DoVanillaRandomization)
+	{
+		// Check the customization level for vanilla randomization
+		int ForceCustomizationLevel = CarConfigs[CarTypeID].RandomParts.ForceCustomizationLevel;
+
+		// -2 = Random customization level
+		// -1 = Nothing
+		// 0 = Body, Spoiler, Rims and Paint (Carbon)
+		// 1 = Paint and Vinyls
+		// 2 = (Level 1) + Body, Spoiler, Rims, Window Tint, Roof Scoops, Hood
+		// 3 = (Level 2) + Unlimiter stuff
+		// 4 = (Level 3) + Decals
+		if (ForceCustomizationLevel == -2) CustomizationLevel = bRandom(5);
+		else CustomizationLevel = ForceCustomizationLevel;
+
+		bool NeedsStockBodyParts = ForceStockPartsOnAddOnOpponents && RideInfo[0] >= 84; // Keep BODY, SPOILER, HOOD and ROOF stock
+
+		switch (CustomizationLevel)
+		{
+		case 4:
+			// Decals
+			RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_FRONT_WINDOW_TEX0, -1);
+			RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_FRONT_WINDOW_TEX1, -1);
+			RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_FRONT_WINDOW_TEX2, -1);
+			RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_FRONT_WINDOW_TEX3, -1);
+			RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_FRONT_WINDOW_TEX4, -1);
+			RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_FRONT_WINDOW_TEX5, -1);
+			RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_FRONT_WINDOW_TEX6, -1);
+			RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_FRONT_WINDOW_TEX7, -1);
+			RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_REAR_WINDOW_TEX0, -1);
+			RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_REAR_WINDOW_TEX1, -1);
+			RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_REAR_WINDOW_TEX2, -1);
+			RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_REAR_WINDOW_TEX3, -1);
+			RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_REAR_WINDOW_TEX4, -1);
+			RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_REAR_WINDOW_TEX5, -1);
+			RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_REAR_WINDOW_TEX6, -1);
+			RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_REAR_WINDOW_TEX7, -1);
+			RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_LEFT_DOOR_TEX0, -1);
+			RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_LEFT_DOOR_TEX1, -1);
+			RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_LEFT_DOOR_TEX2, -1);
+			RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_LEFT_DOOR_TEX3, -1);
+			RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_LEFT_DOOR_TEX4, -1);
+			RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_LEFT_DOOR_TEX5, -1);
+			if (NumbersProbability < CarConfigs[RideInfo[0]].RandomParts.NumbersProbability)
+			{
+				RideInfo_SetRandomNumber(RideInfo, EDX_Unused, CARSLOTID_DECAL_LEFT_DOOR_TEX6, -1);
+				RideInfo_SetRandomNumber(RideInfo, EDX_Unused, CARSLOTID_DECAL_LEFT_DOOR_TEX7, -1);
+				RideInfo_SetRandomNumber(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_DOOR_TEX6, -1);
+				RideInfo_SetRandomNumber(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_DOOR_TEX7, -1);
+			}
+			if (CarConfigs[RideInfo[0]].RandomParts.MatchSideDecals)
+			{
+				RideInfo_SetPart(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_DOOR_TEX0, (DWORD)RideInfo_GetPart(RideInfo, CARSLOTID_DECAL_LEFT_DOOR_TEX0), 1);
+				RideInfo_SetPart(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_DOOR_TEX1, (DWORD)RideInfo_GetPart(RideInfo, CARSLOTID_DECAL_LEFT_DOOR_TEX1), 1);
+				RideInfo_SetPart(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_DOOR_TEX2, (DWORD)RideInfo_GetPart(RideInfo, CARSLOTID_DECAL_LEFT_DOOR_TEX2), 1);
+				RideInfo_SetPart(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_DOOR_TEX3, (DWORD)RideInfo_GetPart(RideInfo, CARSLOTID_DECAL_LEFT_DOOR_TEX3), 1);
+				RideInfo_SetPart(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_DOOR_TEX4, (DWORD)RideInfo_GetPart(RideInfo, CARSLOTID_DECAL_LEFT_DOOR_TEX4), 1);
+				RideInfo_SetPart(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_DOOR_TEX5, (DWORD)RideInfo_GetPart(RideInfo, CARSLOTID_DECAL_LEFT_DOOR_TEX5), 1);
+			}
+			else
+			{
+				RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_DOOR_TEX0, -1);
+				RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_DOOR_TEX1, -1);
+				RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_DOOR_TEX2, -1);
+				RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_DOOR_TEX3, -1);
+				RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_DOOR_TEX4, -1);
+				RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_DOOR_TEX5, -1);
+			}
+			RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_LEFT_QUARTER_TEX0, -1);
+			RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_LEFT_QUARTER_TEX1, -1);
+			RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_LEFT_QUARTER_TEX2, -1);
+			RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_LEFT_QUARTER_TEX3, -1);
+			RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_LEFT_QUARTER_TEX4, -1);
+			RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_LEFT_QUARTER_TEX5, -1);
+			RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_LEFT_QUARTER_TEX6, -1);
+			RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_LEFT_QUARTER_TEX7, -1);
+			if (CarConfigs[RideInfo[0]].RandomParts.MatchSideDecals)
+			{
+				RideInfo_SetPart(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_QUARTER_TEX0, (DWORD)RideInfo_GetPart(RideInfo, CARSLOTID_DECAL_LEFT_QUARTER_TEX0), 1);
+				RideInfo_SetPart(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_QUARTER_TEX1, (DWORD)RideInfo_GetPart(RideInfo, CARSLOTID_DECAL_LEFT_QUARTER_TEX1), 1);
+				RideInfo_SetPart(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_QUARTER_TEX2, (DWORD)RideInfo_GetPart(RideInfo, CARSLOTID_DECAL_LEFT_QUARTER_TEX2), 1);
+				RideInfo_SetPart(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_QUARTER_TEX3, (DWORD)RideInfo_GetPart(RideInfo, CARSLOTID_DECAL_LEFT_QUARTER_TEX3), 1);
+				RideInfo_SetPart(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_QUARTER_TEX4, (DWORD)RideInfo_GetPart(RideInfo, CARSLOTID_DECAL_LEFT_QUARTER_TEX4), 1);
+				RideInfo_SetPart(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_QUARTER_TEX5, (DWORD)RideInfo_GetPart(RideInfo, CARSLOTID_DECAL_LEFT_QUARTER_TEX5), 1);
+				RideInfo_SetPart(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_QUARTER_TEX6, (DWORD)RideInfo_GetPart(RideInfo, CARSLOTID_DECAL_LEFT_QUARTER_TEX6), 1);
+				RideInfo_SetPart(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_QUARTER_TEX7, (DWORD)RideInfo_GetPart(RideInfo, CARSLOTID_DECAL_LEFT_QUARTER_TEX7), 1);
+			}
+			else
+			{
+				RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_QUARTER_TEX0, -1);
+				RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_QUARTER_TEX1, -1);
+				RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_QUARTER_TEX2, -1);
+				RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_QUARTER_TEX3, -1);
+				RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_QUARTER_TEX4, -1);
+				RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_QUARTER_TEX5, -1);
+				RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_QUARTER_TEX6, -1);
+				RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_QUARTER_TEX7, -1);
+			}
+
+			// Gauges
+			if (CarConfigs[CarTypeID].Visual.CustomGauges)
+			{
+				RideInfo_SetRandomPart(RideInfo, CARSLOTID_CUSTOM_HUD, -1);
+				RideInfo_SetRandomPart(RideInfo, CARSLOTID_HUD_BACKING_COLOUR, -1);
+				RideInfo_SetRandomPart(RideInfo, CARSLOTID_HUD_NEEDLE_COLOUR, -1);
+				RideInfo_SetRandomPart(RideInfo, CARSLOTID_HUD_CHARACTER_COLOUR, -1);
+			}
+
+		case 3:
+			// Unlimiter parts
+			if (CarConfigs[CarTypeID].Parts.RoofScoops) RideInfo_SetRandomPart(RideInfo, CARSLOTID_ROOF, -1);
+			if (CarConfigs[CarTypeID].Parts.Interior) RideInfo_SetRandomPart(RideInfo, CARSLOTID_INTERIOR, -1);
+			if (CarConfigs[CarTypeID].Parts.Roof) RideInfo_SetRandomPart(RideInfo, CARSLOTID_BASE, -1);
+			if (CarConfigs[CarTypeID].Parts.Brakes) RideInfo_SetRandomPart(RideInfo, CARSLOTID_FRONT_BRAKE, -1);
+			if (CarConfigs[CarTypeID].Parts.Headlights) RideInfo_SetRandomPart(RideInfo, CARSLOTID_LEFT_HEADLIGHT, -1);
+			if (CarConfigs[CarTypeID].Parts.Taillights) RideInfo_SetRandomPart(RideInfo, CARSLOTID_LEFT_BRAKELIGHT, -1);
+			if (CarConfigs[CarTypeID].Parts.Mirrors) RideInfo_SetRandomPart(RideInfo, CARSLOTID_LEFT_SIDE_MIRROR, -1);
+
+			for (int i = 0; i < NumAttachments; i++)
+			{
+				RideInfo_SetRandomPart(RideInfo, CARSLOTID_ATTACHMENT0 + i, -1);
+			}
+
+			if (CarConfigs[CarTypeID].Visual.Driver) RideInfo_SetRandomPart(RideInfo, CARSLOTID_DRIVER, -1);
+			if (CarConfigs[CarTypeID].Visual.LicensePlate) RideInfo_SetRandomPart(RideInfo, CARSLOTID_LICENSE_PLATE, -1);
+			if (CarConfigs[CarTypeID].Visual.Tires) RideInfo_SetRandomPart(RideInfo, CARSLOTID_UL_TIRE_TEXTURE, -1); // Tires
+			if (CarConfigs[CarTypeID].Visual.Neon) RideInfo_SetRandomPart(RideInfo, CARSLOTID_UL_NEON, -1); // Neon
+
+		case 2:
+			// Body parts
+			if (!NeedsStockBodyParts)
+			{
+				RideInfo_SetRandomPart(RideInfo, CARSLOTID_BODY, -1);
+				RideInfo_SetRandomPart(RideInfo, CARSLOTID_SPOILER, -1);
+				RideInfo_SetRandomPart(RideInfo, CARSLOTID_ROOF, -1);
+				RideInfo_SetRandomPart(RideInfo, CARSLOTID_HOOD, -1);
+			}
+			RideInfo_SetRandomPart(RideInfo, CARSLOTID_FRONT_WHEEL, -1);
+			if (RandomRearRimProbability < CarConfigs[RideInfo[0]].RandomParts.RandomRearRimProbability) RideInfo_SetRandomPart(RideInfo, CARSLOTID_REAR_WHEEL, -1);
+			else RideInfo_SetPart(RideInfo, EDX_Unused, CARSLOTID_REAR_WHEEL, (DWORD)RideInfo_GetPart(RideInfo, CARSLOTID_FRONT_WHEEL), 1);
+
+			RideInfo_SetRandomPart(RideInfo, CARSLOTID_PAINT_RIM, -1);
+			RideInfo_SetRandomPart(RideInfo, CARSLOTID_WINDOW_TINT, -1);
+
+		case 1:
+			// Paint and vinyls
+			RideInfo_SetRandomPart(RideInfo, CARSLOTID_BASE_PAINT, -1);
+			RideInfo_SetRandomPart(RideInfo, CARSLOTID_VINYL_LAYER0, -1);
+			RideInfo_SetRandomPart(RideInfo, CARSLOTID_VINYL_COLOUR0_0, -1);
+			RideInfo_SetRandomPart(RideInfo, CARSLOTID_VINYL_COLOUR0_1, -1);
+			RideInfo_SetRandomPart(RideInfo, CARSLOTID_VINYL_COLOUR0_2, -1);
+			RideInfo_SetRandomPart(RideInfo, CARSLOTID_VINYL_COLOUR0_3, -1);
+			break;
+		case 0:
+		default:
+			// Pretty much Carbon.
+			if (!NeedsStockBodyParts)
+			{
+				RideInfo_SetRandomPart(RideInfo, CARSLOTID_BODY, -1);
+				RideInfo_SetRandomPart(RideInfo, CARSLOTID_SPOILER, -1);
+			}
+			RideInfo_SetRandomPart(RideInfo, CARSLOTID_BASE_PAINT, -1);
+			RideInfo_SetRandomPart(RideInfo, CARSLOTID_FRONT_WHEEL, -1);
+			if (RandomRearRimProbability < CarConfigs[RideInfo[0]].RandomParts.RandomRearRimProbability) RideInfo_SetRandomPart(RideInfo, CARSLOTID_REAR_WHEEL, -1);
+			else RideInfo_SetPart(RideInfo, EDX_Unused, CARSLOTID_REAR_WHEEL, (DWORD)RideInfo_GetPart(RideInfo, CARSLOTID_FRONT_WHEEL), 1);
+			RideInfo_SetRandomPart(RideInfo, CARSLOTID_PAINT_RIM, -1);
+			break;
+		case -1:
+			// Nothing. Bone stock.
+			break;
+		}
+	}
+	
 	if (CustomRandomParts)
 	{
 		if (CarConfigs[CarTypeID].RandomParts.Parts[CARSLOTID_BODY]) RideInfo_SetRandomPart(RideInfo, CARSLOTID_BODY, -1);
@@ -552,8 +735,14 @@ void __fastcall RideInfo_SetRandomParts(DWORD* RideInfo, void* EDX_Unused)
 		if (CarConfigs[CarTypeID].RandomParts.Parts[CARSLOTID_FRONT_WHEEL])
 		{
 			RideInfo_SetRandomPart(RideInfo, CARSLOTID_FRONT_WHEEL, -1);
-			if (RearRimsHeadsOrTails) RideInfo_SetRandomPart(RideInfo, CARSLOTID_REAR_WHEEL, -1);
-			else RideInfo_SetPart(RideInfo, EDX_Unused, CARSLOTID_REAR_WHEEL, (DWORD)RideInfo_GetPart(RideInfo, CARSLOTID_FRONT_WHEEL), 1);
+			if (CarConfigs[RideInfo[0]].RandomParts.Parts[CARSLOTID_REAR_WHEEL] && RandomRearRimProbability < CarConfigs[RideInfo[0]].RandomParts.RandomRearRimProbability)
+			{
+				RideInfo_SetRandomPart(RideInfo, CARSLOTID_REAR_WHEEL, -1);
+			}
+			else
+			{
+				RideInfo_SetPart(RideInfo, EDX_Unused, CARSLOTID_REAR_WHEEL, (DWORD)RideInfo_GetPart(RideInfo, CARSLOTID_FRONT_WHEEL), 1);
+			}
 		}
 		if (CarConfigs[CarTypeID].RandomParts.Parts[CARSLOTID_HOOD]) RideInfo_SetRandomPart(RideInfo, CARSLOTID_HOOD, -1);
 		if (CarConfigs[CarTypeID].RandomParts.Parts[CARSLOTID_ROOF]) RideInfo_SetRandomPart(RideInfo, CARSLOTID_ROOF, -1);
@@ -606,16 +795,31 @@ void __fastcall RideInfo_SetRandomParts(DWORD* RideInfo, void* EDX_Unused)
 		if (CarConfigs[CarTypeID].RandomParts.Parts[CARSLOTID_DECAL_LEFT_DOOR_TEX3]) RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_LEFT_DOOR_TEX3, -1);
 		if (CarConfigs[CarTypeID].RandomParts.Parts[CARSLOTID_DECAL_LEFT_DOOR_TEX4]) RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_LEFT_DOOR_TEX4, -1);
 		if (CarConfigs[CarTypeID].RandomParts.Parts[CARSLOTID_DECAL_LEFT_DOOR_TEX5]) RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_LEFT_DOOR_TEX5, -1);
-		if (CarConfigs[CarTypeID].RandomParts.Parts[CARSLOTID_DECAL_LEFT_DOOR_TEX6] && NumbersHeadsOrTails) RideInfo_SetRandomNumber(RideInfo, EDX_Unused, CARSLOTID_DECAL_LEFT_DOOR_TEX6, -1);
-		if (CarConfigs[CarTypeID].RandomParts.Parts[CARSLOTID_DECAL_LEFT_DOOR_TEX7] && NumbersHeadsOrTails) RideInfo_SetRandomNumber(RideInfo, EDX_Unused, CARSLOTID_DECAL_LEFT_DOOR_TEX7, -1);
-		if (CarConfigs[CarTypeID].RandomParts.Parts[CARSLOTID_DECAL_RIGHT_DOOR_TEX0]) RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_DOOR_TEX0, -1);
-		if (CarConfigs[CarTypeID].RandomParts.Parts[CARSLOTID_DECAL_RIGHT_DOOR_TEX1]) RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_DOOR_TEX1, -1);
-		if (CarConfigs[CarTypeID].RandomParts.Parts[CARSLOTID_DECAL_RIGHT_DOOR_TEX2]) RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_DOOR_TEX2, -1);
-		if (CarConfigs[CarTypeID].RandomParts.Parts[CARSLOTID_DECAL_RIGHT_DOOR_TEX3]) RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_DOOR_TEX3, -1);
-		if (CarConfigs[CarTypeID].RandomParts.Parts[CARSLOTID_DECAL_RIGHT_DOOR_TEX4]) RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_DOOR_TEX4, -1);
-		if (CarConfigs[CarTypeID].RandomParts.Parts[CARSLOTID_DECAL_RIGHT_DOOR_TEX5]) RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_DOOR_TEX5, -1);
-		if (CarConfigs[CarTypeID].RandomParts.Parts[CARSLOTID_DECAL_RIGHT_DOOR_TEX6] && NumbersHeadsOrTails) RideInfo_SetRandomNumber(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_DOOR_TEX6, -1);  
-		if (CarConfigs[CarTypeID].RandomParts.Parts[CARSLOTID_DECAL_RIGHT_DOOR_TEX7] && NumbersHeadsOrTails) RideInfo_SetRandomNumber(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_DOOR_TEX7, -1);  
+		if (NumbersProbability < CarConfigs[RideInfo[0]].RandomParts.NumbersProbability)
+		{
+			if (CarConfigs[CarTypeID].RandomParts.Parts[CARSLOTID_DECAL_LEFT_DOOR_TEX6]) RideInfo_SetRandomNumber(RideInfo, EDX_Unused, CARSLOTID_DECAL_LEFT_DOOR_TEX6, -1);
+			if (CarConfigs[CarTypeID].RandomParts.Parts[CARSLOTID_DECAL_LEFT_DOOR_TEX7]) RideInfo_SetRandomNumber(RideInfo, EDX_Unused, CARSLOTID_DECAL_LEFT_DOOR_TEX7, -1);
+			if (CarConfigs[CarTypeID].RandomParts.Parts[CARSLOTID_DECAL_RIGHT_DOOR_TEX6]) RideInfo_SetRandomNumber(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_DOOR_TEX6, -1);
+			if (CarConfigs[CarTypeID].RandomParts.Parts[CARSLOTID_DECAL_RIGHT_DOOR_TEX7]) RideInfo_SetRandomNumber(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_DOOR_TEX7, -1);
+		}
+		if (CarConfigs[RideInfo[0]].RandomParts.MatchSideDecals)
+		{
+			RideInfo_SetPart(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_DOOR_TEX0, (DWORD)RideInfo_GetPart(RideInfo, CARSLOTID_DECAL_LEFT_DOOR_TEX0), 1);
+			RideInfo_SetPart(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_DOOR_TEX1, (DWORD)RideInfo_GetPart(RideInfo, CARSLOTID_DECAL_LEFT_DOOR_TEX1), 1);
+			RideInfo_SetPart(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_DOOR_TEX2, (DWORD)RideInfo_GetPart(RideInfo, CARSLOTID_DECAL_LEFT_DOOR_TEX2), 1);
+			RideInfo_SetPart(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_DOOR_TEX3, (DWORD)RideInfo_GetPart(RideInfo, CARSLOTID_DECAL_LEFT_DOOR_TEX3), 1);
+			RideInfo_SetPart(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_DOOR_TEX4, (DWORD)RideInfo_GetPart(RideInfo, CARSLOTID_DECAL_LEFT_DOOR_TEX4), 1);
+			RideInfo_SetPart(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_DOOR_TEX5, (DWORD)RideInfo_GetPart(RideInfo, CARSLOTID_DECAL_LEFT_DOOR_TEX5), 1);
+		}
+		else
+		{
+			if (CarConfigs[CarTypeID].RandomParts.Parts[CARSLOTID_DECAL_RIGHT_DOOR_TEX0]) RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_DOOR_TEX0, -1);
+			if (CarConfigs[CarTypeID].RandomParts.Parts[CARSLOTID_DECAL_RIGHT_DOOR_TEX1]) RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_DOOR_TEX1, -1);
+			if (CarConfigs[CarTypeID].RandomParts.Parts[CARSLOTID_DECAL_RIGHT_DOOR_TEX2]) RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_DOOR_TEX2, -1);
+			if (CarConfigs[CarTypeID].RandomParts.Parts[CARSLOTID_DECAL_RIGHT_DOOR_TEX3]) RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_DOOR_TEX3, -1);
+			if (CarConfigs[CarTypeID].RandomParts.Parts[CARSLOTID_DECAL_RIGHT_DOOR_TEX4]) RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_DOOR_TEX4, -1);
+			if (CarConfigs[CarTypeID].RandomParts.Parts[CARSLOTID_DECAL_RIGHT_DOOR_TEX5]) RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_DOOR_TEX5, -1);
+		}
 		if (CarConfigs[CarTypeID].RandomParts.Parts[CARSLOTID_DECAL_LEFT_QUARTER_TEX0]) RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_LEFT_QUARTER_TEX0, -1);
 		if (CarConfigs[CarTypeID].RandomParts.Parts[CARSLOTID_DECAL_LEFT_QUARTER_TEX1]) RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_LEFT_QUARTER_TEX1, -1);
 		if (CarConfigs[CarTypeID].RandomParts.Parts[CARSLOTID_DECAL_LEFT_QUARTER_TEX2]) RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_LEFT_QUARTER_TEX2, -1);
@@ -624,167 +828,37 @@ void __fastcall RideInfo_SetRandomParts(DWORD* RideInfo, void* EDX_Unused)
 		if (CarConfigs[CarTypeID].RandomParts.Parts[CARSLOTID_DECAL_LEFT_QUARTER_TEX5]) RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_LEFT_QUARTER_TEX5, -1);
 		if (CarConfigs[CarTypeID].RandomParts.Parts[CARSLOTID_DECAL_LEFT_QUARTER_TEX6]) RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_LEFT_QUARTER_TEX6, -1);
 		if (CarConfigs[CarTypeID].RandomParts.Parts[CARSLOTID_DECAL_LEFT_QUARTER_TEX7]) RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_LEFT_QUARTER_TEX7, -1);
-		if (CarConfigs[CarTypeID].RandomParts.Parts[CARSLOTID_DECAL_RIGHT_QUARTER_TEX0]) RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_QUARTER_TEX0, -1);
-		if (CarConfigs[CarTypeID].RandomParts.Parts[CARSLOTID_DECAL_RIGHT_QUARTER_TEX1]) RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_QUARTER_TEX1, -1);
-		if (CarConfigs[CarTypeID].RandomParts.Parts[CARSLOTID_DECAL_RIGHT_QUARTER_TEX2]) RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_QUARTER_TEX2, -1);
-		if (CarConfigs[CarTypeID].RandomParts.Parts[CARSLOTID_DECAL_RIGHT_QUARTER_TEX3]) RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_QUARTER_TEX3, -1);
-		if (CarConfigs[CarTypeID].RandomParts.Parts[CARSLOTID_DECAL_RIGHT_QUARTER_TEX4]) RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_QUARTER_TEX4, -1);
-		if (CarConfigs[CarTypeID].RandomParts.Parts[CARSLOTID_DECAL_RIGHT_QUARTER_TEX5]) RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_QUARTER_TEX5, -1);
-		if (CarConfigs[CarTypeID].RandomParts.Parts[CARSLOTID_DECAL_RIGHT_QUARTER_TEX6]) RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_QUARTER_TEX6, -1);
-		if (CarConfigs[CarTypeID].RandomParts.Parts[CARSLOTID_DECAL_RIGHT_QUARTER_TEX7]) RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_QUARTER_TEX7, -1);
+		if (CarConfigs[RideInfo[0]].RandomParts.MatchSideDecals)
+		{
+			RideInfo_SetPart(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_QUARTER_TEX0, (DWORD)RideInfo_GetPart(RideInfo, CARSLOTID_DECAL_LEFT_QUARTER_TEX0), 1);
+			RideInfo_SetPart(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_QUARTER_TEX1, (DWORD)RideInfo_GetPart(RideInfo, CARSLOTID_DECAL_LEFT_QUARTER_TEX1), 1);
+			RideInfo_SetPart(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_QUARTER_TEX2, (DWORD)RideInfo_GetPart(RideInfo, CARSLOTID_DECAL_LEFT_QUARTER_TEX2), 1);
+			RideInfo_SetPart(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_QUARTER_TEX3, (DWORD)RideInfo_GetPart(RideInfo, CARSLOTID_DECAL_LEFT_QUARTER_TEX3), 1);
+			RideInfo_SetPart(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_QUARTER_TEX4, (DWORD)RideInfo_GetPart(RideInfo, CARSLOTID_DECAL_LEFT_QUARTER_TEX4), 1);
+			RideInfo_SetPart(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_QUARTER_TEX5, (DWORD)RideInfo_GetPart(RideInfo, CARSLOTID_DECAL_LEFT_QUARTER_TEX5), 1);
+			RideInfo_SetPart(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_QUARTER_TEX6, (DWORD)RideInfo_GetPart(RideInfo, CARSLOTID_DECAL_LEFT_QUARTER_TEX6), 1);
+			RideInfo_SetPart(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_QUARTER_TEX7, (DWORD)RideInfo_GetPart(RideInfo, CARSLOTID_DECAL_LEFT_QUARTER_TEX7), 1);
+		}
+		else
+		{
+			if (CarConfigs[CarTypeID].RandomParts.Parts[CARSLOTID_DECAL_RIGHT_QUARTER_TEX0]) RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_QUARTER_TEX0, -1);
+			if (CarConfigs[CarTypeID].RandomParts.Parts[CARSLOTID_DECAL_RIGHT_QUARTER_TEX1]) RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_QUARTER_TEX1, -1);
+			if (CarConfigs[CarTypeID].RandomParts.Parts[CARSLOTID_DECAL_RIGHT_QUARTER_TEX2]) RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_QUARTER_TEX2, -1);
+			if (CarConfigs[CarTypeID].RandomParts.Parts[CARSLOTID_DECAL_RIGHT_QUARTER_TEX3]) RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_QUARTER_TEX3, -1);
+			if (CarConfigs[CarTypeID].RandomParts.Parts[CARSLOTID_DECAL_RIGHT_QUARTER_TEX4]) RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_QUARTER_TEX4, -1);
+			if (CarConfigs[CarTypeID].RandomParts.Parts[CARSLOTID_DECAL_RIGHT_QUARTER_TEX5]) RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_QUARTER_TEX5, -1);
+			if (CarConfigs[CarTypeID].RandomParts.Parts[CARSLOTID_DECAL_RIGHT_QUARTER_TEX6]) RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_QUARTER_TEX6, -1);
+			if (CarConfigs[CarTypeID].RandomParts.Parts[CARSLOTID_DECAL_RIGHT_QUARTER_TEX7]) RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_QUARTER_TEX7, -1);
+		}
 		if (CarConfigs[CarTypeID].RandomParts.Parts[CARSLOTID_CUSTOM_HUD]) RideInfo_SetRandomPart(RideInfo, CARSLOTID_CUSTOM_HUD, -1);
 		if (CarConfigs[CarTypeID].RandomParts.Parts[CARSLOTID_HUD_BACKING_COLOUR]) RideInfo_SetRandomPart(RideInfo, CARSLOTID_HUD_BACKING_COLOUR, -1);
 		if (CarConfigs[CarTypeID].RandomParts.Parts[CARSLOTID_HUD_NEEDLE_COLOUR]) RideInfo_SetRandomPart(RideInfo, CARSLOTID_HUD_NEEDLE_COLOUR, -1);
 		if (CarConfigs[CarTypeID].RandomParts.Parts[CARSLOTID_HUD_CHARACTER_COLOUR]) RideInfo_SetRandomPart(RideInfo, CARSLOTID_HUD_CHARACTER_COLOUR, -1);
 		if (CarConfigs[CarTypeID].RandomParts.Parts[CARSLOTID_DRIVER]) RideInfo_SetRandomPart(RideInfo, CARSLOTID_DRIVER, -1);
 		if (CarConfigs[CarTypeID].RandomParts.Parts[CARSLOTID_LICENSE_PLATE]) RideInfo_SetRandomPart(RideInfo, CARSLOTID_LICENSE_PLATE, -1);
-		if (CarConfigs[CarTypeID].RandomParts.Parts[CARSLOTID_HEADLIGHT]) RideInfo_SetRandomPart(RideInfo, CARSLOTID_HEADLIGHT, -1);
-		if (CarConfigs[CarTypeID].RandomParts.Parts[CARSLOTID_BRAKELIGHT]) RideInfo_SetRandomPart(RideInfo, CARSLOTID_BRAKELIGHT, -1);
-
-		return;
+		if (CarConfigs[CarTypeID].RandomParts.Parts[CARSLOTID_UL_TIRE_TEXTURE]) RideInfo_SetRandomPart(RideInfo, CARSLOTID_UL_TIRE_TEXTURE, -1);
+		if (CarConfigs[CarTypeID].RandomParts.Parts[CARSLOTID_UL_NEON]) RideInfo_SetRandomPart(RideInfo, CARSLOTID_UL_NEON, -1);
 	}
-
-	// Or, check the customization level for vanilla randomization
-	int ForceCustomizationLevel = CarConfigs[CarTypeID].RandomParts.ForceCustomizationLevel;
-
-	// -2 = Random customization level
-	// -1 = Nothing
-	// 0 = Body, Spoiler, Rims and Paint (Carbon)
-	// 1 = Paint and Vinyls
-	// 2 = (Level 1) + Body, Spoiler, Rims, Window Tint, Roof Scoops, Hood
-	// 3 = (Level 2) + Unlimiter stuff
-	// 4 = (Level 3) + Decals
-	if (ForceCustomizationLevel == -2) CustomizationLevel = bRandom(5);
-	else CustomizationLevel = ForceCustomizationLevel;
-
-	bool NeedsStockBodyParts = ForceStockPartsOnAddOnOpponents && RideInfo[0] >= 84; // Keep BODY, SPOILER, HOOD and ROOF stock
-
-	switch (CustomizationLevel)
-	{
-	case 4:
-		// Decals
-		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_FRONT_WINDOW_TEX0, -1);
-		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_FRONT_WINDOW_TEX1, -1);
-		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_FRONT_WINDOW_TEX2, -1);
-		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_FRONT_WINDOW_TEX3, -1);
-		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_FRONT_WINDOW_TEX4, -1);
-		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_FRONT_WINDOW_TEX5, -1);
-		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_FRONT_WINDOW_TEX6, -1);
-		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_FRONT_WINDOW_TEX7, -1);
-		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_REAR_WINDOW_TEX0, -1);
-		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_REAR_WINDOW_TEX1, -1);
-		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_REAR_WINDOW_TEX2, -1);
-		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_REAR_WINDOW_TEX3, -1);
-		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_REAR_WINDOW_TEX4, -1);
-		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_REAR_WINDOW_TEX5, -1);
-		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_REAR_WINDOW_TEX6, -1);
-		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_REAR_WINDOW_TEX7, -1);
-		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_LEFT_DOOR_TEX0, -1);
-		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_LEFT_DOOR_TEX1, -1);
-		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_LEFT_DOOR_TEX2, -1);
-		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_LEFT_DOOR_TEX3, -1);
-		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_LEFT_DOOR_TEX4, -1);
-		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_LEFT_DOOR_TEX5, -1);
-		if (NumbersHeadsOrTails) RideInfo_SetRandomNumber(RideInfo, EDX_Unused, CARSLOTID_DECAL_LEFT_DOOR_TEX6, -1);
-		if (NumbersHeadsOrTails) RideInfo_SetRandomNumber(RideInfo, EDX_Unused, CARSLOTID_DECAL_LEFT_DOOR_TEX7, -1);
-		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_DOOR_TEX0, -1);
-		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_DOOR_TEX1, -1);
-		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_DOOR_TEX2, -1);
-		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_DOOR_TEX3, -1);
-		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_DOOR_TEX4, -1);
-		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_DOOR_TEX5, -1);
-		if (NumbersHeadsOrTails) RideInfo_SetRandomNumber(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_DOOR_TEX6, -1);
-		if (NumbersHeadsOrTails) RideInfo_SetRandomNumber(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_DOOR_TEX7, -1);
-		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_LEFT_QUARTER_TEX0, -1);
-		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_LEFT_QUARTER_TEX1, -1);
-		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_LEFT_QUARTER_TEX2, -1);
-		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_LEFT_QUARTER_TEX3, -1);
-		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_LEFT_QUARTER_TEX4, -1);
-		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_LEFT_QUARTER_TEX5, -1);
-		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_LEFT_QUARTER_TEX6, -1);
-		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_LEFT_QUARTER_TEX7, -1);
-		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_QUARTER_TEX0, -1);
-		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_QUARTER_TEX1, -1);
-		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_QUARTER_TEX2, -1);
-		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_QUARTER_TEX3, -1);
-		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_QUARTER_TEX4, -1);
-		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_QUARTER_TEX5, -1);
-		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_QUARTER_TEX6, -1);
-		RideInfo_SetRandomDecal(RideInfo, EDX_Unused, CARSLOTID_DECAL_RIGHT_QUARTER_TEX7, -1);
-		
-		// Gauges
-		if (CarConfigs[CarTypeID].Visual.CustomGauges)
-		{
-			RideInfo_SetRandomPart(RideInfo, CARSLOTID_CUSTOM_HUD, -1);
-			RideInfo_SetRandomPart(RideInfo, CARSLOTID_HUD_BACKING_COLOUR, -1);
-			RideInfo_SetRandomPart(RideInfo, CARSLOTID_HUD_NEEDLE_COLOUR, -1);
-			RideInfo_SetRandomPart(RideInfo, CARSLOTID_HUD_CHARACTER_COLOUR, -1);
-		}
-
-	case 3:
-		// Unlimiter parts
-		if (CarConfigs[CarTypeID].Parts.RoofScoops) RideInfo_SetRandomPart(RideInfo, CARSLOTID_ROOF, -1);
-		if (CarConfigs[CarTypeID].Parts.Interior) RideInfo_SetRandomPart(RideInfo, CARSLOTID_INTERIOR, -1);
-		if (CarConfigs[CarTypeID].Parts.Roof) RideInfo_SetRandomPart(RideInfo, CARSLOTID_BASE, -1);
-		if (CarConfigs[CarTypeID].Parts.Brakes) RideInfo_SetRandomPart(RideInfo, CARSLOTID_FRONT_BRAKE, -1);
-		if (CarConfigs[CarTypeID].Parts.Headlights) RideInfo_SetRandomPart(RideInfo, CARSLOTID_LEFT_HEADLIGHT, -1);
-		if (CarConfigs[CarTypeID].Parts.Taillights) RideInfo_SetRandomPart(RideInfo, CARSLOTID_LEFT_BRAKELIGHT, -1);
-		if (CarConfigs[CarTypeID].Parts.Mirrors) RideInfo_SetRandomPart(RideInfo, CARSLOTID_LEFT_SIDE_MIRROR, -1);
-
-		for (int i = 0; i < NumAttachments; i++)
-		{
-			RideInfo_SetRandomPart(RideInfo, CARSLOTID_ATTACHMENT0 + i, -1);
-		}
-
-		if (CarConfigs[CarTypeID].Visual.Driver) RideInfo_SetRandomPart(RideInfo, CARSLOTID_DRIVER, -1);
-		if (CarConfigs[CarTypeID].Visual.LicensePlate) RideInfo_SetRandomPart(RideInfo, CARSLOTID_LICENSE_PLATE, -1);
-		if (CarConfigs[CarTypeID].Visual.Tires) RideInfo_SetRandomPart(RideInfo, CARSLOTID_HEADLIGHT, -1); // Tires
-		if (CarConfigs[CarTypeID].Visual.Neon) RideInfo_SetRandomPart(RideInfo, CARSLOTID_BRAKELIGHT, -1); // Neon
-		
-	case 2:
-		// Body parts
-		if (!NeedsStockBodyParts)
-		{
-			RideInfo_SetRandomPart(RideInfo, CARSLOTID_BODY, -1);
-			RideInfo_SetRandomPart(RideInfo, CARSLOTID_SPOILER, -1);
-			RideInfo_SetRandomPart(RideInfo, CARSLOTID_ROOF, -1);
-			RideInfo_SetRandomPart(RideInfo, CARSLOTID_HOOD, -1);
-		}
-		RideInfo_SetRandomPart(RideInfo, CARSLOTID_FRONT_WHEEL, -1);
-		if (RearRimsHeadsOrTails) RideInfo_SetRandomPart(RideInfo, CARSLOTID_REAR_WHEEL, -1);
-		else RideInfo_SetPart(RideInfo, EDX_Unused, CARSLOTID_REAR_WHEEL, (DWORD)RideInfo_GetPart(RideInfo, CARSLOTID_FRONT_WHEEL), 1);
-
-		RideInfo_SetRandomPart(RideInfo, CARSLOTID_PAINT_RIM, -1);
-		RideInfo_SetRandomPart(RideInfo, CARSLOTID_WINDOW_TINT, -1);
-
-	case 1:
-		// Paint and vinyls
-		RideInfo_SetRandomPart(RideInfo, CARSLOTID_BASE_PAINT, -1);
-		RideInfo_SetRandomPart(RideInfo, CARSLOTID_VINYL_LAYER0, -1);
-		RideInfo_SetRandomPart(RideInfo, CARSLOTID_VINYL_COLOUR0_0, -1);
-		RideInfo_SetRandomPart(RideInfo, CARSLOTID_VINYL_COLOUR0_1, -1);
-		RideInfo_SetRandomPart(RideInfo, CARSLOTID_VINYL_COLOUR0_2, -1);
-		RideInfo_SetRandomPart(RideInfo, CARSLOTID_VINYL_COLOUR0_3, -1);
-		break;
-	case 0:
-	default:
-		// Pretty much Carbon.
-		if (!NeedsStockBodyParts)
-		{
-			RideInfo_SetRandomPart(RideInfo, CARSLOTID_BODY, -1);
-			RideInfo_SetRandomPart(RideInfo, CARSLOTID_SPOILER, -1);
-		}
-		RideInfo_SetRandomPart(RideInfo, CARSLOTID_BASE_PAINT, -1);
-		RideInfo_SetRandomPart(RideInfo, CARSLOTID_FRONT_WHEEL, -1);
-		if (RearRimsHeadsOrTails) RideInfo_SetRandomPart(RideInfo, CARSLOTID_REAR_WHEEL, -1);
-		else RideInfo_SetPart(RideInfo, EDX_Unused, CARSLOTID_REAR_WHEEL, (DWORD)RideInfo_GetPart(RideInfo, CARSLOTID_FRONT_WHEEL), 1);
-		RideInfo_SetRandomPart(RideInfo, CARSLOTID_PAINT_RIM, -1);
-		break;
-	case -1:
-		// Nothing. Bone stock.
-		break;
-	}
-
 }
 
 void __fastcall RideInfo_SetStockParts_Traffic(DWORD* TheRideInfo, void* EDX_Unused)

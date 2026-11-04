@@ -732,185 +732,189 @@ void LoadCarConfigs()
 	DefaultCarConfig.StockParts.CustomStockParts = mINI_ReadInteger(GeneralINI, "StockParts", "CustomStockParts", 0) != 0;
 	for (int p = 0; p < NumCarSlots; p++) DefaultCarConfig.StockParts.Parts[p] = -1;
 
-	DefaultCarConfig.StockParts.Parts[23] = mINI_ReadHash(GeneralINI, "StockParts", "BodyKits"); // BODY
-	DefaultCarConfig.StockParts.Parts[44] = mINI_ReadHash(GeneralINI, "StockParts", "Spoilers"); // SPOILER
-	DefaultCarConfig.StockParts.Parts[66] = mINI_ReadHash(GeneralINI, "StockParts", "RimsFront"); // FRONT_WHEEL
-	DefaultCarConfig.StockParts.Parts[67] = mINI_ReadHash(GeneralINI, "StockParts", "RimsRear"); // REAR_WHEEL
-	DefaultCarConfig.StockParts.Parts[63] = mINI_ReadHash(GeneralINI, "StockParts", "Hoods"); // HOOD
-	DefaultCarConfig.StockParts.Parts[62] = mINI_ReadHash(GeneralINI, "StockParts", "RoofScoops"); // ROOF
-	DefaultCarConfig.StockParts.Parts[28] = mINI_ReadHash(GeneralINI, "StockParts", "Interior"); // INTERIOR
-	DefaultCarConfig.StockParts.Parts[0] = mINI_ReadHash(GeneralINI, "StockParts", "Roof"); // BASE
-	DefaultCarConfig.StockParts.Parts[24] = mINI_ReadHash(GeneralINI, "StockParts", "Brakes"); // FRONT_BRAKE
-	DefaultCarConfig.StockParts.Parts[31] = mINI_ReadHash(GeneralINI, "StockParts", "Headlights"); // LEFT_HEADLIGHT
-	DefaultCarConfig.StockParts.Parts[29] = mINI_ReadHash(GeneralINI, "StockParts", "Taillights"); // LEFT_BRAKELIGHT
-	DefaultCarConfig.StockParts.Parts[33] = mINI_ReadHash(GeneralINI, "StockParts", "Mirrors"); // LEFT_SIDE_MIRROR
-	DefaultCarConfig.StockParts.Parts[52] = mINI_ReadHash(GeneralINI, "StockParts", "Attachment0"); // ATTACHMENT0
-	DefaultCarConfig.StockParts.Parts[53] = mINI_ReadHash(GeneralINI, "StockParts", "Attachment1"); // ATTACHMENT1
-	DefaultCarConfig.StockParts.Parts[54] = mINI_ReadHash(GeneralINI, "StockParts", "Attachment2"); // ATTACHMENT2
-	DefaultCarConfig.StockParts.Parts[55] = mINI_ReadHash(GeneralINI, "StockParts", "Attachment3"); // ATTACHMENT3
-	DefaultCarConfig.StockParts.Parts[56] = mINI_ReadHash(GeneralINI, "StockParts", "Attachment4"); // ATTACHMENT4
-	DefaultCarConfig.StockParts.Parts[57] = mINI_ReadHash(GeneralINI, "StockParts", "Attachment5"); // ATTACHMENT5
-	DefaultCarConfig.StockParts.Parts[58] = mINI_ReadHash(GeneralINI, "StockParts", "Attachment6"); // ATTACHMENT6
-	DefaultCarConfig.StockParts.Parts[59] = mINI_ReadHash(GeneralINI, "StockParts", "Attachment7"); // ATTACHMENT7
-	DefaultCarConfig.StockParts.Parts[60] = mINI_ReadHash(GeneralINI, "StockParts", "Attachment8"); // ATTACHMENT8
-	DefaultCarConfig.StockParts.Parts[61] = mINI_ReadHash(GeneralINI, "StockParts", "Attachment9"); // ATTACHMENT9
-	DefaultCarConfig.StockParts.Parts[76] = mINI_ReadHash(GeneralINI, "StockParts", "Paint"); // BASE_PAINT
-	DefaultCarConfig.StockParts.Parts[77] = mINI_ReadHash(GeneralINI, "StockParts", "Vinyls"); // VINYL_LAYER0
-	DefaultCarConfig.StockParts.Parts[79] = mINI_ReadHash(GeneralINI, "StockParts", "VinylColor1");  // VINYL_COLOUR0_0
-	DefaultCarConfig.StockParts.Parts[80] = mINI_ReadHash(GeneralINI, "StockParts", "VinylColor2");  // VINYL_COLOUR0_1
-	DefaultCarConfig.StockParts.Parts[81] = mINI_ReadHash(GeneralINI, "StockParts", "VinylColor3");  // VINYL_COLOUR0_2
-	DefaultCarConfig.StockParts.Parts[82] = mINI_ReadHash(GeneralINI, "StockParts", "VinylColor4");  // VINYL_COLOUR0_3
-	DefaultCarConfig.StockParts.Parts[78] = mINI_ReadHash(GeneralINI, "StockParts", "RimPaint"); // PAINT_RIM
-	DefaultCarConfig.StockParts.Parts[131] = mINI_ReadHash(GeneralINI, "StockParts", "WindowTint"); // WINDOW_TINT
-	DefaultCarConfig.StockParts.Parts[83] = mINI_ReadHash(GeneralINI, "StockParts", "DecalsWindshield1"); // DECAL_FRONT_WINDOW_TEX0
-	DefaultCarConfig.StockParts.Parts[84] = mINI_ReadHash(GeneralINI, "StockParts", "DecalsWindshield2"); // DECAL_FRONT_WINDOW_TEX1
-	DefaultCarConfig.StockParts.Parts[85] = mINI_ReadHash(GeneralINI, "StockParts", "DecalsWindshield3"); // DECAL_FRONT_WINDOW_TEX2
-	DefaultCarConfig.StockParts.Parts[86] = mINI_ReadHash(GeneralINI, "StockParts", "DecalsWindshield4"); // DECAL_FRONT_WINDOW_TEX3
-	DefaultCarConfig.StockParts.Parts[87] = mINI_ReadHash(GeneralINI, "StockParts", "DecalsWindshield5"); // DECAL_FRONT_WINDOW_TEX4
-	DefaultCarConfig.StockParts.Parts[88] = mINI_ReadHash(GeneralINI, "StockParts", "DecalsWindshield6"); // DECAL_FRONT_WINDOW_TEX5
-	DefaultCarConfig.StockParts.Parts[89] = mINI_ReadHash(GeneralINI, "StockParts", "DecalsWindshield7"); // DECAL_FRONT_WINDOW_TEX6
-	DefaultCarConfig.StockParts.Parts[90] = mINI_ReadHash(GeneralINI, "StockParts", "DecalsWindshield8"); // DECAL_FRONT_WINDOW_TEX7
-	DefaultCarConfig.StockParts.Parts[91] = mINI_ReadHash(GeneralINI, "StockParts", "DecalsRearWindow1"); // DECAL_REAR_WINDOW_TEX0
-	DefaultCarConfig.StockParts.Parts[92] = mINI_ReadHash(GeneralINI, "StockParts", "DecalsRearWindow2"); // DECAL_REAR_WINDOW_TEX1
-	DefaultCarConfig.StockParts.Parts[93] = mINI_ReadHash(GeneralINI, "StockParts", "DecalsRearWindow3"); // DECAL_REAR_WINDOW_TEX2
-	DefaultCarConfig.StockParts.Parts[94] = mINI_ReadHash(GeneralINI, "StockParts", "DecalsRearWindow4"); // DECAL_REAR_WINDOW_TEX3
-	DefaultCarConfig.StockParts.Parts[95] = mINI_ReadHash(GeneralINI, "StockParts", "DecalsRearWindow5"); // DECAL_REAR_WINDOW_TEX4
-	DefaultCarConfig.StockParts.Parts[96] = mINI_ReadHash(GeneralINI, "StockParts", "DecalsRearWindow6"); // DECAL_REAR_WINDOW_TEX5
-	DefaultCarConfig.StockParts.Parts[97] = mINI_ReadHash(GeneralINI, "StockParts", "DecalsRearWindow7"); // DECAL_REAR_WINDOW_TEX6
-	DefaultCarConfig.StockParts.Parts[98] = mINI_ReadHash(GeneralINI, "StockParts", "DecalsRearWindow8"); // DECAL_REAR_WINDOW_TEX7
-	DefaultCarConfig.StockParts.Parts[99] = mINI_ReadHash(GeneralINI, "StockParts", "DecalsLeftDoor1"); // DECAL_LEFT_DOOR_TEX0
-	DefaultCarConfig.StockParts.Parts[100] = mINI_ReadHash(GeneralINI, "StockParts", "DecalsLeftDoor2"); // DECAL_LEFT_DOOR_TEX1
-	DefaultCarConfig.StockParts.Parts[101] = mINI_ReadHash(GeneralINI, "StockParts", "DecalsLeftDoor3"); // DECAL_LEFT_DOOR_TEX2
-	DefaultCarConfig.StockParts.Parts[102] = mINI_ReadHash(GeneralINI, "StockParts", "DecalsLeftDoor4"); // DECAL_LEFT_DOOR_TEX3
-	DefaultCarConfig.StockParts.Parts[103] = mINI_ReadHash(GeneralINI, "StockParts", "DecalsLeftDoor5"); // DECAL_LEFT_DOOR_TEX4
-	DefaultCarConfig.StockParts.Parts[104] = mINI_ReadHash(GeneralINI, "StockParts", "DecalsLeftDoor6"); // DECAL_LEFT_DOOR_TEX5
-	DefaultCarConfig.StockParts.Parts[107] = mINI_ReadHash(GeneralINI, "StockParts", "DecalsRightDoor1"); // DECAL_RIGHT_DOOR_TEX0
-	DefaultCarConfig.StockParts.Parts[108] = mINI_ReadHash(GeneralINI, "StockParts", "DecalsRightDoor2"); // DECAL_RIGHT_DOOR_TEX1
-	DefaultCarConfig.StockParts.Parts[109] = mINI_ReadHash(GeneralINI, "StockParts", "DecalsRightDoor3"); // DECAL_RIGHT_DOOR_TEX2
-	DefaultCarConfig.StockParts.Parts[110] = mINI_ReadHash(GeneralINI, "StockParts", "DecalsRightDoor4"); // DECAL_RIGHT_DOOR_TEX3
-	DefaultCarConfig.StockParts.Parts[111] = mINI_ReadHash(GeneralINI, "StockParts", "DecalsRightDoor5"); // DECAL_RIGHT_DOOR_TEX4
-	DefaultCarConfig.StockParts.Parts[112] = mINI_ReadHash(GeneralINI, "StockParts", "DecalsRightDoor6"); // DECAL_RIGHT_DOOR_TEX5
-	DefaultCarConfig.StockParts.Parts[115] = mINI_ReadHash(GeneralINI, "StockParts", "DecalsLeftQuarter1"); // DECAL_LEFT_QUARTER_TEX0
-	DefaultCarConfig.StockParts.Parts[116] = mINI_ReadHash(GeneralINI, "StockParts", "DecalsLeftQuarter2"); // DECAL_LEFT_QUARTER_TEX1
-	DefaultCarConfig.StockParts.Parts[117] = mINI_ReadHash(GeneralINI, "StockParts", "DecalsLeftQuarter3"); // DECAL_LEFT_QUARTER_TEX2
-	DefaultCarConfig.StockParts.Parts[118] = mINI_ReadHash(GeneralINI, "StockParts", "DecalsLeftQuarter4"); // DECAL_LEFT_QUARTER_TEX3
-	DefaultCarConfig.StockParts.Parts[119] = mINI_ReadHash(GeneralINI, "StockParts", "DecalsLeftQuarter5"); // DECAL_LEFT_QUARTER_TEX4
-	DefaultCarConfig.StockParts.Parts[120] = mINI_ReadHash(GeneralINI, "StockParts", "DecalsLeftQuarter6"); // DECAL_LEFT_QUARTER_TEX5
-	DefaultCarConfig.StockParts.Parts[121] = mINI_ReadHash(GeneralINI, "StockParts", "DecalsLeftQuarter7"); // DECAL_LEFT_QUARTER_TEX6
-	DefaultCarConfig.StockParts.Parts[122] = mINI_ReadHash(GeneralINI, "StockParts", "DecalsLeftQuarter8"); // DECAL_LEFT_QUARTER_TEX7
-	DefaultCarConfig.StockParts.Parts[123] = mINI_ReadHash(GeneralINI, "StockParts", "DecalsRightQuarter1"); // DECAL_RIGHT_QUARTER_TEX0
-	DefaultCarConfig.StockParts.Parts[124] = mINI_ReadHash(GeneralINI, "StockParts", "DecalsRightQuarter2"); // DECAL_RIGHT_QUARTER_TEX1
-	DefaultCarConfig.StockParts.Parts[125] = mINI_ReadHash(GeneralINI, "StockParts", "DecalsRightQuarter3"); // DECAL_RIGHT_QUARTER_TEX2
-	DefaultCarConfig.StockParts.Parts[126] = mINI_ReadHash(GeneralINI, "StockParts", "DecalsRightQuarter4"); // DECAL_RIGHT_QUARTER_TEX3
-	DefaultCarConfig.StockParts.Parts[127] = mINI_ReadHash(GeneralINI, "StockParts", "DecalsRightQuarter5"); // DECAL_RIGHT_QUARTER_TEX4
-	DefaultCarConfig.StockParts.Parts[128] = mINI_ReadHash(GeneralINI, "StockParts", "DecalsRightQuarter6"); // DECAL_RIGHT_QUARTER_TEX5
-	DefaultCarConfig.StockParts.Parts[129] = mINI_ReadHash(GeneralINI, "StockParts", "DecalsRightQuarter7"); // DECAL_RIGHT_QUARTER_TEX6
-	DefaultCarConfig.StockParts.Parts[130] = mINI_ReadHash(GeneralINI, "StockParts", "DecalsRightQuarter8"); // DECAL_RIGHT_QUARTER_TEX7
-	DefaultCarConfig.StockParts.Parts[105] = mINI_ReadHash(GeneralINI, "StockParts", "NumbersLeftL"); // DECAL_LEFT_DOOR_TEX6
-	DefaultCarConfig.StockParts.Parts[106] = mINI_ReadHash(GeneralINI, "StockParts", "NumbersLeftR"); // DECAL_LEFT_DOOR_TEX7
-	DefaultCarConfig.StockParts.Parts[113] = mINI_ReadHash(GeneralINI, "StockParts", "NumbersRightL"); // DECAL_RIGHT_DOOR_TEX6
-	DefaultCarConfig.StockParts.Parts[114] = mINI_ReadHash(GeneralINI, "StockParts", "NumbersRightR"); // DECAL_RIGHT_DOOR_TEX7
-	DefaultCarConfig.StockParts.Parts[132] = mINI_ReadHash(GeneralINI, "StockParts", "CustomGauges"); // CUSTOM_HUD
-	DefaultCarConfig.StockParts.Parts[133] = mINI_ReadHash(GeneralINI, "StockParts", "CustomGaugesBackingColor"); // HUD_BACKING_COLOUR
-	DefaultCarConfig.StockParts.Parts[134] = mINI_ReadHash(GeneralINI, "StockParts", "CustomGaugesNeedleColor"); // HUD_NEEDLE_COLOUR
-	DefaultCarConfig.StockParts.Parts[135] = mINI_ReadHash(GeneralINI, "StockParts", "CustomGaugesCharacterColor"); // HUD_CHARACTER_COLOUR
-	DefaultCarConfig.StockParts.Parts[43] = mINI_ReadHash(GeneralINI, "StockParts", "Driver"); // DRIVER
-	DefaultCarConfig.StockParts.Parts[69] = mINI_ReadHash(GeneralINI, "StockParts", "LicensePlate"); // LICENSE_PLATE
-	DefaultCarConfig.StockParts.Parts[64] = mINI_ReadHash(GeneralINI, "StockParts", "Tires"); // HEADLIGHT (Tires)
-	DefaultCarConfig.StockParts.Parts[65] = mINI_ReadHash(GeneralINI, "StockParts", "Neon"); // BRAKELIGHT (Neon)
+	DefaultCarConfig.StockParts.Parts[CARSLOTID_BODY] = mINI_ReadHash(GeneralINI, "StockParts", "BodyKits"); // BODY
+	DefaultCarConfig.StockParts.Parts[CARSLOTID_SPOILER] = mINI_ReadHash(GeneralINI, "StockParts", "Spoilers"); // SPOILER
+	DefaultCarConfig.StockParts.Parts[CARSLOTID_FRONT_WHEEL] = mINI_ReadHash(GeneralINI, "StockParts", "Rims", mINI_ReadHash(GeneralINI, "StockParts", "RimsFront")); // FRONT_WHEEL
+	DefaultCarConfig.StockParts.Parts[CARSLOTID_REAR_WHEEL] = mINI_ReadHash(GeneralINI, "StockParts", "Rims", mINI_ReadHash(GeneralINI, "StockParts", "RimsRear")); // REAR_WHEEL
+	DefaultCarConfig.StockParts.Parts[CARSLOTID_HOOD] = mINI_ReadHash(GeneralINI, "StockParts", "Hoods"); // HOOD
+	DefaultCarConfig.StockParts.Parts[CARSLOTID_ROOF] = mINI_ReadHash(GeneralINI, "StockParts", "RoofScoops"); // ROOF
+	DefaultCarConfig.StockParts.Parts[CARSLOTID_INTERIOR] = mINI_ReadHash(GeneralINI, "StockParts", "Interior"); // INTERIOR
+	DefaultCarConfig.StockParts.Parts[CARSLOTID_BASE] = mINI_ReadHash(GeneralINI, "StockParts", "Roof"); // BASE
+	DefaultCarConfig.StockParts.Parts[CARSLOTID_FRONT_BRAKE] = mINI_ReadHash(GeneralINI, "StockParts", "Brakes"); // FRONT_BRAKE
+	DefaultCarConfig.StockParts.Parts[CARSLOTID_LEFT_HEADLIGHT] = mINI_ReadHash(GeneralINI, "StockParts", "Headlights"); // LEFT_HEADLIGHT
+	DefaultCarConfig.StockParts.Parts[CARSLOTID_LEFT_BRAKELIGHT] = mINI_ReadHash(GeneralINI, "StockParts", "Taillights"); // LEFT_BRAKELIGHT
+	DefaultCarConfig.StockParts.Parts[CARSLOTID_LEFT_SIDE_MIRROR] = mINI_ReadHash(GeneralINI, "StockParts", "Mirrors"); // LEFT_SIDE_MIRROR
+	DefaultCarConfig.StockParts.Parts[CARSLOTID_ATTACHMENT0] = mINI_ReadHash(GeneralINI, "StockParts", "Attachment0"); // ATTACHMENT0
+	DefaultCarConfig.StockParts.Parts[CARSLOTID_ATTACHMENT1] = mINI_ReadHash(GeneralINI, "StockParts", "Attachment1"); // ATTACHMENT1
+	DefaultCarConfig.StockParts.Parts[CARSLOTID_ATTACHMENT2] = mINI_ReadHash(GeneralINI, "StockParts", "Attachment2"); // ATTACHMENT2
+	DefaultCarConfig.StockParts.Parts[CARSLOTID_ATTACHMENT3] = mINI_ReadHash(GeneralINI, "StockParts", "Attachment3"); // ATTACHMENT3
+	DefaultCarConfig.StockParts.Parts[CARSLOTID_ATTACHMENT4] = mINI_ReadHash(GeneralINI, "StockParts", "Attachment4"); // ATTACHMENT4
+	DefaultCarConfig.StockParts.Parts[CARSLOTID_ATTACHMENT5] = mINI_ReadHash(GeneralINI, "StockParts", "Attachment5"); // ATTACHMENT5
+	DefaultCarConfig.StockParts.Parts[CARSLOTID_ATTACHMENT6] = mINI_ReadHash(GeneralINI, "StockParts", "Attachment6"); // ATTACHMENT6
+	DefaultCarConfig.StockParts.Parts[CARSLOTID_ATTACHMENT7] = mINI_ReadHash(GeneralINI, "StockParts", "Attachment7"); // ATTACHMENT7
+	DefaultCarConfig.StockParts.Parts[CARSLOTID_ATTACHMENT8] = mINI_ReadHash(GeneralINI, "StockParts", "Attachment8"); // ATTACHMENT8
+	DefaultCarConfig.StockParts.Parts[CARSLOTID_ATTACHMENT9] = mINI_ReadHash(GeneralINI, "StockParts", "Attachment9"); // ATTACHMENT9
+	DefaultCarConfig.StockParts.Parts[CARSLOTID_BASE_PAINT] = mINI_ReadHash(GeneralINI, "StockParts", "Paint"); // BASE_PAINT
+	DefaultCarConfig.StockParts.Parts[CARSLOTID_VINYL_LAYER0] = mINI_ReadHash(GeneralINI, "StockParts", "Vinyls"); // VINYL_LAYER0
+	DefaultCarConfig.StockParts.Parts[CARSLOTID_VINYL_COLOUR0_0] = mINI_ReadHash(GeneralINI, "StockParts", "VinylColor1");  // VINYL_COLOUR0_0
+	DefaultCarConfig.StockParts.Parts[CARSLOTID_VINYL_COLOUR0_1] = mINI_ReadHash(GeneralINI, "StockParts", "VinylColor2");  // VINYL_COLOUR0_1
+	DefaultCarConfig.StockParts.Parts[CARSLOTID_VINYL_COLOUR0_2] = mINI_ReadHash(GeneralINI, "StockParts", "VinylColor3");  // VINYL_COLOUR0_2
+	DefaultCarConfig.StockParts.Parts[CARSLOTID_VINYL_COLOUR0_3] = mINI_ReadHash(GeneralINI, "StockParts", "VinylColor4");  // VINYL_COLOUR0_3
+	DefaultCarConfig.StockParts.Parts[CARSLOTID_PAINT_RIM] = mINI_ReadHash(GeneralINI, "StockParts", "RimPaint"); // PAINT_RIM
+	DefaultCarConfig.StockParts.Parts[CARSLOTID_WINDOW_TINT] = mINI_ReadHash(GeneralINI, "StockParts", "WindowTint"); // WINDOW_TINT
+	DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_FRONT_WINDOW_TEX0] = mINI_ReadHash(GeneralINI, "StockParts", "DecalsWindshield1"); // DECAL_FRONT_WINDOW_TEX0
+	DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_FRONT_WINDOW_TEX1] = mINI_ReadHash(GeneralINI, "StockParts", "DecalsWindshield2"); // DECAL_FRONT_WINDOW_TEX1
+	DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_FRONT_WINDOW_TEX2] = mINI_ReadHash(GeneralINI, "StockParts", "DecalsWindshield3"); // DECAL_FRONT_WINDOW_TEX2
+	DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_FRONT_WINDOW_TEX3] = mINI_ReadHash(GeneralINI, "StockParts", "DecalsWindshield4"); // DECAL_FRONT_WINDOW_TEX3
+	DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_FRONT_WINDOW_TEX4] = mINI_ReadHash(GeneralINI, "StockParts", "DecalsWindshield5"); // DECAL_FRONT_WINDOW_TEX4
+	DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_FRONT_WINDOW_TEX5] = mINI_ReadHash(GeneralINI, "StockParts", "DecalsWindshield6"); // DECAL_FRONT_WINDOW_TEX5
+	DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_FRONT_WINDOW_TEX6] = mINI_ReadHash(GeneralINI, "StockParts", "DecalsWindshield7"); // DECAL_FRONT_WINDOW_TEX6
+	DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_FRONT_WINDOW_TEX7] = mINI_ReadHash(GeneralINI, "StockParts", "DecalsWindshield8"); // DECAL_FRONT_WINDOW_TEX7
+	DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_REAR_WINDOW_TEX0] = mINI_ReadHash(GeneralINI, "StockParts", "DecalsRearWindow1"); // DECAL_REAR_WINDOW_TEX0
+	DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_REAR_WINDOW_TEX1] = mINI_ReadHash(GeneralINI, "StockParts", "DecalsRearWindow2"); // DECAL_REAR_WINDOW_TEX1
+	DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_REAR_WINDOW_TEX2] = mINI_ReadHash(GeneralINI, "StockParts", "DecalsRearWindow3"); // DECAL_REAR_WINDOW_TEX2
+	DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_REAR_WINDOW_TEX3] = mINI_ReadHash(GeneralINI, "StockParts", "DecalsRearWindow4"); // DECAL_REAR_WINDOW_TEX3
+	DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_REAR_WINDOW_TEX4] = mINI_ReadHash(GeneralINI, "StockParts", "DecalsRearWindow5"); // DECAL_REAR_WINDOW_TEX4
+	DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_REAR_WINDOW_TEX5] = mINI_ReadHash(GeneralINI, "StockParts", "DecalsRearWindow6"); // DECAL_REAR_WINDOW_TEX5
+	DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_REAR_WINDOW_TEX6] = mINI_ReadHash(GeneralINI, "StockParts", "DecalsRearWindow7"); // DECAL_REAR_WINDOW_TEX6
+	DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_REAR_WINDOW_TEX7] = mINI_ReadHash(GeneralINI, "StockParts", "DecalsRearWindow8"); // DECAL_REAR_WINDOW_TEX7
+	DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_LEFT_DOOR_TEX0] = mINI_ReadHash(GeneralINI, "StockParts", "DecalsLeftDoor1"); // DECAL_LEFT_DOOR_TEX0
+	DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_LEFT_DOOR_TEX1] = mINI_ReadHash(GeneralINI, "StockParts", "DecalsLeftDoor2"); // DECAL_LEFT_DOOR_TEX1
+	DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_LEFT_DOOR_TEX2] = mINI_ReadHash(GeneralINI, "StockParts", "DecalsLeftDoor3"); // DECAL_LEFT_DOOR_TEX2
+	DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_LEFT_DOOR_TEX3] = mINI_ReadHash(GeneralINI, "StockParts", "DecalsLeftDoor4"); // DECAL_LEFT_DOOR_TEX3
+	DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_LEFT_DOOR_TEX4] = mINI_ReadHash(GeneralINI, "StockParts", "DecalsLeftDoor5"); // DECAL_LEFT_DOOR_TEX4
+	DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_LEFT_DOOR_TEX5] = mINI_ReadHash(GeneralINI, "StockParts", "DecalsLeftDoor6"); // DECAL_LEFT_DOOR_TEX5
+	DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_RIGHT_DOOR_TEX0] = mINI_ReadHash(GeneralINI, "StockParts", "DecalsRightDoor1"); // DECAL_RIGHT_DOOR_TEX0
+	DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_RIGHT_DOOR_TEX1] = mINI_ReadHash(GeneralINI, "StockParts", "DecalsRightDoor2"); // DECAL_RIGHT_DOOR_TEX1
+	DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_RIGHT_DOOR_TEX2] = mINI_ReadHash(GeneralINI, "StockParts", "DecalsRightDoor3"); // DECAL_RIGHT_DOOR_TEX2
+	DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_RIGHT_DOOR_TEX3] = mINI_ReadHash(GeneralINI, "StockParts", "DecalsRightDoor4"); // DECAL_RIGHT_DOOR_TEX3
+	DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_RIGHT_DOOR_TEX4] = mINI_ReadHash(GeneralINI, "StockParts", "DecalsRightDoor5"); // DECAL_RIGHT_DOOR_TEX4
+	DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_RIGHT_DOOR_TEX5] = mINI_ReadHash(GeneralINI, "StockParts", "DecalsRightDoor6"); // DECAL_RIGHT_DOOR_TEX5
+	DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_LEFT_QUARTER_TEX0] = mINI_ReadHash(GeneralINI, "StockParts", "DecalsLeftQuarter1"); // DECAL_LEFT_QUARTER_TEX0
+	DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_LEFT_QUARTER_TEX1] = mINI_ReadHash(GeneralINI, "StockParts", "DecalsLeftQuarter2"); // DECAL_LEFT_QUARTER_TEX1
+	DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_LEFT_QUARTER_TEX2] = mINI_ReadHash(GeneralINI, "StockParts", "DecalsLeftQuarter3"); // DECAL_LEFT_QUARTER_TEX2
+	DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_LEFT_QUARTER_TEX3] = mINI_ReadHash(GeneralINI, "StockParts", "DecalsLeftQuarter4"); // DECAL_LEFT_QUARTER_TEX3
+	DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_LEFT_QUARTER_TEX4] = mINI_ReadHash(GeneralINI, "StockParts", "DecalsLeftQuarter5"); // DECAL_LEFT_QUARTER_TEX4
+	DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_LEFT_QUARTER_TEX5] = mINI_ReadHash(GeneralINI, "StockParts", "DecalsLeftQuarter6"); // DECAL_LEFT_QUARTER_TEX5
+	DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_LEFT_QUARTER_TEX6] = mINI_ReadHash(GeneralINI, "StockParts", "DecalsLeftQuarter7"); // DECAL_LEFT_QUARTER_TEX6
+	DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_LEFT_QUARTER_TEX7] = mINI_ReadHash(GeneralINI, "StockParts", "DecalsLeftQuarter8"); // DECAL_LEFT_QUARTER_TEX7
+	DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_RIGHT_QUARTER_TEX0] = mINI_ReadHash(GeneralINI, "StockParts", "DecalsRightQuarter1"); // DECAL_RIGHT_QUARTER_TEX0
+	DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_RIGHT_QUARTER_TEX1] = mINI_ReadHash(GeneralINI, "StockParts", "DecalsRightQuarter2"); // DECAL_RIGHT_QUARTER_TEX1
+	DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_RIGHT_QUARTER_TEX2] = mINI_ReadHash(GeneralINI, "StockParts", "DecalsRightQuarter3"); // DECAL_RIGHT_QUARTER_TEX2
+	DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_RIGHT_QUARTER_TEX3] = mINI_ReadHash(GeneralINI, "StockParts", "DecalsRightQuarter4"); // DECAL_RIGHT_QUARTER_TEX3
+	DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_RIGHT_QUARTER_TEX4] = mINI_ReadHash(GeneralINI, "StockParts", "DecalsRightQuarter5"); // DECAL_RIGHT_QUARTER_TEX4
+	DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_RIGHT_QUARTER_TEX5] = mINI_ReadHash(GeneralINI, "StockParts", "DecalsRightQuarter6"); // DECAL_RIGHT_QUARTER_TEX5
+	DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_RIGHT_QUARTER_TEX6] = mINI_ReadHash(GeneralINI, "StockParts", "DecalsRightQuarter7"); // DECAL_RIGHT_QUARTER_TEX6
+	DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_RIGHT_QUARTER_TEX7] = mINI_ReadHash(GeneralINI, "StockParts", "DecalsRightQuarter8"); // DECAL_RIGHT_QUARTER_TEX7
+	DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_LEFT_DOOR_TEX6] = mINI_ReadHash(GeneralINI, "StockParts", "NumbersLeftL"); // DECAL_LEFT_DOOR_TEX6
+	DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_LEFT_DOOR_TEX7] = mINI_ReadHash(GeneralINI, "StockParts", "NumbersLeftR"); // DECAL_LEFT_DOOR_TEX7
+	DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_RIGHT_DOOR_TEX6] = mINI_ReadHash(GeneralINI, "StockParts", "NumbersRightL"); // DECAL_RIGHT_DOOR_TEX6
+	DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_RIGHT_DOOR_TEX7] = mINI_ReadHash(GeneralINI, "StockParts", "NumbersRightR"); // DECAL_RIGHT_DOOR_TEX7
+	DefaultCarConfig.StockParts.Parts[CARSLOTID_CUSTOM_HUD] = mINI_ReadHash(GeneralINI, "StockParts", "CustomGauges"); // CUSTOM_HUD
+	DefaultCarConfig.StockParts.Parts[CARSLOTID_HUD_BACKING_COLOUR] = mINI_ReadHash(GeneralINI, "StockParts", "CustomGaugesBackingColor"); // HUD_BACKING_COLOUR
+	DefaultCarConfig.StockParts.Parts[CARSLOTID_HUD_NEEDLE_COLOUR] = mINI_ReadHash(GeneralINI, "StockParts", "CustomGaugesNeedleColor"); // HUD_NEEDLE_COLOUR
+	DefaultCarConfig.StockParts.Parts[CARSLOTID_HUD_CHARACTER_COLOUR] = mINI_ReadHash(GeneralINI, "StockParts", "CustomGaugesCharacterColor"); // HUD_CHARACTER_COLOUR
+	DefaultCarConfig.StockParts.Parts[CARSLOTID_DRIVER] = mINI_ReadHash(GeneralINI, "StockParts", "Driver"); // DRIVER
+	DefaultCarConfig.StockParts.Parts[CARSLOTID_LICENSE_PLATE] = mINI_ReadHash(GeneralINI, "StockParts", "LicensePlate"); // LICENSE_PLATE
+	DefaultCarConfig.StockParts.Parts[CARSLOTID_UL_TIRE_TEXTURE] = mINI_ReadHash(GeneralINI, "StockParts", "Tires"); // HEADLIGHT (Tires)
+	DefaultCarConfig.StockParts.Parts[CARSLOTID_UL_NEON] = mINI_ReadHash(GeneralINI, "StockParts", "Neon"); // BRAKELIGHT (Neon)
 
 	// RandomParts
 	DefaultCarConfig.RandomParts.ForceCustomizationLevel = mINI_ReadInteger(GeneralINI, "RandomParts", "ForceCustomizationLevel", -2);
-	DefaultCarConfig.RandomParts.CustomRandomParts = mINI_ReadInteger(GeneralINI, "RandomParts", "CustomRandomParts", 0) != 0;
+	DefaultCarConfig.RandomParts.CustomRandomParts = mINI_ReadInteger(GeneralINI, "RandomParts", "CustomRandomParts", 0);
+	DefaultCarConfig.RandomParts.RandomRearRimProbability = Clamp(mINI_ReadInteger(GeneralINI, "RandomParts", "RandomRearRimProbability", 25), 0, 100);
+	DefaultCarConfig.RandomParts.NumbersProbability = Clamp(mINI_ReadInteger(GeneralINI, "RandomParts", "NumbersProbability", 25), 0, 100);
+	DefaultCarConfig.RandomParts.MatchSideDecals = mINI_ReadInteger(GeneralINI, "RandomParts", "MatchSideDecals", 0) != 0;
 	DefaultCarConfig.RandomParts.RandomizeInTraffic = mINI_ReadInteger(GeneralINI, "RandomParts", "RandomizeInTraffic", 0) != 0;
+
 	for (int p = 0; p < NumCarSlots; p++) DefaultCarConfig.RandomParts.Parts[p] = 0;
 
-	DefaultCarConfig.RandomParts.Parts[23] = mINI_ReadInteger(GeneralINI, "RandomParts", "BodyKits", 0) != 0; // BODY
-	DefaultCarConfig.RandomParts.Parts[44] = mINI_ReadInteger(GeneralINI, "RandomParts", "Spoilers", 0) != 0; // SPOILER
-	DefaultCarConfig.RandomParts.Parts[66] = mINI_ReadInteger(GeneralINI, "RandomParts", "RimsFront", 0) != 0; // FRONT_WHEEL
-	DefaultCarConfig.RandomParts.Parts[67] = mINI_ReadInteger(GeneralINI, "RandomParts", "RimsRear", 0) != 0; // REAR_WHEEL
-	DefaultCarConfig.RandomParts.Parts[63] = mINI_ReadInteger(GeneralINI, "RandomParts", "Hoods", 0) != 0; // HOOD
-	DefaultCarConfig.RandomParts.Parts[62] = mINI_ReadInteger(GeneralINI, "RandomParts", "RoofScoops", 0) != 0; // ROOF
-	DefaultCarConfig.RandomParts.Parts[28] = mINI_ReadInteger(GeneralINI, "RandomParts", "Interior", 0) != 0; // INTERIOR
-	DefaultCarConfig.RandomParts.Parts[0] = mINI_ReadInteger(GeneralINI, "RandomParts", "Roof", 0) != 0; // BASE
-	DefaultCarConfig.RandomParts.Parts[24] = mINI_ReadInteger(GeneralINI, "RandomParts", "Brakes", 0) != 0; // FRONT_BRAKE
-	DefaultCarConfig.RandomParts.Parts[31] = mINI_ReadInteger(GeneralINI, "RandomParts", "Headlights", 0) != 0; // LEFT_HEADLIGHT
-	DefaultCarConfig.RandomParts.Parts[29] = mINI_ReadInteger(GeneralINI, "RandomParts", "Taillights", 0) != 0; // LEFT_BRAKELIGHT
-	DefaultCarConfig.RandomParts.Parts[33] = mINI_ReadInteger(GeneralINI, "RandomParts", "Mirrors", 0) != 0; // LEFT_SIDE_MIRROR
-	DefaultCarConfig.RandomParts.Parts[52] = mINI_ReadInteger(GeneralINI, "RandomParts", "Attachment0", 0) != 0; // ATTACHMENT0
-	DefaultCarConfig.RandomParts.Parts[53] = mINI_ReadInteger(GeneralINI, "RandomParts", "Attachment1", 0) != 0; // ATTACHMENT1
-	DefaultCarConfig.RandomParts.Parts[54] = mINI_ReadInteger(GeneralINI, "RandomParts", "Attachment2", 0) != 0; // ATTACHMENT2
-	DefaultCarConfig.RandomParts.Parts[55] = mINI_ReadInteger(GeneralINI, "RandomParts", "Attachment3", 0) != 0; // ATTACHMENT3
-	DefaultCarConfig.RandomParts.Parts[56] = mINI_ReadInteger(GeneralINI, "RandomParts", "Attachment4", 0) != 0; // ATTACHMENT4
-	DefaultCarConfig.RandomParts.Parts[57] = mINI_ReadInteger(GeneralINI, "RandomParts", "Attachment5", 0) != 0; // ATTACHMENT5
-	DefaultCarConfig.RandomParts.Parts[58] = mINI_ReadInteger(GeneralINI, "RandomParts", "Attachment6", 0) != 0; // ATTACHMENT6
-	DefaultCarConfig.RandomParts.Parts[59] = mINI_ReadInteger(GeneralINI, "RandomParts", "Attachment7", 0) != 0; // ATTACHMENT7
-	DefaultCarConfig.RandomParts.Parts[60] = mINI_ReadInteger(GeneralINI, "RandomParts", "Attachment8", 0) != 0; // ATTACHMENT8
-	DefaultCarConfig.RandomParts.Parts[61] = mINI_ReadInteger(GeneralINI, "RandomParts", "Attachment9", 0) != 0; // ATTACHMENT9
-	DefaultCarConfig.RandomParts.Parts[76] = mINI_ReadInteger(GeneralINI, "RandomParts", "Paint", 0) != 0; // BASE_PAINT
-	DefaultCarConfig.RandomParts.Parts[77] = mINI_ReadInteger(GeneralINI, "RandomParts", "Vinyls", 0) != 0; // VINYL_LAYER0
-	DefaultCarConfig.RandomParts.Parts[79] = mINI_ReadInteger(GeneralINI, "RandomParts", "VinylColor1", 0) != 0;  // VINYL_COLOUR0_0
-	DefaultCarConfig.RandomParts.Parts[80] = mINI_ReadInteger(GeneralINI, "RandomParts", "VinylColor2", 0) != 0;  // VINYL_COLOUR0_1
-	DefaultCarConfig.RandomParts.Parts[81] = mINI_ReadInteger(GeneralINI, "RandomParts", "VinylColor3", 0) != 0;  // VINYL_COLOUR0_2
-	DefaultCarConfig.RandomParts.Parts[82] = mINI_ReadInteger(GeneralINI, "RandomParts", "VinylColor4", 0) != 0;  // VINYL_COLOUR0_3
-	DefaultCarConfig.RandomParts.Parts[78] = mINI_ReadInteger(GeneralINI, "RandomParts", "RimPaint", 0) != 0; // PAINT_RIM
-	DefaultCarConfig.RandomParts.Parts[131] = mINI_ReadInteger(GeneralINI, "RandomParts", "WindowTint", 0) != 0; // WINDOW_TINT
-	DefaultCarConfig.RandomParts.Parts[83] = mINI_ReadInteger(GeneralINI, "RandomParts", "DecalsWindshield1", 0) != 0; // DECAL_FRONT_WINDOW_TEX0
-	DefaultCarConfig.RandomParts.Parts[84] = mINI_ReadInteger(GeneralINI, "RandomParts", "DecalsWindshield2", 0) != 0; // DECAL_FRONT_WINDOW_TEX1
-	DefaultCarConfig.RandomParts.Parts[85] = mINI_ReadInteger(GeneralINI, "RandomParts", "DecalsWindshield3", 0) != 0; // DECAL_FRONT_WINDOW_TEX2
-	DefaultCarConfig.RandomParts.Parts[86] = mINI_ReadInteger(GeneralINI, "RandomParts", "DecalsWindshield4", 0) != 0; // DECAL_FRONT_WINDOW_TEX3
-	DefaultCarConfig.RandomParts.Parts[87] = mINI_ReadInteger(GeneralINI, "RandomParts", "DecalsWindshield5", 0) != 0; // DECAL_FRONT_WINDOW_TEX4
-	DefaultCarConfig.RandomParts.Parts[88] = mINI_ReadInteger(GeneralINI, "RandomParts", "DecalsWindshield6", 0) != 0; // DECAL_FRONT_WINDOW_TEX5
-	DefaultCarConfig.RandomParts.Parts[89] = mINI_ReadInteger(GeneralINI, "RandomParts", "DecalsWindshield7", 0) != 0; // DECAL_FRONT_WINDOW_TEX6
-	DefaultCarConfig.RandomParts.Parts[90] = mINI_ReadInteger(GeneralINI, "RandomParts", "DecalsWindshield8", 0) != 0; // DECAL_FRONT_WINDOW_TEX7
-	DefaultCarConfig.RandomParts.Parts[91] = mINI_ReadInteger(GeneralINI, "RandomParts", "DecalsRearWindow1", 0) != 0; // DECAL_REAR_WINDOW_TEX0
-	DefaultCarConfig.RandomParts.Parts[92] = mINI_ReadInteger(GeneralINI, "RandomParts", "DecalsRearWindow2", 0) != 0; // DECAL_REAR_WINDOW_TEX1
-	DefaultCarConfig.RandomParts.Parts[93] = mINI_ReadInteger(GeneralINI, "RandomParts", "DecalsRearWindow3", 0) != 0; // DECAL_REAR_WINDOW_TEX2
-	DefaultCarConfig.RandomParts.Parts[94] = mINI_ReadInteger(GeneralINI, "RandomParts", "DecalsRearWindow4", 0) != 0; // DECAL_REAR_WINDOW_TEX3
-	DefaultCarConfig.RandomParts.Parts[95] = mINI_ReadInteger(GeneralINI, "RandomParts", "DecalsRearWindow5", 0) != 0; // DECAL_REAR_WINDOW_TEX4
-	DefaultCarConfig.RandomParts.Parts[96] = mINI_ReadInteger(GeneralINI, "RandomParts", "DecalsRearWindow6", 0) != 0; // DECAL_REAR_WINDOW_TEX5
-	DefaultCarConfig.RandomParts.Parts[97] = mINI_ReadInteger(GeneralINI, "RandomParts", "DecalsRearWindow7", 0) != 0; // DECAL_REAR_WINDOW_TEX6
-	DefaultCarConfig.RandomParts.Parts[98] = mINI_ReadInteger(GeneralINI, "RandomParts", "DecalsRearWindow8", 0) != 0; // DECAL_REAR_WINDOW_TEX7
-	DefaultCarConfig.RandomParts.Parts[99] = mINI_ReadInteger(GeneralINI, "RandomParts", "DecalsLeftDoor1", 0) != 0; // DECAL_LEFT_DOOR_TEX0
-	DefaultCarConfig.RandomParts.Parts[100] = mINI_ReadInteger(GeneralINI, "RandomParts", "DecalsLeftDoor2", 0) != 0; // DECAL_LEFT_DOOR_TEX1
-	DefaultCarConfig.RandomParts.Parts[101] = mINI_ReadInteger(GeneralINI, "RandomParts", "DecalsLeftDoor3", 0) != 0; // DECAL_LEFT_DOOR_TEX2
-	DefaultCarConfig.RandomParts.Parts[102] = mINI_ReadInteger(GeneralINI, "RandomParts", "DecalsLeftDoor4", 0) != 0; // DECAL_LEFT_DOOR_TEX3
-	DefaultCarConfig.RandomParts.Parts[103] = mINI_ReadInteger(GeneralINI, "RandomParts", "DecalsLeftDoor5", 0) != 0; // DECAL_LEFT_DOOR_TEX4
-	DefaultCarConfig.RandomParts.Parts[104] = mINI_ReadInteger(GeneralINI, "RandomParts", "DecalsLeftDoor6", 0) != 0; // DECAL_LEFT_DOOR_TEX5
-	DefaultCarConfig.RandomParts.Parts[107] = mINI_ReadInteger(GeneralINI, "RandomParts", "DecalsRightDoor1", 0) != 0; // DECAL_RIGHT_DOOR_TEX0
-	DefaultCarConfig.RandomParts.Parts[108] = mINI_ReadInteger(GeneralINI, "RandomParts", "DecalsRightDoor2", 0) != 0; // DECAL_RIGHT_DOOR_TEX1
-	DefaultCarConfig.RandomParts.Parts[109] = mINI_ReadInteger(GeneralINI, "RandomParts", "DecalsRightDoor3", 0) != 0; // DECAL_RIGHT_DOOR_TEX2
-	DefaultCarConfig.RandomParts.Parts[110] = mINI_ReadInteger(GeneralINI, "RandomParts", "DecalsRightDoor4", 0) != 0; // DECAL_RIGHT_DOOR_TEX3
-	DefaultCarConfig.RandomParts.Parts[111] = mINI_ReadInteger(GeneralINI, "RandomParts", "DecalsRightDoor5", 0) != 0; // DECAL_RIGHT_DOOR_TEX4
-	DefaultCarConfig.RandomParts.Parts[112] = mINI_ReadInteger(GeneralINI, "RandomParts", "DecalsRightDoor6", 0) != 0; // DECAL_RIGHT_DOOR_TEX5
-	DefaultCarConfig.RandomParts.Parts[115] = mINI_ReadInteger(GeneralINI, "RandomParts", "DecalsLeftQuarter1", 0) != 0; // DECAL_LEFT_QUARTER_TEX0
-	DefaultCarConfig.RandomParts.Parts[116] = mINI_ReadInteger(GeneralINI, "RandomParts", "DecalsLeftQuarter2", 0) != 0; // DECAL_LEFT_QUARTER_TEX1
-	DefaultCarConfig.RandomParts.Parts[117] = mINI_ReadInteger(GeneralINI, "RandomParts", "DecalsLeftQuarter3", 0) != 0; // DECAL_LEFT_QUARTER_TEX2
-	DefaultCarConfig.RandomParts.Parts[118] = mINI_ReadInteger(GeneralINI, "RandomParts", "DecalsLeftQuarter4", 0) != 0; // DECAL_LEFT_QUARTER_TEX3
-	DefaultCarConfig.RandomParts.Parts[119] = mINI_ReadInteger(GeneralINI, "RandomParts", "DecalsLeftQuarter5", 0) != 0; // DECAL_LEFT_QUARTER_TEX4
-	DefaultCarConfig.RandomParts.Parts[120] = mINI_ReadInteger(GeneralINI, "RandomParts", "DecalsLeftQuarter6", 0) != 0; // DECAL_LEFT_QUARTER_TEX5
-	DefaultCarConfig.RandomParts.Parts[121] = mINI_ReadInteger(GeneralINI, "RandomParts", "DecalsLeftQuarter7", 0) != 0; // DECAL_LEFT_QUARTER_TEX6
-	DefaultCarConfig.RandomParts.Parts[122] = mINI_ReadInteger(GeneralINI, "RandomParts", "DecalsLeftQuarter8", 0) != 0; // DECAL_LEFT_QUARTER_TEX7
-	DefaultCarConfig.RandomParts.Parts[123] = mINI_ReadInteger(GeneralINI, "RandomParts", "DecalsRightQuarter1", 0) != 0; // DECAL_RIGHT_QUARTER_TEX0
-	DefaultCarConfig.RandomParts.Parts[124] = mINI_ReadInteger(GeneralINI, "RandomParts", "DecalsRightQuarter2", 0) != 0; // DECAL_RIGHT_QUARTER_TEX1
-	DefaultCarConfig.RandomParts.Parts[125] = mINI_ReadInteger(GeneralINI, "RandomParts", "DecalsRightQuarter3", 0) != 0; // DECAL_RIGHT_QUARTER_TEX2
-	DefaultCarConfig.RandomParts.Parts[126] = mINI_ReadInteger(GeneralINI, "RandomParts", "DecalsRightQuarter4", 0) != 0; // DECAL_RIGHT_QUARTER_TEX3
-	DefaultCarConfig.RandomParts.Parts[127] = mINI_ReadInteger(GeneralINI, "RandomParts", "DecalsRightQuarter5", 0) != 0; // DECAL_RIGHT_QUARTER_TEX4
-	DefaultCarConfig.RandomParts.Parts[128] = mINI_ReadInteger(GeneralINI, "RandomParts", "DecalsRightQuarter6", 0) != 0; // DECAL_RIGHT_QUARTER_TEX5
-	DefaultCarConfig.RandomParts.Parts[129] = mINI_ReadInteger(GeneralINI, "RandomParts", "DecalsRightQuarter7", 0) != 0; // DECAL_RIGHT_QUARTER_TEX6
-	DefaultCarConfig.RandomParts.Parts[130] = mINI_ReadInteger(GeneralINI, "RandomParts", "DecalsRightQuarter8", 0) != 0; // DECAL_RIGHT_QUARTER_TEX7
-	DefaultCarConfig.RandomParts.Parts[105] = mINI_ReadInteger(GeneralINI, "RandomParts", "NumbersLeftL", 0) != 0; // DECAL_LEFT_DOOR_TEX6
-	DefaultCarConfig.RandomParts.Parts[106] = mINI_ReadInteger(GeneralINI, "RandomParts", "NumbersLeftR", 0) != 0; // DECAL_LEFT_DOOR_TEX7
-	DefaultCarConfig.RandomParts.Parts[113] = mINI_ReadInteger(GeneralINI, "RandomParts", "NumbersRightL", 0) != 0; // DECAL_RIGHT_DOOR_TEX6
-	DefaultCarConfig.RandomParts.Parts[114] = mINI_ReadInteger(GeneralINI, "RandomParts", "NumbersRightR", 0) != 0; // DECAL_RIGHT_DOOR_TEX7
-	DefaultCarConfig.RandomParts.Parts[132] = mINI_ReadInteger(GeneralINI, "RandomParts", "CustomGauges", 0) != 0; // CUSTOM_HUD
-	DefaultCarConfig.RandomParts.Parts[133] = mINI_ReadInteger(GeneralINI, "RandomParts", "CustomGaugesBackingColor", 0) != 0; // HUD_BACKING_COLOUR
-	DefaultCarConfig.RandomParts.Parts[134] = mINI_ReadInteger(GeneralINI, "RandomParts", "CustomGaugesNeedleColor", 0) != 0; // HUD_NEEDLE_COLOUR
-	DefaultCarConfig.RandomParts.Parts[135] = mINI_ReadInteger(GeneralINI, "RandomParts", "CustomGaugesCharacterColor", 0) != 0; // HUD_CHARACTER_COLOUR
-	DefaultCarConfig.RandomParts.Parts[43] = mINI_ReadInteger(GeneralINI, "RandomParts", "Driver", 0) != 0; // DRIVER
-	DefaultCarConfig.RandomParts.Parts[69] = mINI_ReadInteger(GeneralINI, "RandomParts", "LicensePlate", 0) != 0; // LICENSE_PLATE
-	DefaultCarConfig.RandomParts.Parts[64] = mINI_ReadInteger(GeneralINI, "RandomParts", "Tires", 0) != 0; // HEADLIGHT (Tires)
-	DefaultCarConfig.RandomParts.Parts[65] = mINI_ReadInteger(GeneralINI, "RandomParts", "Neon", 0) != 0; // BRAKELIGHT (Neon)
+	DefaultCarConfig.RandomParts.Parts[CARSLOTID_BODY] = mINI_ReadInteger(GeneralINI, "RandomParts", "BodyKits", 0) != 0; // BODY
+	DefaultCarConfig.RandomParts.Parts[CARSLOTID_SPOILER] = mINI_ReadInteger(GeneralINI, "RandomParts", "Spoilers", 0) != 0; // SPOILER
+	DefaultCarConfig.RandomParts.Parts[CARSLOTID_FRONT_WHEEL] = mINI_ReadInteger(GeneralINI, "RandomParts", "Rims", mINI_ReadInteger(GeneralINI, "RandomParts", "RimsFront", 0)) != 0; // FRONT_WHEEL
+	DefaultCarConfig.RandomParts.Parts[CARSLOTID_REAR_WHEEL] = mINI_ReadInteger(GeneralINI, "RandomParts", "Rims", mINI_ReadInteger(GeneralINI, "RandomParts", "RimsRear", 0)) != 0; // REAR_WHEEL
+	DefaultCarConfig.RandomParts.Parts[CARSLOTID_HOOD] = mINI_ReadInteger(GeneralINI, "RandomParts", "Hoods", 0) != 0; // HOOD
+	DefaultCarConfig.RandomParts.Parts[CARSLOTID_ROOF] = mINI_ReadInteger(GeneralINI, "RandomParts", "RoofScoops", 0) != 0; // ROOF
+	DefaultCarConfig.RandomParts.Parts[CARSLOTID_INTERIOR] = mINI_ReadInteger(GeneralINI, "RandomParts", "Interior", 0) != 0; // INTERIOR
+	DefaultCarConfig.RandomParts.Parts[CARSLOTID_BASE] = mINI_ReadInteger(GeneralINI, "RandomParts", "Roof", 0) != 0; // BASE
+	DefaultCarConfig.RandomParts.Parts[CARSLOTID_FRONT_BRAKE] = mINI_ReadInteger(GeneralINI, "RandomParts", "Brakes", 0) != 0; // FRONT_BRAKE
+	DefaultCarConfig.RandomParts.Parts[CARSLOTID_LEFT_HEADLIGHT] = mINI_ReadInteger(GeneralINI, "RandomParts", "Headlights", 0) != 0; // LEFT_HEADLIGHT
+	DefaultCarConfig.RandomParts.Parts[CARSLOTID_LEFT_BRAKELIGHT] = mINI_ReadInteger(GeneralINI, "RandomParts", "Taillights", 0) != 0; // LEFT_BRAKELIGHT
+	DefaultCarConfig.RandomParts.Parts[CARSLOTID_LEFT_SIDE_MIRROR] = mINI_ReadInteger(GeneralINI, "RandomParts", "Mirrors", 0) != 0; // LEFT_SIDE_MIRROR
+	DefaultCarConfig.RandomParts.Parts[CARSLOTID_ATTACHMENT0] = mINI_ReadInteger(GeneralINI, "RandomParts", "Attachment0", 0) != 0; // ATTACHMENT0
+	DefaultCarConfig.RandomParts.Parts[CARSLOTID_ATTACHMENT1] = mINI_ReadInteger(GeneralINI, "RandomParts", "Attachment1", 0) != 0; // ATTACHMENT1
+	DefaultCarConfig.RandomParts.Parts[CARSLOTID_ATTACHMENT2] = mINI_ReadInteger(GeneralINI, "RandomParts", "Attachment2", 0) != 0; // ATTACHMENT2
+	DefaultCarConfig.RandomParts.Parts[CARSLOTID_ATTACHMENT3] = mINI_ReadInteger(GeneralINI, "RandomParts", "Attachment3", 0) != 0; // ATTACHMENT3
+	DefaultCarConfig.RandomParts.Parts[CARSLOTID_ATTACHMENT4] = mINI_ReadInteger(GeneralINI, "RandomParts", "Attachment4", 0) != 0; // ATTACHMENT4
+	DefaultCarConfig.RandomParts.Parts[CARSLOTID_ATTACHMENT5] = mINI_ReadInteger(GeneralINI, "RandomParts", "Attachment5", 0) != 0; // ATTACHMENT5
+	DefaultCarConfig.RandomParts.Parts[CARSLOTID_ATTACHMENT6] = mINI_ReadInteger(GeneralINI, "RandomParts", "Attachment6", 0) != 0; // ATTACHMENT6
+	DefaultCarConfig.RandomParts.Parts[CARSLOTID_ATTACHMENT7] = mINI_ReadInteger(GeneralINI, "RandomParts", "Attachment7", 0) != 0; // ATTACHMENT7
+	DefaultCarConfig.RandomParts.Parts[CARSLOTID_ATTACHMENT8] = mINI_ReadInteger(GeneralINI, "RandomParts", "Attachment8", 0) != 0; // ATTACHMENT8
+	DefaultCarConfig.RandomParts.Parts[CARSLOTID_ATTACHMENT9] = mINI_ReadInteger(GeneralINI, "RandomParts", "Attachment9", 0) != 0; // ATTACHMENT9
+	DefaultCarConfig.RandomParts.Parts[CARSLOTID_BASE_PAINT] = mINI_ReadInteger(GeneralINI, "RandomParts", "Paint", 0) != 0; // BASE_PAINT
+	DefaultCarConfig.RandomParts.Parts[CARSLOTID_VINYL_LAYER0] = mINI_ReadInteger(GeneralINI, "RandomParts", "Vinyls", 0) != 0; // VINYL_LAYER0
+	DefaultCarConfig.RandomParts.Parts[CARSLOTID_VINYL_COLOUR0_0] = mINI_ReadInteger(GeneralINI, "RandomParts", "VinylColor1", 0) != 0;  // VINYL_COLOUR0_0
+	DefaultCarConfig.RandomParts.Parts[CARSLOTID_VINYL_COLOUR0_1] = mINI_ReadInteger(GeneralINI, "RandomParts", "VinylColor2", 0) != 0;  // VINYL_COLOUR0_1
+	DefaultCarConfig.RandomParts.Parts[CARSLOTID_VINYL_COLOUR0_2] = mINI_ReadInteger(GeneralINI, "RandomParts", "VinylColor3", 0) != 0;  // VINYL_COLOUR0_2
+	DefaultCarConfig.RandomParts.Parts[CARSLOTID_VINYL_COLOUR0_3] = mINI_ReadInteger(GeneralINI, "RandomParts", "VinylColor4", 0) != 0;  // VINYL_COLOUR0_3
+	DefaultCarConfig.RandomParts.Parts[CARSLOTID_PAINT_RIM] = mINI_ReadInteger(GeneralINI, "RandomParts", "RimPaint", 0) != 0; // PAINT_RIM
+	DefaultCarConfig.RandomParts.Parts[CARSLOTID_WINDOW_TINT] = mINI_ReadInteger(GeneralINI, "RandomParts", "WindowTint", 0) != 0; // WINDOW_TINT
+	DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_FRONT_WINDOW_TEX0] = mINI_ReadInteger(GeneralINI, "RandomParts", "DecalsWindshield1", 0) != 0; // DECAL_FRONT_WINDOW_TEX0
+	DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_FRONT_WINDOW_TEX1] = mINI_ReadInteger(GeneralINI, "RandomParts", "DecalsWindshield2", 0) != 0; // DECAL_FRONT_WINDOW_TEX1
+	DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_FRONT_WINDOW_TEX2] = mINI_ReadInteger(GeneralINI, "RandomParts", "DecalsWindshield3", 0) != 0; // DECAL_FRONT_WINDOW_TEX2
+	DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_FRONT_WINDOW_TEX3] = mINI_ReadInteger(GeneralINI, "RandomParts", "DecalsWindshield4", 0) != 0; // DECAL_FRONT_WINDOW_TEX3
+	DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_FRONT_WINDOW_TEX4] = mINI_ReadInteger(GeneralINI, "RandomParts", "DecalsWindshield5", 0) != 0; // DECAL_FRONT_WINDOW_TEX4
+	DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_FRONT_WINDOW_TEX5] = mINI_ReadInteger(GeneralINI, "RandomParts", "DecalsWindshield6", 0) != 0; // DECAL_FRONT_WINDOW_TEX5
+	DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_FRONT_WINDOW_TEX6] = mINI_ReadInteger(GeneralINI, "RandomParts", "DecalsWindshield7", 0) != 0; // DECAL_FRONT_WINDOW_TEX6
+	DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_FRONT_WINDOW_TEX7] = mINI_ReadInteger(GeneralINI, "RandomParts", "DecalsWindshield8", 0) != 0; // DECAL_FRONT_WINDOW_TEX7
+	DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_REAR_WINDOW_TEX0] = mINI_ReadInteger(GeneralINI, "RandomParts", "DecalsRearWindow1", 0) != 0; // DECAL_REAR_WINDOW_TEX0
+	DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_REAR_WINDOW_TEX1] = mINI_ReadInteger(GeneralINI, "RandomParts", "DecalsRearWindow2", 0) != 0; // DECAL_REAR_WINDOW_TEX1
+	DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_REAR_WINDOW_TEX2] = mINI_ReadInteger(GeneralINI, "RandomParts", "DecalsRearWindow3", 0) != 0; // DECAL_REAR_WINDOW_TEX2
+	DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_REAR_WINDOW_TEX3] = mINI_ReadInteger(GeneralINI, "RandomParts", "DecalsRearWindow4", 0) != 0; // DECAL_REAR_WINDOW_TEX3
+	DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_REAR_WINDOW_TEX4] = mINI_ReadInteger(GeneralINI, "RandomParts", "DecalsRearWindow5", 0) != 0; // DECAL_REAR_WINDOW_TEX4
+	DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_REAR_WINDOW_TEX5] = mINI_ReadInteger(GeneralINI, "RandomParts", "DecalsRearWindow6", 0) != 0; // DECAL_REAR_WINDOW_TEX5
+	DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_REAR_WINDOW_TEX6] = mINI_ReadInteger(GeneralINI, "RandomParts", "DecalsRearWindow7", 0) != 0; // DECAL_REAR_WINDOW_TEX6
+	DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_REAR_WINDOW_TEX7] = mINI_ReadInteger(GeneralINI, "RandomParts", "DecalsRearWindow8", 0) != 0; // DECAL_REAR_WINDOW_TEX7
+	DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_LEFT_DOOR_TEX0] = mINI_ReadInteger(GeneralINI, "RandomParts", "DecalsLeftDoor1", 0) != 0; // DECAL_LEFT_DOOR_TEX0
+	DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_LEFT_DOOR_TEX1] = mINI_ReadInteger(GeneralINI, "RandomParts", "DecalsLeftDoor2", 0) != 0; // DECAL_LEFT_DOOR_TEX1
+	DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_LEFT_DOOR_TEX2] = mINI_ReadInteger(GeneralINI, "RandomParts", "DecalsLeftDoor3", 0) != 0; // DECAL_LEFT_DOOR_TEX2
+	DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_LEFT_DOOR_TEX3] = mINI_ReadInteger(GeneralINI, "RandomParts", "DecalsLeftDoor4", 0) != 0; // DECAL_LEFT_DOOR_TEX3
+	DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_LEFT_DOOR_TEX4] = mINI_ReadInteger(GeneralINI, "RandomParts", "DecalsLeftDoor5", 0) != 0; // DECAL_LEFT_DOOR_TEX4
+	DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_LEFT_DOOR_TEX5] = mINI_ReadInteger(GeneralINI, "RandomParts", "DecalsLeftDoor6", 0) != 0; // DECAL_LEFT_DOOR_TEX5
+	DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_RIGHT_DOOR_TEX0] = mINI_ReadInteger(GeneralINI, "RandomParts", "DecalsRightDoor1", 0) != 0; // DECAL_RIGHT_DOOR_TEX0
+	DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_RIGHT_DOOR_TEX1] = mINI_ReadInteger(GeneralINI, "RandomParts", "DecalsRightDoor2", 0) != 0; // DECAL_RIGHT_DOOR_TEX1
+	DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_RIGHT_DOOR_TEX2] = mINI_ReadInteger(GeneralINI, "RandomParts", "DecalsRightDoor3", 0) != 0; // DECAL_RIGHT_DOOR_TEX2
+	DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_RIGHT_DOOR_TEX3] = mINI_ReadInteger(GeneralINI, "RandomParts", "DecalsRightDoor4", 0) != 0; // DECAL_RIGHT_DOOR_TEX3
+	DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_RIGHT_DOOR_TEX4] = mINI_ReadInteger(GeneralINI, "RandomParts", "DecalsRightDoor5", 0) != 0; // DECAL_RIGHT_DOOR_TEX4
+	DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_RIGHT_DOOR_TEX5] = mINI_ReadInteger(GeneralINI, "RandomParts", "DecalsRightDoor6", 0) != 0; // DECAL_RIGHT_DOOR_TEX5
+	DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_LEFT_QUARTER_TEX0] = mINI_ReadInteger(GeneralINI, "RandomParts", "DecalsLeftQuarter1", 0) != 0; // DECAL_LEFT_QUARTER_TEX0
+	DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_LEFT_QUARTER_TEX1] = mINI_ReadInteger(GeneralINI, "RandomParts", "DecalsLeftQuarter2", 0) != 0; // DECAL_LEFT_QUARTER_TEX1
+	DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_LEFT_QUARTER_TEX2] = mINI_ReadInteger(GeneralINI, "RandomParts", "DecalsLeftQuarter3", 0) != 0; // DECAL_LEFT_QUARTER_TEX2
+	DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_LEFT_QUARTER_TEX3] = mINI_ReadInteger(GeneralINI, "RandomParts", "DecalsLeftQuarter4", 0) != 0; // DECAL_LEFT_QUARTER_TEX3
+	DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_LEFT_QUARTER_TEX4] = mINI_ReadInteger(GeneralINI, "RandomParts", "DecalsLeftQuarter5", 0) != 0; // DECAL_LEFT_QUARTER_TEX4
+	DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_LEFT_QUARTER_TEX5] = mINI_ReadInteger(GeneralINI, "RandomParts", "DecalsLeftQuarter6", 0) != 0; // DECAL_LEFT_QUARTER_TEX5
+	DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_LEFT_QUARTER_TEX6] = mINI_ReadInteger(GeneralINI, "RandomParts", "DecalsLeftQuarter7", 0) != 0; // DECAL_LEFT_QUARTER_TEX6
+	DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_LEFT_QUARTER_TEX7] = mINI_ReadInteger(GeneralINI, "RandomParts", "DecalsLeftQuarter8", 0) != 0; // DECAL_LEFT_QUARTER_TEX7
+	DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_RIGHT_QUARTER_TEX0] = mINI_ReadInteger(GeneralINI, "RandomParts", "DecalsRightQuarter1", 0) != 0; // DECAL_RIGHT_QUARTER_TEX0
+	DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_RIGHT_QUARTER_TEX1] = mINI_ReadInteger(GeneralINI, "RandomParts", "DecalsRightQuarter2", 0) != 0; // DECAL_RIGHT_QUARTER_TEX1
+	DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_RIGHT_QUARTER_TEX2] = mINI_ReadInteger(GeneralINI, "RandomParts", "DecalsRightQuarter3", 0) != 0; // DECAL_RIGHT_QUARTER_TEX2
+	DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_RIGHT_QUARTER_TEX3] = mINI_ReadInteger(GeneralINI, "RandomParts", "DecalsRightQuarter4", 0) != 0; // DECAL_RIGHT_QUARTER_TEX3
+	DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_RIGHT_QUARTER_TEX4] = mINI_ReadInteger(GeneralINI, "RandomParts", "DecalsRightQuarter5", 0) != 0; // DECAL_RIGHT_QUARTER_TEX4
+	DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_RIGHT_QUARTER_TEX5] = mINI_ReadInteger(GeneralINI, "RandomParts", "DecalsRightQuarter6", 0) != 0; // DECAL_RIGHT_QUARTER_TEX5
+	DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_RIGHT_QUARTER_TEX6] = mINI_ReadInteger(GeneralINI, "RandomParts", "DecalsRightQuarter7", 0) != 0; // DECAL_RIGHT_QUARTER_TEX6
+	DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_RIGHT_QUARTER_TEX7] = mINI_ReadInteger(GeneralINI, "RandomParts", "DecalsRightQuarter8", 0) != 0; // DECAL_RIGHT_QUARTER_TEX7
+	DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_LEFT_DOOR_TEX6] = mINI_ReadInteger(GeneralINI, "RandomParts", "NumbersLeftL", 0) != 0; // DECAL_LEFT_DOOR_TEX6
+	DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_LEFT_DOOR_TEX7] = mINI_ReadInteger(GeneralINI, "RandomParts", "NumbersLeftR", 0) != 0; // DECAL_LEFT_DOOR_TEX7
+	DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_RIGHT_DOOR_TEX6] = mINI_ReadInteger(GeneralINI, "RandomParts", "NumbersRightL", 0) != 0; // DECAL_RIGHT_DOOR_TEX6
+	DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_RIGHT_DOOR_TEX7] = mINI_ReadInteger(GeneralINI, "RandomParts", "NumbersRightR", 0) != 0; // DECAL_RIGHT_DOOR_TEX7
+	DefaultCarConfig.RandomParts.Parts[CARSLOTID_CUSTOM_HUD] = mINI_ReadInteger(GeneralINI, "RandomParts", "CustomGauges", 0) != 0; // CUSTOM_HUD
+	DefaultCarConfig.RandomParts.Parts[CARSLOTID_HUD_BACKING_COLOUR] = mINI_ReadInteger(GeneralINI, "RandomParts", "CustomGaugesBackingColor", 0) != 0; // HUD_BACKING_COLOUR
+	DefaultCarConfig.RandomParts.Parts[CARSLOTID_HUD_NEEDLE_COLOUR] = mINI_ReadInteger(GeneralINI, "RandomParts", "CustomGaugesNeedleColor", 0) != 0; // HUD_NEEDLE_COLOUR
+	DefaultCarConfig.RandomParts.Parts[CARSLOTID_HUD_CHARACTER_COLOUR] = mINI_ReadInteger(GeneralINI, "RandomParts", "CustomGaugesCharacterColor", 0) != 0; // HUD_CHARACTER_COLOUR
+	DefaultCarConfig.RandomParts.Parts[CARSLOTID_DRIVER] = mINI_ReadInteger(GeneralINI, "RandomParts", "Driver", 0) != 0; // DRIVER
+	DefaultCarConfig.RandomParts.Parts[CARSLOTID_LICENSE_PLATE] = mINI_ReadInteger(GeneralINI, "RandomParts", "LicensePlate", 0) != 0; // LICENSE_PLATE
+	DefaultCarConfig.RandomParts.Parts[CARSLOTID_UL_TIRE_TEXTURE] = mINI_ReadInteger(GeneralINI, "RandomParts", "Tires", 0) != 0; // HEADLIGHT (Tires)
+	DefaultCarConfig.RandomParts.Parts[CARSLOTID_UL_NEON] = mINI_ReadInteger(GeneralINI, "RandomParts", "Neon", 0) != 0; // BRAKELIGHT (Neon)
 
 	// FECooling
 	DefaultCarConfig.FECooling.BodyKits = mINI_ReadFloat(GeneralINI, "FECooling", "BodyKits", 0.0f);
@@ -1633,188 +1637,190 @@ void LoadCarConfigs()
 		ACarConfig.StockParts.CustomStockParts = mINI_ReadInteger(CarINI, "StockParts", "CustomStockParts", DefaultCarConfig.StockParts.CustomStockParts) != 0;
 		for (int p = 0; p < NumCarSlots; p++) ACarConfig.StockParts.Parts[p] = DefaultCarConfig.StockParts.Parts[p];
 
-		ACarConfig.StockParts.Parts[23] = mINI_ReadHash(CarINI, "StockParts", "BodyKits", DefaultCarConfig.StockParts.Parts[23]);
-		ACarConfig.StockParts.Parts[44] = mINI_ReadHash(CarINI, "StockParts", "Spoilers", DefaultCarConfig.StockParts.Parts[44]);
-		ACarConfig.StockParts.Parts[66] = mINI_ReadHash(CarINI, "StockParts", "RimsFront", DefaultCarConfig.StockParts.Parts[66]);
-		ACarConfig.StockParts.Parts[67] = mINI_ReadHash(CarINI, "StockParts", "RimsRear", DefaultCarConfig.StockParts.Parts[67]);
-		ACarConfig.StockParts.Parts[63] = mINI_ReadHash(CarINI, "StockParts", "Hoods", DefaultCarConfig.StockParts.Parts[63]);
-		ACarConfig.StockParts.Parts[62] = mINI_ReadHash(CarINI, "StockParts", "RoofScoops", DefaultCarConfig.StockParts.Parts[62]);
-		ACarConfig.StockParts.Parts[28] = mINI_ReadHash(CarINI, "StockParts", "Interior", DefaultCarConfig.StockParts.Parts[28]);
-		ACarConfig.StockParts.Parts[0] = mINI_ReadHash(CarINI, "StockParts", "Roof", DefaultCarConfig.StockParts.Parts[0]);
-		ACarConfig.StockParts.Parts[24] = mINI_ReadHash(CarINI, "StockParts", "Brakes", DefaultCarConfig.StockParts.Parts[24]);
-		ACarConfig.StockParts.Parts[31] = mINI_ReadHash(CarINI, "StockParts", "Headlights", DefaultCarConfig.StockParts.Parts[31]);
-		ACarConfig.StockParts.Parts[29] = mINI_ReadHash(CarINI, "StockParts", "Taillights", DefaultCarConfig.StockParts.Parts[29]);
-		ACarConfig.StockParts.Parts[33] = mINI_ReadHash(CarINI, "StockParts", "Mirrors", DefaultCarConfig.StockParts.Parts[33]);
-		ACarConfig.StockParts.Parts[52] = mINI_ReadHash(CarINI, "StockParts", "Attachment0", DefaultCarConfig.StockParts.Parts[52]);
-		ACarConfig.StockParts.Parts[53] = mINI_ReadHash(CarINI, "StockParts", "Attachment1", DefaultCarConfig.StockParts.Parts[53]);
-		ACarConfig.StockParts.Parts[54] = mINI_ReadHash(CarINI, "StockParts", "Attachment2", DefaultCarConfig.StockParts.Parts[54]);
-		ACarConfig.StockParts.Parts[55] = mINI_ReadHash(CarINI, "StockParts", "Attachment3", DefaultCarConfig.StockParts.Parts[55]);
-		ACarConfig.StockParts.Parts[56] = mINI_ReadHash(CarINI, "StockParts", "Attachment4", DefaultCarConfig.StockParts.Parts[56]);
-		ACarConfig.StockParts.Parts[57] = mINI_ReadHash(CarINI, "StockParts", "Attachment5", DefaultCarConfig.StockParts.Parts[57]);
-		ACarConfig.StockParts.Parts[58] = mINI_ReadHash(CarINI, "StockParts", "Attachment6", DefaultCarConfig.StockParts.Parts[58]);
-		ACarConfig.StockParts.Parts[59] = mINI_ReadHash(CarINI, "StockParts", "Attachment7", DefaultCarConfig.StockParts.Parts[59]);
-		ACarConfig.StockParts.Parts[60] = mINI_ReadHash(CarINI, "StockParts", "Attachment8", DefaultCarConfig.StockParts.Parts[60]);
-		ACarConfig.StockParts.Parts[61] = mINI_ReadHash(CarINI, "StockParts", "Attachment9", DefaultCarConfig.StockParts.Parts[61]);
-		ACarConfig.StockParts.Parts[76] = mINI_ReadHash(CarINI, "StockParts", "Paint", DefaultCarConfig.StockParts.Parts[76]);
-		ACarConfig.StockParts.Parts[77] = mINI_ReadHash(CarINI, "StockParts", "Vinyls", DefaultCarConfig.StockParts.Parts[77]);
-		ACarConfig.StockParts.Parts[79] = mINI_ReadHash(CarINI, "StockParts", "VinylColor1", DefaultCarConfig.StockParts.Parts[79]);
-		ACarConfig.StockParts.Parts[80] = mINI_ReadHash(CarINI, "StockParts", "VinylColor2", DefaultCarConfig.StockParts.Parts[80]);
-		ACarConfig.StockParts.Parts[81] = mINI_ReadHash(CarINI, "StockParts", "VinylColor3", DefaultCarConfig.StockParts.Parts[81]);
-		ACarConfig.StockParts.Parts[82] = mINI_ReadHash(CarINI, "StockParts", "VinylColor4", DefaultCarConfig.StockParts.Parts[82]);
-		ACarConfig.StockParts.Parts[78] = mINI_ReadHash(CarINI, "StockParts", "RimPaint", DefaultCarConfig.StockParts.Parts[78]);
-		ACarConfig.StockParts.Parts[131] = mINI_ReadHash(CarINI, "StockParts", "WindowTint", DefaultCarConfig.StockParts.Parts[131]);
-		ACarConfig.StockParts.Parts[83] = mINI_ReadHash(CarINI, "StockParts", "DecalsWindshield1", DefaultCarConfig.StockParts.Parts[83]);
-		ACarConfig.StockParts.Parts[84] = mINI_ReadHash(CarINI, "StockParts", "DecalsWindshield2", DefaultCarConfig.StockParts.Parts[84]);
-		ACarConfig.StockParts.Parts[85] = mINI_ReadHash(CarINI, "StockParts", "DecalsWindshield3", DefaultCarConfig.StockParts.Parts[85]);
-		ACarConfig.StockParts.Parts[86] = mINI_ReadHash(CarINI, "StockParts", "DecalsWindshield4", DefaultCarConfig.StockParts.Parts[86]);
-		ACarConfig.StockParts.Parts[87] = mINI_ReadHash(CarINI, "StockParts", "DecalsWindshield5", DefaultCarConfig.StockParts.Parts[87]);
-		ACarConfig.StockParts.Parts[88] = mINI_ReadHash(CarINI, "StockParts", "DecalsWindshield6", DefaultCarConfig.StockParts.Parts[88]);
-		ACarConfig.StockParts.Parts[89] = mINI_ReadHash(CarINI, "StockParts", "DecalsWindshield7", DefaultCarConfig.StockParts.Parts[89]);
-		ACarConfig.StockParts.Parts[90] = mINI_ReadHash(CarINI, "StockParts", "DecalsWindshield8", DefaultCarConfig.StockParts.Parts[90]);
-		ACarConfig.StockParts.Parts[91] = mINI_ReadHash(CarINI, "StockParts", "DecalsRearWindow1", DefaultCarConfig.StockParts.Parts[91]);
-		ACarConfig.StockParts.Parts[92] = mINI_ReadHash(CarINI, "StockParts", "DecalsRearWindow2", DefaultCarConfig.StockParts.Parts[92]);
-		ACarConfig.StockParts.Parts[93] = mINI_ReadHash(CarINI, "StockParts", "DecalsRearWindow3", DefaultCarConfig.StockParts.Parts[93]);
-		ACarConfig.StockParts.Parts[94] = mINI_ReadHash(CarINI, "StockParts", "DecalsRearWindow4", DefaultCarConfig.StockParts.Parts[94]);
-		ACarConfig.StockParts.Parts[95] = mINI_ReadHash(CarINI, "StockParts", "DecalsRearWindow5", DefaultCarConfig.StockParts.Parts[95]);
-		ACarConfig.StockParts.Parts[96] = mINI_ReadHash(CarINI, "StockParts", "DecalsRearWindow6", DefaultCarConfig.StockParts.Parts[96]);
-		ACarConfig.StockParts.Parts[97] = mINI_ReadHash(CarINI, "StockParts", "DecalsRearWindow7", DefaultCarConfig.StockParts.Parts[97]);
-		ACarConfig.StockParts.Parts[98] = mINI_ReadHash(CarINI, "StockParts", "DecalsRearWindow8", DefaultCarConfig.StockParts.Parts[98]);
-		ACarConfig.StockParts.Parts[99] = mINI_ReadHash(CarINI, "StockParts", "DecalsLeftDoor1", DefaultCarConfig.StockParts.Parts[99]);
-		ACarConfig.StockParts.Parts[100] = mINI_ReadHash(CarINI, "StockParts", "DecalsLeftDoor2", DefaultCarConfig.StockParts.Parts[100]);
-		ACarConfig.StockParts.Parts[101] = mINI_ReadHash(CarINI, "StockParts", "DecalsLeftDoor3", DefaultCarConfig.StockParts.Parts[101]);
-		ACarConfig.StockParts.Parts[102] = mINI_ReadHash(CarINI, "StockParts", "DecalsLeftDoor4", DefaultCarConfig.StockParts.Parts[102]);
-		ACarConfig.StockParts.Parts[103] = mINI_ReadHash(CarINI, "StockParts", "DecalsLeftDoor5", DefaultCarConfig.StockParts.Parts[103]);
-		ACarConfig.StockParts.Parts[104] = mINI_ReadHash(CarINI, "StockParts", "DecalsLeftDoor6", DefaultCarConfig.StockParts.Parts[104]);
-		ACarConfig.StockParts.Parts[107] = mINI_ReadHash(CarINI, "StockParts", "DecalsRightDoor1", DefaultCarConfig.StockParts.Parts[107]);
-		ACarConfig.StockParts.Parts[108] = mINI_ReadHash(CarINI, "StockParts", "DecalsRightDoor2", DefaultCarConfig.StockParts.Parts[108]);
-		ACarConfig.StockParts.Parts[109] = mINI_ReadHash(CarINI, "StockParts", "DecalsRightDoor3", DefaultCarConfig.StockParts.Parts[109]);
-		ACarConfig.StockParts.Parts[110] = mINI_ReadHash(CarINI, "StockParts", "DecalsRightDoor4", DefaultCarConfig.StockParts.Parts[110]);
-		ACarConfig.StockParts.Parts[111] = mINI_ReadHash(CarINI, "StockParts", "DecalsRightDoor5", DefaultCarConfig.StockParts.Parts[111]);
-		ACarConfig.StockParts.Parts[112] = mINI_ReadHash(CarINI, "StockParts", "DecalsRightDoor6", DefaultCarConfig.StockParts.Parts[112]);
-		ACarConfig.StockParts.Parts[115] = mINI_ReadHash(CarINI, "StockParts", "DecalsLeftQuarter1", DefaultCarConfig.StockParts.Parts[115]);
-		ACarConfig.StockParts.Parts[116] = mINI_ReadHash(CarINI, "StockParts", "DecalsLeftQuarter2", DefaultCarConfig.StockParts.Parts[116]);
-		ACarConfig.StockParts.Parts[117] = mINI_ReadHash(CarINI, "StockParts", "DecalsLeftQuarter3", DefaultCarConfig.StockParts.Parts[117]);
-		ACarConfig.StockParts.Parts[118] = mINI_ReadHash(CarINI, "StockParts", "DecalsLeftQuarter4", DefaultCarConfig.StockParts.Parts[118]);
-		ACarConfig.StockParts.Parts[119] = mINI_ReadHash(CarINI, "StockParts", "DecalsLeftQuarter5", DefaultCarConfig.StockParts.Parts[119]);
-		ACarConfig.StockParts.Parts[120] = mINI_ReadHash(CarINI, "StockParts", "DecalsLeftQuarter6", DefaultCarConfig.StockParts.Parts[120]);
-		ACarConfig.StockParts.Parts[121] = mINI_ReadHash(CarINI, "StockParts", "DecalsLeftQuarter7", DefaultCarConfig.StockParts.Parts[121]);
-		ACarConfig.StockParts.Parts[122] = mINI_ReadHash(CarINI, "StockParts", "DecalsLeftQuarter8", DefaultCarConfig.StockParts.Parts[122]);
-		ACarConfig.StockParts.Parts[123] = mINI_ReadHash(CarINI, "StockParts", "DecalsRightQuarter1", DefaultCarConfig.StockParts.Parts[123]);
-		ACarConfig.StockParts.Parts[124] = mINI_ReadHash(CarINI, "StockParts", "DecalsRightQuarter2", DefaultCarConfig.StockParts.Parts[124]);
-		ACarConfig.StockParts.Parts[125] = mINI_ReadHash(CarINI, "StockParts", "DecalsRightQuarter3", DefaultCarConfig.StockParts.Parts[125]);
-		ACarConfig.StockParts.Parts[126] = mINI_ReadHash(CarINI, "StockParts", "DecalsRightQuarter4", DefaultCarConfig.StockParts.Parts[126]);
-		ACarConfig.StockParts.Parts[127] = mINI_ReadHash(CarINI, "StockParts", "DecalsRightQuarter5", DefaultCarConfig.StockParts.Parts[127]);
-		ACarConfig.StockParts.Parts[128] = mINI_ReadHash(CarINI, "StockParts", "DecalsRightQuarter6", DefaultCarConfig.StockParts.Parts[128]);
-		ACarConfig.StockParts.Parts[129] = mINI_ReadHash(CarINI, "StockParts", "DecalsRightQuarter7", DefaultCarConfig.StockParts.Parts[129]);
-		ACarConfig.StockParts.Parts[130] = mINI_ReadHash(CarINI, "StockParts", "DecalsRightQuarter8", DefaultCarConfig.StockParts.Parts[130]);
-		ACarConfig.StockParts.Parts[105] = mINI_ReadHash(CarINI, "StockParts", "NumbersLeftL", DefaultCarConfig.StockParts.Parts[105]);
-		ACarConfig.StockParts.Parts[106] = mINI_ReadHash(CarINI, "StockParts", "NumbersLeftR", DefaultCarConfig.StockParts.Parts[106]);
-		ACarConfig.StockParts.Parts[113] = mINI_ReadHash(CarINI, "StockParts", "NumbersRightL", DefaultCarConfig.StockParts.Parts[113]);
-		ACarConfig.StockParts.Parts[114] = mINI_ReadHash(CarINI, "StockParts", "NumbersRightR", DefaultCarConfig.StockParts.Parts[114]);
-		ACarConfig.StockParts.Parts[132] = mINI_ReadHash(CarINI, "StockParts", "CustomGauges", DefaultCarConfig.StockParts.Parts[132]);
-		ACarConfig.StockParts.Parts[133] = mINI_ReadHash(CarINI, "StockParts", "CustomGaugesBackingColor", DefaultCarConfig.StockParts.Parts[133]);
-		ACarConfig.StockParts.Parts[134] = mINI_ReadHash(CarINI, "StockParts", "CustomGaugesNeedleColor", DefaultCarConfig.StockParts.Parts[134]);
-		ACarConfig.StockParts.Parts[135] = mINI_ReadHash(CarINI, "StockParts", "CustomGaugesCharacterColor", DefaultCarConfig.StockParts.Parts[135]);
-		ACarConfig.StockParts.Parts[43] = mINI_ReadHash(CarINI, "StockParts", "Driver", DefaultCarConfig.StockParts.Parts[43]);
-		ACarConfig.StockParts.Parts[69] = mINI_ReadHash(CarINI, "StockParts", "LicensePlate", DefaultCarConfig.StockParts.Parts[69]);
-		ACarConfig.StockParts.Parts[64] = mINI_ReadHash(CarINI, "StockParts", "Tires", DefaultCarConfig.StockParts.Parts[64]);
-		ACarConfig.StockParts.Parts[65] = mINI_ReadHash(CarINI, "StockParts", "Neon", DefaultCarConfig.StockParts.Parts[65]);
+		ACarConfig.StockParts.Parts[CARSLOTID_BODY] = mINI_ReadHash(CarINI, "StockParts", "BodyKits", DefaultCarConfig.StockParts.Parts[CARSLOTID_BODY]);
+		ACarConfig.StockParts.Parts[CARSLOTID_SPOILER] = mINI_ReadHash(CarINI, "StockParts", "Spoilers", DefaultCarConfig.StockParts.Parts[CARSLOTID_SPOILER]);
+		ACarConfig.StockParts.Parts[CARSLOTID_FRONT_WHEEL] = mINI_ReadHash(CarINI, "StockParts", "Rims", mINI_ReadHash(CarINI, "StockParts", "RimsFront", DefaultCarConfig.StockParts.Parts[CARSLOTID_FRONT_WHEEL]));
+		ACarConfig.StockParts.Parts[CARSLOTID_REAR_WHEEL] = mINI_ReadHash(CarINI, "StockParts", "Rims", mINI_ReadHash(CarINI, "StockParts", "RimsRear", DefaultCarConfig.StockParts.Parts[CARSLOTID_REAR_WHEEL]));
+		ACarConfig.StockParts.Parts[CARSLOTID_HOOD] = mINI_ReadHash(CarINI, "StockParts", "Hoods", DefaultCarConfig.StockParts.Parts[CARSLOTID_HOOD]);
+		ACarConfig.StockParts.Parts[CARSLOTID_ROOF] = mINI_ReadHash(CarINI, "StockParts", "RoofScoops", DefaultCarConfig.StockParts.Parts[CARSLOTID_ROOF]);
+		ACarConfig.StockParts.Parts[CARSLOTID_INTERIOR] = mINI_ReadHash(CarINI, "StockParts", "Interior", DefaultCarConfig.StockParts.Parts[CARSLOTID_INTERIOR]);
+		ACarConfig.StockParts.Parts[CARSLOTID_BASE] = mINI_ReadHash(CarINI, "StockParts", "Roof", DefaultCarConfig.StockParts.Parts[CARSLOTID_BASE]);
+		ACarConfig.StockParts.Parts[CARSLOTID_FRONT_BRAKE] = mINI_ReadHash(CarINI, "StockParts", "Brakes", DefaultCarConfig.StockParts.Parts[CARSLOTID_FRONT_BRAKE]);
+		ACarConfig.StockParts.Parts[CARSLOTID_LEFT_HEADLIGHT] = mINI_ReadHash(CarINI, "StockParts", "Headlights", DefaultCarConfig.StockParts.Parts[CARSLOTID_LEFT_HEADLIGHT]);
+		ACarConfig.StockParts.Parts[CARSLOTID_LEFT_BRAKELIGHT] = mINI_ReadHash(CarINI, "StockParts", "Taillights", DefaultCarConfig.StockParts.Parts[CARSLOTID_LEFT_BRAKELIGHT]);
+		ACarConfig.StockParts.Parts[CARSLOTID_LEFT_SIDE_MIRROR] = mINI_ReadHash(CarINI, "StockParts", "Mirrors", DefaultCarConfig.StockParts.Parts[CARSLOTID_LEFT_SIDE_MIRROR]);
+		ACarConfig.StockParts.Parts[CARSLOTID_ATTACHMENT0] = mINI_ReadHash(CarINI, "StockParts", "Attachment0", DefaultCarConfig.StockParts.Parts[CARSLOTID_ATTACHMENT0]);
+		ACarConfig.StockParts.Parts[CARSLOTID_ATTACHMENT1] = mINI_ReadHash(CarINI, "StockParts", "Attachment1", DefaultCarConfig.StockParts.Parts[CARSLOTID_ATTACHMENT1]);
+		ACarConfig.StockParts.Parts[CARSLOTID_ATTACHMENT2] = mINI_ReadHash(CarINI, "StockParts", "Attachment2", DefaultCarConfig.StockParts.Parts[CARSLOTID_ATTACHMENT2]);
+		ACarConfig.StockParts.Parts[CARSLOTID_ATTACHMENT3] = mINI_ReadHash(CarINI, "StockParts", "Attachment3", DefaultCarConfig.StockParts.Parts[CARSLOTID_ATTACHMENT3]);
+		ACarConfig.StockParts.Parts[CARSLOTID_ATTACHMENT4] = mINI_ReadHash(CarINI, "StockParts", "Attachment4", DefaultCarConfig.StockParts.Parts[CARSLOTID_ATTACHMENT4]);
+		ACarConfig.StockParts.Parts[CARSLOTID_ATTACHMENT5] = mINI_ReadHash(CarINI, "StockParts", "Attachment5", DefaultCarConfig.StockParts.Parts[CARSLOTID_ATTACHMENT5]);
+		ACarConfig.StockParts.Parts[CARSLOTID_ATTACHMENT6] = mINI_ReadHash(CarINI, "StockParts", "Attachment6", DefaultCarConfig.StockParts.Parts[CARSLOTID_ATTACHMENT6]);
+		ACarConfig.StockParts.Parts[CARSLOTID_ATTACHMENT7] = mINI_ReadHash(CarINI, "StockParts", "Attachment7", DefaultCarConfig.StockParts.Parts[CARSLOTID_ATTACHMENT7]);
+		ACarConfig.StockParts.Parts[CARSLOTID_ATTACHMENT8] = mINI_ReadHash(CarINI, "StockParts", "Attachment8", DefaultCarConfig.StockParts.Parts[CARSLOTID_ATTACHMENT8]);
+		ACarConfig.StockParts.Parts[CARSLOTID_ATTACHMENT9] = mINI_ReadHash(CarINI, "StockParts", "Attachment9", DefaultCarConfig.StockParts.Parts[CARSLOTID_ATTACHMENT9]);
+		ACarConfig.StockParts.Parts[CARSLOTID_BASE_PAINT] = mINI_ReadHash(CarINI, "StockParts", "Paint", DefaultCarConfig.StockParts.Parts[CARSLOTID_BASE_PAINT]);
+		ACarConfig.StockParts.Parts[CARSLOTID_VINYL_LAYER0] = mINI_ReadHash(CarINI, "StockParts", "Vinyls", DefaultCarConfig.StockParts.Parts[CARSLOTID_VINYL_LAYER0]);
+		ACarConfig.StockParts.Parts[CARSLOTID_VINYL_COLOUR0_0] = mINI_ReadHash(CarINI, "StockParts", "VinylColor1", DefaultCarConfig.StockParts.Parts[CARSLOTID_VINYL_COLOUR0_0]);
+		ACarConfig.StockParts.Parts[CARSLOTID_VINYL_COLOUR0_1] = mINI_ReadHash(CarINI, "StockParts", "VinylColor2", DefaultCarConfig.StockParts.Parts[CARSLOTID_VINYL_COLOUR0_1]);
+		ACarConfig.StockParts.Parts[CARSLOTID_VINYL_COLOUR0_2] = mINI_ReadHash(CarINI, "StockParts", "VinylColor3", DefaultCarConfig.StockParts.Parts[CARSLOTID_VINYL_COLOUR0_2]);
+		ACarConfig.StockParts.Parts[CARSLOTID_VINYL_COLOUR0_3] = mINI_ReadHash(CarINI, "StockParts", "VinylColor4", DefaultCarConfig.StockParts.Parts[CARSLOTID_VINYL_COLOUR0_3]);
+		ACarConfig.StockParts.Parts[CARSLOTID_PAINT_RIM] = mINI_ReadHash(CarINI, "StockParts", "RimPaint", DefaultCarConfig.StockParts.Parts[CARSLOTID_PAINT_RIM]);
+		ACarConfig.StockParts.Parts[CARSLOTID_WINDOW_TINT] = mINI_ReadHash(CarINI, "StockParts", "WindowTint", DefaultCarConfig.StockParts.Parts[CARSLOTID_WINDOW_TINT]);
+		ACarConfig.StockParts.Parts[CARSLOTID_DECAL_FRONT_WINDOW_TEX0] = mINI_ReadHash(CarINI, "StockParts", "DecalsWindshield1", DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_FRONT_WINDOW_TEX0]);
+		ACarConfig.StockParts.Parts[CARSLOTID_DECAL_FRONT_WINDOW_TEX1] = mINI_ReadHash(CarINI, "StockParts", "DecalsWindshield2", DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_FRONT_WINDOW_TEX1]);
+		ACarConfig.StockParts.Parts[CARSLOTID_DECAL_FRONT_WINDOW_TEX2] = mINI_ReadHash(CarINI, "StockParts", "DecalsWindshield3", DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_FRONT_WINDOW_TEX2]);
+		ACarConfig.StockParts.Parts[CARSLOTID_DECAL_FRONT_WINDOW_TEX3] = mINI_ReadHash(CarINI, "StockParts", "DecalsWindshield4", DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_FRONT_WINDOW_TEX3]);
+		ACarConfig.StockParts.Parts[CARSLOTID_DECAL_FRONT_WINDOW_TEX4] = mINI_ReadHash(CarINI, "StockParts", "DecalsWindshield5", DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_FRONT_WINDOW_TEX4]);
+		ACarConfig.StockParts.Parts[CARSLOTID_DECAL_FRONT_WINDOW_TEX5] = mINI_ReadHash(CarINI, "StockParts", "DecalsWindshield6", DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_FRONT_WINDOW_TEX5]);
+		ACarConfig.StockParts.Parts[CARSLOTID_DECAL_FRONT_WINDOW_TEX6] = mINI_ReadHash(CarINI, "StockParts", "DecalsWindshield7", DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_FRONT_WINDOW_TEX6]);
+		ACarConfig.StockParts.Parts[CARSLOTID_DECAL_FRONT_WINDOW_TEX7] = mINI_ReadHash(CarINI, "StockParts", "DecalsWindshield8", DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_FRONT_WINDOW_TEX7]);
+		ACarConfig.StockParts.Parts[CARSLOTID_DECAL_REAR_WINDOW_TEX0] = mINI_ReadHash(CarINI, "StockParts", "DecalsRearWindow1", DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_REAR_WINDOW_TEX0]);
+		ACarConfig.StockParts.Parts[CARSLOTID_DECAL_REAR_WINDOW_TEX1] = mINI_ReadHash(CarINI, "StockParts", "DecalsRearWindow2", DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_REAR_WINDOW_TEX1]);
+		ACarConfig.StockParts.Parts[CARSLOTID_DECAL_REAR_WINDOW_TEX2] = mINI_ReadHash(CarINI, "StockParts", "DecalsRearWindow3", DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_REAR_WINDOW_TEX2]);
+		ACarConfig.StockParts.Parts[CARSLOTID_DECAL_REAR_WINDOW_TEX3] = mINI_ReadHash(CarINI, "StockParts", "DecalsRearWindow4", DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_REAR_WINDOW_TEX3]);
+		ACarConfig.StockParts.Parts[CARSLOTID_DECAL_REAR_WINDOW_TEX4] = mINI_ReadHash(CarINI, "StockParts", "DecalsRearWindow5", DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_REAR_WINDOW_TEX4]);
+		ACarConfig.StockParts.Parts[CARSLOTID_DECAL_REAR_WINDOW_TEX5] = mINI_ReadHash(CarINI, "StockParts", "DecalsRearWindow6", DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_REAR_WINDOW_TEX5]);
+		ACarConfig.StockParts.Parts[CARSLOTID_DECAL_REAR_WINDOW_TEX6] = mINI_ReadHash(CarINI, "StockParts", "DecalsRearWindow7", DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_REAR_WINDOW_TEX6]);
+		ACarConfig.StockParts.Parts[CARSLOTID_DECAL_REAR_WINDOW_TEX7] = mINI_ReadHash(CarINI, "StockParts", "DecalsRearWindow8", DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_REAR_WINDOW_TEX7]);
+		ACarConfig.StockParts.Parts[CARSLOTID_DECAL_LEFT_DOOR_TEX0] = mINI_ReadHash(CarINI, "StockParts", "DecalsLeftDoor1", DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_LEFT_DOOR_TEX0]);
+		ACarConfig.StockParts.Parts[CARSLOTID_DECAL_LEFT_DOOR_TEX1] = mINI_ReadHash(CarINI, "StockParts", "DecalsLeftDoor2", DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_LEFT_DOOR_TEX1]);
+		ACarConfig.StockParts.Parts[CARSLOTID_DECAL_LEFT_DOOR_TEX2] = mINI_ReadHash(CarINI, "StockParts", "DecalsLeftDoor3", DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_LEFT_DOOR_TEX2]);
+		ACarConfig.StockParts.Parts[CARSLOTID_DECAL_LEFT_DOOR_TEX3] = mINI_ReadHash(CarINI, "StockParts", "DecalsLeftDoor4", DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_LEFT_DOOR_TEX3]);
+		ACarConfig.StockParts.Parts[CARSLOTID_DECAL_LEFT_DOOR_TEX4] = mINI_ReadHash(CarINI, "StockParts", "DecalsLeftDoor5", DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_LEFT_DOOR_TEX4]);
+		ACarConfig.StockParts.Parts[CARSLOTID_DECAL_LEFT_DOOR_TEX5] = mINI_ReadHash(CarINI, "StockParts", "DecalsLeftDoor6", DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_LEFT_DOOR_TEX5]);
+		ACarConfig.StockParts.Parts[CARSLOTID_DECAL_RIGHT_DOOR_TEX0] = mINI_ReadHash(CarINI, "StockParts", "DecalsRightDoor1", DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_RIGHT_DOOR_TEX0]);
+		ACarConfig.StockParts.Parts[CARSLOTID_DECAL_RIGHT_DOOR_TEX1] = mINI_ReadHash(CarINI, "StockParts", "DecalsRightDoor2", DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_RIGHT_DOOR_TEX1]);
+		ACarConfig.StockParts.Parts[CARSLOTID_DECAL_RIGHT_DOOR_TEX2] = mINI_ReadHash(CarINI, "StockParts", "DecalsRightDoor3", DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_RIGHT_DOOR_TEX2]);
+		ACarConfig.StockParts.Parts[CARSLOTID_DECAL_RIGHT_DOOR_TEX3] = mINI_ReadHash(CarINI, "StockParts", "DecalsRightDoor4", DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_RIGHT_DOOR_TEX3]);
+		ACarConfig.StockParts.Parts[CARSLOTID_DECAL_RIGHT_DOOR_TEX4] = mINI_ReadHash(CarINI, "StockParts", "DecalsRightDoor5", DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_RIGHT_DOOR_TEX4]);
+		ACarConfig.StockParts.Parts[CARSLOTID_DECAL_RIGHT_DOOR_TEX5] = mINI_ReadHash(CarINI, "StockParts", "DecalsRightDoor6", DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_RIGHT_DOOR_TEX5]);
+		ACarConfig.StockParts.Parts[CARSLOTID_DECAL_LEFT_QUARTER_TEX0] = mINI_ReadHash(CarINI, "StockParts", "DecalsLeftQuarter1", DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_LEFT_QUARTER_TEX0]);
+		ACarConfig.StockParts.Parts[CARSLOTID_DECAL_LEFT_QUARTER_TEX1] = mINI_ReadHash(CarINI, "StockParts", "DecalsLeftQuarter2", DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_LEFT_QUARTER_TEX1]);
+		ACarConfig.StockParts.Parts[CARSLOTID_DECAL_LEFT_QUARTER_TEX2] = mINI_ReadHash(CarINI, "StockParts", "DecalsLeftQuarter3", DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_LEFT_QUARTER_TEX2]);
+		ACarConfig.StockParts.Parts[CARSLOTID_DECAL_LEFT_QUARTER_TEX3] = mINI_ReadHash(CarINI, "StockParts", "DecalsLeftQuarter4", DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_LEFT_QUARTER_TEX3]);
+		ACarConfig.StockParts.Parts[CARSLOTID_DECAL_LEFT_QUARTER_TEX4] = mINI_ReadHash(CarINI, "StockParts", "DecalsLeftQuarter5", DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_LEFT_QUARTER_TEX4]);
+		ACarConfig.StockParts.Parts[CARSLOTID_DECAL_LEFT_QUARTER_TEX5] = mINI_ReadHash(CarINI, "StockParts", "DecalsLeftQuarter6", DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_LEFT_QUARTER_TEX5]);
+		ACarConfig.StockParts.Parts[CARSLOTID_DECAL_LEFT_QUARTER_TEX6] = mINI_ReadHash(CarINI, "StockParts", "DecalsLeftQuarter7", DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_LEFT_QUARTER_TEX6]);
+		ACarConfig.StockParts.Parts[CARSLOTID_DECAL_LEFT_QUARTER_TEX7] = mINI_ReadHash(CarINI, "StockParts", "DecalsLeftQuarter8", DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_LEFT_QUARTER_TEX7]);
+		ACarConfig.StockParts.Parts[CARSLOTID_DECAL_RIGHT_QUARTER_TEX0] = mINI_ReadHash(CarINI, "StockParts", "DecalsRightQuarter1", DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_RIGHT_QUARTER_TEX0]);
+		ACarConfig.StockParts.Parts[CARSLOTID_DECAL_RIGHT_QUARTER_TEX1] = mINI_ReadHash(CarINI, "StockParts", "DecalsRightQuarter2", DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_RIGHT_QUARTER_TEX1]);
+		ACarConfig.StockParts.Parts[CARSLOTID_DECAL_RIGHT_QUARTER_TEX2] = mINI_ReadHash(CarINI, "StockParts", "DecalsRightQuarter3", DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_RIGHT_QUARTER_TEX2]);
+		ACarConfig.StockParts.Parts[CARSLOTID_DECAL_RIGHT_QUARTER_TEX3] = mINI_ReadHash(CarINI, "StockParts", "DecalsRightQuarter4", DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_RIGHT_QUARTER_TEX3]);
+		ACarConfig.StockParts.Parts[CARSLOTID_DECAL_RIGHT_QUARTER_TEX4] = mINI_ReadHash(CarINI, "StockParts", "DecalsRightQuarter5", DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_RIGHT_QUARTER_TEX4]);
+		ACarConfig.StockParts.Parts[CARSLOTID_DECAL_RIGHT_QUARTER_TEX5] = mINI_ReadHash(CarINI, "StockParts", "DecalsRightQuarter6", DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_RIGHT_QUARTER_TEX5]);
+		ACarConfig.StockParts.Parts[CARSLOTID_DECAL_RIGHT_QUARTER_TEX6] = mINI_ReadHash(CarINI, "StockParts", "DecalsRightQuarter7", DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_RIGHT_QUARTER_TEX6]);
+		ACarConfig.StockParts.Parts[CARSLOTID_DECAL_RIGHT_QUARTER_TEX7] = mINI_ReadHash(CarINI, "StockParts", "DecalsRightQuarter8", DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_RIGHT_QUARTER_TEX7]);
+		ACarConfig.StockParts.Parts[CARSLOTID_DECAL_LEFT_DOOR_TEX6] = mINI_ReadHash(CarINI, "StockParts", "NumbersLeftL", DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_LEFT_DOOR_TEX6]);
+		ACarConfig.StockParts.Parts[CARSLOTID_DECAL_LEFT_DOOR_TEX7] = mINI_ReadHash(CarINI, "StockParts", "NumbersLeftR", DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_LEFT_DOOR_TEX7]);
+		ACarConfig.StockParts.Parts[CARSLOTID_DECAL_RIGHT_DOOR_TEX6] = mINI_ReadHash(CarINI, "StockParts", "NumbersRightL", DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_RIGHT_DOOR_TEX6]);
+		ACarConfig.StockParts.Parts[CARSLOTID_DECAL_RIGHT_DOOR_TEX7] = mINI_ReadHash(CarINI, "StockParts", "NumbersRightR", DefaultCarConfig.StockParts.Parts[CARSLOTID_DECAL_RIGHT_DOOR_TEX7]);
+		ACarConfig.StockParts.Parts[CARSLOTID_CUSTOM_HUD] = mINI_ReadHash(CarINI, "StockParts", "CustomGauges", DefaultCarConfig.StockParts.Parts[CARSLOTID_CUSTOM_HUD]);
+		ACarConfig.StockParts.Parts[CARSLOTID_HUD_BACKING_COLOUR] = mINI_ReadHash(CarINI, "StockParts", "CustomGaugesBackingColor", DefaultCarConfig.StockParts.Parts[CARSLOTID_HUD_BACKING_COLOUR]);
+		ACarConfig.StockParts.Parts[CARSLOTID_HUD_NEEDLE_COLOUR] = mINI_ReadHash(CarINI, "StockParts", "CustomGaugesNeedleColor", DefaultCarConfig.StockParts.Parts[CARSLOTID_HUD_NEEDLE_COLOUR]);
+		ACarConfig.StockParts.Parts[CARSLOTID_HUD_CHARACTER_COLOUR] = mINI_ReadHash(CarINI, "StockParts", "CustomGaugesCharacterColor", DefaultCarConfig.StockParts.Parts[CARSLOTID_HUD_CHARACTER_COLOUR]);
+		ACarConfig.StockParts.Parts[CARSLOTID_DRIVER] = mINI_ReadHash(CarINI, "StockParts", "Driver", DefaultCarConfig.StockParts.Parts[CARSLOTID_DRIVER]);
+		ACarConfig.StockParts.Parts[CARSLOTID_LICENSE_PLATE] = mINI_ReadHash(CarINI, "StockParts", "LicensePlate", DefaultCarConfig.StockParts.Parts[CARSLOTID_LICENSE_PLATE]);
+		ACarConfig.StockParts.Parts[CARSLOTID_UL_TIRE_TEXTURE] = mINI_ReadHash(CarINI, "StockParts", "Tires", DefaultCarConfig.StockParts.Parts[CARSLOTID_UL_TIRE_TEXTURE]);
+		ACarConfig.StockParts.Parts[CARSLOTID_UL_NEON] = mINI_ReadHash(CarINI, "StockParts", "Neon", DefaultCarConfig.StockParts.Parts[CARSLOTID_UL_NEON]);
 
 		// RandomParts
 		ACarConfig.RandomParts.ForceCustomizationLevel = mINI_ReadInteger(CarINI, "RandomParts", "ForceCustomizationLevel", DefaultCarConfig.RandomParts.ForceCustomizationLevel);
-		ACarConfig.RandomParts.CustomRandomParts = mINI_ReadInteger(CarINI, "RandomParts", "CustomRandomParts", DefaultCarConfig.RandomParts.CustomRandomParts) != 0;
+		ACarConfig.RandomParts.CustomRandomParts = mINI_ReadInteger(CarINI, "RandomParts", "CustomRandomParts", DefaultCarConfig.RandomParts.CustomRandomParts);
+		ACarConfig.RandomParts.RandomRearRimProbability = mINI_ReadInteger(CarINI, "RandomParts", "RandomRearRimProbability", DefaultCarConfig.RandomParts.RandomRearRimProbability);
+		ACarConfig.RandomParts.MatchSideDecals = mINI_ReadInteger(CarINI, "RandomParts", "MatchSideDecals", DefaultCarConfig.RandomParts.MatchSideDecals) != 0;
 		ACarConfig.RandomParts.RandomizeInTraffic = mINI_ReadInteger(CarINI, "RandomParts", "RandomizeInTraffic", DefaultCarConfig.RandomParts.RandomizeInTraffic) != 0;
 
 		if (RandomizeTraffic && ACarConfig.RandomParts.RandomizeInTraffic) SetSkinnable(i);
 
 		for (int p = 0; p < NumCarSlots; p++) ACarConfig.RandomParts.Parts[p] = DefaultCarConfig.RandomParts.Parts[p];
 
-		ACarConfig.RandomParts.Parts[23] = mINI_ReadInteger(CarINI, "RandomParts", "BodyKits", DefaultCarConfig.RandomParts.Parts[23]) != 0;
-		ACarConfig.RandomParts.Parts[44] = mINI_ReadInteger(CarINI, "RandomParts", "Spoilers", DefaultCarConfig.RandomParts.Parts[44]) != 0;
-		ACarConfig.RandomParts.Parts[66] = mINI_ReadInteger(CarINI, "RandomParts", "RimsFront", DefaultCarConfig.RandomParts.Parts[66]) != 0;
-		ACarConfig.RandomParts.Parts[67] = mINI_ReadInteger(CarINI, "RandomParts", "RimsRear", DefaultCarConfig.RandomParts.Parts[67]) != 0;
-		ACarConfig.RandomParts.Parts[63] = mINI_ReadInteger(CarINI, "RandomParts", "Hoods", DefaultCarConfig.RandomParts.Parts[63]) != 0;
-		ACarConfig.RandomParts.Parts[62] = mINI_ReadInteger(CarINI, "RandomParts", "RoofScoops", DefaultCarConfig.RandomParts.Parts[62]) != 0;
-		ACarConfig.RandomParts.Parts[28] = mINI_ReadInteger(CarINI, "RandomParts", "Interior", DefaultCarConfig.RandomParts.Parts[28]) != 0;
-		ACarConfig.RandomParts.Parts[0] = mINI_ReadInteger(CarINI, "RandomParts", "Roof", DefaultCarConfig.RandomParts.Parts[0]) != 0;
-		ACarConfig.RandomParts.Parts[24] = mINI_ReadInteger(CarINI, "RandomParts", "Brakes", DefaultCarConfig.RandomParts.Parts[24]) != 0;
-		ACarConfig.RandomParts.Parts[31] = mINI_ReadInteger(CarINI, "RandomParts", "Headlights", DefaultCarConfig.RandomParts.Parts[31]) != 0;
-		ACarConfig.RandomParts.Parts[29] = mINI_ReadInteger(CarINI, "RandomParts", "Taillights", DefaultCarConfig.RandomParts.Parts[29]) != 0;
-		ACarConfig.RandomParts.Parts[33] = mINI_ReadInteger(CarINI, "RandomParts", "Mirrors", DefaultCarConfig.RandomParts.Parts[33]) != 0;
-		ACarConfig.RandomParts.Parts[52] = mINI_ReadInteger(CarINI, "RandomParts", "Attachment0", DefaultCarConfig.RandomParts.Parts[52]) != 0;
-		ACarConfig.RandomParts.Parts[53] = mINI_ReadInteger(CarINI, "RandomParts", "Attachment1", DefaultCarConfig.RandomParts.Parts[53]) != 0;
-		ACarConfig.RandomParts.Parts[54] = mINI_ReadInteger(CarINI, "RandomParts", "Attachment2", DefaultCarConfig.RandomParts.Parts[54]) != 0;
-		ACarConfig.RandomParts.Parts[55] = mINI_ReadInteger(CarINI, "RandomParts", "Attachment3", DefaultCarConfig.RandomParts.Parts[55]) != 0;
-		ACarConfig.RandomParts.Parts[56] = mINI_ReadInteger(CarINI, "RandomParts", "Attachment4", DefaultCarConfig.RandomParts.Parts[56]) != 0;
-		ACarConfig.RandomParts.Parts[57] = mINI_ReadInteger(CarINI, "RandomParts", "Attachment5", DefaultCarConfig.RandomParts.Parts[57]) != 0;
-		ACarConfig.RandomParts.Parts[58] = mINI_ReadInteger(CarINI, "RandomParts", "Attachment6", DefaultCarConfig.RandomParts.Parts[58]) != 0;
-		ACarConfig.RandomParts.Parts[59] = mINI_ReadInteger(CarINI, "RandomParts", "Attachment7", DefaultCarConfig.RandomParts.Parts[59]) != 0;
-		ACarConfig.RandomParts.Parts[60] = mINI_ReadInteger(CarINI, "RandomParts", "Attachment8", DefaultCarConfig.RandomParts.Parts[60]) != 0;
-		ACarConfig.RandomParts.Parts[61] = mINI_ReadInteger(CarINI, "RandomParts", "Attachment9", DefaultCarConfig.RandomParts.Parts[61]) != 0;
-		ACarConfig.RandomParts.Parts[76] = mINI_ReadInteger(CarINI, "RandomParts", "Paint", DefaultCarConfig.RandomParts.Parts[76]) != 0;
-		ACarConfig.RandomParts.Parts[77] = mINI_ReadInteger(CarINI, "RandomParts", "Vinyls", DefaultCarConfig.RandomParts.Parts[77]) != 0;
-		ACarConfig.RandomParts.Parts[79] = mINI_ReadInteger(CarINI, "RandomParts", "VinylColor1", DefaultCarConfig.RandomParts.Parts[79]) != 0;
-		ACarConfig.RandomParts.Parts[80] = mINI_ReadInteger(CarINI, "RandomParts", "VinylColor2", DefaultCarConfig.RandomParts.Parts[80]) != 0;
-		ACarConfig.RandomParts.Parts[81] = mINI_ReadInteger(CarINI, "RandomParts", "VinylColor3", DefaultCarConfig.RandomParts.Parts[81]) != 0;
-		ACarConfig.RandomParts.Parts[82] = mINI_ReadInteger(CarINI, "RandomParts", "VinylColor4", DefaultCarConfig.RandomParts.Parts[82]) != 0;
-		ACarConfig.RandomParts.Parts[78] = mINI_ReadInteger(CarINI, "RandomParts", "RimPaint", DefaultCarConfig.RandomParts.Parts[78]) != 0;
-		ACarConfig.RandomParts.Parts[131] = mINI_ReadInteger(CarINI, "RandomParts", "WindowTint", DefaultCarConfig.RandomParts.Parts[131]) != 0;
-		ACarConfig.RandomParts.Parts[83] = mINI_ReadInteger(CarINI, "RandomParts", "DecalsWindshield1", DefaultCarConfig.RandomParts.Parts[83]) != 0;
-		ACarConfig.RandomParts.Parts[84] = mINI_ReadInteger(CarINI, "RandomParts", "DecalsWindshield2", DefaultCarConfig.RandomParts.Parts[84]) != 0;
-		ACarConfig.RandomParts.Parts[85] = mINI_ReadInteger(CarINI, "RandomParts", "DecalsWindshield3", DefaultCarConfig.RandomParts.Parts[85]) != 0;
-		ACarConfig.RandomParts.Parts[86] = mINI_ReadInteger(CarINI, "RandomParts", "DecalsWindshield4", DefaultCarConfig.RandomParts.Parts[86]) != 0;
-		ACarConfig.RandomParts.Parts[87] = mINI_ReadInteger(CarINI, "RandomParts", "DecalsWindshield5", DefaultCarConfig.RandomParts.Parts[87]) != 0;
-		ACarConfig.RandomParts.Parts[88] = mINI_ReadInteger(CarINI, "RandomParts", "DecalsWindshield6", DefaultCarConfig.RandomParts.Parts[88]) != 0;
-		ACarConfig.RandomParts.Parts[89] = mINI_ReadInteger(CarINI, "RandomParts", "DecalsWindshield7", DefaultCarConfig.RandomParts.Parts[89]) != 0;
-		ACarConfig.RandomParts.Parts[90] = mINI_ReadInteger(CarINI, "RandomParts", "DecalsWindshield8", DefaultCarConfig.RandomParts.Parts[90]) != 0;
-		ACarConfig.RandomParts.Parts[91] = mINI_ReadInteger(CarINI, "RandomParts", "DecalsRearWindow1", DefaultCarConfig.RandomParts.Parts[91]) != 0;
-		ACarConfig.RandomParts.Parts[92] = mINI_ReadInteger(CarINI, "RandomParts", "DecalsRearWindow2", DefaultCarConfig.RandomParts.Parts[92]) != 0;
-		ACarConfig.RandomParts.Parts[93] = mINI_ReadInteger(CarINI, "RandomParts", "DecalsRearWindow3", DefaultCarConfig.RandomParts.Parts[93]) != 0;
-		ACarConfig.RandomParts.Parts[94] = mINI_ReadInteger(CarINI, "RandomParts", "DecalsRearWindow4", DefaultCarConfig.RandomParts.Parts[94]) != 0;
-		ACarConfig.RandomParts.Parts[95] = mINI_ReadInteger(CarINI, "RandomParts", "DecalsRearWindow5", DefaultCarConfig.RandomParts.Parts[95]) != 0;
-		ACarConfig.RandomParts.Parts[96] = mINI_ReadInteger(CarINI, "RandomParts", "DecalsRearWindow6", DefaultCarConfig.RandomParts.Parts[96]) != 0;
-		ACarConfig.RandomParts.Parts[97] = mINI_ReadInteger(CarINI, "RandomParts", "DecalsRearWindow7", DefaultCarConfig.RandomParts.Parts[97]) != 0;
-		ACarConfig.RandomParts.Parts[98] = mINI_ReadInteger(CarINI, "RandomParts", "DecalsRearWindow8", DefaultCarConfig.RandomParts.Parts[98]) != 0;
-		ACarConfig.RandomParts.Parts[99] = mINI_ReadInteger(CarINI, "RandomParts", "DecalsLeftDoor1", DefaultCarConfig.RandomParts.Parts[99]) != 0;
-		ACarConfig.RandomParts.Parts[100] = mINI_ReadInteger(CarINI, "RandomParts", "DecalsLeftDoor2", DefaultCarConfig.RandomParts.Parts[100]) != 0;
-		ACarConfig.RandomParts.Parts[101] = mINI_ReadInteger(CarINI, "RandomParts", "DecalsLeftDoor3", DefaultCarConfig.RandomParts.Parts[101]) != 0;
-		ACarConfig.RandomParts.Parts[102] = mINI_ReadInteger(CarINI, "RandomParts", "DecalsLeftDoor4", DefaultCarConfig.RandomParts.Parts[102]) != 0;
-		ACarConfig.RandomParts.Parts[103] = mINI_ReadInteger(CarINI, "RandomParts", "DecalsLeftDoor5", DefaultCarConfig.RandomParts.Parts[103]) != 0;
-		ACarConfig.RandomParts.Parts[104] = mINI_ReadInteger(CarINI, "RandomParts", "DecalsLeftDoor6", DefaultCarConfig.RandomParts.Parts[104]) != 0;
-		ACarConfig.RandomParts.Parts[107] = mINI_ReadInteger(CarINI, "RandomParts", "DecalsRightDoor1", DefaultCarConfig.RandomParts.Parts[107]) != 0;
-		ACarConfig.RandomParts.Parts[108] = mINI_ReadInteger(CarINI, "RandomParts", "DecalsRightDoor2", DefaultCarConfig.RandomParts.Parts[108]) != 0;
-		ACarConfig.RandomParts.Parts[109] = mINI_ReadInteger(CarINI, "RandomParts", "DecalsRightDoor3", DefaultCarConfig.RandomParts.Parts[109]) != 0;
-		ACarConfig.RandomParts.Parts[110] = mINI_ReadInteger(CarINI, "RandomParts", "DecalsRightDoor4", DefaultCarConfig.RandomParts.Parts[110]) != 0;
-		ACarConfig.RandomParts.Parts[111] = mINI_ReadInteger(CarINI, "RandomParts", "DecalsRightDoor5", DefaultCarConfig.RandomParts.Parts[111]) != 0;
-		ACarConfig.RandomParts.Parts[112] = mINI_ReadInteger(CarINI, "RandomParts", "DecalsRightDoor6", DefaultCarConfig.RandomParts.Parts[112]) != 0;
-		ACarConfig.RandomParts.Parts[115] = mINI_ReadInteger(CarINI, "RandomParts", "DecalsLeftQuarter1", DefaultCarConfig.RandomParts.Parts[115]) != 0;
-		ACarConfig.RandomParts.Parts[116] = mINI_ReadInteger(CarINI, "RandomParts", "DecalsLeftQuarter2", DefaultCarConfig.RandomParts.Parts[116]) != 0;
-		ACarConfig.RandomParts.Parts[117] = mINI_ReadInteger(CarINI, "RandomParts", "DecalsLeftQuarter3", DefaultCarConfig.RandomParts.Parts[117]) != 0;
-		ACarConfig.RandomParts.Parts[118] = mINI_ReadInteger(CarINI, "RandomParts", "DecalsLeftQuarter4", DefaultCarConfig.RandomParts.Parts[118]) != 0;
-		ACarConfig.RandomParts.Parts[119] = mINI_ReadInteger(CarINI, "RandomParts", "DecalsLeftQuarter5", DefaultCarConfig.RandomParts.Parts[119]) != 0;
-		ACarConfig.RandomParts.Parts[120] = mINI_ReadInteger(CarINI, "RandomParts", "DecalsLeftQuarter6", DefaultCarConfig.RandomParts.Parts[120]) != 0;
-		ACarConfig.RandomParts.Parts[121] = mINI_ReadInteger(CarINI, "RandomParts", "DecalsLeftQuarter7", DefaultCarConfig.RandomParts.Parts[121]) != 0;
-		ACarConfig.RandomParts.Parts[122] = mINI_ReadInteger(CarINI, "RandomParts", "DecalsLeftQuarter8", DefaultCarConfig.RandomParts.Parts[122]) != 0;
-		ACarConfig.RandomParts.Parts[123] = mINI_ReadInteger(CarINI, "RandomParts", "DecalsRightQuarter1", DefaultCarConfig.RandomParts.Parts[123]) != 0;
-		ACarConfig.RandomParts.Parts[124] = mINI_ReadInteger(CarINI, "RandomParts", "DecalsRightQuarter2", DefaultCarConfig.RandomParts.Parts[124]) != 0;
-		ACarConfig.RandomParts.Parts[125] = mINI_ReadInteger(CarINI, "RandomParts", "DecalsRightQuarter3", DefaultCarConfig.RandomParts.Parts[125]) != 0;
-		ACarConfig.RandomParts.Parts[126] = mINI_ReadInteger(CarINI, "RandomParts", "DecalsRightQuarter4", DefaultCarConfig.RandomParts.Parts[126]) != 0;
-		ACarConfig.RandomParts.Parts[127] = mINI_ReadInteger(CarINI, "RandomParts", "DecalsRightQuarter5", DefaultCarConfig.RandomParts.Parts[127]) != 0;
-		ACarConfig.RandomParts.Parts[128] = mINI_ReadInteger(CarINI, "RandomParts", "DecalsRightQuarter6", DefaultCarConfig.RandomParts.Parts[128]) != 0;
-		ACarConfig.RandomParts.Parts[129] = mINI_ReadInteger(CarINI, "RandomParts", "DecalsRightQuarter7", DefaultCarConfig.RandomParts.Parts[129]) != 0;
-		ACarConfig.RandomParts.Parts[130] = mINI_ReadInteger(CarINI, "RandomParts", "DecalsRightQuarter8", DefaultCarConfig.RandomParts.Parts[130]) != 0;
-		ACarConfig.RandomParts.Parts[105] = mINI_ReadInteger(CarINI, "RandomParts", "NumbersLeftL", DefaultCarConfig.RandomParts.Parts[105]) != 0;
-		ACarConfig.RandomParts.Parts[106] = mINI_ReadInteger(CarINI, "RandomParts", "NumbersLeftR", DefaultCarConfig.RandomParts.Parts[106]) != 0;
-		ACarConfig.RandomParts.Parts[113] = mINI_ReadInteger(CarINI, "RandomParts", "NumbersRightL", DefaultCarConfig.RandomParts.Parts[113]) != 0;
-		ACarConfig.RandomParts.Parts[114] = mINI_ReadInteger(CarINI, "RandomParts", "NumbersRightR", DefaultCarConfig.RandomParts.Parts[114]) != 0;
-		ACarConfig.RandomParts.Parts[132] = mINI_ReadInteger(CarINI, "RandomParts", "CustomGauges", DefaultCarConfig.RandomParts.Parts[132]) != 0;
-		ACarConfig.RandomParts.Parts[133] = mINI_ReadInteger(CarINI, "RandomParts", "CustomGaugesBackingColor", DefaultCarConfig.RandomParts.Parts[133]) != 0;
-		ACarConfig.RandomParts.Parts[134] = mINI_ReadInteger(CarINI, "RandomParts", "CustomGaugesNeedleColor", DefaultCarConfig.RandomParts.Parts[134]) != 0;
-		ACarConfig.RandomParts.Parts[135] = mINI_ReadInteger(CarINI, "RandomParts", "CustomGaugesCharacterColor", DefaultCarConfig.RandomParts.Parts[135]) != 0;
-		ACarConfig.RandomParts.Parts[43] = mINI_ReadInteger(CarINI, "RandomParts", "Driver", DefaultCarConfig.RandomParts.Parts[43]) != 0;
-		ACarConfig.RandomParts.Parts[69] = mINI_ReadInteger(CarINI, "RandomParts", "LicensePlate", DefaultCarConfig.RandomParts.Parts[69]) != 0;
-		ACarConfig.RandomParts.Parts[64] = mINI_ReadInteger(CarINI, "RandomParts", "Tires", DefaultCarConfig.RandomParts.Parts[64]) != 0;
-		ACarConfig.RandomParts.Parts[65] = mINI_ReadInteger(CarINI, "RandomParts", "Neon", DefaultCarConfig.RandomParts.Parts[65]) != 0;
+		ACarConfig.RandomParts.Parts[CARSLOTID_BODY] = mINI_ReadInteger(CarINI, "RandomParts", "BodyKits", DefaultCarConfig.RandomParts.Parts[CARSLOTID_BODY]) != 0;
+		ACarConfig.RandomParts.Parts[CARSLOTID_SPOILER] = mINI_ReadInteger(CarINI, "RandomParts", "Spoilers", DefaultCarConfig.RandomParts.Parts[CARSLOTID_SPOILER]) != 0;
+		ACarConfig.RandomParts.Parts[CARSLOTID_FRONT_WHEEL] = mINI_ReadInteger(CarINI, "RandomParts", "Rims", mINI_ReadInteger(CarINI, "RandomParts", "RimsFront", DefaultCarConfig.RandomParts.Parts[CARSLOTID_FRONT_WHEEL])) != 0;
+		ACarConfig.RandomParts.Parts[CARSLOTID_REAR_WHEEL] = mINI_ReadInteger(CarINI, "RandomParts", "Rims", mINI_ReadInteger(CarINI, "RandomParts", "RimsRear", DefaultCarConfig.RandomParts.Parts[CARSLOTID_REAR_WHEEL])) != 0;
+		ACarConfig.RandomParts.Parts[CARSLOTID_HOOD] = mINI_ReadInteger(CarINI, "RandomParts", "Hoods", DefaultCarConfig.RandomParts.Parts[CARSLOTID_HOOD]) != 0;
+		ACarConfig.RandomParts.Parts[CARSLOTID_ROOF] = mINI_ReadInteger(CarINI, "RandomParts", "RoofScoops", DefaultCarConfig.RandomParts.Parts[CARSLOTID_ROOF]) != 0;
+		ACarConfig.RandomParts.Parts[CARSLOTID_INTERIOR] = mINI_ReadInteger(CarINI, "RandomParts", "Interior", DefaultCarConfig.RandomParts.Parts[CARSLOTID_INTERIOR]) != 0;
+		ACarConfig.RandomParts.Parts[CARSLOTID_BASE] = mINI_ReadInteger(CarINI, "RandomParts", "Roof", DefaultCarConfig.RandomParts.Parts[CARSLOTID_BASE]) != 0;
+		ACarConfig.RandomParts.Parts[CARSLOTID_FRONT_BRAKE] = mINI_ReadInteger(CarINI, "RandomParts", "Brakes", DefaultCarConfig.RandomParts.Parts[CARSLOTID_FRONT_BRAKE]) != 0;
+		ACarConfig.RandomParts.Parts[CARSLOTID_LEFT_HEADLIGHT] = mINI_ReadInteger(CarINI, "RandomParts", "Headlights", DefaultCarConfig.RandomParts.Parts[CARSLOTID_LEFT_HEADLIGHT]) != 0;
+		ACarConfig.RandomParts.Parts[CARSLOTID_LEFT_BRAKELIGHT] = mINI_ReadInteger(CarINI, "RandomParts", "Taillights", DefaultCarConfig.RandomParts.Parts[CARSLOTID_LEFT_BRAKELIGHT]) != 0;
+		ACarConfig.RandomParts.Parts[CARSLOTID_LEFT_SIDE_MIRROR] = mINI_ReadInteger(CarINI, "RandomParts", "Mirrors", DefaultCarConfig.RandomParts.Parts[CARSLOTID_LEFT_SIDE_MIRROR]) != 0;
+		ACarConfig.RandomParts.Parts[CARSLOTID_ATTACHMENT0] = mINI_ReadInteger(CarINI, "RandomParts", "Attachment0", DefaultCarConfig.RandomParts.Parts[CARSLOTID_ATTACHMENT0]) != 0;
+		ACarConfig.RandomParts.Parts[CARSLOTID_ATTACHMENT1] = mINI_ReadInteger(CarINI, "RandomParts", "Attachment1", DefaultCarConfig.RandomParts.Parts[CARSLOTID_ATTACHMENT1]) != 0;
+		ACarConfig.RandomParts.Parts[CARSLOTID_ATTACHMENT2] = mINI_ReadInteger(CarINI, "RandomParts", "Attachment2", DefaultCarConfig.RandomParts.Parts[CARSLOTID_ATTACHMENT2]) != 0;
+		ACarConfig.RandomParts.Parts[CARSLOTID_ATTACHMENT3] = mINI_ReadInteger(CarINI, "RandomParts", "Attachment3", DefaultCarConfig.RandomParts.Parts[CARSLOTID_ATTACHMENT3]) != 0;
+		ACarConfig.RandomParts.Parts[CARSLOTID_ATTACHMENT4] = mINI_ReadInteger(CarINI, "RandomParts", "Attachment4", DefaultCarConfig.RandomParts.Parts[CARSLOTID_ATTACHMENT4]) != 0;
+		ACarConfig.RandomParts.Parts[CARSLOTID_ATTACHMENT5] = mINI_ReadInteger(CarINI, "RandomParts", "Attachment5", DefaultCarConfig.RandomParts.Parts[CARSLOTID_ATTACHMENT5]) != 0;
+		ACarConfig.RandomParts.Parts[CARSLOTID_ATTACHMENT6] = mINI_ReadInteger(CarINI, "RandomParts", "Attachment6", DefaultCarConfig.RandomParts.Parts[CARSLOTID_ATTACHMENT6]) != 0;
+		ACarConfig.RandomParts.Parts[CARSLOTID_ATTACHMENT7] = mINI_ReadInteger(CarINI, "RandomParts", "Attachment7", DefaultCarConfig.RandomParts.Parts[CARSLOTID_ATTACHMENT7]) != 0;
+		ACarConfig.RandomParts.Parts[CARSLOTID_ATTACHMENT8] = mINI_ReadInteger(CarINI, "RandomParts", "Attachment8", DefaultCarConfig.RandomParts.Parts[CARSLOTID_ATTACHMENT8]) != 0;
+		ACarConfig.RandomParts.Parts[CARSLOTID_ATTACHMENT9] = mINI_ReadInteger(CarINI, "RandomParts", "Attachment9", DefaultCarConfig.RandomParts.Parts[CARSLOTID_ATTACHMENT9]) != 0;
+		ACarConfig.RandomParts.Parts[CARSLOTID_BASE_PAINT] = mINI_ReadInteger(CarINI, "RandomParts", "Paint", DefaultCarConfig.RandomParts.Parts[CARSLOTID_BASE_PAINT]) != 0;
+		ACarConfig.RandomParts.Parts[CARSLOTID_VINYL_LAYER0] = mINI_ReadInteger(CarINI, "RandomParts", "Vinyls", DefaultCarConfig.RandomParts.Parts[CARSLOTID_VINYL_LAYER0]) != 0;
+		ACarConfig.RandomParts.Parts[CARSLOTID_VINYL_COLOUR0_0] = mINI_ReadInteger(CarINI, "RandomParts", "VinylColor1", DefaultCarConfig.RandomParts.Parts[CARSLOTID_VINYL_COLOUR0_0]) != 0;
+		ACarConfig.RandomParts.Parts[CARSLOTID_VINYL_COLOUR0_1] = mINI_ReadInteger(CarINI, "RandomParts", "VinylColor2", DefaultCarConfig.RandomParts.Parts[CARSLOTID_VINYL_COLOUR0_1]) != 0;
+		ACarConfig.RandomParts.Parts[CARSLOTID_VINYL_COLOUR0_2] = mINI_ReadInteger(CarINI, "RandomParts", "VinylColor3", DefaultCarConfig.RandomParts.Parts[CARSLOTID_VINYL_COLOUR0_2]) != 0;
+		ACarConfig.RandomParts.Parts[CARSLOTID_VINYL_COLOUR0_3] = mINI_ReadInteger(CarINI, "RandomParts", "VinylColor4", DefaultCarConfig.RandomParts.Parts[CARSLOTID_VINYL_COLOUR0_3]) != 0;
+		ACarConfig.RandomParts.Parts[CARSLOTID_PAINT_RIM] = mINI_ReadInteger(CarINI, "RandomParts", "RimPaint", DefaultCarConfig.RandomParts.Parts[CARSLOTID_PAINT_RIM]) != 0;
+		ACarConfig.RandomParts.Parts[CARSLOTID_WINDOW_TINT] = mINI_ReadInteger(CarINI, "RandomParts", "WindowTint", DefaultCarConfig.RandomParts.Parts[CARSLOTID_WINDOW_TINT]) != 0;
+		ACarConfig.RandomParts.Parts[CARSLOTID_DECAL_FRONT_WINDOW_TEX0] = mINI_ReadInteger(CarINI, "RandomParts", "DecalsWindshield1", DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_FRONT_WINDOW_TEX0]) != 0;
+		ACarConfig.RandomParts.Parts[CARSLOTID_DECAL_FRONT_WINDOW_TEX1] = mINI_ReadInteger(CarINI, "RandomParts", "DecalsWindshield2", DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_FRONT_WINDOW_TEX1]) != 0;
+		ACarConfig.RandomParts.Parts[CARSLOTID_DECAL_FRONT_WINDOW_TEX2] = mINI_ReadInteger(CarINI, "RandomParts", "DecalsWindshield3", DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_FRONT_WINDOW_TEX2]) != 0;
+		ACarConfig.RandomParts.Parts[CARSLOTID_DECAL_FRONT_WINDOW_TEX3] = mINI_ReadInteger(CarINI, "RandomParts", "DecalsWindshield4", DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_FRONT_WINDOW_TEX3]) != 0;
+		ACarConfig.RandomParts.Parts[CARSLOTID_DECAL_FRONT_WINDOW_TEX4] = mINI_ReadInteger(CarINI, "RandomParts", "DecalsWindshield5", DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_FRONT_WINDOW_TEX4]) != 0;
+		ACarConfig.RandomParts.Parts[CARSLOTID_DECAL_FRONT_WINDOW_TEX5] = mINI_ReadInteger(CarINI, "RandomParts", "DecalsWindshield6", DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_FRONT_WINDOW_TEX5]) != 0;
+		ACarConfig.RandomParts.Parts[CARSLOTID_DECAL_FRONT_WINDOW_TEX6] = mINI_ReadInteger(CarINI, "RandomParts", "DecalsWindshield7", DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_FRONT_WINDOW_TEX6]) != 0;
+		ACarConfig.RandomParts.Parts[CARSLOTID_DECAL_FRONT_WINDOW_TEX7] = mINI_ReadInteger(CarINI, "RandomParts", "DecalsWindshield8", DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_FRONT_WINDOW_TEX7]) != 0;
+		ACarConfig.RandomParts.Parts[CARSLOTID_DECAL_REAR_WINDOW_TEX0] = mINI_ReadInteger(CarINI, "RandomParts", "DecalsRearWindow1", DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_REAR_WINDOW_TEX0]) != 0;
+		ACarConfig.RandomParts.Parts[CARSLOTID_DECAL_REAR_WINDOW_TEX1] = mINI_ReadInteger(CarINI, "RandomParts", "DecalsRearWindow2", DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_REAR_WINDOW_TEX1]) != 0;
+		ACarConfig.RandomParts.Parts[CARSLOTID_DECAL_REAR_WINDOW_TEX2] = mINI_ReadInteger(CarINI, "RandomParts", "DecalsRearWindow3", DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_REAR_WINDOW_TEX2]) != 0;
+		ACarConfig.RandomParts.Parts[CARSLOTID_DECAL_REAR_WINDOW_TEX3] = mINI_ReadInteger(CarINI, "RandomParts", "DecalsRearWindow4", DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_REAR_WINDOW_TEX3]) != 0;
+		ACarConfig.RandomParts.Parts[CARSLOTID_DECAL_REAR_WINDOW_TEX4] = mINI_ReadInteger(CarINI, "RandomParts", "DecalsRearWindow5", DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_REAR_WINDOW_TEX4]) != 0;
+		ACarConfig.RandomParts.Parts[CARSLOTID_DECAL_REAR_WINDOW_TEX5] = mINI_ReadInteger(CarINI, "RandomParts", "DecalsRearWindow6", DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_REAR_WINDOW_TEX5]) != 0;
+		ACarConfig.RandomParts.Parts[CARSLOTID_DECAL_REAR_WINDOW_TEX6] = mINI_ReadInteger(CarINI, "RandomParts", "DecalsRearWindow7", DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_REAR_WINDOW_TEX6]) != 0;
+		ACarConfig.RandomParts.Parts[CARSLOTID_DECAL_REAR_WINDOW_TEX7] = mINI_ReadInteger(CarINI, "RandomParts", "DecalsRearWindow8", DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_REAR_WINDOW_TEX7]) != 0;
+		ACarConfig.RandomParts.Parts[CARSLOTID_DECAL_LEFT_DOOR_TEX0] = mINI_ReadInteger(CarINI, "RandomParts", "DecalsLeftDoor1", DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_LEFT_DOOR_TEX0]) != 0;
+		ACarConfig.RandomParts.Parts[CARSLOTID_DECAL_LEFT_DOOR_TEX1] = mINI_ReadInteger(CarINI, "RandomParts", "DecalsLeftDoor2", DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_LEFT_DOOR_TEX1]) != 0;
+		ACarConfig.RandomParts.Parts[CARSLOTID_DECAL_LEFT_DOOR_TEX2] = mINI_ReadInteger(CarINI, "RandomParts", "DecalsLeftDoor3", DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_LEFT_DOOR_TEX2]) != 0;
+		ACarConfig.RandomParts.Parts[CARSLOTID_DECAL_LEFT_DOOR_TEX3] = mINI_ReadInteger(CarINI, "RandomParts", "DecalsLeftDoor4", DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_LEFT_DOOR_TEX3]) != 0;
+		ACarConfig.RandomParts.Parts[CARSLOTID_DECAL_LEFT_DOOR_TEX4] = mINI_ReadInteger(CarINI, "RandomParts", "DecalsLeftDoor5", DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_LEFT_DOOR_TEX4]) != 0;
+		ACarConfig.RandomParts.Parts[CARSLOTID_DECAL_LEFT_DOOR_TEX5] = mINI_ReadInteger(CarINI, "RandomParts", "DecalsLeftDoor6", DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_LEFT_DOOR_TEX5]) != 0;
+		ACarConfig.RandomParts.Parts[CARSLOTID_DECAL_RIGHT_DOOR_TEX0] = mINI_ReadInteger(CarINI, "RandomParts", "DecalsRightDoor1", DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_RIGHT_DOOR_TEX0]) != 0;
+		ACarConfig.RandomParts.Parts[CARSLOTID_DECAL_RIGHT_DOOR_TEX1] = mINI_ReadInteger(CarINI, "RandomParts", "DecalsRightDoor2", DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_RIGHT_DOOR_TEX1]) != 0;
+		ACarConfig.RandomParts.Parts[CARSLOTID_DECAL_RIGHT_DOOR_TEX2] = mINI_ReadInteger(CarINI, "RandomParts", "DecalsRightDoor3", DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_RIGHT_DOOR_TEX2]) != 0;
+		ACarConfig.RandomParts.Parts[CARSLOTID_DECAL_RIGHT_DOOR_TEX3] = mINI_ReadInteger(CarINI, "RandomParts", "DecalsRightDoor4", DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_RIGHT_DOOR_TEX3]) != 0;
+		ACarConfig.RandomParts.Parts[CARSLOTID_DECAL_RIGHT_DOOR_TEX4] = mINI_ReadInteger(CarINI, "RandomParts", "DecalsRightDoor5", DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_RIGHT_DOOR_TEX4]) != 0;
+		ACarConfig.RandomParts.Parts[CARSLOTID_DECAL_RIGHT_DOOR_TEX5] = mINI_ReadInteger(CarINI, "RandomParts", "DecalsRightDoor6", DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_RIGHT_DOOR_TEX5]) != 0;
+		ACarConfig.RandomParts.Parts[CARSLOTID_DECAL_LEFT_QUARTER_TEX0] = mINI_ReadInteger(CarINI, "RandomParts", "DecalsLeftQuarter1", DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_LEFT_QUARTER_TEX0]) != 0;
+		ACarConfig.RandomParts.Parts[CARSLOTID_DECAL_LEFT_QUARTER_TEX1] = mINI_ReadInteger(CarINI, "RandomParts", "DecalsLeftQuarter2", DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_LEFT_QUARTER_TEX1]) != 0;
+		ACarConfig.RandomParts.Parts[CARSLOTID_DECAL_LEFT_QUARTER_TEX2] = mINI_ReadInteger(CarINI, "RandomParts", "DecalsLeftQuarter3", DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_LEFT_QUARTER_TEX2]) != 0;
+		ACarConfig.RandomParts.Parts[CARSLOTID_DECAL_LEFT_QUARTER_TEX3] = mINI_ReadInteger(CarINI, "RandomParts", "DecalsLeftQuarter4", DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_LEFT_QUARTER_TEX3]) != 0;
+		ACarConfig.RandomParts.Parts[CARSLOTID_DECAL_LEFT_QUARTER_TEX4] = mINI_ReadInteger(CarINI, "RandomParts", "DecalsLeftQuarter5", DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_LEFT_QUARTER_TEX4]) != 0;
+		ACarConfig.RandomParts.Parts[CARSLOTID_DECAL_LEFT_QUARTER_TEX5] = mINI_ReadInteger(CarINI, "RandomParts", "DecalsLeftQuarter6", DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_LEFT_QUARTER_TEX5]) != 0;
+		ACarConfig.RandomParts.Parts[CARSLOTID_DECAL_LEFT_QUARTER_TEX6] = mINI_ReadInteger(CarINI, "RandomParts", "DecalsLeftQuarter7", DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_LEFT_QUARTER_TEX6]) != 0;
+		ACarConfig.RandomParts.Parts[CARSLOTID_DECAL_LEFT_QUARTER_TEX7] = mINI_ReadInteger(CarINI, "RandomParts", "DecalsLeftQuarter8", DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_LEFT_QUARTER_TEX7]) != 0;
+		ACarConfig.RandomParts.Parts[CARSLOTID_DECAL_RIGHT_QUARTER_TEX0] = mINI_ReadInteger(CarINI, "RandomParts", "DecalsRightQuarter1", DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_RIGHT_QUARTER_TEX0]) != 0;
+		ACarConfig.RandomParts.Parts[CARSLOTID_DECAL_RIGHT_QUARTER_TEX1] = mINI_ReadInteger(CarINI, "RandomParts", "DecalsRightQuarter2", DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_RIGHT_QUARTER_TEX1]) != 0;
+		ACarConfig.RandomParts.Parts[CARSLOTID_DECAL_RIGHT_QUARTER_TEX2] = mINI_ReadInteger(CarINI, "RandomParts", "DecalsRightQuarter3", DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_RIGHT_QUARTER_TEX2]) != 0;
+		ACarConfig.RandomParts.Parts[CARSLOTID_DECAL_RIGHT_QUARTER_TEX3] = mINI_ReadInteger(CarINI, "RandomParts", "DecalsRightQuarter4", DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_RIGHT_QUARTER_TEX3]) != 0;
+		ACarConfig.RandomParts.Parts[CARSLOTID_DECAL_RIGHT_QUARTER_TEX4] = mINI_ReadInteger(CarINI, "RandomParts", "DecalsRightQuarter5", DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_RIGHT_QUARTER_TEX4]) != 0;
+		ACarConfig.RandomParts.Parts[CARSLOTID_DECAL_RIGHT_QUARTER_TEX5] = mINI_ReadInteger(CarINI, "RandomParts", "DecalsRightQuarter6", DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_RIGHT_QUARTER_TEX5]) != 0;
+		ACarConfig.RandomParts.Parts[CARSLOTID_DECAL_RIGHT_QUARTER_TEX6] = mINI_ReadInteger(CarINI, "RandomParts", "DecalsRightQuarter7", DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_RIGHT_QUARTER_TEX6]) != 0;
+		ACarConfig.RandomParts.Parts[CARSLOTID_DECAL_RIGHT_QUARTER_TEX7] = mINI_ReadInteger(CarINI, "RandomParts", "DecalsRightQuarter8", DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_RIGHT_QUARTER_TEX7]) != 0;
+		ACarConfig.RandomParts.Parts[CARSLOTID_DECAL_LEFT_DOOR_TEX6] = mINI_ReadInteger(CarINI, "RandomParts", "NumbersLeftL", DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_LEFT_DOOR_TEX6]) != 0;
+		ACarConfig.RandomParts.Parts[CARSLOTID_DECAL_LEFT_DOOR_TEX7] = mINI_ReadInteger(CarINI, "RandomParts", "NumbersLeftR", DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_LEFT_DOOR_TEX7]) != 0;
+		ACarConfig.RandomParts.Parts[CARSLOTID_DECAL_RIGHT_DOOR_TEX6] = mINI_ReadInteger(CarINI, "RandomParts", "NumbersRightL", DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_RIGHT_DOOR_TEX6]) != 0;
+		ACarConfig.RandomParts.Parts[CARSLOTID_DECAL_RIGHT_DOOR_TEX7] = mINI_ReadInteger(CarINI, "RandomParts", "NumbersRightR", DefaultCarConfig.RandomParts.Parts[CARSLOTID_DECAL_RIGHT_DOOR_TEX7]) != 0;
+		ACarConfig.RandomParts.Parts[CARSLOTID_CUSTOM_HUD] = mINI_ReadInteger(CarINI, "RandomParts", "CustomGauges", DefaultCarConfig.RandomParts.Parts[CARSLOTID_CUSTOM_HUD]) != 0;
+		ACarConfig.RandomParts.Parts[CARSLOTID_HUD_BACKING_COLOUR] = mINI_ReadInteger(CarINI, "RandomParts", "CustomGaugesBackingColor", DefaultCarConfig.RandomParts.Parts[CARSLOTID_HUD_BACKING_COLOUR]) != 0;
+		ACarConfig.RandomParts.Parts[CARSLOTID_HUD_NEEDLE_COLOUR] = mINI_ReadInteger(CarINI, "RandomParts", "CustomGaugesNeedleColor", DefaultCarConfig.RandomParts.Parts[CARSLOTID_HUD_NEEDLE_COLOUR]) != 0;
+		ACarConfig.RandomParts.Parts[CARSLOTID_HUD_CHARACTER_COLOUR] = mINI_ReadInteger(CarINI, "RandomParts", "CustomGaugesCharacterColor", DefaultCarConfig.RandomParts.Parts[CARSLOTID_HUD_CHARACTER_COLOUR]) != 0;
+		ACarConfig.RandomParts.Parts[CARSLOTID_DRIVER] = mINI_ReadInteger(CarINI, "RandomParts", "Driver", DefaultCarConfig.RandomParts.Parts[CARSLOTID_DRIVER]) != 0;
+		ACarConfig.RandomParts.Parts[CARSLOTID_LICENSE_PLATE] = mINI_ReadInteger(CarINI, "RandomParts", "LicensePlate", DefaultCarConfig.RandomParts.Parts[CARSLOTID_LICENSE_PLATE]) != 0;
+		ACarConfig.RandomParts.Parts[CARSLOTID_UL_TIRE_TEXTURE] = mINI_ReadInteger(CarINI, "RandomParts", "Tires", DefaultCarConfig.RandomParts.Parts[CARSLOTID_UL_TIRE_TEXTURE]) != 0;
+		ACarConfig.RandomParts.Parts[CARSLOTID_UL_NEON] = mINI_ReadInteger(CarINI, "RandomParts", "Neon", DefaultCarConfig.RandomParts.Parts[CARSLOTID_UL_NEON]) != 0;
 
 		// FECooling
 		ACarConfig.FECooling.BodyKits = mINI_ReadFloat(CarINI, "FECooling", "BodyKits", DefaultCarConfig.FECooling.BodyKits);
@@ -2009,11 +2015,13 @@ void LoadRimBrands()
 	char RimBrandID[15];
 
 	int NumRimBrands = mINI_ReadInteger(RimBrandsINI, "RimBrands", "NumberOfRimBrands", DefaultRimBrandCount);
+	bool SortAlphabetically = mINI_ReadInteger(RimBrandsINI, "RimBrands", "SortAlphabetically", 0) != 0;
 
 	for (int i = 0; i <= NumRimBrands; i++)
 	{
 		sprintf(RimBrandID, "Brand%d", i);
 
+		SetRimBrandName(ARimBrand, mINI_ReadString(RimBrandsINI, RimBrandID, "BrandName", GetDefaultRimBrandName(i)));
 		ARimBrand.BrandNameHash = mINI_ReadHashS(RimBrandsINI, RimBrandID, "BrandName", GetDefaultRimBrandName(i));
 		int d = GetMatchingDefaultRimBrand(ARimBrand.BrandNameHash);
 		ARimBrand.StringHash = mINI_ReadHashS(RimBrandsINI, RimBrandID, "String", GetDefaultRimBrandString(d));
@@ -2040,7 +2048,8 @@ void LoadRimBrands()
 				mINI::INIStructure itINI;
 				itINIFile.read(itINI);
 
-				ARimBrand.BrandNameHash = mINI_ReadInteger(itINI, "Brand", "BrandName");
+				SetRimBrandName(ARimBrand, mINI_ReadString(itINI, "Brand", "BrandName", itINIPath.stem().string().c_str()));
+				ARimBrand.BrandNameHash = mINI_ReadHashS(itINI, "Brand", "BrandName");
 				ARimBrand.TextureHash = mINI_ReadHashS(itINI, "Brand", "Texture");
 				ARimBrand.StringHash = mINI_ReadHashS(itINI, "Brand", "String");
 				ARimBrand.NoRimSize = mINI_ReadInteger(itINI, "Brand", "NoRimSize", 0) != 0;
@@ -2048,7 +2057,7 @@ void LoadRimBrands()
 				// If we already have a grup with the same hash, overwrite it
 				bool found = 0;
 
-				for (int k = 0; k < RimBrands_temp.size(); k++)
+				for (int k = 1; k < RimBrands_temp.size(); k++) // skip custom brand
 				{
 					if (RimBrands_temp[k].BrandNameHash == ARimBrand.BrandNameHash) // overwrite
 					{
@@ -2068,6 +2077,15 @@ void LoadRimBrands()
 				}
 			}
 		}
+	}
+
+	if (SortAlphabetically && RimBrands_temp.size() > 2)
+	{
+		std::stable_sort(RimBrands_temp.begin() + 1, RimBrands_temp.end(),
+			[](const RimBrand& a, const RimBrand& b)
+			{
+				return _stricmp(a.BrandName, b.BrandName) < 0;
+			});
 	}
 
 	RimBrands = std::move(RimBrands_temp); // Replace global list with temp
@@ -2132,7 +2150,7 @@ void LoadVinylGroups()
 				// If we already have a grup with the same hash, overwrite it
 				bool found = 0;
 
-				for (int k = 0; k < VinylGroups_temp.size(); k++)
+				for (int k = 1; k < VinylGroups_temp.size(); k++)
 				{
 					if (VinylGroups_temp[k].Index == AVinylGroup.Index) // overwrite
 					{
@@ -2223,7 +2241,7 @@ void LoadPaintGroups()
 				// If we already have a grup with the same hash, overwrite it
 				bool found = 0;
 
-				for (int k = 0; k < PaintGroups_temp.size(); k++)
+				for (int k = 1; k < PaintGroups_temp.size(); k++)
 				{
 					if (PaintGroups_temp[k].BrandNameHash == APaintGroup.BrandNameHash) // overwrite
 					{

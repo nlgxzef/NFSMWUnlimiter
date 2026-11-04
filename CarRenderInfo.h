@@ -215,7 +215,7 @@ void __fastcall CarRenderInfo_UpdateCarReplacementTextures(DWORD* CarRenderInfo,
 			}
 
 			// TIRE
-			Part = RideInfo_GetPart(RideInfo, CARSLOTID_HEADLIGHT);
+			Part = RideInfo_GetPart(RideInfo, CARSLOTID_UL_TIRE_TEXTURE);
 
 			if (Part)
 			{
@@ -1595,8 +1595,9 @@ void __fastcall CarRenderInfo_CreateCarLightFlares(DWORD* CarRenderInfo, void* E
 {
 	DWORD* Solid;
 	ePositionMarker* Marker;
-	eLightFlare* Flare;
+	eLightFlare* Flare, *Last;
 	int FlareType = 0;
+	Color FlareTint = 0;
 
 	if (CarRenderInfo[34]) // CarTypeInfo
 	{
@@ -1607,59 +1608,57 @@ void __fastcall CarRenderInfo_CreateCarLightFlares(DWORD* CarRenderInfo, void* E
 
 			if (Solid)
 			{
-				while (1)
-				{
-					Marker = eSolid_GetPositionMarker(Solid, Marker);
-					if (!Marker) break;
+				Marker = eSolid_GetPositionMarker(Solid, Marker);
 
-					Flare = (eLightFlare*)FastMem_Alloc((DWORD*)_gFastMem, 0x30, 0);
-					if (!Flare) break;
+				do
+				{
+					if (!Marker) break; // No (more) markers
 
 					switch (Marker->NameHash)
 					{
 					case 0x7A5BCF69: // CENTRE_HEADLIGHT
 						FlareType = 0; // ELF_CAR_HEADLIGHT
-						Flare->ColourTint = CarRenderInfo_GetColor(CarRenderInfo, 0, 31, 2, 0, 0);
-						if (!Flare->ColourTint) goto _LeftHeadlight;
+						FlareTint = CarRenderInfo_GetColor(CarRenderInfo, 0, 31, 2, 0, 0);
+						if (!FlareTint) goto _LeftHeadlight;
 						break;
 					case 0xD09091C6: // RIGHT_HEADLIGHT
 						FlareType = 0; // ELF_CAR_HEADLIGHT
-						Flare->ColourTint = CarRenderInfo_GetColor(CarRenderInfo, 0, 40, 0, 0, 0);
-						if (!Flare->ColourTint) goto _LeftHeadlight;
+						FlareTint = CarRenderInfo_GetColor(CarRenderInfo, 0, 40, 0, 0, 0);
+						if (!FlareTint) goto _LeftHeadlight;
 						break;
 					case 0x9DB90133: // LEFT_HEADLIGHT
 						FlareType = 0; // ELF_CAR_HEADLIGHT
 					_LeftHeadlight:
-						Flare->ColourTint = CarRenderInfo_GetColor(CarRenderInfo, 0, 31, 0, 0, 0);
+						FlareTint = CarRenderInfo_GetColor(CarRenderInfo, 0, 31, 0, 0, 0);
 						break;
 
 
 					case 0xA2A2FC7C: // CENTRE_BRAKELIGHT
 						FlareType = 1; // ELF_CAR_BRAKELIGHT
-						Flare->ColourTint = CarRenderInfo_GetColor(CarRenderInfo, 0, 29, 2, 0, 0);
-						if (!Flare->ColourTint) goto _LeftBrakelight;
+						FlareTint = CarRenderInfo_GetColor(CarRenderInfo, 0, 29, 2, 0, 0);
+						if (!FlareTint) goto _LeftBrakelight;
 						break;
 					case 0xBF700A79: // RIGHT_BRAKELIGHT
 						FlareType = 1; // ELF_CAR_BRAKELIGHT
-						Flare->ColourTint = CarRenderInfo_GetColor(CarRenderInfo, 0, 38, 0, 0, 0);
-						if (!Flare->ColourTint) goto _LeftBrakelight;
+						FlareTint = CarRenderInfo_GetColor(CarRenderInfo, 0, 38, 0, 0, 0);
+						if (!FlareTint) goto _LeftBrakelight;
 						break;
 					case 0x31A66786: // LEFT_BRAKELIGHT
 						FlareType = 1; // ELF_CAR_BRAKELIGHT
 					_LeftBrakelight:
-						Flare->ColourTint = CarRenderInfo_GetColor(CarRenderInfo, 0, 29, 0, 0, 0);
+						FlareTint = CarRenderInfo_GetColor(CarRenderInfo, 0, 29, 0, 0, 0);
 						break;
 
 
 					case 0x7ADF7EF8: // RIGHT_REVERSE
 						FlareType = 3; // ELF_CAR_REVERSELIGHT
-						Flare->ColourTint = CarRenderInfo_GetColor(CarRenderInfo, 0, 38, 1, 0, 0);
-						if (!Flare->ColourTint) goto _LeftReverse;
+						FlareTint = CarRenderInfo_GetColor(CarRenderInfo, 0, 38, 1, 0, 0);
+						if (!FlareTint) goto _LeftReverse;
 						break;
 					case 0x7A5B2F25: // LEFT_REVERSE
 						FlareType = 3; // ELF_CAR_REVERSELIGHT
 					_LeftReverse:
-						Flare->ColourTint = CarRenderInfo_GetColor(CarRenderInfo, 0, 29, 1, 0, 0);
+						FlareTint = CarRenderInfo_GetColor(CarRenderInfo, 0, 29, 1, 0, 0);
 						break;
 
 
@@ -1694,10 +1693,18 @@ void __fastcall CarRenderInfo_CreateCarLightFlares(DWORD* CarRenderInfo, void* E
 					case 0xBEB6C523: // REAR_RIGHT_SIGNAL
 						FlareType = 17; // ELF_BLINKING_AMBER
 						break;
+
+					default:
+						goto _NextMarker;
 					}
+
+					Flare = (eLightFlare*)FastMem_Alloc((DWORD*)_gFastMem, 0x30, 0);
+					if (!Flare) break;
 
 					Flare->NameHash = Marker->NameHash;
 					Flare->Type = FlareType;
+					Flare->ColourTint = FlareTint;
+
 					switch (FlareType)
 					{
 					case 5: // ELF_CAR_COPLIGHTRED
@@ -1720,16 +1727,17 @@ void __fastcall CarRenderInfo_CreateCarLightFlares(DWORD* CarRenderInfo, void* E
 					Flare->DirectionY = Marker->Matrix.v2.y;
 					Flare->DirectionZ = Marker->Matrix.v2.z;
 
-					//bTNode<eLightFlare>_AddAfter((bTNode<eLightFlare>*)CarRenderInfo[65], CarRenderInfo[66]);
-
-					eLightFlare* Last = (eLightFlare*)CarRenderInfo[66];
+					//Add to list
+					Last = (eLightFlare*)CarRenderInfo[66];
 					Flare->Next = Last->Next;
 					Flare->Prev = Last;
 					Last->Next = Flare;
 					CarRenderInfo[66] = (DWORD)Flare;
 					
-					//Flare->Next = (eLightFlare*)(DWORD*)(CarRenderInfo + 65);
+				_NextMarker:
+					Marker = eSolid_GetPositionMarker(Solid, Marker); // get next marker
 				}
+				while (Marker);
 			}
 		}
 	}
